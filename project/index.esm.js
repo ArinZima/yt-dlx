@@ -227,7 +227,7 @@ async function ytCore$1(query) {
     }
 }
 
-var version = "4.2.0";
+var version = "4.4.0";
 
 async function Engine({ query, }) {
     let videoId, TubeCore, TubeBody;

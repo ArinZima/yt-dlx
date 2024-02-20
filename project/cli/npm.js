@@ -3,7 +3,7 @@
 var child_process = require('child_process');
 
 // package.json
-var version = "4.2.0";
+var version = "4.4.0";
 child_process.exec("npm show yt-core version", (_error, stdout) => {
   let logger = "";
   const latestVersion = stdout.trim();
