@@ -32,7 +32,7 @@ apt-get -y autoremove && hash -r || warn "Autoremove did not complete successful
 
 if ! command -v node &> /dev/null; then
   log "Installing Node.js and npm"
-  curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && hash -r || error "Failed to add Node.js repository."
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && hash -r || error "Failed to add Node.js repository."
   aptitude install -y nodejs && hash -r || error "Failed to install Node.js."
   apt-get -y autoremove && hash -r || warn "Autoremove did not complete successfully."
 else
@@ -41,7 +41,7 @@ fi
 
 log "Installing global npm & yarn Node.js packages"
 npm install --global npm bun yarn && hash -r || error "Failed to install npm global Node.js packages."
-yarn global add pm2 forever yt-dlp && hash -r || error "Failed to install yarn global Node.js packages."
+yarn global add pm2 forever yt-core && hash -r || error "Failed to install yarn global Node.js packages."
 apt-get -y autoremove && hash -r || warn "Autoremove did not complete successfully."
 
 log "Running 'yarn install'"
