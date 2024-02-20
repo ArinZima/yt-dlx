@@ -35,7 +35,6 @@ export default async function AudioVideoHighest({
       };
     }
     const metaBody = await ytCore({ query });
-    console.log(metaBody);
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
