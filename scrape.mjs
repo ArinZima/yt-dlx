@@ -19,8 +19,8 @@ async function YouTubeScraper() {
   }
   const links = [];
   const titles = [];
-  const videoIds = [];
   const authors = [];
+  const videoIds = [];
   const authorUrls = [];
   for (const vid of videos) {
     const title = await vid.$eval("#video-title", (el) =>
@@ -45,10 +45,10 @@ async function YouTubeScraper() {
     authorUrls.push(authorUrl);
   }
   for (let i = 0; i < videos.length; i++) {
-    console.log(colors.green("Video ID: ") + videoIds[i]);
-    console.log(colors.green("Title: ") + titles[i]);
     console.log(colors.green("Link: ") + links[i]);
+    console.log(colors.green("Title: ") + titles[i]);
     console.log(colors.green("Author: ") + authors[i]);
+    console.log(colors.green("Video ID: ") + videoIds[i]);
     console.log(colors.green("Author URL: ") + authorUrls[i]);
     console.log(colors.reset(""));
   }
