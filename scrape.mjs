@@ -7,7 +7,7 @@ const spinnies = new Spinnies();
 const metaSpin = randomUUID().toString();
 
 async function YouTubeScraper(query) {
-  spinnies.add(metaSpin, { text: colors.yellow("Creating new page...") });
+  spinnies.add(metaSpin, { text: colors.yellow("Spinning Chromium...") });
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
@@ -18,12 +18,12 @@ async function YouTubeScraper(query) {
     text: colors.yellow("Loading dynamic content..."),
   });
   let videos = [];
-  while (videos.length < 20) {
+  while (videos.length < 100) {
     await page.waitForSelector(".ytd-video-renderer");
     const newVideos = await page.$$("ytd-video-renderer");
     videos = [...videos, ...newVideos];
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(4000);
   }
   const data = [];
   for (const vid of videos) {
@@ -43,14 +43,29 @@ async function YouTubeScraper(query) {
     const authorUrl = await authorContainer
       .getProperty("href")
       .then((property) => property.jsonValue());
+    let description = "";
+    const descriptionElement = await vid.$(".metadata-snippet-text");
+    if (descriptionElement) {
+      description = await descriptionElement
+        .getProperty("innerText")
+        .then((property) => property.jsonValue());
+    }
+    const viewsContainer = await vid.$(
+      ".inline-metadata-item.style-scope.ytd-video-meta-block"
+    );
+    const views = await viewsContainer
+      .getProperty("innerText")
+      .then((property) => property.jsonValue());
     data.push({
       title,
       author,
       videoId,
-      videoLink,
       authorUrl,
+      videoLink,
       thumbnailUrl:
         "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg",
+      description,
+      views: views.replace(/ views/g, ""),
     });
   }
   await browser.close();
