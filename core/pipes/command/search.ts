@@ -9,7 +9,7 @@ export default async function search({ query }: { query: string }) {
           status: 500,
         };
       default:
-        return (await scrape(query)).stdout;
+        return await scrape(query);
     }
   } catch (error) {
     switch (true) {
