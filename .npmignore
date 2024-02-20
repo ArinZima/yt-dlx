@@ -1,0 +1,6 @@
+temp
+.venv
+frontend
+**/*.env
+.env*.local
+node_modules

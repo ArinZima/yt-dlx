@@ -1,0 +1,105 @@
+{
+  "name": "yt-core",
+  "version": "4.1.0",
+  "types": "project/index.d.ts",
+  "main": "project/index.cjs.js",
+  "module": "project/index.esm.js",
+  "description": "Effortless audio-video download and streaming. yt-core does the heavy load for free.",
+  "bin": {
+    "yt": "project/cli/main.js",
+    "core": "project/cli/main.js",
+    "yt_dl": "project/cli/main.js",
+    "ytdlp": "project/cli/main.js",
+    "ytcore": "project/cli/main.js",
+    "yt-dlp": "project/cli/main.js",
+    "ytgrab": "project/cli/main.js",
+    "yt-cli": "project/cli/main.js",
+    "yt-core": "project/cli/main.js",
+    "yt-tool": "project/cli/main.js",
+    "yt-fetch": "project/cli/main.js",
+    "yt-utils": "project/cli/main.js",
+    "yt-helper": "project/cli/main.js",
+    "youtubedlp": "project/cli/main.js",
+    "yt-download": "project/cli/main.js",
+    "youtube-dlp": "project/cli/main.js",
+    "yt_downloader": "project/cli/main.js"
+  },
+  "scripts": {
+    "upload": "yarn build && yarn publish --access=public && yarn rebuild",
+    "cli": "yarn yt version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
+    "relink": "yarn build && yarn unlink && yarn link && yarn link yt-core && yarn cli",
+    "test:fresh": "yarn rebuild && yarn test && yarn test",
+    "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+    "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+    "rebuild": "rm -rf node_modules project temp yarn.lock && yarn install && yarn upgrade --latest && yarn build",
+    "build": "rm -rf project temp && yarn tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs' && npm pkg fix"
+  },
+  "files": [
+    "project",
+    "LICENSE",
+    "README.md",
+    "yarn.lock"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "author": {
+    "name": "shovitdutta"
+  },
+  "licenses": [
+    {
+      "type": "AGPL-3.0",
+      "url": "https://opensource.org/licenses/AGPL-3.0"
+    }
+  ],
+  "homepage": "https://rebrand.ly/mixly",
+  "repository": {
+    "type": "git",
+    "url": "https://mixly-shovitdutta.koyeb.app/pkg"
+  },
+  "keywords": [
+    "yt-core",
+    "yt-dlp",
+    "ytdlp",
+    "cli",
+    "yt"
+  ],
+  "dependencies": {
+    "@shovit/ytid": "^1.0.0",
+    "axios": "^1.6.7",
+    "body-parser": "^1.20.2",
+    "colors": "^1.4.0",
+    "dotenv": "^16.4.4",
+    "fluent-ffmpeg": "^2.1.2",
+    "minimist": "^1.2.8",
+    "ora": "^8.0.1",
+    "package-json": "^9.0.0",
+    "readline-sync": "^1.4.10",
+    "spinnies": "^0.5.1",
+    "stream": "^0.0.2",
+    "yt-core": "^4.0.0",
+    "yt-search": "^2.10.4",
+    "ytdl-core": "^4.11.5",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/async": "^3.2.24",
+    "@types/chai": "^4.3.11",
+    "@types/fluent-ffmpeg": "^2.1.24",
+    "@types/fs-extra": "^11.0.4",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^20.11.19",
+    "@types/readline-sync": "^1.4.8",
+    "@types/spinnies": "^0.5.3",
+    "@types/yt-search": "^2.10.3",
+    "chai": "^5.1.0",
+    "rollup": "^4.12.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}
