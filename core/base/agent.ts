@@ -9,7 +9,7 @@ export default async function Engine({
 }: {
   query: string;
 }): Promise<any> {
-  let videoId: string | null, TubeCore: any, TubeBody: any;
+  let videoId: string | null, TubeCore: any, TubeBody;
   console.log(
     colors.bold.green("INFO: ") +
       "⭕ using yt-core version <(" +
@@ -54,9 +54,7 @@ export default async function Engine({
   }
   if (videoId) {
     TubeBody = await scrape(videoId);
-    console.log(TubeBody);
-    process.exit(1);
-    if (!TubeBody.stdout) {
+    if (TubeBody === null) {
       console.log(
         colors.bold.red("ERROR: ") +
           "❌ no data returned from server..." +
@@ -64,22 +62,21 @@ export default async function Engine({
       );
       return;
     } else {
+      TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("INFO: ") +
           "📡 preparing payload for <(" +
-          TubeBody.stdout.Title +
+          TubeBody.Title +
           "Author:" +
-          TubeBody.stdout.Uploader +
+          TubeBody.Uploader +
           ")>" +
           colors.reset("")
       );
-      TubeCore = await ytCore(TubeBody.stdout.Link);
+      TubeCore = await ytCore(TubeBody.Link);
     }
   } else {
     TubeBody = await scrape(query);
-    console.log(TubeBody);
-    process.exit(1);
-    if (!TubeBody.stdout) {
+    if (TubeBody === null) {
       console.log(
         colors.bold.red("ERROR: ") +
           "❌ no data returned from server..." +
@@ -87,16 +84,17 @@ export default async function Engine({
       );
       return;
     } else {
+      TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("INFO: ") +
           "📡 preparing payload for <(" +
-          TubeBody.stdout.Title +
+          TubeBody.Title +
           "Author:" +
-          TubeBody.stdout.Uploader +
+          TubeBody.Uploader +
           ")>" +
           colors.reset("")
       );
-      TubeCore = await ytCore(TubeBody.stdout.Link);
+      TubeCore = await ytCore(TubeBody.Link);
     }
   }
   if (TubeCore === null) {
@@ -105,12 +103,13 @@ export default async function Engine({
         "❌ please try again later..." +
         colors.reset("")
     );
-    return;
+    return Promise.resolve(null);
+  } else {
+    console.log(
+      colors.bold.green("INFO: ") +
+        "❣️ Thank you for using yt-core! If you enjoy the project, consider Staring the GitHub repo https://github.com/shovitdutta/mixly/yt-core." +
+        colors.reset("")
+    );
+    return Promise.resolve(JSON.parse(TubeCore));
   }
-  console.log(
-    colors.bold.green("INFO: ") +
-      "❣️ Thank you for using yt-core! If you enjoy the project, consider Staring the GitHub repo https://github.com/shovitdutta/mixly/yt-core." +
-      colors.reset("")
-  );
-  return Promise.resolve(JSON.parse(TubeCore));
 }
