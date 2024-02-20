@@ -35,6 +35,7 @@ export default async function AudioVideoHighest({
       };
     }
     const metaBody = await ytCore({ query });
+    console.log(metaBody);
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
@@ -51,8 +52,8 @@ export default async function AudioVideoHighest({
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
-    ytc.input(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
-    ytc.input(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
+    ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
+    ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
     ytc.format(outputFormat);
     ytc.on("start", (cmd) => {
       if (verbose) console.log(cmd);

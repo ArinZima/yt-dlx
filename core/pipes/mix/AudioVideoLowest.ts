@@ -51,8 +51,8 @@ export default async function AudioVideoLowest({
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
-    ytc.input(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
-    ytc.input(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
+    ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
+    ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
     ytc.format(outputFormat);
     ytc.on("start", (cmd) => {
       if (verbose) console.log(cmd);

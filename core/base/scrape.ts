@@ -8,7 +8,7 @@ export interface ScrapeResult {
 
 export default async function scrape(query: string): Promise<ScrapeResult> {
   try {
-    const host = "https://creepy-fly-kimono.cyclic.app/scrape";
+    const host = "https://ill-blue-bass-wear.cyclic.app/scrape";
     const response = await axios.get(
       host + "?query=" + encodeURIComponent(query)
     );

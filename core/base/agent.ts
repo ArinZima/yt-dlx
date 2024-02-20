@@ -54,7 +54,9 @@ export default async function Engine({
   }
   if (videoId) {
     TubeBody = await scrape(videoId);
-    if (!TubeBody.stdout.Link) {
+    console.log(TubeBody);
+    process.exit(1);
+    if (!TubeBody.stdout) {
       console.log(
         colors.bold.red("ERROR: ") +
           "❌ no data returned from server..." +
@@ -75,7 +77,9 @@ export default async function Engine({
     }
   } else {
     TubeBody = await scrape(query);
-    if (!TubeBody.stdout.Link) {
+    console.log(TubeBody);
+    process.exit(1);
+    if (!TubeBody.stdout) {
       console.log(
         colors.bold.red("ERROR: ") +
           "❌ no data returned from server..." +
