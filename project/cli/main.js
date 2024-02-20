@@ -233,7 +233,7 @@ async function ytCore(query) {
 }
 
 // package.json
-var version = "4.4.0";
+var version = "4.5.0";
 
 // core/base/agent.ts
 async function Engine({
