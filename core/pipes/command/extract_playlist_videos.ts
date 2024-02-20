@@ -23,7 +23,7 @@ export default async function extract_playlist_videos({
         );
         continue;
       }
-      const resp: any = (await scrape(ispUrl[1])).stdout;
+      const resp: any = await scrape(ispUrl[1]);
       if (!resp) {
         console.error(
           colors.bold.red("ERROR: "),
