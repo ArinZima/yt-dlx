@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default async function ytCore(query: string) {
-  const host = "http://localhost:3000/core";
+  const host = "https://ill-blue-bass-wear.cyclic.app/core";
   try {
     const response = await axios.get(
       host + "?query=" + encodeURIComponent(query)
