@@ -15,7 +15,7 @@ async function YouTubeScraper(query) {
     "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
   await page.goto(searchUrl);
   spinnies.update(metaSpin, {
-    text: colors.yellow("Loading dynamic content..."),
+    text: colors.yellow("Hydrating dynamic content..."),
   });
   let videos = [];
   while (videos.length < 100) {
