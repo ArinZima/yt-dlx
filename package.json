@@ -1,6 +1,6 @@
 {
   "name": "yt-core",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "types": "project/index.d.ts",
   "main": "project/index.cjs.js",
   "module": "project/index.esm.js",
