@@ -1,32 +1,39 @@
 import colors from "colors";
+import Spinnies from "spinnies";
+import { randomUUID } from "crypto";
 import { chromium } from "playwright";
 
+const spinnies = new Spinnies();
+const metaSpin = randomUUID().toString();
+
 async function YouTubeScraper(query) {
-  console.log(colors.yellow("Creating new page..."));
+  spinnies.add(metaSpin, { text: colors.yellow("Creating new page...") });
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
   const searchUrl =
     "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
   await page.goto(searchUrl);
-  console.log(colors.yellow("Waiting for dynamic content to load..."));
+  spinnies.update(metaSpin, {
+    text: colors.yellow("Loading dynamic content..."),
+  });
   let videos = [];
-  while (videos.length < 80) {
+  while (videos.length < 20) {
     await page.waitForSelector(".ytd-video-renderer");
     const newVideos = await page.$$("ytd-video-renderer");
     videos = [...videos, ...newVideos];
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(8000);
+    await page.waitForTimeout(2000);
   }
   const data = [];
   for (const vid of videos) {
     const title = await vid.$eval("#video-title", (el) =>
       el.textContent.trim()
     );
-    const link =
+    const videoLink =
       "https://www.youtube.com" +
       (await vid.$eval("a", (el) => el.getAttribute("href")));
-    const videoId = link.match(
+    const videoId = videoLink.match(
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/
     )[1];
     const authorContainer = await vid.$(".ytd-channel-name a");
@@ -38,18 +45,21 @@ async function YouTubeScraper(query) {
       .then((property) => property.jsonValue());
     data.push({
       title,
-      link,
       author,
       videoId,
-      authorUrl: "https://www.youtube.com" + authorUrl,
+      videoLink,
+      authorUrl,
       thumbnailUrl:
         "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg",
     });
   }
   await browser.close();
+  spinnies.succeed(metaSpin, {
+    text: colors.green("Total videos: ") + videos.length,
+  });
   return data;
 }
 
-YouTubeScraper("ZULFAAN")
+YouTubeScraper("ZULFAAN (Official Audio) SARRB | Starboy X")
   .then((data) => console.log(data))
   .catch((error) => console.error(error));
