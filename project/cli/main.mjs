@@ -1367,7 +1367,6 @@ async function AudioVideoHighest({
       };
     }
     const metaBody = await Engine({ query });
-    console.log(metaBody);
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",

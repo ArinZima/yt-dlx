@@ -1371,7 +1371,6 @@ async function AudioVideoHighest({ query, stream: stream$1, verbose, folderName,
             };
         }
         const metaBody = await Engine({ query });
-        console.log(metaBody);
         if (!metaBody) {
             return {
                 message: "Unable to get response from YouTube...",
