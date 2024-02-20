@@ -1,27 +1,24 @@
 import colors from "colors";
 import { chromium } from "playwright";
 
-async function YouTubeScraper() {
+async function YouTubeScraper(query) {
   console.log(colors.yellow("Creating new page..."));
-  let browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
-  const searchUrl = "https://www.youtube.com/results?search_query=Houdini";
+  const searchUrl =
+    "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
   await page.goto(searchUrl);
   console.log(colors.yellow("Waiting for dynamic content to load..."));
   let videos = [];
-  while (videos.length < 40) {
+  while (videos.length < 80) {
     await page.waitForSelector(".ytd-video-renderer");
     const newVideos = await page.$$("ytd-video-renderer");
     videos = [...videos, ...newVideos];
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(8000);
   }
-  const links = [];
-  const titles = [];
-  const authors = [];
-  const videoIds = [];
-  const authorUrls = [];
+  const data = [];
   for (const vid of videos) {
     const title = await vid.$eval("#video-title", (el) =>
       el.textContent.trim()
@@ -29,31 +26,30 @@ async function YouTubeScraper() {
     const link =
       "https://www.youtube.com" +
       (await vid.$eval("a", (el) => el.getAttribute("href")));
-    titles.push(title);
-    links.push(link);
     const videoId = link.match(
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/
     )[1];
-    videoIds.push(videoId);
     const authorContainer = await vid.$(".ytd-channel-name a");
-    const author = await authorContainer.textContent();
+    const author = await authorContainer
+      .getProperty("textContent")
+      .then((property) => property.jsonValue());
     const authorUrl = await authorContainer
       .getProperty("href")
       .then((property) => property.jsonValue());
-    authors.push(author);
-    authorUrls.push("https://www.youtube.com" + authorUrl);
-  }
-  for (let i = 0; i < videos.length; i++) {
-    console.log(colors.green("Link: ") + links[i]);
-    console.log(colors.green("Title: ") + titles[i]);
-    console.log(colors.green("Author: ") + authors[i]);
-    console.log(colors.green("Video ID: ") + videoIds[i]);
-    console.log(colors.green("Author URL: ") + authorUrls[i]);
-    console.log(colors.reset(""));
+    data.push({
+      title,
+      link,
+      author,
+      videoId,
+      authorUrl: "https://www.youtube.com" + authorUrl,
+      thumbnailUrl:
+        "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg",
+    });
   }
   await browser.close();
+  return data;
 }
 
-YouTubeScraper().catch((error) => {
-  console.error(colors.red("Error during scraping:"), error);
-});
+YouTubeScraper("ZULFAAN")
+  .then((data) => console.log(data))
+  .catch((error) => console.error(error));
