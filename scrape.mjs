@@ -35,14 +35,13 @@ async function YouTubeScraper() {
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/
     )[1];
     videoIds.push(videoId);
-    const authorContainer = await vid.$(".ytd-channel-name");
-    const author = await authorContainer.$eval("#text", (el) =>
-      el.textContent.trim()
-    );
-    const authorUrl =
-      "https://www.youtube.com" + (await authorContainer.getAttribute("href"));
+    const authorContainer = await vid.$(".ytd-channel-name a");
+    const author = await authorContainer.textContent();
+    const authorUrl = await authorContainer
+      .getProperty("href")
+      .then((property) => property.jsonValue());
     authors.push(author);
-    authorUrls.push(authorUrl);
+    authorUrls.push("https://www.youtube.com" + authorUrl);
   }
   for (let i = 0; i < videos.length; i++) {
     console.log(colors.green("Link: ") + links[i]);
