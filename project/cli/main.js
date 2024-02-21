@@ -684,180 +684,175 @@ var progressBar_default = progressBar;
 
 // core/pipes/audio/AudioLowest.ts
 var metaSpin = crypto.randomUUID().toString();
-async function AudioLowest({
-  query,
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  outputFormat = "mp3"
-}) {
+var AudioLowestInputSchema = z3.z.object({
+  query: z3.z.string(),
+  filter: z3.z.string().optional(),
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+});
+async function AudioLowest(input) {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500
-        };
+    const {
+      query,
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      outputFormat = "mp3"
+    } = AudioLowestInputSchema.parse(input);
+    const metaBody = await Engine({ query });
+    if (!metaBody) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
+      };
+    }
+    let metaName = "";
+    const title = metaBody.metaTube.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "-"
+    );
+    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaEntry = lowEntry(metaBody.AudioTube);
+    const ytc = fluentffmpeg__default.default();
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
+    ytc.addInput(metaBody.metaTube.thumbnail);
+    ytc.addOutputOption("-map", "1:0");
+    ytc.addOutputOption("-map", "0:a:0");
+    ytc.addOutputOption("-id3v2_version", "3");
+    ytc.format(outputFormat);
+    ytc.on("start", (cmd) => {
+      if (verbose)
+        console.log(cmd);
+      progressBar_default(0, metaSpin);
+    });
+    ytc.on("end", () => progressBar_default(100, metaSpin));
+    ytc.on("close", () => progressBar_default(100, metaSpin));
+    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin));
+    ytc.on("error", (error) => {
+      return error;
+    });
+    switch (filter2) {
+      case "bassboost":
+        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
+        break;
+      case "echo":
+        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
+        break;
+      case "flanger":
+        ytc.withAudioFilter(["flanger"]);
+        metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
+        break;
+      case "nightcore":
+        ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
+        break;
+      case "panning":
+        ytc.withAudioFilter(["apulsator=hz=0.08"]);
+        metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
+        break;
+      case "phaser":
+        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
+        break;
+      case "reverse":
+        ytc.withAudioFilter(["areverse"]);
+        metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
+        break;
+      case "slow":
+        ytc.withAudioFilter(["atempo=0.8"]);
+        metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
+        break;
+      case "speed":
+        ytc.withAudioFilter(["atempo=2"]);
+        metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
+        break;
+      case "subboost":
+        ytc.withAudioFilter(["asubboost"]);
+        metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
+        break;
+      case "superslow":
+        ytc.withAudioFilter(["atempo=0.5"]);
+        metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
+        break;
+      case "superspeed":
+        ytc.withAudioFilter(["atempo=3"]);
+        metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
+        break;
+      case "surround":
+        ytc.withAudioFilter(["surround"]);
+        metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
+        break;
+      case "vaporwave":
+        ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
+        break;
+      case "vibrato":
+        ytc.withAudioFilter(["vibrato=f=6.5"]);
+        metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
+        break;
       default:
-        const metaBody = await Engine({ query });
-        if (!metaBody) {
-          return {
-            message: "Unable to get response from YouTube...",
-            status: 500
-          };
+        ytc.withAudioFilter([]);
+        metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
+        break;
+    }
+    if (stream$1) {
+      const readStream = new stream.Readable({
+        read() {
         }
-        let metaName = "";
-        const title = metaBody.metaTube.title.replace(
-          /[^a-zA-Z0-9_]+/g,
-          "-"
-        );
-        const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-        if (!fs__namespace.existsSync(metaFold))
-          fs__namespace.mkdirSync(metaFold, { recursive: true });
-        const metaEntry = lowEntry(metaBody.AudioTube);
-        const ytc = fluentffmpeg__default.default();
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.addInput(metaBody.metaTube.thumbnail);
-        ytc.addOutputOption("-map", "1:0");
-        ytc.addOutputOption("-map", "0:a:0");
-        ytc.addOutputOption("-id3v2_version", "3");
-        ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
-          if (verbose)
-            console.log(cmd);
-          progressBar_default(0, metaSpin);
-        });
-        ytc.on("end", () => progressBar_default(100, metaSpin));
-        ytc.on("close", () => progressBar_default(100, metaSpin));
-        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin));
-        ytc.on("error", (error) => {
-          return error;
-        });
-        switch (filter2) {
-          case "bassboost":
-            ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-            metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
-            break;
-          case "echo":
-            ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-            metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
-            break;
-          case "flanger":
-            ytc.withAudioFilter(["flanger"]);
-            metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
-            break;
-          case "nightcore":
-            ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-            metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
-            break;
-          case "panning":
-            ytc.withAudioFilter(["apulsator=hz=0.08"]);
-            metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
-            break;
-          case "phaser":
-            ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-            metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
-            break;
-          case "reverse":
-            ytc.withAudioFilter(["areverse"]);
-            metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
-            break;
-          case "slow":
-            ytc.withAudioFilter(["atempo=0.8"]);
-            metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
-            break;
-          case "speed":
-            ytc.withAudioFilter(["atempo=2"]);
-            metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
-            break;
-          case "subboost":
-            ytc.withAudioFilter(["asubboost"]);
-            metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
-            break;
-          case "superslow":
-            ytc.withAudioFilter(["atempo=0.5"]);
-            metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
-            break;
-          case "superspeed":
-            ytc.withAudioFilter(["atempo=3"]);
-            metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
-            break;
-          case "surround":
-            ytc.withAudioFilter(["surround"]);
-            metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
-            break;
-          case "vaporwave":
-            ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-            metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
-            break;
-          case "vibrato":
-            ytc.withAudioFilter(["vibrato=f=6.5"]);
-            metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
-            break;
-          default:
-            ytc.withAudioFilter([]);
-            metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
-            break;
+      });
+      const writeStream = new stream.Writable({
+        write(chunk, _encoding, callback) {
+          readStream.push(chunk);
+          callback();
+        },
+        final(callback) {
+          readStream.push(null);
+          callback();
         }
-        if (stream$1) {
-          const readStream = new stream.Readable({
-            read() {
-            }
-          });
-          const writeStream = new stream.Writable({
-            write(chunk, _encoding, callback) {
-              readStream.push(chunk);
-              callback();
-            },
-            final(callback) {
-              readStream.push(null);
-              callback();
-            }
-          });
-          ytc.pipe(writeStream, { end: true });
-          return {
-            stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
-          };
-        } else {
-          await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-              resolve();
-              return {
-                status: 200,
-                message: "process ended..."
-              };
-            }).run();
-          });
+      });
+      ytc.pipe(writeStream, { end: true });
+      return {
+        stream: readStream,
+        filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          resolve();
           return {
             status: 200,
             message: "process ended..."
           };
-        }
+        }).run();
+      });
+      return {
+        status: 200,
+        message: "process ended..."
+      };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
     }
   }
 }
@@ -872,213 +867,197 @@ function bigEntry(out) {
   );
 }
 var metaSpin2 = crypto.randomUUID().toString();
-async function AudioHighest({
-  query,
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  outputFormat = "mp3"
-}) {
+var AudioHighestInputSchema = z3.z.object({
+  query: z3.z.string(),
+  filter: z3.z.string().optional(),
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+});
+async function AudioHighest(input) {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500
-        };
+    const {
+      query,
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      outputFormat = "mp3"
+    } = AudioHighestInputSchema.parse(input);
+    const metaBody = await Engine({ query });
+    if (!metaBody) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
+      };
+    }
+    let metaName = "";
+    const title = metaBody.metaTube.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "-"
+    );
+    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaEntry = bigEntry(metaBody.AudioTube);
+    const ytc = fluentffmpeg__default.default();
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
+    ytc.addInput(metaBody.metaTube.thumbnail);
+    ytc.addOutputOption("-map", "1:0");
+    ytc.addOutputOption("-map", "0:a:0");
+    ytc.addOutputOption("-id3v2_version", "3");
+    ytc.format(outputFormat);
+    ytc.on("start", (cmd) => {
+      if (verbose)
+        console.log(cmd);
+      progressBar_default(0, metaSpin2);
+    });
+    ytc.on("end", () => progressBar_default(100, metaSpin2));
+    ytc.on("close", () => progressBar_default(100, metaSpin2));
+    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin2));
+    ytc.on("error", (error) => {
+      return error;
+    });
+    switch (filter2) {
+      case "bassboost":
+        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
+        break;
+      case "echo":
+        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
+        break;
+      case "flanger":
+        ytc.withAudioFilter(["flanger"]);
+        metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
+        break;
+      case "nightcore":
+        ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
+        break;
+      case "panning":
+        ytc.withAudioFilter(["apulsator=hz=0.08"]);
+        metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
+        break;
+      case "phaser":
+        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
+        break;
+      case "reverse":
+        ytc.withAudioFilter(["areverse"]);
+        metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
+        break;
+      case "slow":
+        ytc.withAudioFilter(["atempo=0.8"]);
+        metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
+        break;
+      case "speed":
+        ytc.withAudioFilter(["atempo=2"]);
+        metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
+        break;
+      case "subboost":
+        ytc.withAudioFilter(["asubboost"]);
+        metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
+        break;
+      case "superslow":
+        ytc.withAudioFilter(["atempo=0.5"]);
+        metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
+        break;
+      case "superspeed":
+        ytc.withAudioFilter(["atempo=3"]);
+        metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
+        break;
+      case "surround":
+        ytc.withAudioFilter(["surround"]);
+        metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
+        break;
+      case "vaporwave":
+        ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
+        break;
+      case "vibrato":
+        ytc.withAudioFilter(["vibrato=f=6.5"]);
+        metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
+        break;
       default:
-        const metaBody = await Engine({ query });
-        if (!metaBody) {
-          return {
-            message: "Unable to get response from YouTube...",
-            status: 500
-          };
+        ytc.withAudioFilter([]);
+        metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
+        break;
+    }
+    if (stream$1) {
+      const readStream = new stream.Readable({
+        read() {
         }
-        let metaName = "";
-        const title = metaBody.metaTube.title.replace(
-          /[^a-zA-Z0-9_]+/g,
-          "-"
-        );
-        const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-        if (!fs__namespace.existsSync(metaFold))
-          fs__namespace.mkdirSync(metaFold, { recursive: true });
-        const metaEntry = bigEntry(metaBody.AudioTube);
-        const ytc = fluentffmpeg__default.default();
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.addInput(metaBody.metaTube.thumbnail);
-        ytc.addOutputOption("-map", "1:0");
-        ytc.addOutputOption("-map", "0:a:0");
-        ytc.addOutputOption("-id3v2_version", "3");
-        ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
-          if (verbose)
-            console.log(cmd);
-          progressBar_default(0, metaSpin2);
-        });
-        ytc.on("end", () => progressBar_default(100, metaSpin2));
-        ytc.on("close", () => progressBar_default(100, metaSpin2));
-        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin2));
-        ytc.on("error", (error) => {
-          return error;
-        });
-        switch (filter2) {
-          case "bassboost":
-            ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-            metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
-            break;
-          case "echo":
-            ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-            metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
-            break;
-          case "flanger":
-            ytc.withAudioFilter(["flanger"]);
-            metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
-            break;
-          case "nightcore":
-            ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-            metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
-            break;
-          case "panning":
-            ytc.withAudioFilter(["apulsator=hz=0.08"]);
-            metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
-            break;
-          case "phaser":
-            ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-            metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
-            break;
-          case "reverse":
-            ytc.withAudioFilter(["areverse"]);
-            metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
-            break;
-          case "slow":
-            ytc.withAudioFilter(["atempo=0.8"]);
-            metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
-            break;
-          case "speed":
-            ytc.withAudioFilter(["atempo=2"]);
-            metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
-            break;
-          case "subboost":
-            ytc.withAudioFilter(["asubboost"]);
-            metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
-            break;
-          case "superslow":
-            ytc.withAudioFilter(["atempo=0.5"]);
-            metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
-            break;
-          case "superspeed":
-            ytc.withAudioFilter(["atempo=3"]);
-            metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
-            break;
-          case "surround":
-            ytc.withAudioFilter(["surround"]);
-            metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
-            break;
-          case "vaporwave":
-            ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-            metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
-            break;
-          case "vibrato":
-            ytc.withAudioFilter(["vibrato=f=6.5"]);
-            metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
-            break;
-          default:
-            ytc.withAudioFilter([]);
-            metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
-            break;
+      });
+      const writeStream = new stream.Writable({
+        write(chunk, _encoding, callback) {
+          readStream.push(chunk);
+          callback();
+        },
+        final(callback) {
+          readStream.push(null);
+          callback();
         }
-        if (stream$1) {
-          const readStream = new stream.Readable({
-            read() {
-            }
-          });
-          const writeStream = new stream.Writable({
-            write(chunk, _encoding, callback) {
-              readStream.push(chunk);
-              callback();
-            },
-            final(callback) {
-              readStream.push(null);
-              callback();
-            }
-          });
-          ytc.pipe(writeStream, { end: true });
-          return {
-            stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
-          };
-        } else {
-          await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-              resolve();
-              return {
-                status: 200,
-                message: "process ended..."
-              };
-            }).run();
-          });
+      });
+      ytc.pipe(writeStream, { end: true });
+      return {
+        stream: readStream,
+        filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          resolve();
           return {
             status: 200,
             message: "process ended..."
           };
-        }
+        }).run();
+      });
+      return {
+        status: 200,
+        message: "process ended..."
+      };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
     }
   }
 }
 var metaSpin3 = crypto.randomUUID().toString();
-async function VideoLowest({
-  query,
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  outputFormat = "mp4"
-}) {
+var VideoLowestInputSchema = z3.z.object({
+  query: z3.z.string(),
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  filter: z3.z.string().optional(),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+});
+async function VideoLowest(input) {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500
-        };
-      default:
-        query = query;
-        break;
-    }
+    const {
+      query,
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      outputFormat = "mp4"
+    } = VideoLowestInputSchema.parse(input);
     const metaBody = await Engine({ query });
     if (!metaBody) {
       return {
@@ -1174,50 +1153,43 @@ async function VideoLowest({
         };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
     }
   }
 }
 var metaSpin4 = crypto.randomUUID().toString();
-async function VideoHighest({
-  query,
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  outputFormat = "mp4"
-}) {
+var VideoHighestInputSchema = z3.z.object({
+  query: z3.z.string(),
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function VideoHighest(input) {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500
-        };
-      default:
-        query = query;
-        break;
-    }
+    const {
+      query,
+      stream: stream$1,
+      verbose,
+      folderName,
+      outputFormat = "mp4",
+      filter: filter2
+    } = VideoHighestInputSchema.parse(input);
     const metaBody = await Engine({ query });
     if (!metaBody) {
       return {
@@ -1225,11 +1197,11 @@ async function VideoHighest({
         status: 500
       };
     }
-    let metaName = "";
     const title = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
+    let metaName = "";
     const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
@@ -1313,500 +1285,470 @@ async function VideoHighest({
         };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
     }
   }
 }
 var metaSpin5 = crypto.randomUUID().toString();
-async function AudioVideoLowest({
-  query,
-  stream: stream$1,
-  verbose,
-  folderName,
-  outputFormat = "mp4"
-}) {
+var AudioVideoLowestInputSchema = z3.z.object({
+  query: z3.z.string(),
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+});
+async function AudioVideoLowest(input) {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500
-        };
-      default:
-        const metaBody = await Engine({ query });
-        if (!metaBody) {
-          return {
-            message: "Unable to get response from YouTube...",
-            status: 500
-          };
+    const {
+      query,
+      stream: stream$1,
+      verbose,
+      folderName,
+      outputFormat = "mp4"
+    } = AudioVideoLowestInputSchema.parse(input);
+    const metaBody = await Engine({ query });
+    if (!metaBody) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
+      };
+    }
+    const title = metaBody.metaTube.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "-"
+    );
+    const metaName = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
+    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const ytc = fluentffmpeg__default.default();
+    ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
+    ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
+    ytc.format(outputFormat);
+    ytc.on("start", (cmd) => {
+      if (verbose)
+        console.log(cmd);
+      progressBar_default(0, metaSpin5);
+    });
+    ytc.on("end", () => progressBar_default(100, metaSpin5));
+    ytc.on("close", () => progressBar_default(100, metaSpin5));
+    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin5));
+    ytc.on("error", (error) => {
+      return error;
+    });
+    if (stream$1) {
+      const readStream = new stream.Readable({
+        read() {
         }
-        const title = metaBody.metaTube.title.replace(
-          /[^a-zA-Z0-9_]+/g,
-          "-"
-        );
-        let metaName = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
-        const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-        if (!fs__namespace.existsSync(metaFold))
-          fs__namespace.mkdirSync(metaFold, { recursive: true });
-        const ytc = fluentffmpeg__default.default();
-        ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
-        ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
-        ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
-          if (verbose)
-            console.log(cmd);
-          progressBar_default(0, metaSpin5);
-        });
-        ytc.on("end", () => progressBar_default(100, metaSpin5));
-        ytc.on("close", () => progressBar_default(100, metaSpin5));
-        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin5));
-        ytc.on("error", (error) => {
-          return error;
-        });
-        if (stream$1) {
-          const readStream = new stream.Readable({
-            read() {
-            }
-          });
-          const writeStream = new stream.Writable({
-            write(chunk, _encoding, callback) {
-              readStream.push(chunk);
-              callback();
-            },
-            final(callback) {
-              readStream.push(null);
-              callback();
-            }
-          });
-          ytc.pipe(writeStream, { end: true });
-          return {
-            stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
-          };
-        } else {
-          await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-              resolve();
-              return {
-                status: 200,
-                message: "process ended..."
-              };
-            }).run();
-          });
+      });
+      const writeStream = new stream.Writable({
+        write(chunk, _encoding, callback) {
+          readStream.push(chunk);
+          callback();
+        },
+        final(callback) {
+          readStream.push(null);
+          callback();
+        }
+      });
+      ytc.pipe(writeStream, { end: true });
+      return {
+        stream: readStream,
+        filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          resolve();
           return {
             status: 200,
             message: "process ended..."
           };
-        }
+        }).run();
+      });
+      return {
+        status: 200,
+        message: "process ended..."
+      };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
     }
   }
 }
 var metaSpin6 = crypto.randomUUID().toString();
-async function AudioVideoHighest({
-  query,
-  stream: stream$1,
-  verbose,
-  folderName,
-  outputFormat = "mp4"
-}) {
+var AudioVideoHighestInputSchema = z3.z.object({
+  query: z3.z.string(),
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+});
+async function AudioVideoHighest(input) {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500
-        };
-      default:
-        const metaBody = await Engine({ query });
-        if (!metaBody) {
-          return {
-            message: "Unable to get response from YouTube...",
-            status: 500
-          };
+    const {
+      query,
+      stream: stream$1,
+      verbose,
+      folderName,
+      outputFormat = "mp4"
+    } = AudioVideoHighestInputSchema.parse(input);
+    const metaBody = await Engine({ query });
+    if (!metaBody) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
+      };
+    }
+    const title = metaBody.metaTube.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "-"
+    );
+    const metaName = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
+    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const ytc = fluentffmpeg__default.default();
+    ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
+    ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
+    ytc.format(outputFormat);
+    ytc.on("start", (cmd) => {
+      if (verbose)
+        console.log(cmd);
+      progressBar_default(0, metaSpin6);
+    });
+    ytc.on("end", () => progressBar_default(100, metaSpin6));
+    ytc.on("close", () => progressBar_default(100, metaSpin6));
+    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin6));
+    ytc.on("error", (error) => {
+      return error;
+    });
+    if (stream$1) {
+      const readStream = new stream.Readable({
+        read() {
         }
-        const title = metaBody.metaTube.title.replace(
-          /[^a-zA-Z0-9_]+/g,
-          "-"
-        );
-        let metaName = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
-        const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-        if (!fs__namespace.existsSync(metaFold))
-          fs__namespace.mkdirSync(metaFold, { recursive: true });
-        const ytc = fluentffmpeg__default.default();
-        ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
-        ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
-        ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
-          if (verbose)
-            console.log(cmd);
-          progressBar_default(0, metaSpin6);
-        });
-        ytc.on("end", () => progressBar_default(100, metaSpin6));
-        ytc.on("close", () => progressBar_default(100, metaSpin6));
-        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin6));
-        ytc.on("error", (error) => {
-          return error;
-        });
-        if (stream$1) {
-          const readStream = new stream.Readable({
-            read() {
-            }
-          });
-          const writeStream = new stream.Writable({
-            write(chunk, _encoding, callback) {
-              readStream.push(chunk);
-              callback();
-            },
-            final(callback) {
-              readStream.push(null);
-              callback();
-            }
-          });
-          ytc.pipe(writeStream, { end: true });
-          return {
-            stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
-          };
-        } else {
-          await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-              resolve();
-              return {
-                status: 200,
-                message: "process ended..."
-              };
-            }).run();
-          });
+      });
+      const writeStream = new stream.Writable({
+        write(chunk, _encoding, callback) {
+          readStream.push(chunk);
+          callback();
+        },
+        final(callback) {
+          readStream.push(null);
+          callback();
+        }
+      });
+      ytc.pipe(writeStream, { end: true });
+      return {
+        stream: readStream,
+        filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          resolve();
           return {
             status: 200,
             message: "process ended..."
           };
-        }
+        }).run();
+      });
+      return {
+        status: 200,
+        message: "process ended..."
+      };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
     }
   }
 }
 var metaSpin7 = crypto.randomUUID().toString();
-async function AudioQualityCustom({
-  query,
-  filter: filter2,
-  quality,
-  stream: stream$1,
-  folderName,
-  outputFormat = "mp3"
-}) {
+var AudioQualityCustomInputSchema = z3.z.object({
+  query: z3.z.string(),
+  stream: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  quality: z3.z.enum(["high", "medium", "low", "ultralow"]),
+  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function AudioQualityCustom(input) {
   try {
-    switch (true) {
-      case (!query || typeof query !== "string" || !query.trim()):
-        return {
-          message: "Query parameter is invalid or missing",
-          status: 500
-        };
-      case (!quality || typeof quality !== "string" || !quality.trim()):
-        return {
-          message: "Quality parameter is invalid or missing",
-          status: 500
-        };
-      default:
-        const metaResp = await Engine({ query });
-        if (!metaResp) {
-          return {
-            message: "The specified quality was not found...",
-            status: 500
-          };
-        }
-        const metaBody = metaResp.AudioTube.filter(
-          (op) => op.meta_dl.formatnote === quality
-        );
-        if (!metaBody) {
-          return {
-            message: "Unable to get response from YouTube...",
-            status: 500
-          };
-        }
-        const title = metaResp.metaTube.title.replace(
-          /[^a-zA-Z0-9_]+/g,
-          "-"
-        );
-        const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-        if (!fs__namespace.existsSync(metaFold))
-          fs__namespace.mkdirSync(metaFold, { recursive: true });
-        const ytc = fluentffmpeg__default.default();
-        const metaEntry = bigEntry(metaBody);
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.addInput(metaResp.metaTube.thumbnail);
-        ytc.addOutputOption("-map", "1:0");
-        ytc.addOutputOption("-map", "0:a:0");
-        ytc.addOutputOption("-id3v2_version", "3");
-        ytc.withAudioBitrate(metaEntry.meta_audio.bitrate);
-        ytc.withAudioChannels(metaEntry.meta_audio.channels);
-        ytc.format(outputFormat);
-        switch (filter2) {
-          case "bassboost":
-            ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-            break;
-          case "echo":
-            ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-            break;
-          case "flanger":
-            ytc.withAudioFilter(["flanger"]);
-            break;
-          case "nightcore":
-            ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-            break;
-          case "panning":
-            ytc.withAudioFilter(["apulsator=hz=0.08"]);
-            break;
-          case "phaser":
-            ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-            break;
-          case "reverse":
-            ytc.withAudioFilter(["areverse"]);
-            break;
-          case "slow":
-            ytc.withAudioFilter(["atempo=0.8"]);
-            break;
-          case "speed":
-            ytc.withAudioFilter(["atempo=2"]);
-            break;
-          case "subboost":
-            ytc.withAudioFilter(["asubboost"]);
-            break;
-          case "superslow":
-            ytc.withAudioFilter(["atempo=0.5"]);
-            break;
-          case "superspeed":
-            ytc.withAudioFilter(["atempo=3"]);
-            break;
-          case "surround":
-            ytc.withAudioFilter(["surround"]);
-            break;
-          case "vaporwave":
-            ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-            break;
-          case "vibrato":
-            ytc.withAudioFilter(["vibrato=f=6.5"]);
-            break;
-          default:
-            ytc.withAudioFilter([]);
-            break;
-        }
-        ytc.on("start", () => progressBar_default(0, metaSpin7));
-        ytc.on("end", () => progressBar_default(100, metaSpin7));
-        ytc.on("close", () => progressBar_default(100, metaSpin7));
-        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin7));
-        ytc.on("error", (error) => {
-          return error;
-        });
-        if (stream$1) {
-          const readStream = new stream.Readable({
-            read() {
-            }
-          });
-          const writeStream = new stream.Writable({
-            write(chunk, _encoding, callback) {
-              readStream.push(chunk);
-              callback();
-            },
-            final(callback) {
-              readStream.push(null);
-              callback();
-            }
-          });
-          ytc.pipe(writeStream, { end: true });
-          return {
-            stream: readStream,
-            filename: folderName ? path__namespace.join(
-              metaFold,
-              `yt-core-(${quality})-${title}.${outputFormat}`
-            ) : `yt-core-(${quality})-${title}.${outputFormat}`
-          };
-        } else {
-          await new Promise((resolve, reject2) => {
-            ytc.output(
-              path__namespace.join(
-                metaFold,
-                `yt-core-(${quality})-${title}.${outputFormat}`
-              )
-            ).on("error", reject2).on("end", () => {
-              resolve();
-            }).run();
-          });
-          return {
-            message: "process ended...",
-            status: 200
-          };
-        }
-    }
-  } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
-    }
-  }
-}
-var metaSpin8 = crypto.randomUUID().toString();
-async function VideoQualityCustom({
-  query,
-  filter: filter2,
-  quality,
-  stream: stream$1,
-  folderName,
-  outputFormat = "mp4"
-}) {
-  try {
-    switch (true) {
-      case (!query || typeof query !== "string" || !query.trim()):
-        return {
-          message: "Query parameter is invalid or missing",
-          status: 500
-        };
-      case (!quality || typeof quality !== "string" || !quality.trim()):
-        return {
-          message: "Quality parameter is invalid or missing",
-          status: 500
-        };
-      default:
-        quality = quality;
-        query = query;
-        break;
-    }
-    const EnResp = await Engine({ query });
-    if (!EnResp) {
+    const {
+      query,
+      stream: stream$1,
+      folderName,
+      quality,
+      outputFormat = "mp3",
+      filter: filter2
+    } = AudioQualityCustomInputSchema.parse(input);
+    const metaResp = await Engine({ query });
+    if (!metaResp) {
       return {
         message: "The specified quality was not found...",
         status: 500
       };
     }
-    const YSBody = EnResp.VideoTube.filter(
+    const metaBody = metaResp.AudioTube.filter(
       (op) => op.meta_dl.formatnote === quality
     );
-    if (!YSBody) {
+    if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
         status: 500
       };
+    }
+    const title = metaResp.metaTube.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "-"
+    );
+    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const ytc = fluentffmpeg__default.default();
+    const metaEntry = bigEntry(metaBody);
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
+    ytc.addInput(metaResp.metaTube.thumbnail);
+    ytc.addOutputOption("-map", "1:0");
+    ytc.addOutputOption("-map", "0:a:0");
+    ytc.addOutputOption("-id3v2_version", "3");
+    ytc.withAudioBitrate(metaEntry.meta_audio.bitrate);
+    ytc.withAudioChannels(metaEntry.meta_audio.channels);
+    ytc.format(outputFormat);
+    switch (filter2) {
+      case "bassboost":
+        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        break;
+      case "echo":
+        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        break;
+      case "flanger":
+        ytc.withAudioFilter(["flanger"]);
+        break;
+      case "nightcore":
+        ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        break;
+      case "panning":
+        ytc.withAudioFilter(["apulsator=hz=0.08"]);
+        break;
+      case "phaser":
+        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        break;
+      case "reverse":
+        ytc.withAudioFilter(["areverse"]);
+        break;
+      case "slow":
+        ytc.withAudioFilter(["atempo=0.8"]);
+        break;
+      case "speed":
+        ytc.withAudioFilter(["atempo=2"]);
+        break;
+      case "subboost":
+        ytc.withAudioFilter(["asubboost"]);
+        break;
+      case "superslow":
+        ytc.withAudioFilter(["atempo=0.5"]);
+        break;
+      case "superspeed":
+        ytc.withAudioFilter(["atempo=3"]);
+        break;
+      case "surround":
+        ytc.withAudioFilter(["surround"]);
+        break;
+      case "vaporwave":
+        ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        break;
+      case "vibrato":
+        ytc.withAudioFilter(["vibrato=f=6.5"]);
+        break;
+      default:
+        ytc.withAudioFilter([]);
+        break;
+    }
+    ytc.on("start", () => progressBar_default(0, metaSpin7));
+    ytc.on("end", () => progressBar_default(100, metaSpin7));
+    ytc.on("close", () => progressBar_default(100, metaSpin7));
+    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin7));
+    ytc.on("error", (error) => {
+      return error;
+    });
+    if (stream$1) {
+      const readStream = new stream.Readable({
+        read() {
+        }
+      });
+      const writeStream = new stream.Writable({
+        write(chunk, _encoding, callback) {
+          readStream.push(chunk);
+          callback();
+        },
+        final(callback) {
+          readStream.push(null);
+          callback();
+        }
+      });
+      ytc.pipe(writeStream, { end: true });
+      return {
+        stream: readStream,
+        filename: folderName ? path__namespace.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`) : `yt-core-(${quality})-${title}.${outputFormat}`
+      };
     } else {
-      let ipop = "";
-      const title = EnResp.metaTube.title.replace(
-        /[^a-zA-Z0-9_]+/g,
-        "-"
-      );
-      const opfol = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-      if (!fs__namespace.existsSync(opfol))
-        fs__namespace.mkdirSync(opfol, { recursive: true });
-      const ytc = fluentffmpeg__default.default();
-      const metaEntry = bigEntry(YSBody);
-      ytc.addInput(metaEntry.meta_dl.mediaurl);
-      ytc.format(outputFormat);
-      switch (filter2) {
-        case "grayscale":
-          ytc.withVideoFilter([
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          ]);
-          ipop = `yt-core_(VideoQualityCustom-grayscale)_${title}.${outputFormat}`;
-          break;
-        case "invert":
-          ytc.withVideoFilter(["negate"]);
-          ipop = `yt-core_(VideoQualityCustom-invert)_${title}.${outputFormat}`;
-          break;
-        case "rotate90":
-          ytc.withVideoFilter(["rotate=PI/2"]);
-          ipop = `yt-core_(VideoQualityCustom-rotate90)_${title}.${outputFormat}`;
-          break;
-        case "rotate180":
-          ytc.withVideoFilter(["rotate=PI"]);
-          ipop = `yt-core_(VideoQualityCustom-rotate180)_${title}.${outputFormat}`;
-          break;
-        case "rotate270":
-          ytc.withVideoFilter(["rotate=3*PI/2"]);
-          ipop = `yt-core_(VideoQualityCustom-rotate270)_${title}.${outputFormat}`;
-          break;
-        case "flipHorizontal":
-          ytc.withVideoFilter(["hflip"]);
-          ipop = `yt-core_(VideoQualityCustom-flipHorizontal)_${title}.${outputFormat}`;
-          break;
-        case "flipVertical":
-          ytc.withVideoFilter(["vflip"]);
-          ipop = `yt-core_(VideoQualityCustom-flipVertical)_${title}.${outputFormat}`;
-          break;
-        default:
-          ytc.withVideoFilter([]);
-          ipop = `yt-core_(VideoQualityCustom)_${title}.${outputFormat}`;
-      }
-      ytc.on("start", () => {
-        progressBar_default(0, metaSpin8);
+      await new Promise((resolve, reject2) => {
+        ytc.output(
+          path__namespace.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`)
+        ).on("error", reject2).on("end", () => {
+          resolve();
+        }).run();
       });
-      ytc.on("end", () => progressBar_default(100, metaSpin8));
-      ytc.on("close", () => progressBar_default(100, metaSpin8));
-      ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin8));
-      ytc.on("error", (error) => {
-        return error;
-      });
-      if (stream$1) {
+      return {
+        message: "process ended...",
+        status: 200
+      };
+    }
+  } catch (error) {
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
+    }
+  }
+}
+var metaSpin8 = crypto.randomUUID().toString();
+var VideoLowestInputSchema2 = z3.z.object({
+  query: z3.z.string(),
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  filter: z3.z.string().optional(),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+});
+async function VideoLowest2(input) {
+  try {
+    const {
+      query,
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      outputFormat = "mp4"
+    } = VideoLowestInputSchema2.parse(input);
+    const metaBody = await Engine({ query });
+    if (!metaBody) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
+      };
+    }
+    let metaName = "";
+    const title = metaBody.metaTube.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "-"
+    );
+    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaEntry = lowEntry(metaBody.VideoTube);
+    const ytc = fluentffmpeg__default.default();
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
+    ytc.format(outputFormat);
+    switch (filter2) {
+      case "grayscale":
+        ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        metaName = `yt-core_(VideoLowest-grayscale)_${title}.${outputFormat}`;
+        break;
+      case "invert":
+        ytc.withVideoFilter("negate");
+        metaName = `yt-core_(VideoLowest-invert)_${title}.${outputFormat}`;
+        break;
+      case "rotate90":
+        ytc.withVideoFilter("rotate=PI/2");
+        metaName = `yt-core_(VideoLowest-rotate90)_${title}.${outputFormat}`;
+        break;
+      case "rotate180":
+        ytc.withVideoFilter("rotate=PI");
+        metaName = `yt-core_(VideoLowest-rotate180)_${title}.${outputFormat}`;
+        break;
+      case "rotate270":
+        ytc.withVideoFilter("rotate=3*PI/2");
+        metaName = `yt-core_(VideoLowest-rotate270)_${title}.${outputFormat}`;
+        break;
+      case "flipHorizontal":
+        ytc.withVideoFilter("hflip");
+        metaName = `yt-core_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
+        break;
+      case "flipVertical":
+        ytc.withVideoFilter("vflip");
+        metaName = `yt-core_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
+        break;
+      default:
+        metaName = `yt-core_(VideoLowest)_${title}.${outputFormat}`;
+    }
+    ytc.on("start", (cmd) => {
+      if (verbose)
+        console.log(cmd);
+      progressBar_default(0, metaSpin8);
+    });
+    ytc.on("end", () => progressBar_default(100, metaSpin8));
+    ytc.on("close", () => progressBar_default(100, metaSpin8));
+    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin8));
+    ytc.on("error", (error) => {
+      return error;
+    });
+    switch (stream$1) {
+      case true:
         const readStream = new stream.Readable({
           read() {
           }
@@ -1824,11 +1766,11 @@ async function VideoQualityCustom({
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path__namespace.join(opfol, ipop) : ipop
+          filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
         };
-      } else {
+      default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path__namespace.join(opfol, ipop)).on("error", reject2).on("end", () => {
+          ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -1836,20 +1778,23 @@ async function VideoQualityCustom({
           message: "process ended...",
           status: 200
         };
-      }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
+    if (error instanceof z3.ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500
+      };
     }
   }
 }
@@ -3676,20 +3621,29 @@ var index = {
   doDuring: doWhilst$1
 };
 var metaSpin9 = crypto.randomUUID().toString();
-async function ListVideoLowest({
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp4"
-}) {
+var ListVideoLowestInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function ListVideoLowest(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp4"
+    } = ListVideoLowestInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -3697,13 +3651,6 @@ async function ListVideoLowest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -3831,39 +3778,54 @@ async function ListVideoLowest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
 var metaSpin10 = crypto.randomUUID().toString();
-async function ListVideoHighest({
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp4"
-}) {
+var ListVideoHighestInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function ListVideoHighest(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp4"
+    } = ListVideoHighestInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -3871,13 +3833,6 @@ async function ListVideoHighest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4005,40 +3960,70 @@ async function ListVideoHighest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
 var metaSpin11 = crypto.randomUUID().toString();
-async function ListVideoQualityCustom({
-  filter: filter2,
-  stream: stream$1,
-  quality,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp4"
-}) {
+var ListVideoQualityCustomInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  quality: z3.z.enum([
+    "144p",
+    "240p",
+    "360p",
+    "480p",
+    "720p",
+    "1080p",
+    "1440p",
+    "2160p",
+    "2880p",
+    "4320p",
+    "5760p",
+    "8640p",
+    "12000p"
+  ]),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function ListVideoQualityCustom(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter: filter2,
+      stream: stream$1,
+      quality,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp4"
+    } = ListVideoQualityCustomInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4046,13 +4031,6 @@ async function ListVideoQualityCustom({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4196,39 +4174,54 @@ async function ListVideoQualityCustom({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
 var metaSpin12 = crypto.randomUUID().toString();
-async function ListAudioLowest({
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp3"
-}) {
+var ListAudioLowestInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function ListAudioLowest(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp3"
+    } = ListAudioLowestInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4236,13 +4229,6 @@ async function ListAudioLowest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4408,39 +4394,54 @@ async function ListAudioLowest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
 var metaSpin13 = crypto.randomUUID().toString();
-async function ListAudioHighest({
-  filter: filter2,
-  stream: stream$1,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp3"
-}) {
+var ListAudioHighestInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function ListAudioHighest(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter: filter2,
+      stream: stream$1,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp3"
+    } = ListAudioHighestInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4448,13 +4449,6 @@ async function ListAudioHighest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4620,40 +4614,56 @@ async function ListAudioHighest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
 var metaSpin14 = crypto.randomUUID().toString();
-async function ListAudioQualityCustom({
-  filter: filter2,
-  stream: stream$1,
-  quality,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp3"
-}) {
+var ListAudioQualityCustomInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  quality: z3.z.enum(["high", "medium", "low", "ultralow"]),
+  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z3.z.string().optional()
+});
+async function ListAudioQualityCustom(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter: filter2,
+      stream: stream$1,
+      quality,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp3"
+    } = ListAudioQualityCustomInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4661,13 +4671,6 @@ async function ListAudioQualityCustom({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4850,38 +4853,52 @@ async function ListAudioQualityCustom({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
 var metaSpin15 = crypto.randomUUID().toString();
-async function ListAudioVideoLowest({
-  stream: stream$1,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp4"
-}) {
+var ListAudioVideoLowestInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+});
+async function ListAudioVideoLowest(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      stream: stream$1,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp4"
+    } = ListAudioVideoLowestInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4889,13 +4906,6 @@ async function ListAudioVideoLowest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -4989,38 +4999,52 @@ async function ListAudioVideoLowest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
 var metaSpin16 = crypto.randomUUID().toString();
-async function ListAudioVideoHighest({
-  stream: stream$1,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp4"
-}) {
+var ListAudioVideoHighestInputSchema = z3.z.object({
+  stream: z3.z.boolean().optional(),
+  verbose: z3.z.boolean().optional(),
+  folderName: z3.z.string().optional(),
+  playlistUrls: z3.z.array(z3.z.string()),
+  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+});
+async function ListAudioVideoHighest(input) {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      stream: stream$1,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp4"
+    } = ListAudioVideoHighestInputSchema.parse(input);
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -5028,13 +5052,6 @@ async function ListAudioVideoHighest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500
           }
         ];
@@ -5128,21 +5145,27 @@ async function ListAudioVideoHighest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500
-          }
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500
-          }
-        ];
+    if (error instanceof z3.ZodError) {
+      return [
+        {
+          message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
+          status: 500
+        }
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500
+        }
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500
+        }
+      ];
     }
   }
 }
@@ -5174,7 +5197,7 @@ var ytCore2 = {
     single: {
       lowest: VideoLowest,
       highest: VideoHighest,
-      custom: VideoQualityCustom
+      custom: VideoLowest2
     },
     playlist: {
       lowest: ListVideoLowest,
