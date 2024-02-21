@@ -84,8 +84,19 @@
 console.clear();
 import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 import ListAudioHighest from "./pipes/audio/ListAudioHighest";
+import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
 (async () => {
   try {
+    await ListAudioQualityCustom({
+      playlistUrls: [
+        "https://youtube.com/playlist?list=PLDIoUOhQQPlWvtxdeVTG3i7-SlSN0jfWj&si=9GB2vLYUskpGJ--C",
+        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
+        "https://youtube.com/playlist?list=PLDIoUOhQQPlWt8OpaGG43OjNYuJ2q9jEN&si=0k8__KXk8gxgPaf5",
+      ],
+      folderName: "temp",
+      quality: "medium",
+      verbose: false,
+    });
     await ListAudioHighest({
       playlistUrls: [
         "https://youtube.com/playlist?list=PLDIoUOhQQPlWvtxdeVTG3i7-SlSN0jfWj&si=9GB2vLYUskpGJ--C",
