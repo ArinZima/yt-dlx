@@ -11,7 +11,7 @@ export default async function Engine({
 }): Promise<any> {
   let videoId: string | null, TubeCore: any, TubeBody;
   console.log(
-    colors.bold.green("INFO: ") +
+    colors.bold.green("\n\nINFO: ") +
       `⭕ using yt-core version <(${version})>` +
       colors.reset("")
   );
@@ -90,10 +90,12 @@ export default async function Engine({
       break;
     default:
       console.log(
-        colors.bold.green("INFO: ") +
-          "❣️ Thank you for using yt-core! If you enjoy the project, consider\n" +
-          "starring the GitHub repo: https://github.com/shovitdutta/mixly/yt-core" +
-          colors.reset("")
+        colors.bold.green("INFO:"),
+        "❣️ Thank you for using yt-core! If you enjoy the project, consider"
+      );
+      console.log(
+        colors.bold.green("INFO:"),
+        "starring the GitHub repo: https://github.com/shovitdutta/mixly/yt-core"
       );
       return JSON.parse(TubeCore);
   }
