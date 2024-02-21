@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-var colors14 = require('colors');
+var colors16 = require('colors');
 var axios = require('axios');
 var YouTubeID = require('@shovit/ytid');
 var z3 = require('zod');
@@ -33,7 +33,7 @@ function _interopNamespace(e) {
   return Object.freeze(n);
 }
 
-var colors14__default = /*#__PURE__*/_interopDefault(colors14);
+var colors16__default = /*#__PURE__*/_interopDefault(colors16);
 var axios__default = /*#__PURE__*/_interopDefault(axios);
 var YouTubeID__default = /*#__PURE__*/_interopDefault(YouTubeID);
 var z3__namespace = /*#__PURE__*/_interopNamespace(z3);
@@ -46,7 +46,7 @@ var minimist__default = /*#__PURE__*/_interopDefault(minimist);
 
 function help() {
   return Promise.resolve(
-    colors14__default.default.bold.white(`
+    colors16__default.default.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER CORE <( YT-CORE /)>                                    \u2503
 \u2503                                            (License: MIT)                                                   \u2503
@@ -240,22 +240,22 @@ async function Engine({
 }) {
   let videoId, TubeCore, TubeBody;
   console.log(
-    colors14__default.default.bold.green("\n\nINFO: ") + `\u2B55 using yt-core version <(${version})>` + colors14__default.default.reset("")
+    colors16__default.default.bold.green("\n\nINFO: ") + `\u2B55 using yt-core version <(${version})>` + colors16__default.default.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors14__default.default.bold.red("ERROR: ") + "\u2757'query' is required..." + colors14__default.default.reset("")
+      colors16__default.default.bold.red("ERROR: ") + "\u2757'query' is required..." + colors16__default.default.reset("")
     );
     return null;
   }
   if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors14__default.default.bold.red("ERROR: ") + "\u2757use extract_playlist_videos() for playlists..." + colors14__default.default.reset("")
+      colors16__default.default.bold.red("ERROR: ") + "\u2757use extract_playlist_videos() for playlists..." + colors16__default.default.reset("")
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors14__default.default.bold.green("INFO: ") + `\u{1F6F0}\uFE0F fetching metadata for: <(${query})>` + colors14__default.default.reset("")
+      colors16__default.default.bold.green("INFO: ") + `\u{1F6F0}\uFE0F fetching metadata for: <(${query})>` + colors16__default.default.reset("")
     );
     videoId = await YouTubeID__default.default(query);
   } else
@@ -265,13 +265,13 @@ async function Engine({
       TubeBody = await scrape(query);
       if (TubeBody === null) {
         console.log(
-          colors14__default.default.bold.red("ERROR: ") + "\u2757no data returned from server..." + colors14__default.default.reset("")
+          colors16__default.default.bold.red("ERROR: ") + "\u2757no data returned from server..." + colors16__default.default.reset("")
         );
         return null;
       }
       TubeBody = JSON.parse(TubeBody);
       console.log(
-        colors14__default.default.bold.green("INFO: ") + `\u{1F4E1}preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` + colors14__default.default.reset("")
+        colors16__default.default.bold.green("INFO: ") + `\u{1F4E1}preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` + colors16__default.default.reset("")
       );
       TubeCore = await ytCore(TubeBody[0].Link);
       break;
@@ -279,13 +279,13 @@ async function Engine({
       TubeBody = await scrape(videoId);
       if (TubeBody === null) {
         console.log(
-          colors14__default.default.bold.red("ERROR: ") + "\u2757no data returned from server..." + colors14__default.default.reset("")
+          colors16__default.default.bold.red("ERROR: ") + "\u2757no data returned from server..." + colors16__default.default.reset("")
         );
         return null;
       }
       TubeBody = JSON.parse(TubeBody);
       console.log(
-        colors14__default.default.bold.green("INFO: ") + `\u{1F4E1}preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` + colors14__default.default.reset("")
+        colors16__default.default.bold.green("INFO: ") + `\u{1F4E1}preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` + colors16__default.default.reset("")
       );
       TubeCore = await ytCore(TubeBody.Link);
       break;
@@ -293,12 +293,12 @@ async function Engine({
   switch (TubeCore) {
     case null:
       console.log(
-        colors14__default.default.bold.red("ERROR: ") + "\u2757no data returned from server..." + colors14__default.default.reset("")
+        colors16__default.default.bold.red("ERROR: ") + "\u2757no data returned from server..." + colors16__default.default.reset("")
       );
       return null;
     default:
       console.log(
-        colors14__default.default.bold.green("INFO:"),
+        colors16__default.default.bold.green("INFO:"),
         "\u2763\uFE0F Thank you for using yt-core! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-core"
       );
       return JSON.parse(TubeCore);
@@ -418,7 +418,7 @@ async function get_playlist({
       const ispUrl = url.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors14__default.default.bold.red("ERROR: "),
+          colors16__default.default.bold.red("ERROR: "),
           "Invalid YouTube Playlist URL:",
           url
         );
@@ -427,7 +427,7 @@ async function get_playlist({
       const resp = await search2__default.default({ listId: ispUrl[1] });
       if (!resp) {
         console.error(
-          colors14__default.default.bold.red("ERROR: "),
+          colors16__default.default.bold.red("ERROR: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -438,12 +438,12 @@ async function get_playlist({
           const videoId = resp.videos[i].videoId;
           const metaTube = await search2__default.default({ videoId });
           console.log(
-            colors14__default.default.bold.green("INFO:"),
-            colors14__default.default.bold.green("<("),
+            colors16__default.default.bold.green("INFO:"),
+            colors16__default.default.bold.green("<("),
             metaTube.title,
-            colors14__default.default.bold.green("by"),
+            colors16__default.default.bold.green("by"),
             metaTube.author.name,
-            colors14__default.default.bold.green(")>")
+            colors16__default.default.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId))
             continue;
@@ -458,7 +458,7 @@ async function get_playlist({
             proTubeArr.push({ ...newTube, authorName, authorUrl });
           }
         } catch (error) {
-          console.error(colors14__default.default.bold.red("ERROR: "), error);
+          console.error(colors16__default.default.bold.red("ERROR: "), error);
         }
       }
     }
@@ -618,7 +618,7 @@ async function extract_playlist_videos({
       const ispUrl = url.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors14__default.default.bold.red("ERROR: "),
+          colors16__default.default.bold.red("ERROR: "),
           "Invalid YouTube Playlist URL:",
           url
         );
@@ -627,7 +627,7 @@ async function extract_playlist_videos({
       const resp = await scrape(ispUrl[1]);
       if (!resp) {
         console.error(
-          colors14__default.default.bold.red("ERROR: "),
+          colors16__default.default.bold.red("ERROR: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -645,7 +645,7 @@ async function extract_playlist_videos({
             proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors14__default.default.bold.red("ERROR: "), error);
+          console.error(colors16__default.default.bold.red("ERROR: "), error);
         }
       }
     }
@@ -666,7 +666,7 @@ async function bigEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors14__default.default.bold.red("ERROR:"),
+        colors16__default.default.bold.red("ERROR:"),
         "\u2757sorry no downloadable data found"
       );
       return null;
@@ -680,7 +680,7 @@ async function bigEntry(metaBody) {
           return item;
       }
       console.log(
-        colors14__default.default.bold.red("ERROR:"),
+        colors16__default.default.bold.red("ERROR:"),
         "\u2757sorry no downloadable data found"
       );
       return null;
@@ -693,17 +693,19 @@ var progressBar = (prog) => {
     return;
   if (prog.currentKbps === void 0)
     return;
+  if (prog.percent > 98)
+    prog.percent = 100;
   readline__default.default.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
-  let color = colors14__default.default.green;
+  let color = colors16__default.default.green;
   if (prog.percent < 20)
-    color = colors14__default.default.red;
+    color = colors16__default.default.red;
   else if (prog.percent < 80)
-    color = colors14__default.default.yellow;
+    color = colors16__default.default.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
-    color("PROG:") + " " + sprog + " " + prog.percent.toFixed(2) + "%" + color(" FFMPEG: ") + prog.currentKbps + "kbps " + color("TIMEMARK: ") + prog.timemark
+    color("PROG: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("NETWORK: ") + prog.currentKbps + "kbps " + color("TIMEMARK: ") + prog.timemark
   );
   if (prog.percent >= 99)
     process.stdout.write("\n");
@@ -923,7 +925,7 @@ async function bigEntry2(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors14__default.default.bold.red("ERROR:"),
+        colors16__default.default.bold.red("ERROR:"),
         "\u2757sorry no downloadable data found"
       );
       return null;
@@ -937,7 +939,7 @@ async function bigEntry2(metaBody) {
           return item;
       }
       console.log(
-        colors14__default.default.bold.red("ERROR:"),
+        colors16__default.default.bold.red("ERROR:"),
         "\u2757sorry no downloadable data found"
       );
       return null;
@@ -4065,7 +4067,7 @@ async function ListVideoLowest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors14__default.default.bold.red("ERROR: ") + video.title
+                  message: colors16__default.default.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -4267,7 +4269,7 @@ async function ListVideoHighest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors14__default.default.bold.red("ERROR: ") + video.title
+                  message: colors16__default.default.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -4501,7 +4503,7 @@ async function ListVideoQualityCustom(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors14__default.default.bold.red("ERROR: ") + video.title
+                  message: colors16__default.default.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -4557,7 +4559,6 @@ async function ListAudioLowest(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      console.log("playlistUrl:", url);
       const metaList = await scrape(url);
       if (metaList === null || !metaList) {
         return {
@@ -4574,7 +4575,11 @@ async function ListAudioLowest(input) {
         (video) => uniqueVideoIds.add(video.id)
       );
     }
-    console.log("Total Unique Videos:", parseList.length);
+    console.log(
+      colors16__default.default.bold.green("INFO:"),
+      "\u{1F381}Total Unique Videos:",
+      parseList.length
+    );
     for (const i of parseList) {
       const TubeBody = await scrape(i.videoId);
       if (TubeBody === null)
@@ -4775,7 +4780,6 @@ async function ListAudioHighest(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      console.log("playlistUrl:", url);
       const metaList = await scrape(url);
       if (metaList === null || !metaList) {
         return {
@@ -4792,7 +4796,11 @@ async function ListAudioHighest(input) {
         (video) => uniqueVideoIds.add(video.id)
       );
     }
-    console.log("Total Unique Videos:", parseList.length);
+    console.log(
+      colors16__default.default.bold.green("INFO:"),
+      "\u{1F381}Total Unique Videos:",
+      parseList.length
+    );
     for (const i of parseList) {
       const TubeBody = await scrape(i.videoId);
       if (TubeBody === null)
@@ -4971,13 +4979,13 @@ async function ListAudioHighest(input) {
   }
 }
 var ListAudioQualityCustomInputSchema = z3.z.object({
+  filter: z3.z.string().optional(),
   stream: z3.z.boolean().optional(),
   verbose: z3.z.boolean().optional(),
   folderName: z3.z.string().optional(),
   playlistUrls: z3.z.array(z3.z.string()),
   quality: z3.z.enum(["high", "medium", "low", "ultralow"]),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
-  filter: z3.z.string().optional()
+  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function ListAudioQualityCustom(input) {
   try {
@@ -4990,219 +4998,188 @@ async function ListAudioQualityCustom(input) {
       playlistUrls,
       outputFormat = "mp3"
     } = ListAudioQualityCustomInputSchema.parse(input);
-    switch (true) {
-      case playlistUrls.length === 0:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
-            status: 500
-          }
-        ];
-      case !Array.isArray(playlistUrls):
-        return [
-          {
-            message: "playlistUrls parameter must be an array",
-            status: 500
-          }
-        ];
-      case !playlistUrls.every(
-        (url) => typeof url === "string" && url.trim().length > 0
-      ):
-        return [
-          {
-            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
-            status: 500
-          }
-        ];
-      default:
-        const videos = await get_playlist({
-          playlistUrls
+    let parseList = [];
+    let metaName = "";
+    let results = [];
+    const uniqueVideoIds = /* @__PURE__ */ new Set();
+    for (const url of playlistUrls) {
+      const metaList = await scrape(url);
+      if (metaList === null || !metaList) {
+        return {
+          message: "Unable to get response from YouTube...",
+          status: 500
+        };
+      }
+      const parsedMetaList = await JSON.parse(metaList);
+      const uniqueVideos = parsedMetaList.Videos.filter(
+        (video) => !uniqueVideoIds.has(video.id)
+      );
+      parseList.push(...uniqueVideos);
+      uniqueVideos.forEach(
+        (video) => uniqueVideoIds.add(video.id)
+      );
+    }
+    console.log(
+      colors16__default.default.bold.green("INFO:"),
+      "\u{1F381}Total Unique Videos:",
+      parseList.length
+    );
+    for (const i of parseList) {
+      const TubeBody = await scrape(i.videoId);
+      if (TubeBody === null)
+        continue;
+      const parseTube = await JSON.parse(TubeBody);
+      const metaBody = await Engine({
+        query: parseTube.Link
+      });
+      if (metaBody === null)
+        continue;
+      const newBody = metaBody.AudioTube.filter(
+        (op) => op.meta_dl.formatnote === quality
+      );
+      if (!newBody || newBody === null)
+        continue;
+      const title = metaBody.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
+      if (!fs__namespace.existsSync(metaFold))
+        fs__namespace.mkdirSync(metaFold, { recursive: true });
+      const metaEntry = await bigEntry2(newBody);
+      if (metaEntry === null)
+        continue;
+      const ytc = fluentffmpeg__default.default();
+      ytc.addInput(metaEntry.meta_dl.mediaurl);
+      ytc.addInput(metaBody.metaTube.thumbnail);
+      ytc.addOutputOption("-map", "1:0");
+      ytc.addOutputOption("-map", "0:a:0");
+      ytc.addOutputOption("-id3v2_version", "3");
+      ytc.format(outputFormat);
+      ytc.on("start", (command) => {
+        if (verbose)
+          console.log(command);
+        progressBar_default({
+          currentKbps: void 0,
+          timemark: void 0,
+          percent: void 0
         });
-        if (!videos) {
-          return [
-            {
-              message: "Unable to get response from YouTube...",
-              status: 500
+      });
+      ytc.on("end", () => {
+        progressBar_default({
+          currentKbps: void 0,
+          timemark: void 0,
+          percent: void 0
+        });
+      });
+      ytc.on("close", () => {
+        progressBar_default({
+          currentKbps: void 0,
+          timemark: void 0,
+          percent: void 0
+        });
+      });
+      ytc.on("progress", (prog) => {
+        progressBar_default({
+          currentKbps: prog.currentKbps,
+          timemark: prog.timemark,
+          percent: prog.percent
+        });
+      });
+      switch (filter2) {
+        case "bassboost":
+          ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          metaName = `yt-core-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+          break;
+        case "echo":
+          ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          metaName = `yt-core-(AudioQualityCustom_echo)-${title}.${outputFormat}`;
+          break;
+        case "flanger":
+          ytc.withAudioFilter(["flanger"]);
+          metaName = `yt-core-(AudioQualityCustom_flanger)-${title}.${outputFormat}`;
+          break;
+        case "nightcore":
+          ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          metaName = `yt-core-(AudioQualityCustom_nightcore)-${title}.${outputFormat}`;
+          break;
+        case "panning":
+          ytc.withAudioFilter(["apulsator=hz=0.08"]);
+          metaName = `yt-core-(AudioQualityCustom_panning)-${title}.${outputFormat}`;
+          break;
+        case "phaser":
+          ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+          metaName = `yt-core-(AudioQualityCustom_phaser)-${title}.${outputFormat}`;
+          break;
+        case "reverse":
+          ytc.withAudioFilter(["areverse"]);
+          metaName = `yt-core-(AudioQualityCustom_reverse)-${title}.${outputFormat}`;
+          break;
+        case "slow":
+          ytc.withAudioFilter(["atempo=0.8"]);
+          metaName = `yt-core-(AudioQualityCustom_slow)-${title}.${outputFormat}`;
+          break;
+        case "speed":
+          ytc.withAudioFilter(["atempo=2"]);
+          metaName = `yt-core-(AudioQualityCustom_speed)-${title}.${outputFormat}`;
+          break;
+        case "subboost":
+          ytc.withAudioFilter(["asubboost"]);
+          metaName = `yt-core-(AudioQualityCustom_subboost)-${title}.${outputFormat}`;
+          break;
+        case "superslow":
+          ytc.withAudioFilter(["atempo=0.5"]);
+          metaName = `yt-core-(AudioQualityCustom_superslow)-${title}.${outputFormat}`;
+          break;
+        case "superspeed":
+          ytc.withAudioFilter(["atempo=3"]);
+          metaName = `yt-core-(AudioQualityCustom_superspeed)-${title}.${outputFormat}`;
+          break;
+        case "surround":
+          ytc.withAudioFilter(["surround"]);
+          metaName = `yt-core-(AudioQualityCustom_surround)-${title}.${outputFormat}`;
+          break;
+        case "vaporwave":
+          ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          metaName = `yt-core-(AudioQualityCustom_vaporwave)-${title}.${outputFormat}`;
+          break;
+        case "vibrato":
+          ytc.withAudioFilter(["vibrato=f=6.5"]);
+          metaName = `yt-core-(AudioQualityCustom_vibrato)-${title}.${outputFormat}`;
+          break;
+        default:
+          ytc.withAudioFilter([]);
+          metaName = `yt-core-(AudioQualityCustom)-${title}.${outputFormat}`;
+          break;
+      }
+      switch (true) {
+        case stream$1:
+          const readStream = new stream.Readable({
+            read() {
             }
-          ];
-        } else {
-          const results = [];
-          await index.eachSeries(
-            videos,
-            async (video) => {
-              try {
-                let metaBody;
-                metaBody = await Engine({ query: video.url });
-                if (!metaBody) {
-                  results.push({
-                    message: "Unable to get response from YouTube...",
-                    status: 500
-                  });
-                } else {
-                  metaBody = metaBody.AudioTube.filter(
-                    (op) => op.meta_dl.formatnote === quality
-                  );
-                  if (!metaBody) {
-                    results.push({
-                      message: "Unable to get response from YouTube...",
-                      status: 500
-                    });
-                  } else {
-                    let metaName = "";
-                    const title = metaBody.metaTube.title.replace(
-                      /[^a-zA-Z0-9_]+/g,
-                      "-"
-                    );
-                    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-                    if (!fs__namespace.existsSync(metaFold))
-                      fs__namespace.mkdirSync(metaFold, { recursive: true });
-                    const metaEntry = await bigEntry2(metaBody.AudioTube);
-                    if (metaEntry === null)
-                      return;
-                    const ytc = fluentffmpeg__default.default();
-                    ytc.addInput(metaEntry.meta_dl.mediaurl);
-                    ytc.addInput(metaBody.metaTube.thumbnail);
-                    ytc.addOutputOption("-map", "1:0");
-                    ytc.addOutputOption("-map", "0:a:0");
-                    ytc.addOutputOption("-id3v2_version", "3");
-                    ytc.format(outputFormat);
-                    ytc.on("start", (command) => {
-                      if (verbose)
-                        console.log(command);
-                      progressBar_default({
-                        currentKbps: void 0,
-                        timemark: void 0,
-                        percent: void 0
-                      });
-                    });
-                    ytc.on("end", () => {
-                      progressBar_default({
-                        currentKbps: void 0,
-                        timemark: void 0,
-                        percent: void 0
-                      });
-                    });
-                    ytc.on("close", () => {
-                      progressBar_default({
-                        currentKbps: void 0,
-                        timemark: void 0,
-                        percent: void 0
-                      });
-                    });
-                    ytc.on("progress", (prog) => {
-                      progressBar_default({
-                        currentKbps: prog.currentKbps,
-                        timemark: prog.timemark,
-                        percent: prog.percent
-                      });
-                    });
-                    switch (filter2) {
-                      case "bassboost":
-                        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                        metaName = `yt-core-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                        break;
-                      case "echo":
-                        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                        metaName = `yt-core-(AudioQualityCustom_echo)-${title}.${outputFormat}`;
-                        break;
-                      case "flanger":
-                        ytc.withAudioFilter(["flanger"]);
-                        metaName = `yt-core-(AudioQualityCustom_flanger)-${title}.${outputFormat}`;
-                        break;
-                      case "nightcore":
-                        ytc.withAudioFilter([
-                          "aresample=48000,asetrate=48000*1.25"
-                        ]);
-                        metaName = `yt-core-(AudioQualityCustom_nightcore)-${title}.${outputFormat}`;
-                        break;
-                      case "panning":
-                        ytc.withAudioFilter(["apulsator=hz=0.08"]);
-                        metaName = `yt-core-(AudioQualityCustom_panning)-${title}.${outputFormat}`;
-                        break;
-                      case "phaser":
-                        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-                        metaName = `yt-core-(AudioQualityCustom_phaser)-${title}.${outputFormat}`;
-                        break;
-                      case "reverse":
-                        ytc.withAudioFilter(["areverse"]);
-                        metaName = `yt-core-(AudioQualityCustom_reverse)-${title}.${outputFormat}`;
-                        break;
-                      case "slow":
-                        ytc.withAudioFilter(["atempo=0.8"]);
-                        metaName = `yt-core-(AudioQualityCustom_slow)-${title}.${outputFormat}`;
-                        break;
-                      case "speed":
-                        ytc.withAudioFilter(["atempo=2"]);
-                        metaName = `yt-core-(AudioQualityCustom_speed)-${title}.${outputFormat}`;
-                        break;
-                      case "subboost":
-                        ytc.withAudioFilter(["asubboost"]);
-                        metaName = `yt-core-(AudioQualityCustom_subboost)-${title}.${outputFormat}`;
-                        break;
-                      case "superslow":
-                        ytc.withAudioFilter(["atempo=0.5"]);
-                        metaName = `yt-core-(AudioQualityCustom_superslow)-${title}.${outputFormat}`;
-                        break;
-                      case "superspeed":
-                        ytc.withAudioFilter(["atempo=3"]);
-                        metaName = `yt-core-(AudioQualityCustom_superspeed)-${title}.${outputFormat}`;
-                        break;
-                      case "surround":
-                        ytc.withAudioFilter(["surround"]);
-                        metaName = `yt-core-(AudioQualityCustom_surround)-${title}.${outputFormat}`;
-                        break;
-                      case "vaporwave":
-                        ytc.withAudioFilter([
-                          "aresample=48000,asetrate=48000*0.8"
-                        ]);
-                        metaName = `yt-core-(AudioQualityCustom_vaporwave)-${title}.${outputFormat}`;
-                        break;
-                      case "vibrato":
-                        ytc.withAudioFilter(["vibrato=f=6.5"]);
-                        metaName = `yt-core-(AudioQualityCustom_vibrato)-${title}.${outputFormat}`;
-                        break;
-                      default:
-                        ytc.withAudioFilter([]);
-                        metaName = `yt-core-(AudioQualityCustom)-${title}.${outputFormat}`;
-                        break;
-                    }
-                    if (stream$1) {
-                      const readStream = new stream.Readable({
-                        read() {
-                        }
-                      });
-                      const writeStream = new stream.Writable({
-                        write(chunk, _encoding, callback) {
-                          readStream.push(chunk);
-                          callback();
-                        },
-                        final(callback) {
-                          readStream.push(null);
-                          callback();
-                        }
-                      });
-                      ytc.pipe(writeStream, { end: true });
-                      results.push({
-                        stream: readStream,
-                        filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
-                      });
-                    } else {
-                      await new Promise((resolve, reject2) => {
-                        ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-                      });
-                    }
-                  }
-                }
-              } catch (error) {
-                results.push({
-                  status: 500,
-                  message: colors14__default.default.bold.red("ERROR: ") + video.title
-                });
-              }
+          });
+          const writeStream = new stream.Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
             }
-          );
-          return results;
-        }
+          });
+          ytc.pipe(writeStream, { end: true });
+          results.push({
+            stream: readStream,
+            filename: folderName ? path__namespace.join(metaFold, metaName) : metaName
+          });
+          break;
+        default:
+          await new Promise((resolve, reject2) => {
+            ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+          });
+          break;
+      }
     }
   } catch (error) {
     if (error instanceof z3.ZodError) {
@@ -5364,7 +5341,7 @@ async function ListAudioVideoLowest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors14__default.default.bold.red("ERROR: ") + video.title
+                  message: colors16__default.default.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5532,7 +5509,7 @@ async function ListAudioVideoHighest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors14__default.default.bold.red("ERROR: ") + video.title
+                  message: colors16__default.default.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5634,7 +5611,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors14__default.default.green("Installed Version: yt-core@" + version));
+      console.error(colors16__default.default.green("Installed Version: yt-core@" + version));
       break;
     case "help":
     case "h":
@@ -5642,14 +5619,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors14__default.default.red(error));
+        console.error(colors16__default.default.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.info.extract({
           query: proTube.query
@@ -5657,14 +5634,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "search-yt":
     case "s":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.info.search({
           query: proTube.query
@@ -5672,14 +5649,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.info.list_formats({
           query: proTube.query
@@ -5687,14 +5664,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "get-video-data":
     case "vi":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.info.get_video_data({
           query: proTube.query
@@ -5702,14 +5679,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.audio.single.highest({
           query: proTube.query
@@ -5717,14 +5694,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.audio.single.lowest({
           query: proTube.query
@@ -5732,14 +5709,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.video.single.highest({
           query: proTube.query
@@ -5747,14 +5724,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.video.single.lowest({
           query: proTube.query
@@ -5762,14 +5739,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.audio_video.single.highest({
           query: proTube.query
@@ -5777,14 +5754,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       } else
         core_default.audio_video.single.lowest({
           query: proTube.query
@@ -5792,17 +5769,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors14__default.default.red(error));
+          console.error(colors16__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors14__default.default.red("error: no format"));
+        console.error(colors16__default.default.red("error: no format"));
       }
       core_default.audio.single.custom({
         query: proTube.query,
@@ -5811,17 +5788,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors14__default.default.red(error));
+        console.error(colors16__default.default.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors14__default.default.red("error: no query"));
+        console.error(colors16__default.default.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors14__default.default.red("error: no format"));
+        console.error(colors16__default.default.red("error: no format"));
       }
       core_default.video.single.custom({
         query: proTube.query,
@@ -5830,7 +5807,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors14__default.default.red(error));
+        console.error(colors16__default.default.red(error));
         process.exit();
       });
       break;
@@ -5839,7 +5816,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors14__default.default.red(error));
+        console.error(colors16__default.default.red(error));
         process.exit();
       });
       break;
@@ -5850,7 +5827,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors14__default.default.red(error));
+    console.error(colors16__default.default.red(error));
     process.exit();
   });
 } else
