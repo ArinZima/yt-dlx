@@ -10,10 +10,12 @@ sudo aptitude clean && \
 sudo rm -rf /var/lib/apt/lists/* && \
 sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
 sudo aptitude install -y nodejs && \
-sudo npm install --global yarn && \
-sudo yarn global add playwright bun npm yt-core && \
+sudo npm install --global yarn bun && \
+sudo yarn global add playwright npm yt-core && \
 playwright install && \
 playwright install-deps && \
 sudo yarn install && yarn rebuild && \
+sudo echo "Tesing playwright..." && \
+yarn spec && \
 cd frontend && \
 sudo yarn install && yarn build
