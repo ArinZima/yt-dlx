@@ -10,8 +10,6 @@ sudo aptitude clean && \
 sudo rm -rf /var/lib/apt/lists/* && \
 sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
 sudo aptitude install -y nodejs && \
-git clone https://github.com/shovitdutta/yt-core.git && \
-cd yt-core && \
 sudo npm install --global yarn && \
 sudo yarn global add playwright bun npm yt-core && \
 playwright install && \
