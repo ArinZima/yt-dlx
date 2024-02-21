@@ -9,10 +9,10 @@ import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
+import type ErrorResult from "../../interface/ErrorResult";
+import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 import type SuccessResult from "../../interface/SuccessResult";
-import type StreamResult from "../../interface/StreamResult";
-import type ErrorResult from "../../interface/ErrorResult";
 
 const metaSpin = randomUUID().toString();
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";

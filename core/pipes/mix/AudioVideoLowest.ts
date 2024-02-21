@@ -6,9 +6,9 @@ import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type SuccessResult from "../../interface/SuccessResult";
-import type StreamResult from "../../interface/StreamResult";
 import type ErrorResult from "../../interface/ErrorResult";
+import type StreamResult from "../../interface/StreamResult";
+import type SuccessResult from "../../interface/SuccessResult";
 
 const metaSpin = randomUUID().toString();
 type VideoFormat = "mp4" | "avi" | "mov";

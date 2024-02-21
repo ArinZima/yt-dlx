@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import colors14 from 'colors';
 import axios from 'axios';
-import * as z4 from 'zod';
 import YouTubeID from '@shovit/ytid';
+import * as z3 from 'zod';
 import search2 from 'yt-search';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -208,186 +208,172 @@ async function Engine({
 }) {
   let videoId, TubeCore, TubeBody;
   console.log(
-    colors14.bold.green("INFO: ") + "\u2B55 using yt-core version <(" + version + ")>" + colors14.reset("")
+    colors14.bold.green("INFO: ") + `\u2B55 using yt-core version <(${version})>` + colors14.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors14.bold.red("ERROR: ") + "\u274C 'query' is required..." + colors14.reset("")
+      colors14.bold.red("ERROR: ") + "\u2757 'query' is required..." + colors14.reset("")
     );
     return;
   }
   if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors14.bold.red("ERROR: ") + "\u274C use extract_playlist_videos() for playlists..." + colors14.reset("")
+      colors14.bold.red("ERROR: ") + "\u2757 use extract_playlist_videos() for playlists..." + colors14.reset("")
     );
     return;
-  }
-  if (/https/i.test(query) && !/list/i.test(query)) {
+  } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors14.bold.green("INFO: ") + "\u2B55 fetching metadata for: <(" + query + ")>" + colors14.reset("")
+      colors14.bold.green("INFO: ") + `\u2B55 fetching metadata for: <(${query})>` + colors14.reset("")
     );
     videoId = await YouTubeID(query);
-  } else {
-    let isYouTubeID2 = function(input) {
-      const regex = /^[a-zA-Z0-9_-]{11}$/;
-      const match = input.match(regex);
-      if (match)
-        return match[0];
-      else
-        return null;
-    };
-    videoId = isYouTubeID2(query);
-  }
-  if (videoId) {
-    TubeBody = await scrape(videoId);
-    if (TubeBody === null) {
-      console.log(
-        colors14.bold.red("ERROR: ") + "\u274C no data returned from server..." + colors14.reset("")
-      );
-      return;
-    } else {
+  } else
+    videoId = await YouTubeID(query);
+  switch (videoId) {
+    case null:
+      TubeBody = await scrape(query);
+      if (TubeBody === null) {
+        console.log(
+          colors14.bold.red("ERROR: ") + "\u2757 no data returned from server..." + colors14.reset("")
+        );
+        return;
+      }
       TubeBody = JSON.parse(TubeBody);
       console.log(
-        colors14.bold.green("INFO: ") + "\u{1F4E1} preparing payload for <(" + TubeBody.Title + "Author:" + TubeBody.Uploader + ")>" + colors14.reset("")
+        colors14.bold.green("INFO: ") + `\u{1F4E1} preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` + colors14.reset("")
       );
-      TubeCore = await ytCore(TubeBody.Link);
-    }
-  } else {
-    TubeBody = await scrape(query);
-    if (TubeBody === null) {
-      console.log(
-        colors14.bold.red("ERROR: ") + "\u274C no data returned from server..." + colors14.reset("")
-      );
-      return;
-    } else {
+      TubeCore = await ytCore(TubeBody[0].Link);
+      break;
+    default:
+      TubeBody = await scrape(videoId);
+      if (TubeBody === null) {
+        console.log(
+          colors14.bold.red("ERROR: ") + "\u2757 no data returned from server..." + colors14.reset("")
+        );
+        return;
+      }
       TubeBody = JSON.parse(TubeBody);
       console.log(
-        colors14.bold.green("INFO: ") + "\u{1F4E1} preparing payload for <(" + TubeBody.Title + "Author:" + TubeBody.Uploader + ")>" + colors14.reset("")
+        colors14.bold.green("INFO: ") + `\u{1F4E1} preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` + colors14.reset("")
       );
       TubeCore = await ytCore(TubeBody.Link);
-    }
+      break;
   }
-  if (TubeCore === null) {
-    console.log(
-      colors14.bold.red("ERROR: ") + "\u274C please try again later..." + colors14.reset("")
-    );
-    return Promise.resolve(null);
-  } else {
-    console.log(
-      colors14.bold.green("INFO: ") + "\u2763\uFE0F Thank you for using yt-core! If you enjoy the project, consider Staring the GitHub repo https://github.com/shovitdutta/mixly/yt-core." + colors14.reset("")
-    );
-    return Promise.resolve(JSON.parse(TubeCore));
+  switch (TubeCore) {
+    case null:
+      console.log(
+        colors14.bold.red("ERROR: ") + "\u2757 no data returned from server..." + colors14.reset("")
+      );
+      break;
+    default:
+      console.log(
+        colors14.bold.green("INFO: ") + "\u2763\uFE0F Thank you for using yt-core! If you enjoy the project, consider\nstarring the GitHub repo: https://github.com/shovitdutta/mixly/yt-core" + colors14.reset("")
+      );
+      return JSON.parse(TubeCore);
   }
 }
 
 // core/pipes/command/extract.ts
-function extract({ query }) {
-  return new Promise(async (resolve, reject2) => {
-    try {
-      let calculateUploadAgo2 = function(days) {
-        const years = Math.floor(days / 365);
-        const months = Math.floor(days % 365 / 30);
-        const remainingDays = days % 30;
-        const formattedString = `${years > 0 ? years + " years, " : ""}${months > 0 ? months + " months, " : ""}${remainingDays} days`;
-        return {
-          years,
-          months,
-          days: remainingDays,
-          formatted: formattedString
-        };
-      }, calculateVideoDuration2 = function(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor(seconds % 3600 / 60);
-        const remainingSeconds = seconds % 60;
-        const formattedString = `${hours > 0 ? hours + " hours, " : ""}${minutes > 0 ? minutes + " minutes, " : ""}${remainingSeconds} seconds`;
-        return {
-          hours,
-          minutes,
-          seconds: remainingSeconds,
-          formatted: formattedString
-        };
-      }, formatCount2 = function(count) {
-        const abbreviations = ["K", "M", "B", "T"];
-        for (let i = abbreviations.length - 1; i >= 0; i--) {
-          const size = Math.pow(10, (i + 1) * 3);
-          if (size <= count) {
-            const formattedCount = Math.round(count / size * 10) / 10;
-            return `${formattedCount}${abbreviations[i]}`;
-          }
-        }
-        return `${count}`;
+async function extract({ query }) {
+  try {
+    let calculateUploadAgo2 = function(days) {
+      const years = Math.floor(days / 365);
+      const months = Math.floor(days % 365 / 30);
+      const remainingDays = days % 30;
+      const formattedString = `${years > 0 ? years + " years, " : ""}${months > 0 ? months + " months, " : ""}${remainingDays} days`;
+      return { years, months, days: remainingDays, formatted: formattedString };
+    }, calculateVideoDuration2 = function(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor(seconds % 3600 / 60);
+      const remainingSeconds = seconds % 60;
+      const formattedString = `${hours > 0 ? hours + " hours, " : ""}${minutes > 0 ? minutes + " minutes, " : ""}${remainingSeconds} seconds`;
+      return {
+        hours,
+        minutes,
+        seconds: remainingSeconds,
+        formatted: formattedString
       };
-      var calculateUploadAgo = calculateUploadAgo2, calculateVideoDuration = calculateVideoDuration2, formatCount = formatCount2;
-      const zval = z4.object({
-        query: z4.string()
-      }).parse({ query });
-      const EnResp = await Engine(zval);
-      if (!EnResp)
-        return reject2("Unable to get response from YouTube...");
-      const uploadDate = EnResp.metaTube.upload_date;
-      const uploadDateFormatted = new Date(
-        uploadDate.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")
-      );
-      const currentDate = /* @__PURE__ */ new Date();
-      const daysAgo = Math.floor(
-        (currentDate.getTime() - uploadDateFormatted.getTime()) / (1e3 * 60 * 60 * 24)
-      );
-      const prettyDate = new Date(
-        uploadDate.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")
-      ).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
-      const uploadAgoObject = calculateUploadAgo2(daysAgo);
-      const videoTimeInSeconds = EnResp.metaTube.duration;
-      const videoDuration = calculateVideoDuration2(videoTimeInSeconds);
-      const viewCountFormatted = formatCount2(EnResp.metaTube.view_count);
-      const likeCountFormatted = formatCount2(EnResp.metaTube.like_count);
-      const payload = {
-        audio_data: EnResp.AudioTube,
-        video_data: EnResp.VideoTube,
-        hdrvideo_data: EnResp.HDRVideoTube,
-        meta_data: {
-          id: EnResp.metaTube.id,
-          original_url: EnResp.metaTube.original_url,
-          webpage_url: EnResp.metaTube.webpage_url,
-          title: EnResp.metaTube.title,
-          view_count: EnResp.metaTube.view_count,
-          like_count: EnResp.metaTube.like_count,
-          view_count_formatted: viewCountFormatted,
-          like_count_formatted: likeCountFormatted,
-          full_title: EnResp.metaTube.Fulltitle,
-          uploader: EnResp.metaTube.uploader,
-          uploader_id: EnResp.metaTube.uploader_id,
-          uploader_url: EnResp.metaTube.uploader_url,
-          thumbnail: EnResp.metaTube.thumbnail,
-          categories: EnResp.metaTube.categories,
-          time: videoTimeInSeconds,
-          duration: videoDuration,
-          age_limit: EnResp.metaTube.age_limit,
-          live_status: EnResp.metaTube.live_status,
-          description: EnResp.metaTube.description,
-          full_description: EnResp.metaTube.description,
-          upload_date: prettyDate,
-          upload_ago: daysAgo,
-          upload_ago_formatted: uploadAgoObject,
-          comment_count: EnResp.metaTube.comment_count,
-          comment_count_formatted: formatCount2(EnResp.metaTube.comment_count),
-          channel_id: EnResp.metaTube.channel_id,
-          channel_name: EnResp.metaTube.channel,
-          channel_url: EnResp.metaTube.channel_url,
-          channel_follower_count: EnResp.metaTube.channel_follower_count,
-          channel_follower_count_formatted: formatCount2(
-            EnResp.metaTube.channel_follower_count
-          )
+    }, formatCount2 = function(count) {
+      const abbreviations = ["K", "M", "B", "T"];
+      for (let i = abbreviations.length - 1; i >= 0; i--) {
+        const size = Math.pow(10, (i + 1) * 3);
+        if (size <= count) {
+          const formattedCount = Math.round(count / size * 10) / 10;
+          return `${formattedCount}${abbreviations[i]}`;
         }
+      }
+      return `${count}`;
+    };
+    var calculateUploadAgo = calculateUploadAgo2, calculateVideoDuration = calculateVideoDuration2, formatCount = formatCount2;
+    const metaBody = await Engine({ query });
+    if (!metaBody) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
       };
-      resolve(payload);
-    } catch (error) {
-      reject2(error instanceof z4.ZodError ? error.errors : error);
     }
-  });
+    const uploadDate = new Date(
+      metaBody.metaTube.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")
+    );
+    const currentDate = /* @__PURE__ */ new Date();
+    const daysAgo = Math.floor(
+      (currentDate.getTime() - uploadDate.getTime()) / (1e3 * 60 * 60 * 24)
+    );
+    const prettyDate = uploadDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+    const uploadAgoObject = calculateUploadAgo2(daysAgo);
+    const videoTimeInSeconds = metaBody.metaTube.duration;
+    const videoDuration = calculateVideoDuration2(videoTimeInSeconds);
+    const viewCountFormatted = formatCount2(metaBody.metaTube.view_count);
+    const likeCountFormatted = formatCount2(metaBody.metaTube.like_count);
+    const payload = {
+      audio_data: metaBody.AudioTube,
+      video_data: metaBody.VideoTube,
+      hdrvideo_data: metaBody.HDRVideoTube,
+      meta_data: {
+        id: metaBody.metaTube.id,
+        original_url: metaBody.metaTube.original_url,
+        webpage_url: metaBody.metaTube.webpage_url,
+        title: metaBody.metaTube.title,
+        view_count: metaBody.metaTube.view_count,
+        like_count: metaBody.metaTube.like_count,
+        view_count_formatted: viewCountFormatted,
+        like_count_formatted: likeCountFormatted,
+        full_title: metaBody.metaTube.Fulltitle,
+        uploader: metaBody.metaTube.uploader,
+        uploader_id: metaBody.metaTube.uploader_id,
+        uploader_url: metaBody.metaTube.uploader_url,
+        thumbnail: metaBody.metaTube.thumbnail,
+        categories: metaBody.metaTube.categories,
+        time: videoTimeInSeconds,
+        duration: videoDuration,
+        age_limit: metaBody.metaTube.age_limit,
+        live_status: metaBody.metaTube.live_status,
+        description: metaBody.metaTube.description,
+        full_description: metaBody.metaTube.description,
+        upload_date: prettyDate,
+        upload_ago: daysAgo,
+        upload_ago_formatted: uploadAgoObject,
+        comment_count: metaBody.metaTube.comment_count,
+        comment_count_formatted: formatCount2(metaBody.metaTube.comment_count),
+        channel_id: metaBody.metaTube.channel_id,
+        channel_name: metaBody.metaTube.channel,
+        channel_url: metaBody.metaTube.channel_url,
+        channel_follower_count: metaBody.metaTube.channel_follower_count,
+        channel_follower_count_formatted: formatCount2(
+          metaBody.metaTube.channel_follower_count
+        )
+      }
+    };
+    return payload;
+  } catch (error) {
+    return {
+      message: error.message || "An unexpected error occurred",
+      status: 500
+    };
+  }
 }
 async function get_playlist({
   playlistUrls
@@ -445,7 +431,7 @@ async function get_playlist({
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z4.ZodError ? error.errors : error;
+    return error instanceof z3.ZodError ? error.errors : error;
   }
 }
 function list_formats({
@@ -453,8 +439,8 @@ function list_formats({
 }) {
   return new Promise(async (resolve, reject2) => {
     try {
-      const zval = z4.object({
-        query: z4.string()
+      const zval = z3.object({
+        query: z3.string()
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -481,7 +467,7 @@ function list_formats({
       };
       resolve(EnBody);
     } catch (error) {
-      reject2(error instanceof z4.ZodError ? error.errors : error);
+      reject2(error instanceof z3.ZodError ? error.errors : error);
     }
   });
 }
@@ -522,11 +508,11 @@ function get_video_data({
           }
         }
         return `${count}`;
-        z4;
+        z3;
       };
       var calculateUploadAgo = calculateUploadAgo2, calculateVideoDuration = calculateVideoDuration2, formatCount = formatCount2;
-      const zval = z4.object({
-        query: z4.string()
+      const zval = z3.object({
+        query: z3.string()
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -585,7 +571,7 @@ function get_video_data({
         )
       });
     } catch (error) {
-      reject2(error instanceof z4.ZodError ? error.errors : error);
+      reject2(error instanceof z3.ZodError ? error.errors : error);
     }
   });
 }
@@ -632,7 +618,7 @@ async function extract_playlist_videos({
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z4.ZodError ? error.errors : error;
+    return error instanceof z3.ZodError ? error.errors : error;
   }
 }
 
@@ -674,146 +660,158 @@ async function AudioLowest({
   outputFormat = "mp3"
 }) {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500
-      };
-    }
-    const metaBody = await Engine({ query });
-    if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
-    }
-    let metaName = "";
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = lowEntry(metaBody.AudioTube);
-    const ytc = fluentffmpeg();
-    ytc.input(metaEntry.meta_dl.mediaurl);
-    ytc.input(metaBody.metaTube.thumbnail);
-    ytc.addOutputOption("-map", "1:0");
-    ytc.addOutputOption("-map", "0:a:0");
-    ytc.addOutputOption("-id3v2_version", "3");
-    ytc.format(outputFormat);
-    ytc.on("start", (cmd) => {
-      if (verbose)
-        console.log(cmd);
-      progressBar_default(0, metaSpin);
-    });
-    ytc.on("end", () => progressBar_default(100, metaSpin));
-    ytc.on("close", () => progressBar_default(100, metaSpin));
-    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin));
-    ytc.on("error", (error) => {
-      return error;
-    });
-    switch (filter2) {
-      case "bassboost":
-        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "echo":
-        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
-        break;
-      case "flanger":
-        ytc.withAudioFilter(["flanger"]);
-        metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
-        break;
-      case "nightcore":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
-        break;
-      case "panning":
-        ytc.withAudioFilter(["apulsator=hz=0.08"]);
-        metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
-        break;
-      case "phaser":
-        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-        metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
-        break;
-      case "reverse":
-        ytc.withAudioFilter(["areverse"]);
-        metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
-        break;
-      case "slow":
-        ytc.withAudioFilter(["atempo=0.8"]);
-        metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
-        break;
-      case "speed":
-        ytc.withAudioFilter(["atempo=2"]);
-        metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
-        break;
-      case "subboost":
-        ytc.withAudioFilter(["asubboost"]);
-        metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
-        break;
-      case "superslow":
-        ytc.withAudioFilter(["atempo=0.5"]);
-        metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
-        break;
-      case "superspeed":
-        ytc.withAudioFilter(["atempo=3"]);
-        metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
-        break;
-      case "surround":
-        ytc.withAudioFilter(["surround"]);
-        metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
-        break;
-      case "vaporwave":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
-        break;
-      case "vibrato":
-        ytc.withAudioFilter(["vibrato=f=6.5"]);
-        metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
-        break;
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500
+        };
       default:
-        ytc.withAudioFilter([]);
-        metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
-        break;
-    }
-    if (stream) {
-      const readStream = new Readable({
-        read() {
+        const metaBody = await Engine({ query });
+        if (!metaBody) {
+          return {
+            message: "Unable to get response from YouTube...",
+            status: 500
+          };
         }
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(null);
-          callback();
+        let metaName = "";
+        const title = metaBody.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "-"
+        );
+        const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+        if (!fs.existsSync(metaFold))
+          fs.mkdirSync(metaFold, { recursive: true });
+        const metaEntry = lowEntry(metaBody.AudioTube);
+        const ytc = fluentffmpeg();
+        ytc.addInput(metaEntry.meta_dl.mediaurl);
+        ytc.addInput(metaBody.metaTube.thumbnail);
+        ytc.addOutputOption("-map", "1:0");
+        ytc.addOutputOption("-map", "0:a:0");
+        ytc.addOutputOption("-id3v2_version", "3");
+        ytc.format(outputFormat);
+        ytc.on("start", (cmd) => {
+          if (verbose)
+            console.log(cmd);
+          progressBar_default(0, metaSpin);
+        });
+        ytc.on("end", () => progressBar_default(100, metaSpin));
+        ytc.on("close", () => progressBar_default(100, metaSpin));
+        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin));
+        ytc.on("error", (error) => {
+          return error;
+        });
+        switch (filter2) {
+          case "bassboost":
+            ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
+            break;
+          case "echo":
+            ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
+            break;
+          case "flanger":
+            ytc.withAudioFilter(["flanger"]);
+            metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
+            break;
+          case "nightcore":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
+            break;
+          case "panning":
+            ytc.withAudioFilter(["apulsator=hz=0.08"]);
+            metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
+            break;
+          case "phaser":
+            ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+            metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
+            break;
+          case "reverse":
+            ytc.withAudioFilter(["areverse"]);
+            metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
+            break;
+          case "slow":
+            ytc.withAudioFilter(["atempo=0.8"]);
+            metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
+            break;
+          case "speed":
+            ytc.withAudioFilter(["atempo=2"]);
+            metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
+            break;
+          case "subboost":
+            ytc.withAudioFilter(["asubboost"]);
+            metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
+            break;
+          case "superslow":
+            ytc.withAudioFilter(["atempo=0.5"]);
+            metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
+            break;
+          case "superspeed":
+            ytc.withAudioFilter(["atempo=3"]);
+            metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
+            break;
+          case "surround":
+            ytc.withAudioFilter(["surround"]);
+            metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
+            break;
+          case "vaporwave":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
+            break;
+          case "vibrato":
+            ytc.withAudioFilter(["vibrato=f=6.5"]);
+            metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
+            break;
+          default:
+            ytc.withAudioFilter([]);
+            metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
+            break;
         }
-      });
-      ytc.pipe(writeStream, { end: true });
-      return {
-        stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
-      };
-    } else {
-      await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
+        if (stream) {
+          const readStream = new Readable({
+            read() {
+            }
+          });
+          const writeStream = new Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
+            }
+          });
+          ytc.pipe(writeStream, { end: true });
+          return {
+            stream: readStream,
+            filename: folderName ? path.join(metaFold, metaName) : metaName
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+              resolve();
+              return {
+                status: 200,
+                message: "process ended..."
+              };
+            }).run();
+          });
           return {
             status: 200,
             message: "process ended..."
           };
-        }).run();
-      });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+        }
     }
   } catch (error) {
     switch (true) {
@@ -850,146 +848,158 @@ async function AudioHighest({
   outputFormat = "mp3"
 }) {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500
-      };
-    }
-    const metaBody = await Engine({ query });
-    if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
-    }
-    let metaName = "";
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = bigEntry(metaBody.AudioTube);
-    const ytc = fluentffmpeg();
-    ytc.input(metaEntry.meta_dl.mediaurl);
-    ytc.input(metaBody.metaTube.thumbnail);
-    ytc.addOutputOption("-map", "1:0");
-    ytc.addOutputOption("-map", "0:a:0");
-    ytc.addOutputOption("-id3v2_version", "3");
-    ytc.format(outputFormat);
-    ytc.on("start", (cmd) => {
-      if (verbose)
-        console.log(cmd);
-      progressBar_default(0, metaSpin2);
-    });
-    ytc.on("end", () => progressBar_default(100, metaSpin2));
-    ytc.on("close", () => progressBar_default(100, metaSpin2));
-    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin2));
-    ytc.on("error", (error) => {
-      return error;
-    });
-    switch (filter2) {
-      case "bassboost":
-        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "echo":
-        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
-        break;
-      case "flanger":
-        ytc.withAudioFilter(["flanger"]);
-        metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
-        break;
-      case "nightcore":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
-        break;
-      case "panning":
-        ytc.withAudioFilter(["apulsator=hz=0.08"]);
-        metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
-        break;
-      case "phaser":
-        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-        metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
-        break;
-      case "reverse":
-        ytc.withAudioFilter(["areverse"]);
-        metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
-        break;
-      case "slow":
-        ytc.withAudioFilter(["atempo=0.8"]);
-        metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
-        break;
-      case "speed":
-        ytc.withAudioFilter(["atempo=2"]);
-        metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
-        break;
-      case "subboost":
-        ytc.withAudioFilter(["asubboost"]);
-        metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
-        break;
-      case "superslow":
-        ytc.withAudioFilter(["atempo=0.5"]);
-        metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
-        break;
-      case "superspeed":
-        ytc.withAudioFilter(["atempo=3"]);
-        metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
-        break;
-      case "surround":
-        ytc.withAudioFilter(["surround"]);
-        metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
-        break;
-      case "vaporwave":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
-        break;
-      case "vibrato":
-        ytc.withAudioFilter(["vibrato=f=6.5"]);
-        metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
-        break;
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500
+        };
       default:
-        ytc.withAudioFilter([]);
-        metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
-        break;
-    }
-    if (stream) {
-      const readStream = new Readable({
-        read() {
+        const metaBody = await Engine({ query });
+        if (!metaBody) {
+          return {
+            message: "Unable to get response from YouTube...",
+            status: 500
+          };
         }
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(null);
-          callback();
+        let metaName = "";
+        const title = metaBody.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "-"
+        );
+        const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+        if (!fs.existsSync(metaFold))
+          fs.mkdirSync(metaFold, { recursive: true });
+        const metaEntry = bigEntry(metaBody.AudioTube);
+        const ytc = fluentffmpeg();
+        ytc.addInput(metaEntry.meta_dl.mediaurl);
+        ytc.addInput(metaBody.metaTube.thumbnail);
+        ytc.addOutputOption("-map", "1:0");
+        ytc.addOutputOption("-map", "0:a:0");
+        ytc.addOutputOption("-id3v2_version", "3");
+        ytc.format(outputFormat);
+        ytc.on("start", (cmd) => {
+          if (verbose)
+            console.log(cmd);
+          progressBar_default(0, metaSpin2);
+        });
+        ytc.on("end", () => progressBar_default(100, metaSpin2));
+        ytc.on("close", () => progressBar_default(100, metaSpin2));
+        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin2));
+        ytc.on("error", (error) => {
+          return error;
+        });
+        switch (filter2) {
+          case "bassboost":
+            ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
+            break;
+          case "echo":
+            ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
+            break;
+          case "flanger":
+            ytc.withAudioFilter(["flanger"]);
+            metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
+            break;
+          case "nightcore":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
+            break;
+          case "panning":
+            ytc.withAudioFilter(["apulsator=hz=0.08"]);
+            metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
+            break;
+          case "phaser":
+            ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+            metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
+            break;
+          case "reverse":
+            ytc.withAudioFilter(["areverse"]);
+            metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
+            break;
+          case "slow":
+            ytc.withAudioFilter(["atempo=0.8"]);
+            metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
+            break;
+          case "speed":
+            ytc.withAudioFilter(["atempo=2"]);
+            metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
+            break;
+          case "subboost":
+            ytc.withAudioFilter(["asubboost"]);
+            metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
+            break;
+          case "superslow":
+            ytc.withAudioFilter(["atempo=0.5"]);
+            metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
+            break;
+          case "superspeed":
+            ytc.withAudioFilter(["atempo=3"]);
+            metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
+            break;
+          case "surround":
+            ytc.withAudioFilter(["surround"]);
+            metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
+            break;
+          case "vaporwave":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
+            break;
+          case "vibrato":
+            ytc.withAudioFilter(["vibrato=f=6.5"]);
+            metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
+            break;
+          default:
+            ytc.withAudioFilter([]);
+            metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
+            break;
         }
-      });
-      ytc.pipe(writeStream, { end: true });
-      return {
-        stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
-      };
-    } else {
-      await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
+        if (stream) {
+          const readStream = new Readable({
+            read() {
+            }
+          });
+          const writeStream = new Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
+            }
+          });
+          ytc.pipe(writeStream, { end: true });
+          return {
+            stream: readStream,
+            filename: folderName ? path.join(metaFold, metaName) : metaName
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+              resolve();
+              return {
+                status: 200,
+                message: "process ended..."
+              };
+            }).run();
+          });
           return {
             status: 200,
             message: "process ended..."
           };
-        }).run();
-      });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+        }
     }
   } catch (error) {
     switch (true) {
@@ -1016,11 +1026,25 @@ async function VideoLowest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500
-      };
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500
+        };
+      default:
+        query = query;
+        break;
     }
     const metaBody = await Engine({ query });
     if (!metaBody) {
@@ -1039,35 +1063,35 @@ async function VideoLowest({
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = lowEntry(metaBody.VideoTube);
     const ytc = fluentffmpeg();
-    ytc.input(metaEntry.meta_dl.mediaurl);
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);
     switch (filter2) {
       case "grayscale":
-        ytc.videoFilters("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
         metaName = `yt-core_(VideoLowest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        ytc.videoFilters("negate");
+        ytc.withVideoFilter("negate");
         metaName = `yt-core_(VideoLowest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        ytc.videoFilters("rotate=PI/2");
+        ytc.withVideoFilter("rotate=PI/2");
         metaName = `yt-core_(VideoLowest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        ytc.videoFilters("rotate=PI");
+        ytc.withVideoFilter("rotate=PI");
         metaName = `yt-core_(VideoLowest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        ytc.videoFilters("rotate=3*PI/2");
+        ytc.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-core_(VideoLowest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        ytc.videoFilters("hflip");
+        ytc.withVideoFilter("hflip");
         metaName = `yt-core_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        ytc.videoFilters("vflip");
+        ytc.withVideoFilter("vflip");
         metaName = `yt-core_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
@@ -1141,11 +1165,25 @@ async function VideoHighest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500
-      };
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500
+        };
+      default:
+        query = query;
+        break;
     }
     const metaBody = await Engine({ query });
     if (!metaBody) {
@@ -1164,35 +1202,35 @@ async function VideoHighest({
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = bigEntry(metaBody.VideoTube);
     const ytc = fluentffmpeg();
-    ytc.input(metaEntry.meta_dl.mediaurl);
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);
     switch (filter2) {
       case "grayscale":
-        ytc.videoFilters("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
         metaName = `yt-core_(VideoHighest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        ytc.videoFilters("negate");
+        ytc.withVideoFilter("negate");
         metaName = `yt-core_(VideoHighest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        ytc.videoFilters("rotate=PI/2");
+        ytc.withVideoFilter("rotate=PI/2");
         metaName = `yt-core_(VideoHighest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        ytc.videoFilters("rotate=PI");
+        ytc.withVideoFilter("rotate=PI");
         metaName = `yt-core_(VideoHighest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        ytc.videoFilters("rotate=3*PI/2");
+        ytc.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-core_(VideoHighest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        ytc.videoFilters("hflip");
+        ytc.withVideoFilter("hflip");
         metaName = `yt-core_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        ytc.videoFilters("vflip");
+        ytc.withVideoFilter("vflip");
         metaName = `yt-core_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
@@ -1265,76 +1303,88 @@ async function AudioVideoLowest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500
-      };
-    }
-    const metaBody = await Engine({ query });
-    if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
-    }
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    let metaName = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg();
-    ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
-    ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
-    ytc.format(outputFormat);
-    ytc.on("start", (cmd) => {
-      if (verbose)
-        console.log(cmd);
-      progressBar_default(0, metaSpin5);
-    });
-    ytc.on("end", () => progressBar_default(100, metaSpin5));
-    ytc.on("close", () => progressBar_default(100, metaSpin5));
-    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin5));
-    ytc.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      const readStream = new Readable({
-        read() {
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500
+        };
+      default:
+        const metaBody = await Engine({ query });
+        if (!metaBody) {
+          return {
+            message: "Unable to get response from YouTube...",
+            status: 500
+          };
         }
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(null);
-          callback();
-        }
-      });
-      ytc.pipe(writeStream, { end: true });
-      return {
-        stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
-      };
-    } else {
-      await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
+        const title = metaBody.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "-"
+        );
+        let metaName = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
+        const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+        if (!fs.existsSync(metaFold))
+          fs.mkdirSync(metaFold, { recursive: true });
+        const ytc = fluentffmpeg();
+        ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
+        ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
+        ytc.format(outputFormat);
+        ytc.on("start", (cmd) => {
+          if (verbose)
+            console.log(cmd);
+          progressBar_default(0, metaSpin5);
+        });
+        ytc.on("end", () => progressBar_default(100, metaSpin5));
+        ytc.on("close", () => progressBar_default(100, metaSpin5));
+        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin5));
+        ytc.on("error", (error) => {
+          return error;
+        });
+        if (stream) {
+          const readStream = new Readable({
+            read() {
+            }
+          });
+          const writeStream = new Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
+            }
+          });
+          ytc.pipe(writeStream, { end: true });
+          return {
+            stream: readStream,
+            filename: folderName ? path.join(metaFold, metaName) : metaName
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+              resolve();
+              return {
+                status: 200,
+                message: "process ended..."
+              };
+            }).run();
+          });
           return {
             status: 200,
             message: "process ended..."
           };
-        }).run();
-      });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+        }
     }
   } catch (error) {
     switch (true) {
@@ -1360,76 +1410,88 @@ async function AudioVideoHighest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500
-      };
-    }
-    const metaBody = await Engine({ query });
-    if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
-    }
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    let metaName = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg();
-    ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
-    ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
-    ytc.format(outputFormat);
-    ytc.on("start", (cmd) => {
-      if (verbose)
-        console.log(cmd);
-      progressBar_default(0, metaSpin6);
-    });
-    ytc.on("end", () => progressBar_default(100, metaSpin6));
-    ytc.on("close", () => progressBar_default(100, metaSpin6));
-    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin6));
-    ytc.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      const readStream = new Readable({
-        read() {
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500
+        };
+      default:
+        const metaBody = await Engine({ query });
+        if (!metaBody) {
+          return {
+            message: "Unable to get response from YouTube...",
+            status: 500
+          };
         }
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(null);
-          callback();
-        }
-      });
-      ytc.pipe(writeStream, { end: true });
-      return {
-        stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
-      };
-    } else {
-      await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
+        const title = metaBody.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "-"
+        );
+        let metaName = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
+        const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+        if (!fs.existsSync(metaFold))
+          fs.mkdirSync(metaFold, { recursive: true });
+        const ytc = fluentffmpeg();
+        ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
+        ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
+        ytc.format(outputFormat);
+        ytc.on("start", (cmd) => {
+          if (verbose)
+            console.log(cmd);
+          progressBar_default(0, metaSpin6);
+        });
+        ytc.on("end", () => progressBar_default(100, metaSpin6));
+        ytc.on("close", () => progressBar_default(100, metaSpin6));
+        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin6));
+        ytc.on("error", (error) => {
+          return error;
+        });
+        if (stream) {
+          const readStream = new Readable({
+            read() {
+            }
+          });
+          const writeStream = new Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
+            }
+          });
+          ytc.pipe(writeStream, { end: true });
+          return {
+            stream: readStream,
+            filename: folderName ? path.join(metaFold, metaName) : metaName
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+              resolve();
+              return {
+                status: 200,
+                message: "process ended..."
+              };
+            }).run();
+          });
           return {
             status: 200,
             message: "process ended..."
           };
-        }).run();
-      });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+        }
     }
   } catch (error) {
     switch (true) {
@@ -1456,134 +1518,147 @@ async function AudioQualityCustom({
   outputFormat = "mp3"
 }) {
   try {
-    if (!query || typeof query !== "string" || !quality || typeof quality !== "string") {
-      return {
-        message: "Invalid query or quality parameter",
-        status: 500
-      };
-    }
-    const metaResp = await Engine({ query });
-    if (!metaResp) {
-      return {
-        message: "The specified quality was not found...",
-        status: 500
-      };
-    }
-    const metaBody = metaResp.AudioTube.filter(
-      (op) => op.meta_dl.formatnote === quality
-    );
-    if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
-    }
-    const title = metaResp.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg();
-    const metaEntry = bigEntry(metaBody);
-    ytc.input(metaEntry.meta_dl.mediaurl);
-    ytc.input(metaResp.metaTube.thumbnail);
-    ytc.addOutputOption("-map", "1:0");
-    ytc.addOutputOption("-map", "0:a:0");
-    ytc.addOutputOption("-id3v2_version", "3");
-    ytc.withAudioBitrate(metaEntry.meta_audio.bitrate);
-    ytc.withAudioChannels(metaEntry.meta_audio.channels);
-    ytc.format(outputFormat);
-    switch (filter2) {
-      case "bassboost":
-        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        break;
-      case "echo":
-        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        break;
-      case "flanger":
-        ytc.withAudioFilter(["flanger"]);
-        break;
-      case "nightcore":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        break;
-      case "panning":
-        ytc.withAudioFilter(["apulsator=hz=0.08"]);
-        break;
-      case "phaser":
-        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-        break;
-      case "reverse":
-        ytc.withAudioFilter(["areverse"]);
-        break;
-      case "slow":
-        ytc.withAudioFilter(["atempo=0.8"]);
-        break;
-      case "speed":
-        ytc.withAudioFilter(["atempo=2"]);
-        break;
-      case "subboost":
-        ytc.withAudioFilter(["asubboost"]);
-        break;
-      case "superslow":
-        ytc.withAudioFilter(["atempo=0.5"]);
-        break;
-      case "superspeed":
-        ytc.withAudioFilter(["atempo=3"]);
-        break;
-      case "surround":
-        ytc.withAudioFilter(["surround"]);
-        break;
-      case "vaporwave":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        break;
-      case "vibrato":
-        ytc.withAudioFilter(["vibrato=f=6.5"]);
-        break;
+    switch (true) {
+      case (!query || typeof query !== "string" || !query.trim()):
+        return {
+          message: "Query parameter is invalid or missing",
+          status: 500
+        };
+      case (!quality || typeof quality !== "string" || !quality.trim()):
+        return {
+          message: "Quality parameter is invalid or missing",
+          status: 500
+        };
       default:
-        ytc.withAudioFilter([]);
-        break;
-    }
-    ytc.on("start", () => progressBar_default(0, metaSpin7));
-    ytc.on("end", () => progressBar_default(100, metaSpin7));
-    ytc.on("close", () => progressBar_default(100, metaSpin7));
-    ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin7));
-    ytc.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      const readStream = new Readable({
-        read() {
+        const metaResp = await Engine({ query });
+        if (!metaResp) {
+          return {
+            message: "The specified quality was not found...",
+            status: 500
+          };
         }
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(null);
-          callback();
+        const metaBody = metaResp.AudioTube.filter(
+          (op) => op.meta_dl.formatnote === quality
+        );
+        if (!metaBody) {
+          return {
+            message: "Unable to get response from YouTube...",
+            status: 500
+          };
         }
-      });
-      ytc.pipe(writeStream, { end: true });
-      return {
-        stream: readStream,
-        filename: folderName ? path.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`) : `yt-core-(${quality})-${title}.${outputFormat}`
-      };
-    } else {
-      await new Promise((resolve, reject2) => {
-        ytc.output(
-          path.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`)
-        ).on("error", reject2).on("end", () => {
-          resolve();
-        }).run();
-      });
-      return {
-        message: "process ended...",
-        status: 200
-      };
+        const title = metaResp.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "-"
+        );
+        const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+        if (!fs.existsSync(metaFold))
+          fs.mkdirSync(metaFold, { recursive: true });
+        const ytc = fluentffmpeg();
+        const metaEntry = bigEntry(metaBody);
+        ytc.addInput(metaEntry.meta_dl.mediaurl);
+        ytc.addInput(metaResp.metaTube.thumbnail);
+        ytc.addOutputOption("-map", "1:0");
+        ytc.addOutputOption("-map", "0:a:0");
+        ytc.addOutputOption("-id3v2_version", "3");
+        ytc.withAudioBitrate(metaEntry.meta_audio.bitrate);
+        ytc.withAudioChannels(metaEntry.meta_audio.channels);
+        ytc.format(outputFormat);
+        switch (filter2) {
+          case "bassboost":
+            ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            break;
+          case "echo":
+            ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            break;
+          case "flanger":
+            ytc.withAudioFilter(["flanger"]);
+            break;
+          case "nightcore":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            break;
+          case "panning":
+            ytc.withAudioFilter(["apulsator=hz=0.08"]);
+            break;
+          case "phaser":
+            ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+            break;
+          case "reverse":
+            ytc.withAudioFilter(["areverse"]);
+            break;
+          case "slow":
+            ytc.withAudioFilter(["atempo=0.8"]);
+            break;
+          case "speed":
+            ytc.withAudioFilter(["atempo=2"]);
+            break;
+          case "subboost":
+            ytc.withAudioFilter(["asubboost"]);
+            break;
+          case "superslow":
+            ytc.withAudioFilter(["atempo=0.5"]);
+            break;
+          case "superspeed":
+            ytc.withAudioFilter(["atempo=3"]);
+            break;
+          case "surround":
+            ytc.withAudioFilter(["surround"]);
+            break;
+          case "vaporwave":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            break;
+          case "vibrato":
+            ytc.withAudioFilter(["vibrato=f=6.5"]);
+            break;
+          default:
+            ytc.withAudioFilter([]);
+            break;
+        }
+        ytc.on("start", () => progressBar_default(0, metaSpin7));
+        ytc.on("end", () => progressBar_default(100, metaSpin7));
+        ytc.on("close", () => progressBar_default(100, metaSpin7));
+        ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin7));
+        ytc.on("error", (error) => {
+          return error;
+        });
+        if (stream) {
+          const readStream = new Readable({
+            read() {
+            }
+          });
+          const writeStream = new Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
+            }
+          });
+          ytc.pipe(writeStream, { end: true });
+          return {
+            stream: readStream,
+            filename: folderName ? path.join(
+              metaFold,
+              `yt-core-(${quality})-${title}.${outputFormat}`
+            ) : `yt-core-(${quality})-${title}.${outputFormat}`
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ytc.output(
+              path.join(
+                metaFold,
+                `yt-core-(${quality})-${title}.${outputFormat}`
+              )
+            ).on("error", reject2).on("end", () => {
+              resolve();
+            }).run();
+          });
+          return {
+            message: "process ended...",
+            status: 200
+          };
+        }
     }
   } catch (error) {
     switch (true) {
@@ -1610,11 +1685,21 @@ async function VideoQualityCustom({
   outputFormat = "mp4"
 }) {
   try {
-    if (!query || typeof query !== "string" || !quality || typeof quality !== "string") {
-      return {
-        message: "Invalid query or quality parameter",
-        status: 500
-      };
+    switch (true) {
+      case (!query || typeof query !== "string" || !query.trim()):
+        return {
+          message: "Query parameter is invalid or missing",
+          status: 500
+        };
+      case (!quality || typeof quality !== "string" || !quality.trim()):
+        return {
+          message: "Quality parameter is invalid or missing",
+          status: 500
+        };
+      default:
+        quality = quality;
+        query = query;
+        break;
     }
     const EnResp = await Engine({ query });
     if (!EnResp) {
@@ -1642,7 +1727,7 @@ async function VideoQualityCustom({
         fs.mkdirSync(opfol, { recursive: true });
       const ytc = fluentffmpeg();
       const metaEntry = bigEntry(YSBody);
-      ytc.input(metaEntry.meta_dl.mediaurl);
+      ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.format(outputFormat);
       switch (filter2) {
         case "grayscale":
@@ -2244,25 +2329,25 @@ var FN_ARGS = /^(?:async\s+)?(?:function)?\s*\w*\s*\(\s*([^)]+)\s*\)(?:\s*{)/;
 var ARROW_FN_ARGS = /^(?:async\s+)?\(?\s*([^)=]+)\s*\)?(?:\s*=>)/;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /(=.+)?(\s*)$/;
-function stripComments(string4) {
+function stripComments(string3) {
   let stripped = "";
   let index2 = 0;
-  let endBlockComment = string4.indexOf("*/");
-  while (index2 < string4.length) {
-    if (string4[index2] === "/" && string4[index2 + 1] === "/") {
-      let endIndex = string4.indexOf("\n", index2);
-      index2 = endIndex === -1 ? string4.length : endIndex;
-    } else if (endBlockComment !== -1 && string4[index2] === "/" && string4[index2 + 1] === "*") {
-      let endIndex = string4.indexOf("*/", index2);
+  let endBlockComment = string3.indexOf("*/");
+  while (index2 < string3.length) {
+    if (string3[index2] === "/" && string3[index2 + 1] === "/") {
+      let endIndex = string3.indexOf("\n", index2);
+      index2 = endIndex === -1 ? string3.length : endIndex;
+    } else if (endBlockComment !== -1 && string3[index2] === "/" && string3[index2 + 1] === "*") {
+      let endIndex = string3.indexOf("*/", index2);
       if (endIndex !== -1) {
         index2 = endIndex + 2;
-        endBlockComment = string4.indexOf("*/", index2);
+        endBlockComment = string3.indexOf("*/", index2);
       } else {
-        stripped += string4[index2];
+        stripped += string3[index2];
         index2++;
       }
     } else {
-      stripped += string4[index2];
+      stripped += string3[index2];
       index2++;
     }
   }
@@ -3567,122 +3652,150 @@ async function ListVideoLowest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            const metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              throw new Error("Unable to get response from YouTube...");
-            }
-            let metaName = "";
-            const title = metaBody.metaTube.title.replace(
-              /[^a-zA-Z0-9_]+/g,
-              "-"
-            );
-            const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-            if (!fs.existsSync(metaFold))
-              fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = lowEntry(metaBody.VideoTube);
-            const ytc = fluentffmpeg();
-            ytc.input(metaEntry.meta_dl.mediaurl);
-            ytc.format(outputFormat);
-            ytc.on("start", (cmd) => {
-              if (verbose)
-                console.log(cmd);
-              progressBar_default(0, metaSpin9);
-            });
-            ytc.on("end", () => progressBar_default(100, metaSpin9));
-            ytc.on("close", () => progressBar_default(100, metaSpin9));
-            ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin9));
-            switch (filter2) {
-              case "grayscale":
-                ytc.videoFilters(
-                  "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-                );
-                metaName = `yt-core_(VideoLowest-grayscale)_${title}.${outputFormat}`;
-                break;
-              case "invert":
-                ytc.videoFilters("negate");
-                metaName = `yt-core_(VideoLowest-invert)_${title}.${outputFormat}`;
-                break;
-              case "rotate90":
-                ytc.videoFilters("rotate=PI/2");
-                metaName = `yt-core_(VideoLowest-rotate90)_${title}.${outputFormat}`;
-                break;
-              case "rotate180":
-                ytc.videoFilters("rotate=PI");
-                metaName = `yt-core_(VideoLowest-rotate180)_${title}.${outputFormat}`;
-                break;
-              case "rotate270":
-                ytc.videoFilters("rotate=3*PI/2");
-                metaName = `yt-core_(VideoLowest-rotate270)_${title}.${outputFormat}`;
-                break;
-              case "flipHorizontal":
-                ytc.videoFilters("hflip");
-                metaName = `yt-core_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
-                break;
-              case "flipVertical":
-                ytc.videoFilters("vflip");
-                metaName = `yt-core_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
-                break;
-              default:
-                metaName = `yt-core_(VideoLowest)_${title}.${outputFormat}`;
-            }
-            if (stream) {
-              const readStream = new Readable({
-                read() {
-                }
-              });
-              const writeStream = new Writable({
-                write(chunk, _encoding, callback) {
-                  readStream.push(chunk);
-                  callback();
-                },
-                final(callback) {
-                  readStream.push(null);
-                  callback();
-                }
-              });
-              ytc.pipe(writeStream, { end: true });
-              results.push({
-                stream: readStream,
-                filename: folderName ? path.join(metaFold, metaName) : metaName
-              });
-            } else {
-              await new Promise((resolve, reject2) => {
-                ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-              });
-            }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
           }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                const metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
+                  throw new Error("Unable to get response from YouTube...");
+                }
+                let metaName = "";
+                const title = metaBody.metaTube.title.replace(
+                  /[^a-zA-Z0-9_]+/g,
+                  "-"
+                );
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const metaEntry = lowEntry(metaBody.VideoTube);
+                const ytc = fluentffmpeg();
+                ytc.addInput(metaEntry.meta_dl.mediaurl);
+                ytc.format(outputFormat);
+                ytc.on("start", (cmd) => {
+                  if (verbose)
+                    console.log(cmd);
+                  progressBar_default(0, metaSpin9);
+                });
+                ytc.on("end", () => progressBar_default(100, metaSpin9));
+                ytc.on("close", () => progressBar_default(100, metaSpin9));
+                ytc.on(
+                  "progress",
+                  ({ percent }) => progressBar_default(percent, metaSpin9)
+                );
+                switch (filter2) {
+                  case "grayscale":
+                    ytc.withVideoFilter(
+                      "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+                    );
+                    metaName = `yt-core_(VideoLowest-grayscale)_${title}.${outputFormat}`;
+                    break;
+                  case "invert":
+                    ytc.withVideoFilter("negate");
+                    metaName = `yt-core_(VideoLowest-invert)_${title}.${outputFormat}`;
+                    break;
+                  case "rotate90":
+                    ytc.withVideoFilter("rotate=PI/2");
+                    metaName = `yt-core_(VideoLowest-rotate90)_${title}.${outputFormat}`;
+                    break;
+                  case "rotate180":
+                    ytc.withVideoFilter("rotate=PI");
+                    metaName = `yt-core_(VideoLowest-rotate180)_${title}.${outputFormat}`;
+                    break;
+                  case "rotate270":
+                    ytc.withVideoFilter("rotate=3*PI/2");
+                    metaName = `yt-core_(VideoLowest-rotate270)_${title}.${outputFormat}`;
+                    break;
+                  case "flipHorizontal":
+                    ytc.withVideoFilter("hflip");
+                    metaName = `yt-core_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
+                    break;
+                  case "flipVertical":
+                    ytc.withVideoFilter("vflip");
+                    metaName = `yt-core_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
+                    break;
+                  default:
+                    metaName = `yt-core_(VideoLowest)_${title}.${outputFormat}`;
+                }
+                if (stream) {
+                  const readStream = new Readable({
+                    read() {
+                    }
+                  });
+                  const writeStream = new Writable({
+                    write(chunk, _encoding, callback) {
+                      readStream.push(chunk);
+                      callback();
+                    },
+                    final(callback) {
+                      readStream.push(null);
+                      callback();
+                    }
+                  });
+                  ytc.pipe(writeStream, { end: true });
+                  results.push({
+                    stream: readStream,
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                  });
+                } else {
+                  await new Promise((resolve, reject2) => {
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                  });
+                }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
+              }
+            }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -3713,122 +3826,150 @@ async function ListVideoHighest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            const metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              throw new Error("Unable to get response from YouTube...");
-            }
-            let metaName = "";
-            const title = metaBody.metaTube.title.replace(
-              /[^a-zA-Z0-9_]+/g,
-              "-"
-            );
-            const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-            if (!fs.existsSync(metaFold))
-              fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = bigEntry(metaBody.VideoTube);
-            const ytc = fluentffmpeg();
-            ytc.input(metaEntry.meta_dl.mediaurl);
-            ytc.format(outputFormat);
-            ytc.on("start", (cmd) => {
-              if (verbose)
-                console.log(cmd);
-              progressBar_default(0, metaSpin10);
-            });
-            ytc.on("end", () => progressBar_default(100, metaSpin10));
-            ytc.on("close", () => progressBar_default(100, metaSpin10));
-            ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin10));
-            switch (filter2) {
-              case "grayscale":
-                ytc.videoFilters(
-                  "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-                );
-                metaName = `yt-core_(VideoHighest-grayscale)_${title}.${outputFormat}`;
-                break;
-              case "invert":
-                ytc.videoFilters("negate");
-                metaName = `yt-core_(VideoHighest-invert)_${title}.${outputFormat}`;
-                break;
-              case "rotate90":
-                ytc.videoFilters("rotate=PI/2");
-                metaName = `yt-core_(VideoHighest-rotate90)_${title}.${outputFormat}`;
-                break;
-              case "rotate180":
-                ytc.videoFilters("rotate=PI");
-                metaName = `yt-core_(VideoHighest-rotate180)_${title}.${outputFormat}`;
-                break;
-              case "rotate270":
-                ytc.videoFilters("rotate=3*PI/2");
-                metaName = `yt-core_(VideoHighest-rotate270)_${title}.${outputFormat}`;
-                break;
-              case "flipHorizontal":
-                ytc.videoFilters("hflip");
-                metaName = `yt-core_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
-                break;
-              case "flipVertical":
-                ytc.videoFilters("vflip");
-                metaName = `yt-core_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
-                break;
-              default:
-                metaName = `yt-core_(VideoHighest)_${title}.${outputFormat}`;
-            }
-            if (stream) {
-              const readStream = new Readable({
-                read() {
-                }
-              });
-              const writeStream = new Writable({
-                write(chunk, _encoding, callback) {
-                  readStream.push(chunk);
-                  callback();
-                },
-                final(callback) {
-                  readStream.push(null);
-                  callback();
-                }
-              });
-              ytc.pipe(writeStream, { end: true });
-              results.push({
-                stream: readStream,
-                filename: folderName ? path.join(metaFold, metaName) : metaName
-              });
-            } else {
-              await new Promise((resolve, reject2) => {
-                ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-              });
-            }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
           }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                const metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
+                  throw new Error("Unable to get response from YouTube...");
+                }
+                let metaName = "";
+                const title = metaBody.metaTube.title.replace(
+                  /[^a-zA-Z0-9_]+/g,
+                  "-"
+                );
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const metaEntry = bigEntry(metaBody.VideoTube);
+                const ytc = fluentffmpeg();
+                ytc.addInput(metaEntry.meta_dl.mediaurl);
+                ytc.format(outputFormat);
+                ytc.on("start", (cmd) => {
+                  if (verbose)
+                    console.log(cmd);
+                  progressBar_default(0, metaSpin10);
+                });
+                ytc.on("end", () => progressBar_default(100, metaSpin10));
+                ytc.on("close", () => progressBar_default(100, metaSpin10));
+                ytc.on(
+                  "progress",
+                  ({ percent }) => progressBar_default(percent, metaSpin10)
+                );
+                switch (filter2) {
+                  case "grayscale":
+                    ytc.withVideoFilter(
+                      "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+                    );
+                    metaName = `yt-core_(VideoHighest-grayscale)_${title}.${outputFormat}`;
+                    break;
+                  case "invert":
+                    ytc.withVideoFilter("negate");
+                    metaName = `yt-core_(VideoHighest-invert)_${title}.${outputFormat}`;
+                    break;
+                  case "rotate90":
+                    ytc.withVideoFilter("rotate=PI/2");
+                    metaName = `yt-core_(VideoHighest-rotate90)_${title}.${outputFormat}`;
+                    break;
+                  case "rotate180":
+                    ytc.withVideoFilter("rotate=PI");
+                    metaName = `yt-core_(VideoHighest-rotate180)_${title}.${outputFormat}`;
+                    break;
+                  case "rotate270":
+                    ytc.withVideoFilter("rotate=3*PI/2");
+                    metaName = `yt-core_(VideoHighest-rotate270)_${title}.${outputFormat}`;
+                    break;
+                  case "flipHorizontal":
+                    ytc.withVideoFilter("hflip");
+                    metaName = `yt-core_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
+                    break;
+                  case "flipVertical":
+                    ytc.withVideoFilter("vflip");
+                    metaName = `yt-core_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
+                    break;
+                  default:
+                    metaName = `yt-core_(VideoHighest)_${title}.${outputFormat}`;
+                }
+                if (stream) {
+                  const readStream = new Readable({
+                    read() {
+                    }
+                  });
+                  const writeStream = new Writable({
+                    write(chunk, _encoding, callback) {
+                      readStream.push(chunk);
+                      callback();
+                    },
+                    final(callback) {
+                      readStream.push(null);
+                      callback();
+                    }
+                  });
+                  ytc.pipe(writeStream, { end: true });
+                  results.push({
+                    stream: readStream,
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                  });
+                } else {
+                  await new Promise((resolve, reject2) => {
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                  });
+                }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
+              }
+            }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -3860,141 +4001,166 @@ async function ListVideoQualityCustom({
   outputFormat = "mp4"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            let metaBody;
-            metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              results.push({
-                message: "Unable to get response from YouTube...",
-                status: 500
-              });
-            } else {
-              metaBody = metaBody.VideoTube.filter(
-                (op) => op.meta_dl.formatnote === quality
-              );
-              if (!metaBody) {
-                results.push({
-                  message: "Unable to get response from YouTube...",
-                  status: 500
-                });
-              } else {
-                let metaName = "";
-                const title = metaBody.metaTube.title.replace(
-                  /[^a-zA-Z0-9_]+/g,
-                  "-"
-                );
-                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-                if (!fs.existsSync(metaFold))
-                  fs.mkdirSync(metaFold, { recursive: true });
-                const metaEntry = bigEntry(metaBody.VideoTube);
-                const ytc = fluentffmpeg();
-                ytc.input(metaEntry.meta_dl.mediaurl);
-                ytc.format(outputFormat);
-                ytc.on("start", (cmd) => {
-                  if (verbose)
-                    console.log(cmd);
-                  progressBar_default(0, metaSpin11);
-                });
-                ytc.on("end", () => progressBar_default(100, metaSpin11));
-                ytc.on("close", () => progressBar_default(100, metaSpin11));
-                ytc.on(
-                  "progress",
-                  ({ percent }) => progressBar_default(percent, metaSpin11)
-                );
-                switch (filter2) {
-                  case "grayscale":
-                    ytc.withVideoFilter([
-                      "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-                    ]);
-                    metaName = `yt-core_(VideoQualityCustom-grayscale)_${title}.${outputFormat}`;
-                    break;
-                  case "invert":
-                    ytc.withVideoFilter(["negate"]);
-                    metaName = `yt-core_(VideoQualityCustom-invert)_${title}.${outputFormat}`;
-                    break;
-                  case "rotate90":
-                    ytc.withVideoFilter(["rotate=PI/2"]);
-                    metaName = `yt-core_(VideoQualityCustom-rotate90)_${title}.${outputFormat}`;
-                    break;
-                  case "rotate180":
-                    ytc.withVideoFilter(["rotate=PI"]);
-                    metaName = `yt-core_(VideoQualityCustom-rotate180)_${title}.${outputFormat}`;
-                    break;
-                  case "rotate270":
-                    ytc.withVideoFilter(["rotate=3*PI/2"]);
-                    metaName = `yt-core_(VideoQualityCustom-rotate270)_${title}.${outputFormat}`;
-                    break;
-                  case "flipHorizontal":
-                    ytc.withVideoFilter(["hflip"]);
-                    metaName = `yt-core_(VideoQualityCustom-flipHorizontal)_${title}.${outputFormat}`;
-                    break;
-                  case "flipVertical":
-                    ytc.withVideoFilter(["vflip"]);
-                    metaName = `yt-core_(VideoQualityCustom-flipVertical)_${title}.${outputFormat}`;
-                    break;
-                  default:
-                    ytc.withVideoFilter([]);
-                    metaName = `yt-core_(VideoQualityCustom)_${title}.${outputFormat}`;
-                }
-                if (stream) {
-                  const readStream = new Readable({
-                    read() {
-                    }
-                  });
-                  const writeStream = new Writable({
-                    write(chunk, _encoding, callback) {
-                      readStream.push(chunk);
-                      callback();
-                    },
-                    final(callback) {
-                      readStream.push(null);
-                      callback();
-                    }
-                  });
-                  ytc.pipe(writeStream, { end: true });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
+          }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                let metaBody;
+                metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
                   results.push({
-                    stream: readStream,
-                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                    message: "Unable to get response from YouTube...",
+                    status: 500
                   });
                 } else {
-                  await new Promise((resolve, reject2) => {
-                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-                  });
+                  metaBody = metaBody.VideoTube.filter(
+                    (op) => op.meta_dl.formatnote === quality
+                  );
+                  if (!metaBody) {
+                    results.push({
+                      message: "Unable to get response from YouTube...",
+                      status: 500
+                    });
+                  } else {
+                    let metaName = "";
+                    const title = metaBody.metaTube.title.replace(
+                      /[^a-zA-Z0-9_]+/g,
+                      "-"
+                    );
+                    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                    if (!fs.existsSync(metaFold))
+                      fs.mkdirSync(metaFold, { recursive: true });
+                    const metaEntry = bigEntry(metaBody.VideoTube);
+                    const ytc = fluentffmpeg();
+                    ytc.addInput(metaEntry.meta_dl.mediaurl);
+                    ytc.format(outputFormat);
+                    ytc.on("start", (cmd) => {
+                      if (verbose)
+                        console.log(cmd);
+                      progressBar_default(0, metaSpin11);
+                    });
+                    ytc.on("end", () => progressBar_default(100, metaSpin11));
+                    ytc.on("close", () => progressBar_default(100, metaSpin11));
+                    ytc.on(
+                      "progress",
+                      ({ percent }) => progressBar_default(percent, metaSpin11)
+                    );
+                    switch (filter2) {
+                      case "grayscale":
+                        ytc.withVideoFilter([
+                          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+                        ]);
+                        metaName = `yt-core_(VideoQualityCustom-grayscale)_${title}.${outputFormat}`;
+                        break;
+                      case "invert":
+                        ytc.withVideoFilter(["negate"]);
+                        metaName = `yt-core_(VideoQualityCustom-invert)_${title}.${outputFormat}`;
+                        break;
+                      case "rotate90":
+                        ytc.withVideoFilter(["rotate=PI/2"]);
+                        metaName = `yt-core_(VideoQualityCustom-rotate90)_${title}.${outputFormat}`;
+                        break;
+                      case "rotate180":
+                        ytc.withVideoFilter(["rotate=PI"]);
+                        metaName = `yt-core_(VideoQualityCustom-rotate180)_${title}.${outputFormat}`;
+                        break;
+                      case "rotate270":
+                        ytc.withVideoFilter(["rotate=3*PI/2"]);
+                        metaName = `yt-core_(VideoQualityCustom-rotate270)_${title}.${outputFormat}`;
+                        break;
+                      case "flipHorizontal":
+                        ytc.withVideoFilter(["hflip"]);
+                        metaName = `yt-core_(VideoQualityCustom-flipHorizontal)_${title}.${outputFormat}`;
+                        break;
+                      case "flipVertical":
+                        ytc.withVideoFilter(["vflip"]);
+                        metaName = `yt-core_(VideoQualityCustom-flipVertical)_${title}.${outputFormat}`;
+                        break;
+                      default:
+                        ytc.withVideoFilter([]);
+                        metaName = `yt-core_(VideoQualityCustom)_${title}.${outputFormat}`;
+                    }
+                    if (stream) {
+                      const readStream = new Readable({
+                        read() {
+                        }
+                      });
+                      const writeStream = new Writable({
+                        write(chunk, _encoding, callback) {
+                          readStream.push(chunk);
+                          callback();
+                        },
+                        final(callback) {
+                          readStream.push(null);
+                          callback();
+                        }
+                      });
+                      ytc.pipe(writeStream, { end: true });
+                      results.push({
+                        stream: readStream,
+                        filename: folderName ? path.join(metaFold, metaName) : metaName
+                      });
+                    } else {
+                      await new Promise((resolve, reject2) => {
+                        ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                      });
+                    }
+                  }
                 }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
               }
             }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
-          }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -4025,158 +4191,188 @@ async function ListAudioLowest({
   outputFormat = "mp3"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            const metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              throw new Error("Unable to get response from YouTube...");
-            }
-            let metaName = "";
-            const title = metaBody.metaTube.title.replace(
-              /[^a-zA-Z0-9_]+/g,
-              "-"
-            );
-            const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-            if (!fs.existsSync(metaFold))
-              fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = lowEntry(metaBody.AudioTube);
-            const ytc = fluentffmpeg();
-            ytc.input(metaEntry.meta_dl.mediaurl);
-            ytc.input(metaBody.metaTube.thumbnail);
-            ytc.addOutputOption("-map", "1:0");
-            ytc.addOutputOption("-map", "0:a:0");
-            ytc.addOutputOption("-id3v2_version", "3");
-            ytc.format(outputFormat);
-            ytc.on("start", (cmd) => {
-              if (verbose)
-                console.log(cmd);
-              progressBar_default(0, metaSpin12);
-            });
-            ytc.on("end", () => progressBar_default(100, metaSpin12));
-            ytc.on("close", () => progressBar_default(100, metaSpin12));
-            ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin12));
-            switch (filter2) {
-              case "bassboost":
-                ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
-                break;
-              case "echo":
-                ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
-                break;
-              case "flanger":
-                ytc.withAudioFilter(["flanger"]);
-                metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
-                break;
-              case "nightcore":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
-                break;
-              case "panning":
-                ytc.withAudioFilter(["apulsator=hz=0.08"]);
-                metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
-                break;
-              case "phaser":
-                ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-                metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
-                break;
-              case "reverse":
-                ytc.withAudioFilter(["areverse"]);
-                metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
-                break;
-              case "slow":
-                ytc.withAudioFilter(["atempo=0.8"]);
-                metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
-                break;
-              case "speed":
-                ytc.withAudioFilter(["atempo=2"]);
-                metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
-                break;
-              case "subboost":
-                ytc.withAudioFilter(["asubboost"]);
-                metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
-                break;
-              case "superslow":
-                ytc.withAudioFilter(["atempo=0.5"]);
-                metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
-                break;
-              case "superspeed":
-                ytc.withAudioFilter(["atempo=3"]);
-                metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
-                break;
-              case "surround":
-                ytc.withAudioFilter(["surround"]);
-                metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
-                break;
-              case "vaporwave":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
-                break;
-              case "vibrato":
-                ytc.withAudioFilter(["vibrato=f=6.5"]);
-                metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
-                break;
-              default:
-                ytc.withAudioFilter([]);
-                metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
-                break;
-            }
-            if (stream) {
-              const readStream = new Readable({
-                read() {
-                }
-              });
-              const writeStream = new Writable({
-                write(chunk, _encoding, callback) {
-                  readStream.push(chunk);
-                  callback();
-                },
-                final(callback) {
-                  readStream.push(null);
-                  callback();
-                }
-              });
-              ytc.pipe(writeStream, { end: true });
-              results.push({
-                stream: readStream,
-                filename: folderName ? path.join(metaFold, metaName) : metaName
-              });
-            } else {
-              await new Promise((resolve, reject2) => {
-                ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-              });
-            }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
           }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                const metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
+                  throw new Error("Unable to get response from YouTube...");
+                }
+                let metaName = "";
+                const title = metaBody.metaTube.title.replace(
+                  /[^a-zA-Z0-9_]+/g,
+                  "-"
+                );
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const metaEntry = lowEntry(metaBody.AudioTube);
+                const ytc = fluentffmpeg();
+                ytc.addInput(metaEntry.meta_dl.mediaurl);
+                ytc.addInput(metaBody.metaTube.thumbnail);
+                ytc.addOutputOption("-map", "1:0");
+                ytc.addOutputOption("-map", "0:a:0");
+                ytc.addOutputOption("-id3v2_version", "3");
+                ytc.format(outputFormat);
+                ytc.on("start", (cmd) => {
+                  if (verbose)
+                    console.log(cmd);
+                  progressBar_default(0, metaSpin12);
+                });
+                ytc.on("end", () => progressBar_default(100, metaSpin12));
+                ytc.on("close", () => progressBar_default(100, metaSpin12));
+                ytc.on(
+                  "progress",
+                  ({ percent }) => progressBar_default(percent, metaSpin12)
+                );
+                switch (filter2) {
+                  case "bassboost":
+                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
+                    break;
+                  case "echo":
+                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
+                    break;
+                  case "flanger":
+                    ytc.withAudioFilter(["flanger"]);
+                    metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
+                    break;
+                  case "nightcore":
+                    ytc.withAudioFilter([
+                      "aresample=48000,asetrate=48000*1.25"
+                    ]);
+                    metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
+                    break;
+                  case "panning":
+                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                    metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
+                    break;
+                  case "phaser":
+                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
+                    break;
+                  case "reverse":
+                    ytc.withAudioFilter(["areverse"]);
+                    metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
+                    break;
+                  case "slow":
+                    ytc.withAudioFilter(["atempo=0.8"]);
+                    metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
+                    break;
+                  case "speed":
+                    ytc.withAudioFilter(["atempo=2"]);
+                    metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
+                    break;
+                  case "subboost":
+                    ytc.withAudioFilter(["asubboost"]);
+                    metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
+                    break;
+                  case "superslow":
+                    ytc.withAudioFilter(["atempo=0.5"]);
+                    metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
+                    break;
+                  case "superspeed":
+                    ytc.withAudioFilter(["atempo=3"]);
+                    metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
+                    break;
+                  case "surround":
+                    ytc.withAudioFilter(["surround"]);
+                    metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
+                    break;
+                  case "vaporwave":
+                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
+                    break;
+                  case "vibrato":
+                    ytc.withAudioFilter(["vibrato=f=6.5"]);
+                    metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
+                    break;
+                  default:
+                    ytc.withAudioFilter([]);
+                    metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
+                    break;
+                }
+                if (stream) {
+                  const readStream = new Readable({
+                    read() {
+                    }
+                  });
+                  const writeStream = new Writable({
+                    write(chunk, _encoding, callback) {
+                      readStream.push(chunk);
+                      callback();
+                    },
+                    final(callback) {
+                      readStream.push(null);
+                      callback();
+                    }
+                  });
+                  ytc.pipe(writeStream, { end: true });
+                  results.push({
+                    stream: readStream,
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                  });
+                } else {
+                  await new Promise((resolve, reject2) => {
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                  });
+                }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
+              }
+            }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -4207,158 +4403,188 @@ async function ListAudioHighest({
   outputFormat = "mp3"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            const metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              throw new Error("Unable to get response from YouTube...");
-            }
-            let metaName = "";
-            const title = metaBody.metaTube.title.replace(
-              /[^a-zA-Z0-9_]+/g,
-              "-"
-            );
-            const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-            if (!fs.existsSync(metaFold))
-              fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = bigEntry(metaBody.AudioTube);
-            const ytc = fluentffmpeg();
-            ytc.input(metaEntry.meta_dl.mediaurl);
-            ytc.input(metaBody.metaTube.thumbnail);
-            ytc.addOutputOption("-map", "1:0");
-            ytc.addOutputOption("-map", "0:a:0");
-            ytc.addOutputOption("-id3v2_version", "3");
-            ytc.format(outputFormat);
-            ytc.on("start", (cmd) => {
-              if (verbose)
-                console.log(cmd);
-              progressBar_default(0, metaSpin13);
-            });
-            ytc.on("end", () => progressBar_default(100, metaSpin13));
-            ytc.on("close", () => progressBar_default(100, metaSpin13));
-            ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin13));
-            switch (filter2) {
-              case "bassboost":
-                ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
-                break;
-              case "echo":
-                ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
-                break;
-              case "flanger":
-                ytc.withAudioFilter(["flanger"]);
-                metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
-                break;
-              case "nightcore":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
-                break;
-              case "panning":
-                ytc.withAudioFilter(["apulsator=hz=0.08"]);
-                metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
-                break;
-              case "phaser":
-                ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-                metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
-                break;
-              case "reverse":
-                ytc.withAudioFilter(["areverse"]);
-                metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
-                break;
-              case "slow":
-                ytc.withAudioFilter(["atempo=0.8"]);
-                metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
-                break;
-              case "speed":
-                ytc.withAudioFilter(["atempo=2"]);
-                metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
-                break;
-              case "subboost":
-                ytc.withAudioFilter(["asubboost"]);
-                metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
-                break;
-              case "superslow":
-                ytc.withAudioFilter(["atempo=0.5"]);
-                metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
-                break;
-              case "superspeed":
-                ytc.withAudioFilter(["atempo=3"]);
-                metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
-                break;
-              case "surround":
-                ytc.withAudioFilter(["surround"]);
-                metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
-                break;
-              case "vaporwave":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
-                break;
-              case "vibrato":
-                ytc.withAudioFilter(["vibrato=f=6.5"]);
-                metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
-                break;
-              default:
-                ytc.withAudioFilter([]);
-                metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
-                break;
-            }
-            if (stream) {
-              const readStream = new Readable({
-                read() {
-                }
-              });
-              const writeStream = new Writable({
-                write(chunk, _encoding, callback) {
-                  readStream.push(chunk);
-                  callback();
-                },
-                final(callback) {
-                  readStream.push(null);
-                  callback();
-                }
-              });
-              ytc.pipe(writeStream, { end: true });
-              results.push({
-                stream: readStream,
-                filename: folderName ? path.join(metaFold, metaName) : metaName
-              });
-            } else {
-              await new Promise((resolve, reject2) => {
-                ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-              });
-            }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
           }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                const metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
+                  throw new Error("Unable to get response from YouTube...");
+                }
+                let metaName = "";
+                const title = metaBody.metaTube.title.replace(
+                  /[^a-zA-Z0-9_]+/g,
+                  "-"
+                );
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const metaEntry = bigEntry(metaBody.AudioTube);
+                const ytc = fluentffmpeg();
+                ytc.addInput(metaEntry.meta_dl.mediaurl);
+                ytc.addInput(metaBody.metaTube.thumbnail);
+                ytc.addOutputOption("-map", "1:0");
+                ytc.addOutputOption("-map", "0:a:0");
+                ytc.addOutputOption("-id3v2_version", "3");
+                ytc.format(outputFormat);
+                ytc.on("start", (cmd) => {
+                  if (verbose)
+                    console.log(cmd);
+                  progressBar_default(0, metaSpin13);
+                });
+                ytc.on("end", () => progressBar_default(100, metaSpin13));
+                ytc.on("close", () => progressBar_default(100, metaSpin13));
+                ytc.on(
+                  "progress",
+                  ({ percent }) => progressBar_default(percent, metaSpin13)
+                );
+                switch (filter2) {
+                  case "bassboost":
+                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
+                    break;
+                  case "echo":
+                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
+                    break;
+                  case "flanger":
+                    ytc.withAudioFilter(["flanger"]);
+                    metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
+                    break;
+                  case "nightcore":
+                    ytc.withAudioFilter([
+                      "aresample=48000,asetrate=48000*1.25"
+                    ]);
+                    metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
+                    break;
+                  case "panning":
+                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                    metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
+                    break;
+                  case "phaser":
+                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
+                    break;
+                  case "reverse":
+                    ytc.withAudioFilter(["areverse"]);
+                    metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
+                    break;
+                  case "slow":
+                    ytc.withAudioFilter(["atempo=0.8"]);
+                    metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
+                    break;
+                  case "speed":
+                    ytc.withAudioFilter(["atempo=2"]);
+                    metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
+                    break;
+                  case "subboost":
+                    ytc.withAudioFilter(["asubboost"]);
+                    metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
+                    break;
+                  case "superslow":
+                    ytc.withAudioFilter(["atempo=0.5"]);
+                    metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
+                    break;
+                  case "superspeed":
+                    ytc.withAudioFilter(["atempo=3"]);
+                    metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
+                    break;
+                  case "surround":
+                    ytc.withAudioFilter(["surround"]);
+                    metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
+                    break;
+                  case "vaporwave":
+                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
+                    break;
+                  case "vibrato":
+                    ytc.withAudioFilter(["vibrato=f=6.5"]);
+                    metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
+                    break;
+                  default:
+                    ytc.withAudioFilter([]);
+                    metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
+                    break;
+                }
+                if (stream) {
+                  const readStream = new Readable({
+                    read() {
+                    }
+                  });
+                  const writeStream = new Writable({
+                    write(chunk, _encoding, callback) {
+                      readStream.push(chunk);
+                      callback();
+                    },
+                    final(callback) {
+                      readStream.push(null);
+                      callback();
+                    }
+                  });
+                  ytc.pipe(writeStream, { end: true });
+                  results.push({
+                    stream: readStream,
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                  });
+                } else {
+                  await new Promise((resolve, reject2) => {
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                  });
+                }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
+              }
+            }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -4390,178 +4616,205 @@ async function ListAudioQualityCustom({
   outputFormat = "mp3"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            let metaBody;
-            metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              results.push({
-                message: "Unable to get response from YouTube...",
-                status: 500
-              });
-            } else {
-              metaBody = metaBody.AudioTube.filter(
-                (op) => op.meta_dl.formatnote === quality
-              );
-              if (!metaBody) {
-                results.push({
-                  message: "Unable to get response from YouTube...",
-                  status: 500
-                });
-              } else {
-                let metaName = "";
-                const title = metaBody.metaTube.title.replace(
-                  /[^a-zA-Z0-9_]+/g,
-                  "-"
-                );
-                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-                if (!fs.existsSync(metaFold))
-                  fs.mkdirSync(metaFold, { recursive: true });
-                const metaEntry = bigEntry(metaBody.AudioTube);
-                const ytc = fluentffmpeg();
-                ytc.input(metaEntry.meta_dl.mediaurl);
-                ytc.input(metaBody.metaTube.thumbnail);
-                ytc.addOutputOption("-map", "1:0");
-                ytc.addOutputOption("-map", "0:a:0");
-                ytc.addOutputOption("-id3v2_version", "3");
-                ytc.format(outputFormat);
-                ytc.on("start", (cmd) => {
-                  if (verbose)
-                    console.log(cmd);
-                  progressBar_default(0, metaSpin14);
-                });
-                ytc.on("end", () => progressBar_default(100, metaSpin14));
-                ytc.on("close", () => progressBar_default(100, metaSpin14));
-                ytc.on(
-                  "progress",
-                  ({ percent }) => progressBar_default(percent, metaSpin14)
-                );
-                switch (filter2) {
-                  case "bassboost":
-                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                    metaName = `yt-core-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                    break;
-                  case "echo":
-                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                    metaName = `yt-core-(AudioQualityCustom_echo)-${title}.${outputFormat}`;
-                    break;
-                  case "flanger":
-                    ytc.withAudioFilter(["flanger"]);
-                    metaName = `yt-core-(AudioQualityCustom_flanger)-${title}.${outputFormat}`;
-                    break;
-                  case "nightcore":
-                    ytc.withAudioFilter([
-                      "aresample=48000,asetrate=48000*1.25"
-                    ]);
-                    metaName = `yt-core-(AudioQualityCustom_nightcore)-${title}.${outputFormat}`;
-                    break;
-                  case "panning":
-                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
-                    metaName = `yt-core-(AudioQualityCustom_panning)-${title}.${outputFormat}`;
-                    break;
-                  case "phaser":
-                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-                    metaName = `yt-core-(AudioQualityCustom_phaser)-${title}.${outputFormat}`;
-                    break;
-                  case "reverse":
-                    ytc.withAudioFilter(["areverse"]);
-                    metaName = `yt-core-(AudioQualityCustom_reverse)-${title}.${outputFormat}`;
-                    break;
-                  case "slow":
-                    ytc.withAudioFilter(["atempo=0.8"]);
-                    metaName = `yt-core-(AudioQualityCustom_slow)-${title}.${outputFormat}`;
-                    break;
-                  case "speed":
-                    ytc.withAudioFilter(["atempo=2"]);
-                    metaName = `yt-core-(AudioQualityCustom_speed)-${title}.${outputFormat}`;
-                    break;
-                  case "subboost":
-                    ytc.withAudioFilter(["asubboost"]);
-                    metaName = `yt-core-(AudioQualityCustom_subboost)-${title}.${outputFormat}`;
-                    break;
-                  case "superslow":
-                    ytc.withAudioFilter(["atempo=0.5"]);
-                    metaName = `yt-core-(AudioQualityCustom_superslow)-${title}.${outputFormat}`;
-                    break;
-                  case "superspeed":
-                    ytc.withAudioFilter(["atempo=3"]);
-                    metaName = `yt-core-(AudioQualityCustom_superspeed)-${title}.${outputFormat}`;
-                    break;
-                  case "surround":
-                    ytc.withAudioFilter(["surround"]);
-                    metaName = `yt-core-(AudioQualityCustom_surround)-${title}.${outputFormat}`;
-                    break;
-                  case "vaporwave":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                    metaName = `yt-core-(AudioQualityCustom_vaporwave)-${title}.${outputFormat}`;
-                    break;
-                  case "vibrato":
-                    ytc.withAudioFilter(["vibrato=f=6.5"]);
-                    metaName = `yt-core-(AudioQualityCustom_vibrato)-${title}.${outputFormat}`;
-                    break;
-                  default:
-                    ytc.withAudioFilter([]);
-                    metaName = `yt-core-(AudioQualityCustom)-${title}.${outputFormat}`;
-                    break;
-                }
-                if (stream) {
-                  const readStream = new Readable({
-                    read() {
-                    }
-                  });
-                  const writeStream = new Writable({
-                    write(chunk, _encoding, callback) {
-                      readStream.push(chunk);
-                      callback();
-                    },
-                    final(callback) {
-                      readStream.push(null);
-                      callback();
-                    }
-                  });
-                  ytc.pipe(writeStream, { end: true });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
+          }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                let metaBody;
+                metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
                   results.push({
-                    stream: readStream,
-                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                    message: "Unable to get response from YouTube...",
+                    status: 500
                   });
                 } else {
-                  await new Promise((resolve, reject2) => {
-                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-                  });
+                  metaBody = metaBody.AudioTube.filter(
+                    (op) => op.meta_dl.formatnote === quality
+                  );
+                  if (!metaBody) {
+                    results.push({
+                      message: "Unable to get response from YouTube...",
+                      status: 500
+                    });
+                  } else {
+                    let metaName = "";
+                    const title = metaBody.metaTube.title.replace(
+                      /[^a-zA-Z0-9_]+/g,
+                      "-"
+                    );
+                    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                    if (!fs.existsSync(metaFold))
+                      fs.mkdirSync(metaFold, { recursive: true });
+                    const metaEntry = bigEntry(metaBody.AudioTube);
+                    const ytc = fluentffmpeg();
+                    ytc.addInput(metaEntry.meta_dl.mediaurl);
+                    ytc.addInput(metaBody.metaTube.thumbnail);
+                    ytc.addOutputOption("-map", "1:0");
+                    ytc.addOutputOption("-map", "0:a:0");
+                    ytc.addOutputOption("-id3v2_version", "3");
+                    ytc.format(outputFormat);
+                    ytc.on("start", (cmd) => {
+                      if (verbose)
+                        console.log(cmd);
+                      progressBar_default(0, metaSpin14);
+                    });
+                    ytc.on("end", () => progressBar_default(100, metaSpin14));
+                    ytc.on("close", () => progressBar_default(100, metaSpin14));
+                    ytc.on(
+                      "progress",
+                      ({ percent }) => progressBar_default(percent, metaSpin14)
+                    );
+                    switch (filter2) {
+                      case "bassboost":
+                        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                        metaName = `yt-core-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+                        break;
+                      case "echo":
+                        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                        metaName = `yt-core-(AudioQualityCustom_echo)-${title}.${outputFormat}`;
+                        break;
+                      case "flanger":
+                        ytc.withAudioFilter(["flanger"]);
+                        metaName = `yt-core-(AudioQualityCustom_flanger)-${title}.${outputFormat}`;
+                        break;
+                      case "nightcore":
+                        ytc.withAudioFilter([
+                          "aresample=48000,asetrate=48000*1.25"
+                        ]);
+                        metaName = `yt-core-(AudioQualityCustom_nightcore)-${title}.${outputFormat}`;
+                        break;
+                      case "panning":
+                        ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                        metaName = `yt-core-(AudioQualityCustom_panning)-${title}.${outputFormat}`;
+                        break;
+                      case "phaser":
+                        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                        metaName = `yt-core-(AudioQualityCustom_phaser)-${title}.${outputFormat}`;
+                        break;
+                      case "reverse":
+                        ytc.withAudioFilter(["areverse"]);
+                        metaName = `yt-core-(AudioQualityCustom_reverse)-${title}.${outputFormat}`;
+                        break;
+                      case "slow":
+                        ytc.withAudioFilter(["atempo=0.8"]);
+                        metaName = `yt-core-(AudioQualityCustom_slow)-${title}.${outputFormat}`;
+                        break;
+                      case "speed":
+                        ytc.withAudioFilter(["atempo=2"]);
+                        metaName = `yt-core-(AudioQualityCustom_speed)-${title}.${outputFormat}`;
+                        break;
+                      case "subboost":
+                        ytc.withAudioFilter(["asubboost"]);
+                        metaName = `yt-core-(AudioQualityCustom_subboost)-${title}.${outputFormat}`;
+                        break;
+                      case "superslow":
+                        ytc.withAudioFilter(["atempo=0.5"]);
+                        metaName = `yt-core-(AudioQualityCustom_superslow)-${title}.${outputFormat}`;
+                        break;
+                      case "superspeed":
+                        ytc.withAudioFilter(["atempo=3"]);
+                        metaName = `yt-core-(AudioQualityCustom_superspeed)-${title}.${outputFormat}`;
+                        break;
+                      case "surround":
+                        ytc.withAudioFilter(["surround"]);
+                        metaName = `yt-core-(AudioQualityCustom_surround)-${title}.${outputFormat}`;
+                        break;
+                      case "vaporwave":
+                        ytc.withAudioFilter([
+                          "aresample=48000,asetrate=48000*0.8"
+                        ]);
+                        metaName = `yt-core-(AudioQualityCustom_vaporwave)-${title}.${outputFormat}`;
+                        break;
+                      case "vibrato":
+                        ytc.withAudioFilter(["vibrato=f=6.5"]);
+                        metaName = `yt-core-(AudioQualityCustom_vibrato)-${title}.${outputFormat}`;
+                        break;
+                      default:
+                        ytc.withAudioFilter([]);
+                        metaName = `yt-core-(AudioQualityCustom)-${title}.${outputFormat}`;
+                        break;
+                    }
+                    if (stream) {
+                      const readStream = new Readable({
+                        read() {
+                        }
+                      });
+                      const writeStream = new Writable({
+                        write(chunk, _encoding, callback) {
+                          readStream.push(chunk);
+                          callback();
+                        },
+                        final(callback) {
+                          readStream.push(null);
+                          callback();
+                        }
+                      });
+                      ytc.pipe(writeStream, { end: true });
+                      results.push({
+                        stream: readStream,
+                        filename: folderName ? path.join(metaFold, metaName) : metaName
+                      });
+                    } else {
+                      await new Promise((resolve, reject2) => {
+                        ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                      });
+                    }
+                  }
                 }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
               }
             }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
-          }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -4591,88 +4844,116 @@ async function ListAudioVideoLowest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            const metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              throw new Error("Unable to get response from YouTube...");
-            }
-            const title = metaBody.metaTube.title.replace(
-              /[^a-zA-Z0-9_]+/g,
-              "-"
-            );
-            let metaName = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
-            const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-            if (!fs.existsSync(metaFold))
-              fs.mkdirSync(metaFold, { recursive: true });
-            const ytc = fluentffmpeg();
-            ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
-            ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
-            ytc.format(outputFormat);
-            ytc.on("start", (cmd) => {
-              if (verbose)
-                console.log(cmd);
-              progressBar_default(0, metaSpin15);
-            });
-            ytc.on("end", () => progressBar_default(100, metaSpin15));
-            ytc.on("close", () => progressBar_default(100, metaSpin15));
-            ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin15));
-            if (stream) {
-              const readStream = new Readable({
-                read() {
-                }
-              });
-              const writeStream = new Writable({
-                write(chunk, _encoding, callback) {
-                  readStream.push(chunk);
-                  callback();
-                },
-                final(callback) {
-                  readStream.push(null);
-                  callback();
-                }
-              });
-              ytc.pipe(writeStream, { end: true });
-              results.push({
-                stream: readStream,
-                filename: folderName ? path.join(metaFold, metaName) : metaName
-              });
-            } else {
-              await new Promise((resolve, reject2) => {
-                ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-              });
-            }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
           }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                const metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
+                  throw new Error("Unable to get response from YouTube...");
+                }
+                const title = metaBody.metaTube.title.replace(
+                  /[^a-zA-Z0-9_]+/g,
+                  "-"
+                );
+                let metaName = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const ytc = fluentffmpeg();
+                ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
+                ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
+                ytc.format(outputFormat);
+                ytc.on("start", (cmd) => {
+                  if (verbose)
+                    console.log(cmd);
+                  progressBar_default(0, metaSpin15);
+                });
+                ytc.on("end", () => progressBar_default(100, metaSpin15));
+                ytc.on("close", () => progressBar_default(100, metaSpin15));
+                ytc.on(
+                  "progress",
+                  ({ percent }) => progressBar_default(percent, metaSpin15)
+                );
+                if (stream) {
+                  const readStream = new Readable({
+                    read() {
+                    }
+                  });
+                  const writeStream = new Writable({
+                    write(chunk, _encoding, callback) {
+                      readStream.push(chunk);
+                      callback();
+                    },
+                    final(callback) {
+                      readStream.push(null);
+                      callback();
+                    }
+                  });
+                  ytc.pipe(writeStream, { end: true });
+                  results.push({
+                    stream: readStream,
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                  });
+                } else {
+                  await new Promise((resolve, reject2) => {
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                  });
+                }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
+              }
+            }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -4702,88 +4983,116 @@ async function ListAudioVideoHighest({
   outputFormat = "mp4"
 }) {
   try {
-    if (!Array.isArray(playlistUrls) || !playlistUrls.every((url) => typeof url === "string")) {
-      return [
-        {
-          message: "Invalid playlistUrls[] parameter. Expecting an array of strings.",
-          status: 500
-        }
-      ];
-    }
-    const videos = await get_playlist({
-      playlistUrls
-    });
-    if (!videos) {
-      return [
-        {
-          message: "Unable to get response from YouTube...",
-          status: 500
-        }
-      ];
-    } else {
-      const results = [];
-      await index.eachSeries(
-        videos,
-        async (video) => {
-          try {
-            const metaBody = await Engine({ query: video.url });
-            if (!metaBody) {
-              throw new Error("Unable to get response from YouTube...");
-            }
-            const title = metaBody.metaTube.title.replace(
-              /[^a-zA-Z0-9_]+/g,
-              "-"
-            );
-            let metaName = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
-            const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
-            if (!fs.existsSync(metaFold))
-              fs.mkdirSync(metaFold, { recursive: true });
-            const ytc = fluentffmpeg();
-            ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
-            ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
-            ytc.format(outputFormat);
-            ytc.on("start", (cmd) => {
-              if (verbose)
-                console.log(cmd);
-              progressBar_default(0, metaSpin16);
-            });
-            ytc.on("end", () => progressBar_default(100, metaSpin16));
-            ytc.on("close", () => progressBar_default(100, metaSpin16));
-            ytc.on("progress", ({ percent }) => progressBar_default(percent, metaSpin16));
-            if (stream) {
-              const readStream = new Readable({
-                read() {
-                }
-              });
-              const writeStream = new Writable({
-                write(chunk, _encoding, callback) {
-                  readStream.push(chunk);
-                  callback();
-                },
-                final(callback) {
-                  readStream.push(null);
-                  callback();
-                }
-              });
-              ytc.pipe(writeStream, { end: true });
-              results.push({
-                stream: readStream,
-                filename: folderName ? path.join(metaFold, metaName) : metaName
-              });
-            } else {
-              await new Promise((resolve, reject2) => {
-                ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
-              });
-            }
-          } catch (error) {
-            results.push({
-              status: 500,
-              message: colors14.bold.red("ERROR: ") + video.title
-            });
+    switch (playlistUrls.length > 0) {
+      case !playlistUrls:
+        return [
+          {
+            message: "playlistUrls parameter is missing",
+            status: 500
           }
+        ];
+      case !Array.isArray(playlistUrls):
+        return [
+          {
+            message: "playlistUrls parameter must be an array",
+            status: 500
+          }
+        ];
+      case false:
+        return [
+          {
+            message: "playlistUrls parameter cannot be empty",
+            status: 500
+          }
+        ];
+      case !playlistUrls.every(
+        (url) => typeof url === "string" && url.trim().length > 0
+      ):
+        return [
+          {
+            message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
+            status: 500
+          }
+        ];
+      default:
+        const videos = await get_playlist({
+          playlistUrls
+        });
+        if (!videos) {
+          return [
+            {
+              message: "Unable to get response from YouTube...",
+              status: 500
+            }
+          ];
+        } else {
+          const results = [];
+          await index.eachSeries(
+            videos,
+            async (video) => {
+              try {
+                const metaBody = await Engine({ query: video.url });
+                if (!metaBody) {
+                  throw new Error("Unable to get response from YouTube...");
+                }
+                const title = metaBody.metaTube.title.replace(
+                  /[^a-zA-Z0-9_]+/g,
+                  "-"
+                );
+                let metaName = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const ytc = fluentffmpeg();
+                ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
+                ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
+                ytc.format(outputFormat);
+                ytc.on("start", (cmd) => {
+                  if (verbose)
+                    console.log(cmd);
+                  progressBar_default(0, metaSpin16);
+                });
+                ytc.on("end", () => progressBar_default(100, metaSpin16));
+                ytc.on("close", () => progressBar_default(100, metaSpin16));
+                ytc.on(
+                  "progress",
+                  ({ percent }) => progressBar_default(percent, metaSpin16)
+                );
+                if (stream) {
+                  const readStream = new Readable({
+                    read() {
+                    }
+                  });
+                  const writeStream = new Writable({
+                    write(chunk, _encoding, callback) {
+                      readStream.push(chunk);
+                      callback();
+                    },
+                    final(callback) {
+                      readStream.push(null);
+                      callback();
+                    }
+                  });
+                  ytc.pipe(writeStream, { end: true });
+                  results.push({
+                    stream: readStream,
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                  });
+                } else {
+                  await new Promise((resolve, reject2) => {
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                  });
+                }
+              } catch (error) {
+                results.push({
+                  status: 500,
+                  message: colors14.bold.red("ERROR: ") + video.title
+                });
+              }
+            }
+          );
+          return results;
         }
-      );
-      return results;
     }
   } catch (error) {
     switch (true) {
@@ -4809,8 +5118,8 @@ async function ListAudioVideoHighest({
 var ytCore2 = {
   info: {
     help,
-    extract,
     search,
+    extract,
     list_formats,
     get_playlist,
     get_video_data,
