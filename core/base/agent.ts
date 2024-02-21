@@ -31,7 +31,7 @@ export default async function Engine({
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
       colors.bold.green("INFO: ") +
-        `⭕ fetching metadata for: <(${query})>` +
+        `🛰️ fetching metadata for: <(${query})>` +
         colors.reset("")
     );
     videoId = await YouTubeID(query);
