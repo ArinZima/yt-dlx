@@ -8,7 +8,7 @@ export default async function Engine({
   query,
 }: {
   query: string;
-}): Promise<any> {
+}): Promise<any | null> {
   let videoId: string | null, TubeCore: any, TubeBody;
   console.log(
     colors.bold.green("\n\nINFO: ") +
@@ -19,7 +19,7 @@ export default async function Engine({
     console.log(
       colors.bold.red("ERROR: ") + "❗'query' is required..." + colors.reset("")
     );
-    return;
+    return null;
   }
   if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
@@ -27,7 +27,7 @@ export default async function Engine({
         "❗use extract_playlist_videos() for playlists..." +
         colors.reset("")
     );
-    return;
+    return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
       colors.bold.green("INFO: ") +
@@ -46,12 +46,12 @@ export default async function Engine({
             "❗no data returned from server..." +
             colors.reset("")
         );
-        return;
+        return null;
       }
       TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("INFO: ") +
-          `📡 preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
+          `📡preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
           colors.reset("")
       );
       TubeCore = await ytCore(TubeBody[0].Link);
@@ -64,12 +64,12 @@ export default async function Engine({
             "❗no data returned from server..." +
             colors.reset("")
         );
-        return;
+        return null;
       }
       TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("INFO: ") +
-          `📡 preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
+          `📡preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
           colors.reset("")
       );
       TubeCore = await ytCore(TubeBody.Link);
@@ -83,7 +83,7 @@ export default async function Engine({
           "❗no data returned from server..." +
           colors.reset("")
       );
-      break;
+      return null; // Add a return statement here
     default:
       console.log(
         colors.bold.green("INFO:"),

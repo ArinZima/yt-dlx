@@ -1,15 +1,5 @@
-import axios from "axios";
 import colors from "colors";
 import type TubeConfig from "../interface/TubeConfig";
-
-async function checkUrl(url: string): Promise<boolean> {
-  try {
-    const response = await axios.head(url);
-    return response.status === 200;
-  } catch (error) {
-    return false;
-  }
-}
 
 export default async function bigEntry(
   metaBody: TubeConfig[]
@@ -27,12 +17,8 @@ export default async function bigEntry(
       );
       for (const item of sortedByFileSize) {
         const { mediaurl } = item.meta_dl;
-        if (mediaurl && (await checkUrl(mediaurl))) return item;
+        if (mediaurl) return item;
       }
-      console.log(
-        colors.bold.red("ERROR:"),
-        "❗sorry no downloadable data found"
-      );
       return null;
   }
 }
