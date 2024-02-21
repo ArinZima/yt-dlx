@@ -1,112 +1,89 @@
 console.clear();
 import ytCore from ".";
+import ListAudioLowest from "./pipes/audio/ListAudioLowest";
+import ListAudioHighest from "./pipes/audio/ListAudioHighest";
+import ListVideoLowest from "./pipes/video/ListVideoLowest";
+import ListVideoHighest from "./pipes/video/ListVideoHighest";
+import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
+import ListVideoQualityCustom from "./pipes/video/ListVideoQualityCustom";
+const playlistUrls: string[] = [
+  "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
+];
 
 (async () => {
   try {
     await ytCore.audio.playlist.custom({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       quality: "medium",
       verbose: false,
+      playlistUrls,
     });
     await ytCore.audio.playlist.highest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
     await ytCore.audio.playlist.lowest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
 
     await ytCore.video.playlist.custom({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       quality: "720p",
       verbose: false,
+      playlistUrls,
     });
     await ytCore.video.playlist.highest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
     await ytCore.video.playlist.lowest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
   } catch (error) {
     console.error(error);
   }
 })();
 // ===========================================================================================================================
-console.clear();
-import ListAudioLowest from "./pipes/audio/ListAudioLowest";
-import ListAudioHighest from "./pipes/audio/ListAudioHighest";
-import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
-
-import ListVideoLowest from "./pipes/video/ListVideoLowest";
-import ListVideoHighest from "./pipes/video/ListVideoHighest";
-import ListVideoQualityCustom from "./pipes/video/ListVideoQualityCustom";
 
 (async () => {
   try {
     await ListAudioLowest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
     await ListAudioHighest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
     await ListAudioQualityCustom({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       quality: "medium",
       verbose: false,
+      playlistUrls,
     });
     await ListVideoLowest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
     await ListVideoHighest({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       verbose: false,
+      playlistUrls,
     });
     await ListVideoQualityCustom({
-      playlistUrls: [
-        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-      ],
       folderName: "temp",
       quality: "720p",
       verbose: false,
+      playlistUrls,
     });
   } catch (error) {
     console.error(error);
