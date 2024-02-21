@@ -5,7 +5,7 @@ sudo apt-get install -y aptitude && \
 sudo apt-get clean && \
 sudo aptitude update && \
 sudo aptitude safe-upgrade -y && \
-sudo aptitude install -y dos2unix git curl wget ffmpeg opus-tools unzip nginx zsh python-is-python3 python3-pip python3-venv && \
+sudo aptitude install -y dos2unix git curl wget ffmpeg opus-tools unzip nginx python-is-python3 python3-pip python3-venv && \
 sudo aptitude clean && \
 sudo rm -rf /var/lib/apt/lists/* && \
 sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
