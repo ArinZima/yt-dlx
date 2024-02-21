@@ -115,8 +115,11 @@ export default async function ListAudioVideoHighest(
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg();
-                ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
-                ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
+                const AmetaEntry = await bigEntry(metaBody.AudioTube);
+                const VmetaEntry = await bigEntry(metaBody.VideoTube);
+                if (AmetaEntry === null || VmetaEntry === null) return;
+                ytc.addInput(VmetaEntry.meta_dl.mediaurl);
+                ytc.addInput(AmetaEntry.meta_dl.mediaurl);
                 ytc.format(outputFormat);
                 ytc.on("start", (cmd) => {
                   if (verbose) console.log(cmd);

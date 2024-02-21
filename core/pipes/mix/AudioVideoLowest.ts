@@ -59,8 +59,16 @@ export default async function AudioVideoLowest(
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
-    ytc.addInput(lowEntry(metaBody.VideoTube).meta_dl.mediaurl);
-    ytc.addInput(lowEntry(metaBody.AudioTube).meta_dl.mediaurl);
+    const AmetaEntry = await lowEntry(metaBody.AudioTube);
+    const VmetaEntry = await lowEntry(metaBody.VideoTube);
+    if (AmetaEntry === null || VmetaEntry === null) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500,
+      };
+    }
+    ytc.addInput(VmetaEntry.meta_dl.mediaurl);
+    ytc.addInput(AmetaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);
     ytc.on("start", (cmd) => {
       if (verbose) console.log(cmd);

@@ -118,7 +118,8 @@ export default async function ListAudioHighest(
                   : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
-                const metaEntry = bigEntry(metaBody.AudioTube);
+                const metaEntry = await bigEntry(metaBody.AudioTube);
+                if (metaEntry === null) return;
                 const ytc = fluentffmpeg();
                 ytc.addInput(metaEntry.meta_dl.mediaurl);
                 ytc.addInput(metaBody.metaTube.thumbnail);
