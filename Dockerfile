@@ -17,4 +17,5 @@ RUN yarn scrape
 RUN yarn rebuild
 WORKDIR /yt-core/frontend
 RUN yarn install && yarn build
+EXPOSE 8000
 CMD ["yarn", "start"]
