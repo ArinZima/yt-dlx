@@ -19,16 +19,16 @@ const progressBar = (prog: ProgressData) => {
   else if (prog.percent < 80) color = colors.yellow;
   const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
-    color("PROG:") +
+    color("PROGRESS:") +
       " " +
       sprog +
       " " +
       prog.percent.toFixed(2) +
       "%" +
-      color(" FFMPEG: ") +
+      color(" CURRENTKBPS: ") +
       prog.currentKbps +
       "kbps " +
-      color("TIMEMARK: ") +
+      color("TIMESTAMP: ") +
       prog.timemark
   );
   if (prog.percent >= 99) process.stdout.write("\n");
