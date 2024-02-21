@@ -25,6 +25,7 @@
     "yt_downloader": "project/cli/main.js"
   },
   "scripts": {
+    "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
     "upload": "yarn build && yarn publish --access=public && yarn rebuild",
     "cli": "yarn yt version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
     "relink": "yarn build && yarn unlink && yarn link && yarn link yt-core && yarn cli",
