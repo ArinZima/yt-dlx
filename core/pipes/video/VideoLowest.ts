@@ -19,8 +19,8 @@ interface VideoLowestOC {
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  filter?: keyof VideoFilters;
   outputFormat?: VideoFormat;
+  filter?: keyof VideoFilters;
 }
 type VideoLowestType = Promise<SuccessResult | ErrorResult | StreamResult>;
 
