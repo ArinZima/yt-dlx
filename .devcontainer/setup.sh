@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo su
 apt-get update && \
 apt-get install -y aptitude && \
 apt-get clean && \
