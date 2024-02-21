@@ -24,3 +24,9 @@ async function exAsync({ query, retries }) {
   const metaTube = JSON.parse(proTube);
   console.log(metaTube);
 })();
+
+/**
+ * when i run this code in my vscode locally i get the desired links and i am able to download audio video from those links
+ * but when i run the same code in any server like koyeb, codesandbox, heroku, etc i get the desired links
+ * but none of those links work.what is the issue ?
+ */
