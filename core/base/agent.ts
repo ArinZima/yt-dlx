@@ -15,7 +15,6 @@ export default async function Engine({
       `⭕ using yt-core version <(${version})>` +
       colors.reset("")
   );
-
   if (!query || query.trim() === "") {
     console.log(
       colors.bold.red("ERROR: ") +
@@ -24,7 +23,6 @@ export default async function Engine({
     );
     return;
   }
-
   if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
       colors.bold.red("ERROR: ") +
