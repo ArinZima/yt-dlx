@@ -77,7 +77,7 @@ export default async function ListAudioHighest(
       const metaBody = await ytCore({
         query: parseTube.Link,
       });
-      if (metaBody === null || !metaBody) continue;
+      if (metaBody === null) continue;
       const title: string = metaBody.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"
@@ -87,7 +87,7 @@ export default async function ListAudioHighest(
         : process.cwd();
       if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry: TubeConfig | null = await bigEntry(metaBody.AudioTube);
-      if (metaEntry === null || !metaEntry) continue;
+      if (metaEntry === null) continue;
       const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.addInput(metaBody.metaTube.thumbnail);

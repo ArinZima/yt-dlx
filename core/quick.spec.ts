@@ -92,6 +92,7 @@ import ListAudioHighest from "./pipes/audio/ListAudioHighest";
         "https://youtube.com/playlist?list=PLDIoUOhQQPlWt8OpaGG43OjNYuJ2q9jEN&si=0k8__KXk8gxgPaf5",
       ],
       folderName: "temp",
+      verbose: true,
     });
   } catch (error) {
     console.error(error);
