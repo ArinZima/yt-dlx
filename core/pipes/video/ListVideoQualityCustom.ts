@@ -9,6 +9,7 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
+import { z, ZodError } from "zod";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
@@ -53,21 +54,50 @@ interface ListVideoQualityCustomOC {
   filter?: keyof VideoFilters;
 }
 type ListVideoQualityCustomType = SuccessResult | ErrorResult | StreamResult;
-export default async function ListVideoQualityCustom({
-  filter,
-  stream,
-  quality,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp4",
-}: ListVideoQualityCustomOC): Promise<ListVideoQualityCustomType[]> {
+
+const ListVideoQualityCustomInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string()),
+  quality: z.enum([
+    "144p",
+    "240p",
+    "360p",
+    "480p",
+    "720p",
+    "1080p",
+    "1440p",
+    "2160p",
+    "2880p",
+    "4320p",
+    "5760p",
+    "8640p",
+    "12000p",
+  ]),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z.string().optional(),
+});
+
+export default async function ListVideoQualityCustom(
+  input: ListVideoQualityCustomOC
+): Promise<ListVideoQualityCustomType[]> {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter,
+      stream,
+      quality,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp4",
+    } = ListVideoQualityCustomInputSchema.parse(input);
+
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500,
           },
         ];
@@ -75,13 +105,6 @@ export default async function ListVideoQualityCustom({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500,
-          },
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500,
           },
         ];
@@ -232,21 +255,29 @@ export default async function ListVideoQualityCustom({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500,
-          },
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500,
-          },
-        ];
+    if (error instanceof ZodError) {
+      return [
+        {
+          message:
+            "Validation error: " +
+            error.errors.map((e) => e.message).join(", "),
+          status: 500,
+        },
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500,
+        },
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500,
+        },
+      ];
     }
   }
 }
