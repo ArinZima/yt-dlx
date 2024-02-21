@@ -11,6 +11,7 @@ const progressBar = (prog: ProgressData) => {
   if (prog.percent === undefined) return;
   if (prog.timemark === undefined) return;
   if (prog.currentKbps === undefined) return;
+  if (prog.percent > 98) prog.percent = 100;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round((width * prog.percent) / 100);

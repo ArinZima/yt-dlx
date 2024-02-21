@@ -1,3 +1,4 @@
+import os from "os";
 import colors from "colors";
 import readline from "readline";
 import fluentffmpeg from "fluent-ffmpeg";
@@ -6,6 +7,7 @@ const progressBar = (prog) => {
   if (prog.percent === undefined) return;
   if (prog.timemark === undefined) return;
   if (prog.currentKbps === undefined) return;
+  if (prog.percent > 98) prog.percent = 100;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round((width * prog.percent) / 100);
@@ -35,7 +37,9 @@ media.addInput(
   )
 );
 media.format("mp3");
-media.on("start", () => {
+media.withOptions(["-threads", os.cpus().length.toString()]);
+media.on("start", (command) => {
+  console.log(command);
   progressBar({
     currentKbps: undefined,
     timemark: undefined,
