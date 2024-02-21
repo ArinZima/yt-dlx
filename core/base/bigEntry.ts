@@ -1,11 +1,11 @@
-export default function bigEntry(out: any[]) {
-  if (!out || out.length === 0) return null;
-  return out.reduce(
+export default function bigEntry(metaBody: any[]) {
+  if (!metaBody || metaBody.length === 0) return null;
+  return metaBody.reduce(
     (
       prev: { meta_info: { filesizebytes: number } },
       curr: { meta_info: { filesizebytes: number } }
     ) =>
       prev.meta_info.filesizebytes > curr.meta_info.filesizebytes ? prev : curr,
-    out[0]
+    metaBody[0]
   );
 }
