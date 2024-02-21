@@ -37,7 +37,6 @@ import { z as z$1, ZodError } from 'zod';
 import search$1 from 'yt-search';
 import * as fs from 'fs';
 import * as path from 'path';
-import { randomUUID } from 'crypto';
 import fluentffmpeg from 'fluent-ffmpeg';
 import { Readable, Writable } from 'stream';
 import readline from 'readline';
@@ -174,7 +173,7 @@ function help() {
 
 async function scrape(query) {
     try {
-        const host = "https://ill-blue-bass-wear.cyclic.app/scrape";
+        const host = "http://localhost:3000/scrape";
         const response = await axios.get(host + "?query=" + encodeURIComponent(query));
         if (response.data !== null)
             return decodeURIComponent(response.data);
@@ -215,7 +214,7 @@ async function search({ query }) {
 }
 
 async function ytCore$1(query) {
-    const host = "https://ill-blue-bass-wear.cyclic.app/core";
+    const host = "http://localhost:3000/core";
     try {
         const response = await axios.get(host + "?query=" + encodeURIComponent(query));
         if (response.data !== null)
@@ -237,13 +236,13 @@ async function Engine({ query, }) {
         colors.reset(""));
     if (!query || query.trim() === "") {
         console.log(colors.bold.red("ERROR: ") + "❗'query' is required..." + colors.reset(""));
-        return;
+        return null;
     }
     if (/https/i.test(query) && /list/i.test(query)) {
         console.log(colors.bold.red("ERROR: ") +
             "❗use extract_playlist_videos() for playlists..." +
             colors.reset(""));
-        return;
+        return null;
     }
     else if (/https/i.test(query) && !/list/i.test(query)) {
         console.log(colors.bold.green("INFO: ") +
@@ -260,11 +259,11 @@ async function Engine({ query, }) {
                 console.log(colors.bold.red("ERROR: ") +
                     "❗no data returned from server..." +
                     colors.reset(""));
-                return;
+                return null;
             }
             TubeBody = JSON.parse(TubeBody);
             console.log(colors.bold.green("INFO: ") +
-                `📡 preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
+                `📡preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
                 colors.reset(""));
             TubeCore = await ytCore$1(TubeBody[0].Link);
             break;
@@ -274,11 +273,11 @@ async function Engine({ query, }) {
                 console.log(colors.bold.red("ERROR: ") +
                     "❗no data returned from server..." +
                     colors.reset(""));
-                return;
+                return null;
             }
             TubeBody = JSON.parse(TubeBody);
             console.log(colors.bold.green("INFO: ") +
-                `📡 preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
+                `📡preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
                 colors.reset(""));
             TubeCore = await ytCore$1(TubeBody.Link);
             break;
@@ -288,7 +287,7 @@ async function Engine({ query, }) {
             console.log(colors.bold.red("ERROR: ") +
                 "❗no data returned from server..." +
                 colors.reset(""));
-            break;
+            return null; // Add a return statement here
         default:
             console.log(colors.bold.green("INFO:"), "❣️ Thank you for using yt-core! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-core");
             return JSON.parse(TubeCore);
@@ -635,25 +634,37 @@ async function bigEntry$1(metaBody) {
     }
 }
 
-const termwidth = process.stdout.columns;
-const progressBar = (percent, _metaSpin) => {
-    if (percent === undefined)
+const progressBar = (prog) => {
+    if (prog.percent === undefined)
         return;
-    const width = Math.floor(termwidth / 2);
-    const scomp = Math.round((width * percent) / 100);
-    let color = colors.green;
-    if (percent < 20)
-        color = colors.red;
-    else if (percent < 80)
-        color = colors.yellow;
-    const sprog = color("▇").repeat(scomp) + color("━").repeat(width - scomp);
-    const sbar = color("PROG: ") + `${sprog} ${percent.toFixed(2)}%`;
+    if (prog.timemark === undefined)
+        return;
+    if (prog.currentKbps === undefined)
+        return;
     readline.cursorTo(process.stdout, 0);
-    process.stdout.write(sbar);
-    // if (percent >= 100) process.stdout.write("\n");
+    const width = Math.floor(process.stdout.columns / 3);
+    const scomp = Math.round((width * prog.percent) / 100);
+    let color = colors.green;
+    if (prog.percent < 20)
+        color = colors.red;
+    else if (prog.percent < 80)
+        color = colors.yellow;
+    const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+    process.stdout.write(color("PROG:") +
+        " " +
+        sprog +
+        " " +
+        prog.percent.toFixed(2) +
+        "%" +
+        color(" FFMPEG: ") +
+        prog.currentKbps +
+        "kbps " +
+        color("TIMEMARK: ") +
+        prog.timemark);
+    if (prog.percent >= 99)
+        process.stdout.write("\n");
 };
 
-const metaSpin$f = randomUUID().toString();
 const AudioLowestInputSchema = z$1.object({
     query: z$1.string(),
     filter: z$1.string().optional(),
@@ -693,14 +704,36 @@ async function AudioLowest(input) {
         ytc.addOutputOption("-map", "0:a:0");
         ytc.addOutputOption("-id3v2_version", "3");
         ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
+        ytc.on("start", (command) => {
             if (verbose)
-                console.log(cmd);
-            progressBar(0, metaSpin$f);
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
         });
-        ytc.on("end", () => progressBar(100, metaSpin$f));
-        ytc.on("close", () => progressBar(100, metaSpin$f));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$f));
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -858,7 +891,6 @@ async function bigEntry(metaBody) {
     }
 }
 
-const metaSpin$e = randomUUID().toString();
 const AudioHighestInputSchema = z$1.object({
     query: z$1.string(),
     filter: z$1.string().optional(),
@@ -898,14 +930,36 @@ async function AudioHighest(input) {
         ytc.addOutputOption("-map", "0:a:0");
         ytc.addOutputOption("-id3v2_version", "3");
         ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
+        ytc.on("start", (command) => {
             if (verbose)
-                console.log(cmd);
-            progressBar(0, metaSpin$e);
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
         });
-        ytc.on("end", () => progressBar(100, metaSpin$e));
-        ytc.on("close", () => progressBar(100, metaSpin$e));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$e));
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -1037,7 +1091,6 @@ async function AudioHighest(input) {
     }
 }
 
-const metaSpin$d = randomUUID().toString();
 const VideoLowestInputSchema$1 = z$1.object({
     query: z$1.string(),
     stream: z$1.boolean().optional(),
@@ -1105,14 +1158,36 @@ async function VideoLowest$1(input) {
             default:
                 metaName = `yt-core_(VideoLowest)_${title}.${outputFormat}`;
         }
-        ytc.on("start", (cmd) => {
+        ytc.on("start", (command) => {
             if (verbose)
-                console.log(cmd);
-            progressBar(0, metaSpin$d);
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
         });
-        ytc.on("end", () => progressBar(100, metaSpin$d));
-        ytc.on("close", () => progressBar(100, metaSpin$d));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$d));
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -1174,7 +1249,6 @@ async function VideoLowest$1(input) {
     }
 }
 
-const metaSpin$c = randomUUID().toString();
 const VideoHighestInputSchema = z$1.object({
     query: z$1.string(),
     stream: z$1.boolean().optional(),
@@ -1242,14 +1316,36 @@ async function VideoHighest(input) {
             default:
                 metaName = `yt-core_(VideoHighest)_${title}.${outputFormat}`;
         }
-        ytc.on("start", (cmd) => {
+        ytc.on("start", (command) => {
             if (verbose)
-                console.log(cmd);
-            progressBar(0, metaSpin$c);
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
         });
-        ytc.on("end", () => progressBar(100, metaSpin$c));
-        ytc.on("close", () => progressBar(100, metaSpin$c));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$c));
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -1311,7 +1407,6 @@ async function VideoHighest(input) {
     }
 }
 
-const metaSpin$b = randomUUID().toString();
 const AudioVideoLowestInputSchema = z$1.object({
     query: z$1.string(),
     stream: z$1.boolean().optional(),
@@ -1348,14 +1443,36 @@ async function AudioVideoLowest(input) {
         ytc.addInput(VmetaEntry.meta_dl.mediaurl);
         ytc.addInput(AmetaEntry.meta_dl.mediaurl);
         ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
+        ytc.on("start", (command) => {
             if (verbose)
-                console.log(cmd);
-            progressBar(0, metaSpin$b);
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
         });
-        ytc.on("end", () => progressBar(100, metaSpin$b));
-        ytc.on("close", () => progressBar(100, metaSpin$b));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$b));
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -1421,7 +1538,6 @@ async function AudioVideoLowest(input) {
     }
 }
 
-const metaSpin$a = randomUUID().toString();
 const AudioVideoHighestInputSchema = z$1.object({
     query: z$1.string(),
     stream: z$1.boolean().optional(),
@@ -1458,14 +1574,36 @@ async function AudioVideoHighest(input) {
         ytc.addInput(VmetaEntry.meta_dl.mediaurl);
         ytc.addInput(AmetaEntry.meta_dl.mediaurl);
         ytc.format(outputFormat);
-        ytc.on("start", (cmd) => {
+        ytc.on("start", (command) => {
             if (verbose)
-                console.log(cmd);
-            progressBar(0, metaSpin$a);
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
         });
-        ytc.on("end", () => progressBar(100, metaSpin$a));
-        ytc.on("close", () => progressBar(100, metaSpin$a));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$a));
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -1531,18 +1669,18 @@ async function AudioVideoHighest(input) {
     }
 }
 
-const metaSpin$9 = randomUUID().toString();
 const AudioQualityCustomInputSchema = z$1.object({
     query: z$1.string(),
+    filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
+    verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
     quality: z$1.enum(["high", "medium", "low", "ultralow"]),
     outputFormat: z$1.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
-    filter: z$1.string().optional(),
 });
 async function AudioQualityCustom(input) {
     try {
-        const { query, stream, folderName, quality, outputFormat = "mp3", filter, } = AudioQualityCustomInputSchema.parse(input);
+        const { query, filter, stream, verbose, quality, folderName, outputFormat = "mp3", } = AudioQualityCustomInputSchema.parse(input);
         const metaResp = await Engine({ query });
         if (!metaResp) {
             return {
@@ -1629,10 +1767,36 @@ async function AudioQualityCustom(input) {
                 ytc.withAudioFilter([]);
                 break;
         }
-        ytc.on("start", () => progressBar(0, metaSpin$9));
-        ytc.on("end", () => progressBar(100, metaSpin$9));
-        ytc.on("close", () => progressBar(100, metaSpin$9));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$9));
+        ytc.on("start", (command) => {
+            if (verbose)
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -1696,7 +1860,6 @@ async function AudioQualityCustom(input) {
     }
 }
 
-const metaSpin$8 = randomUUID().toString();
 const VideoLowestInputSchema = z$1.object({
     query: z$1.string(),
     stream: z$1.boolean().optional(),
@@ -1764,14 +1927,36 @@ async function VideoLowest(input) {
             default:
                 metaName = `yt-core_(VideoLowest)_${title}.${outputFormat}`;
         }
-        ytc.on("start", (cmd) => {
+        ytc.on("start", (command) => {
             if (verbose)
-                console.log(cmd);
-            progressBar(0, metaSpin$8);
+                console.log(command);
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
         });
-        ytc.on("end", () => progressBar(100, metaSpin$8));
-        ytc.on("close", () => progressBar(100, metaSpin$8));
-        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$8));
+        ytc.on("end", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("close", () => {
+            progressBar({
+                currentKbps: undefined,
+                timemark: undefined,
+                percent: undefined,
+            });
+        });
+        ytc.on("progress", (prog) => {
+            progressBar({
+                currentKbps: prog.currentKbps,
+                timemark: prog.timemark,
+                percent: prog.percent,
+            });
+        });
         ytc.on("error", (error) => {
             return error;
         });
@@ -1833,7 +2018,6 @@ async function VideoLowest(input) {
     }
 }
 
-const metaSpin$7 = randomUUID().toString();
 const ListVideoLowestInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -1900,14 +2084,36 @@ async function ListVideoLowest(input) {
                             const ytc = fluentffmpeg();
                             ytc.addInput(metaEntry.meta_dl.mediaurl);
                             ytc.format(outputFormat);
-                            ytc.on("start", (cmd) => {
+                            ytc.on("start", (command) => {
                                 if (verbose)
-                                    console.log(cmd);
-                                progressBar(0, metaSpin$7);
+                                    console.log(command);
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
                             });
-                            ytc.on("end", () => progressBar(100, metaSpin$7));
-                            ytc.on("close", () => progressBar(100, metaSpin$7));
-                            ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$7));
+                            ytc.on("end", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("close", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("progress", (prog) => {
+                                progressBar({
+                                    currentKbps: prog.currentKbps,
+                                    timemark: prog.timemark,
+                                    percent: prog.percent,
+                                });
+                            });
                             switch (filter) {
                                 case "grayscale":
                                     ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -2012,7 +2218,6 @@ async function ListVideoLowest(input) {
     }
 }
 
-const metaSpin$6 = randomUUID().toString();
 const ListVideoHighestInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2079,14 +2284,36 @@ async function ListVideoHighest(input) {
                             const ytc = fluentffmpeg();
                             ytc.addInput(metaEntry.meta_dl.mediaurl);
                             ytc.format(outputFormat);
-                            ytc.on("start", (cmd) => {
+                            ytc.on("start", (command) => {
                                 if (verbose)
-                                    console.log(cmd);
-                                progressBar(0, metaSpin$6);
+                                    console.log(command);
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
                             });
-                            ytc.on("end", () => progressBar(100, metaSpin$6));
-                            ytc.on("close", () => progressBar(100, metaSpin$6));
-                            ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$6));
+                            ytc.on("end", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("close", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("progress", (prog) => {
+                                progressBar({
+                                    currentKbps: prog.currentKbps,
+                                    timemark: prog.timemark,
+                                    percent: prog.percent,
+                                });
+                            });
                             switch (filter) {
                                 case "grayscale":
                                     ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -2191,7 +2418,6 @@ async function ListVideoHighest(input) {
     }
 }
 
-const metaSpin$5 = randomUUID().toString();
 const ListVideoQualityCustomInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2286,14 +2512,36 @@ async function ListVideoQualityCustom(input) {
                                     const ytc = fluentffmpeg();
                                     ytc.addInput(metaEntry.meta_dl.mediaurl);
                                     ytc.format(outputFormat);
-                                    ytc.on("start", (cmd) => {
+                                    ytc.on("start", (command) => {
                                         if (verbose)
-                                            console.log(cmd);
-                                        progressBar(0, metaSpin$5);
+                                            console.log(command);
+                                        progressBar({
+                                            currentKbps: undefined,
+                                            timemark: undefined,
+                                            percent: undefined,
+                                        });
                                     });
-                                    ytc.on("end", () => progressBar(100, metaSpin$5));
-                                    ytc.on("close", () => progressBar(100, metaSpin$5));
-                                    ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$5));
+                                    ytc.on("end", () => {
+                                        progressBar({
+                                            currentKbps: undefined,
+                                            timemark: undefined,
+                                            percent: undefined,
+                                        });
+                                    });
+                                    ytc.on("close", () => {
+                                        progressBar({
+                                            currentKbps: undefined,
+                                            timemark: undefined,
+                                            percent: undefined,
+                                        });
+                                    });
+                                    ytc.on("progress", (prog) => {
+                                        progressBar({
+                                            currentKbps: prog.currentKbps,
+                                            timemark: prog.timemark,
+                                            percent: prog.percent,
+                                        });
+                                    });
                                     switch (filter) {
                                         case "grayscale":
                                             ytc.withVideoFilter([
@@ -2403,7 +2651,6 @@ async function ListVideoQualityCustom(input) {
     }
 }
 
-const metaSpin$4 = randomUUID().toString();
 const ListAudioLowestInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2415,182 +2662,178 @@ const ListAudioLowestInputSchema = z$1.object({
 async function ListAudioLowest(input) {
     try {
         const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioLowestInputSchema.parse(input);
-        switch (true) {
-            case playlistUrls.length === 0:
-                return [
-                    {
-                        message: "playlistUrls parameter cannot be empty",
-                        status: 500,
-                    },
-                ];
-            case !Array.isArray(playlistUrls):
-                return [
-                    {
-                        message: "playlistUrls parameter must be an array",
-                        status: 500,
-                    },
-                ];
-            case !playlistUrls.every((url) => typeof url === "string" && url.trim().length > 0):
-                return [
-                    {
-                        message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
-                        status: 500,
-                    },
-                ];
-            default:
-                const videos = await get_playlist({
-                    playlistUrls,
+        let parseList = [];
+        let metaName = "";
+        let results = [];
+        const uniqueVideoIds = new Set();
+        for (const url of playlistUrls) {
+            console.log("playlistUrl:", url);
+            const metaList = await scrape(url);
+            if (metaList === null || !metaList) {
+                return {
+                    message: "Unable to get response from YouTube...",
+                    status: 500,
+                };
+            }
+            const parsedMetaList = await JSON.parse(metaList);
+            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            parseList.push(...uniqueVideos);
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+        }
+        console.log("Total Unique Videos:", parseList.length);
+        for (const i of parseList) {
+            const TubeBody = await scrape(i.videoId);
+            if (TubeBody === null)
+                continue;
+            const parseTube = await JSON.parse(TubeBody);
+            const metaBody = await Engine({
+                query: parseTube.Link,
+            });
+            if (metaBody === null)
+                continue;
+            const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
+            const metaFold = folderName
+                ? path.join(process.cwd(), folderName)
+                : process.cwd();
+            if (!fs.existsSync(metaFold))
+                fs.mkdirSync(metaFold, { recursive: true });
+            const metaEntry = await bigEntry$1(metaBody.AudioTube);
+            if (metaEntry === null)
+                continue;
+            const ytc = fluentffmpeg();
+            ytc.addInput(metaEntry.meta_dl.mediaurl);
+            ytc.addInput(metaBody.metaTube.thumbnail);
+            ytc.addOutputOption("-map", "1:0");
+            ytc.addOutputOption("-map", "0:a:0");
+            ytc.addOutputOption("-id3v2_version", "3");
+            ytc.format(outputFormat);
+            ytc.on("start", (command) => {
+                if (verbose)
+                    console.log(command);
+                progressBar({
+                    currentKbps: undefined,
+                    timemark: undefined,
+                    percent: undefined,
                 });
-                if (!videos) {
-                    return [
-                        {
-                            message: "Unable to get response from YouTube...",
-                            status: 500,
-                        },
-                    ];
-                }
-                else {
-                    const results = [];
-                    await async.eachSeries(videos, async (video) => {
-                        try {
-                            const metaBody = await Engine({ query: video.url });
-                            if (!metaBody) {
-                                throw new Error("Unable to get response from YouTube...");
-                            }
-                            let metaName = "";
-                            const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
-                            const metaFold = folderName
-                                ? path.join(process.cwd(), folderName)
-                                : process.cwd();
-                            if (!fs.existsSync(metaFold))
-                                fs.mkdirSync(metaFold, { recursive: true });
-                            const metaEntry = await bigEntry$1(metaBody.AudioTube);
-                            if (metaEntry === null)
-                                return;
-                            const ytc = fluentffmpeg();
-                            ytc.addInput(metaEntry.meta_dl.mediaurl);
-                            ytc.addInput(metaBody.metaTube.thumbnail);
-                            ytc.addOutputOption("-map", "1:0");
-                            ytc.addOutputOption("-map", "0:a:0");
-                            ytc.addOutputOption("-id3v2_version", "3");
-                            ytc.format(outputFormat);
-                            ytc.on("start", (cmd) => {
-                                if (verbose)
-                                    console.log(cmd);
-                                progressBar(0, metaSpin$4);
-                            });
-                            ytc.on("end", () => progressBar(100, metaSpin$4));
-                            ytc.on("close", () => progressBar(100, metaSpin$4));
-                            ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$4));
-                            switch (filter) {
-                                case "bassboost":
-                                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                                    metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
-                                    break;
-                                case "echo":
-                                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                                    metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
-                                    break;
-                                case "flanger":
-                                    ytc.withAudioFilter(["flanger"]);
-                                    metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
-                                    break;
-                                case "nightcore":
-                                    ytc.withAudioFilter([
-                                        "aresample=48000,asetrate=48000*1.25",
-                                    ]);
-                                    metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
-                                    break;
-                                case "panning":
-                                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
-                                    metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
-                                    break;
-                                case "phaser":
-                                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-                                    metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
-                                    break;
-                                case "reverse":
-                                    ytc.withAudioFilter(["areverse"]);
-                                    metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
-                                    break;
-                                case "slow":
-                                    ytc.withAudioFilter(["atempo=0.8"]);
-                                    metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
-                                    break;
-                                case "speed":
-                                    ytc.withAudioFilter(["atempo=2"]);
-                                    metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
-                                    break;
-                                case "subboost":
-                                    ytc.withAudioFilter(["asubboost"]);
-                                    metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
-                                    break;
-                                case "superslow":
-                                    ytc.withAudioFilter(["atempo=0.5"]);
-                                    metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
-                                    break;
-                                case "superspeed":
-                                    ytc.withAudioFilter(["atempo=3"]);
-                                    metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
-                                    break;
-                                case "surround":
-                                    ytc.withAudioFilter(["surround"]);
-                                    metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
-                                    break;
-                                case "vaporwave":
-                                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                                    metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
-                                    break;
-                                case "vibrato":
-                                    ytc.withAudioFilter(["vibrato=f=6.5"]);
-                                    metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
-                                    break;
-                                default:
-                                    ytc.withAudioFilter([]);
-                                    metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
-                                    break;
-                            }
-                            if (stream) {
-                                const readStream = new Readable({
-                                    read() { },
-                                });
-                                const writeStream = new Writable({
-                                    write(chunk, _encoding, callback) {
-                                        readStream.push(chunk);
-                                        callback();
-                                    },
-                                    final(callback) {
-                                        readStream.push(null);
-                                        callback();
-                                    },
-                                });
-                                ytc.pipe(writeStream, { end: true });
-                                results.push({
-                                    stream: readStream,
-                                    filename: folderName
-                                        ? path.join(metaFold, metaName)
-                                        : metaName,
-                                });
-                            }
-                            else {
-                                await new Promise((resolve, reject) => {
-                                    ytc
-                                        .output(path.join(metaFold, metaName))
-                                        .on("end", () => resolve())
-                                        .on("error", reject)
-                                        .run();
-                                });
-                            }
-                        }
-                        catch (error) {
-                            results.push({
-                                status: 500,
-                                message: colors.bold.red("ERROR: ") + video.title,
-                            });
-                        }
+            });
+            ytc.on("end", () => {
+                progressBar({
+                    currentKbps: undefined,
+                    timemark: undefined,
+                    percent: undefined,
+                });
+            });
+            ytc.on("close", () => {
+                progressBar({
+                    currentKbps: undefined,
+                    timemark: undefined,
+                    percent: undefined,
+                });
+            });
+            ytc.on("progress", (prog) => {
+                progressBar({
+                    currentKbps: prog.currentKbps,
+                    timemark: prog.timemark,
+                    percent: prog.percent,
+                });
+            });
+            switch (filter) {
+                case "bassboost":
+                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
+                    break;
+                case "echo":
+                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
+                    break;
+                case "flanger":
+                    ytc.withAudioFilter(["flanger"]);
+                    metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
+                    break;
+                case "nightcore":
+                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
+                    break;
+                case "panning":
+                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                    metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
+                    break;
+                case "phaser":
+                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
+                    break;
+                case "reverse":
+                    ytc.withAudioFilter(["areverse"]);
+                    metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
+                    break;
+                case "slow":
+                    ytc.withAudioFilter(["atempo=0.8"]);
+                    metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
+                    break;
+                case "speed":
+                    ytc.withAudioFilter(["atempo=2"]);
+                    metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
+                    break;
+                case "subboost":
+                    ytc.withAudioFilter(["asubboost"]);
+                    metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
+                    break;
+                case "superslow":
+                    ytc.withAudioFilter(["atempo=0.5"]);
+                    metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
+                    break;
+                case "superspeed":
+                    ytc.withAudioFilter(["atempo=3"]);
+                    metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
+                    break;
+                case "surround":
+                    ytc.withAudioFilter(["surround"]);
+                    metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
+                    break;
+                case "vaporwave":
+                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
+                    break;
+                case "vibrato":
+                    ytc.withAudioFilter(["vibrato=f=6.5"]);
+                    metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
+                    break;
+                default:
+                    ytc.withAudioFilter([]);
+                    metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
+                    break;
+            }
+            switch (true) {
+                case stream:
+                    const readStream = new Readable({
+                        read() { },
                     });
-                    return results;
-                }
+                    const writeStream = new Writable({
+                        write(chunk, _encoding, callback) {
+                            readStream.push(chunk);
+                            callback();
+                        },
+                        final(callback) {
+                            readStream.push(null);
+                            callback();
+                        },
+                    });
+                    ytc.pipe(writeStream, { end: true });
+                    results.push({
+                        stream: readStream,
+                        filename: folderName ? path.join(metaFold, metaName) : metaName,
+                    });
+                    break;
+                default:
+                    await new Promise((resolve, reject) => {
+                        ytc
+                            .output(path.join(metaFold, metaName))
+                            .on("end", () => resolve())
+                            .on("error", reject)
+                            .run();
+                    });
+                    break;
+            }
         }
     }
     catch (error) {
@@ -2622,7 +2865,6 @@ async function ListAudioLowest(input) {
     }
 }
 
-const metaSpin$3 = randomUUID().toString();
 const ListAudioHighestInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2634,182 +2876,178 @@ const ListAudioHighestInputSchema = z$1.object({
 async function ListAudioHighest(input) {
     try {
         const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioHighestInputSchema.parse(input);
-        switch (true) {
-            case playlistUrls.length === 0:
-                return [
-                    {
-                        message: "playlistUrls parameter cannot be empty",
-                        status: 500,
-                    },
-                ];
-            case !Array.isArray(playlistUrls):
-                return [
-                    {
-                        message: "playlistUrls parameter must be an array",
-                        status: 500,
-                    },
-                ];
-            case !playlistUrls.every((url) => typeof url === "string" && url.trim().length > 0):
-                return [
-                    {
-                        message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
-                        status: 500,
-                    },
-                ];
-            default:
-                const videos = await get_playlist({
-                    playlistUrls,
+        let parseList = [];
+        let metaName = "";
+        let results = [];
+        const uniqueVideoIds = new Set();
+        for (const url of playlistUrls) {
+            console.log("playlistUrl:", url);
+            const metaList = await scrape(url);
+            if (metaList === null || !metaList) {
+                return {
+                    message: "Unable to get response from YouTube...",
+                    status: 500,
+                };
+            }
+            const parsedMetaList = await JSON.parse(metaList);
+            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            parseList.push(...uniqueVideos);
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+        }
+        console.log("Total Unique Videos:", parseList.length);
+        for (const i of parseList) {
+            const TubeBody = await scrape(i.videoId);
+            if (TubeBody === null)
+                continue;
+            const parseTube = await JSON.parse(TubeBody);
+            const metaBody = await Engine({
+                query: parseTube.Link,
+            });
+            if (metaBody === null)
+                continue;
+            const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
+            const metaFold = folderName
+                ? path.join(process.cwd(), folderName)
+                : process.cwd();
+            if (!fs.existsSync(metaFold))
+                fs.mkdirSync(metaFold, { recursive: true });
+            const metaEntry = await bigEntry(metaBody.AudioTube);
+            if (metaEntry === null)
+                continue;
+            const ytc = fluentffmpeg();
+            ytc.addInput(metaEntry.meta_dl.mediaurl);
+            ytc.addInput(metaBody.metaTube.thumbnail);
+            ytc.addOutputOption("-map", "1:0");
+            ytc.addOutputOption("-map", "0:a:0");
+            ytc.addOutputOption("-id3v2_version", "3");
+            ytc.format(outputFormat);
+            ytc.on("start", (command) => {
+                if (verbose)
+                    console.log(command);
+                progressBar({
+                    currentKbps: undefined,
+                    timemark: undefined,
+                    percent: undefined,
                 });
-                if (!videos) {
-                    return [
-                        {
-                            message: "Unable to get response from YouTube...",
-                            status: 500,
-                        },
-                    ];
-                }
-                else {
-                    const results = [];
-                    await async.eachSeries(videos, async (video) => {
-                        try {
-                            const metaBody = await Engine({ query: video.url });
-                            if (!metaBody) {
-                                throw new Error("Unable to get response from YouTube...");
-                            }
-                            let metaName = "";
-                            const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
-                            const metaFold = folderName
-                                ? path.join(process.cwd(), folderName)
-                                : process.cwd();
-                            if (!fs.existsSync(metaFold))
-                                fs.mkdirSync(metaFold, { recursive: true });
-                            const metaEntry = await bigEntry(metaBody.AudioTube);
-                            if (metaEntry === null)
-                                return;
-                            const ytc = fluentffmpeg();
-                            ytc.addInput(metaEntry.meta_dl.mediaurl);
-                            ytc.addInput(metaBody.metaTube.thumbnail);
-                            ytc.addOutputOption("-map", "1:0");
-                            ytc.addOutputOption("-map", "0:a:0");
-                            ytc.addOutputOption("-id3v2_version", "3");
-                            ytc.format(outputFormat);
-                            ytc.on("start", (cmd) => {
-                                if (verbose)
-                                    console.log(cmd);
-                                progressBar(0, metaSpin$3);
-                            });
-                            ytc.on("end", () => progressBar(100, metaSpin$3));
-                            ytc.on("close", () => progressBar(100, metaSpin$3));
-                            ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$3));
-                            switch (filter) {
-                                case "bassboost":
-                                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                                    metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
-                                    break;
-                                case "echo":
-                                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                                    metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
-                                    break;
-                                case "flanger":
-                                    ytc.withAudioFilter(["flanger"]);
-                                    metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
-                                    break;
-                                case "nightcore":
-                                    ytc.withAudioFilter([
-                                        "aresample=48000,asetrate=48000*1.25",
-                                    ]);
-                                    metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
-                                    break;
-                                case "panning":
-                                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
-                                    metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
-                                    break;
-                                case "phaser":
-                                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-                                    metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
-                                    break;
-                                case "reverse":
-                                    ytc.withAudioFilter(["areverse"]);
-                                    metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
-                                    break;
-                                case "slow":
-                                    ytc.withAudioFilter(["atempo=0.8"]);
-                                    metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
-                                    break;
-                                case "speed":
-                                    ytc.withAudioFilter(["atempo=2"]);
-                                    metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
-                                    break;
-                                case "subboost":
-                                    ytc.withAudioFilter(["asubboost"]);
-                                    metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
-                                    break;
-                                case "superslow":
-                                    ytc.withAudioFilter(["atempo=0.5"]);
-                                    metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
-                                    break;
-                                case "superspeed":
-                                    ytc.withAudioFilter(["atempo=3"]);
-                                    metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
-                                    break;
-                                case "surround":
-                                    ytc.withAudioFilter(["surround"]);
-                                    metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
-                                    break;
-                                case "vaporwave":
-                                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                                    metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
-                                    break;
-                                case "vibrato":
-                                    ytc.withAudioFilter(["vibrato=f=6.5"]);
-                                    metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
-                                    break;
-                                default:
-                                    ytc.withAudioFilter([]);
-                                    metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
-                                    break;
-                            }
-                            if (stream) {
-                                const readStream = new Readable({
-                                    read() { },
-                                });
-                                const writeStream = new Writable({
-                                    write(chunk, _encoding, callback) {
-                                        readStream.push(chunk);
-                                        callback();
-                                    },
-                                    final(callback) {
-                                        readStream.push(null);
-                                        callback();
-                                    },
-                                });
-                                ytc.pipe(writeStream, { end: true });
-                                results.push({
-                                    stream: readStream,
-                                    filename: folderName
-                                        ? path.join(metaFold, metaName)
-                                        : metaName,
-                                });
-                            }
-                            else {
-                                await new Promise((resolve, reject) => {
-                                    ytc
-                                        .output(path.join(metaFold, metaName))
-                                        .on("end", () => resolve())
-                                        .on("error", reject)
-                                        .run();
-                                });
-                            }
-                        }
-                        catch (error) {
-                            results.push({
-                                status: 500,
-                                message: colors.bold.red("ERROR: ") + video.title,
-                            });
-                        }
+            });
+            ytc.on("end", () => {
+                progressBar({
+                    currentKbps: undefined,
+                    timemark: undefined,
+                    percent: undefined,
+                });
+            });
+            ytc.on("close", () => {
+                progressBar({
+                    currentKbps: undefined,
+                    timemark: undefined,
+                    percent: undefined,
+                });
+            });
+            ytc.on("progress", (prog) => {
+                progressBar({
+                    currentKbps: prog.currentKbps,
+                    timemark: prog.timemark,
+                    percent: prog.percent,
+                });
+            });
+            switch (filter) {
+                case "bassboost":
+                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    metaName = `yt-core-(AudioHighest_bassboost)-${title}.${outputFormat}`;
+                    break;
+                case "echo":
+                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    metaName = `yt-core-(AudioHighest_echo)-${title}.${outputFormat}`;
+                    break;
+                case "flanger":
+                    ytc.withAudioFilter(["flanger"]);
+                    metaName = `yt-core-(AudioHighest_flanger)-${title}.${outputFormat}`;
+                    break;
+                case "nightcore":
+                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    metaName = `yt-core-(AudioHighest_nightcore)-${title}.${outputFormat}`;
+                    break;
+                case "panning":
+                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                    metaName = `yt-core-(AudioHighest_panning)-${title}.${outputFormat}`;
+                    break;
+                case "phaser":
+                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    metaName = `yt-core-(AudioHighest_phaser)-${title}.${outputFormat}`;
+                    break;
+                case "reverse":
+                    ytc.withAudioFilter(["areverse"]);
+                    metaName = `yt-core-(AudioHighest_reverse)-${title}.${outputFormat}`;
+                    break;
+                case "slow":
+                    ytc.withAudioFilter(["atempo=0.8"]);
+                    metaName = `yt-core-(AudioHighest_slow)-${title}.${outputFormat}`;
+                    break;
+                case "speed":
+                    ytc.withAudioFilter(["atempo=2"]);
+                    metaName = `yt-core-(AudioHighest_speed)-${title}.${outputFormat}`;
+                    break;
+                case "subboost":
+                    ytc.withAudioFilter(["asubboost"]);
+                    metaName = `yt-core-(AudioHighest_subboost)-${title}.${outputFormat}`;
+                    break;
+                case "superslow":
+                    ytc.withAudioFilter(["atempo=0.5"]);
+                    metaName = `yt-core-(AudioHighest_superslow)-${title}.${outputFormat}`;
+                    break;
+                case "superspeed":
+                    ytc.withAudioFilter(["atempo=3"]);
+                    metaName = `yt-core-(AudioHighest_superspeed)-${title}.${outputFormat}`;
+                    break;
+                case "surround":
+                    ytc.withAudioFilter(["surround"]);
+                    metaName = `yt-core-(AudioHighest_surround)-${title}.${outputFormat}`;
+                    break;
+                case "vaporwave":
+                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    metaName = `yt-core-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
+                    break;
+                case "vibrato":
+                    ytc.withAudioFilter(["vibrato=f=6.5"]);
+                    metaName = `yt-core-(AudioHighest_vibrato)-${title}.${outputFormat}`;
+                    break;
+                default:
+                    ytc.withAudioFilter([]);
+                    metaName = `yt-core-(AudioHighest)-${title}.${outputFormat}`;
+                    break;
+            }
+            switch (true) {
+                case stream:
+                    const readStream = new Readable({
+                        read() { },
                     });
-                    return results;
-                }
+                    const writeStream = new Writable({
+                        write(chunk, _encoding, callback) {
+                            readStream.push(chunk);
+                            callback();
+                        },
+                        final(callback) {
+                            readStream.push(null);
+                            callback();
+                        },
+                    });
+                    ytc.pipe(writeStream, { end: true });
+                    results.push({
+                        stream: readStream,
+                        filename: folderName ? path.join(metaFold, metaName) : metaName,
+                    });
+                    break;
+                default:
+                    await new Promise((resolve, reject) => {
+                        ytc
+                            .output(path.join(metaFold, metaName))
+                            .on("end", () => resolve())
+                            .on("error", reject)
+                            .run();
+                    });
+                    break;
+            }
         }
     }
     catch (error) {
@@ -2841,7 +3079,6 @@ async function ListAudioHighest(input) {
     }
 }
 
-const metaSpin$2 = randomUUID().toString();
 const ListAudioQualityCustomInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2926,14 +3163,36 @@ async function ListAudioQualityCustom(input) {
                                     ytc.addOutputOption("-map", "0:a:0");
                                     ytc.addOutputOption("-id3v2_version", "3");
                                     ytc.format(outputFormat);
-                                    ytc.on("start", (cmd) => {
+                                    ytc.on("start", (command) => {
                                         if (verbose)
-                                            console.log(cmd);
-                                        progressBar(0, metaSpin$2);
+                                            console.log(command);
+                                        progressBar({
+                                            currentKbps: undefined,
+                                            timemark: undefined,
+                                            percent: undefined,
+                                        });
                                     });
-                                    ytc.on("end", () => progressBar(100, metaSpin$2));
-                                    ytc.on("close", () => progressBar(100, metaSpin$2));
-                                    ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$2));
+                                    ytc.on("end", () => {
+                                        progressBar({
+                                            currentKbps: undefined,
+                                            timemark: undefined,
+                                            percent: undefined,
+                                        });
+                                    });
+                                    ytc.on("close", () => {
+                                        progressBar({
+                                            currentKbps: undefined,
+                                            timemark: undefined,
+                                            percent: undefined,
+                                        });
+                                    });
+                                    ytc.on("progress", (prog) => {
+                                        progressBar({
+                                            currentKbps: prog.currentKbps,
+                                            timemark: prog.timemark,
+                                            percent: prog.percent,
+                                        });
+                                    });
                                     switch (filter) {
                                         case "bassboost":
                                             ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -3078,7 +3337,6 @@ async function ListAudioQualityCustom(input) {
     }
 }
 
-const metaSpin$1 = randomUUID().toString();
 const ListAudioVideoLowestInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -3146,14 +3404,36 @@ async function ListAudioVideoLowest(input) {
                             ytc.addInput(VmetaEntry.meta_dl.mediaurl);
                             ytc.addInput(AmetaEntry.meta_dl.mediaurl);
                             ytc.format(outputFormat);
-                            ytc.on("start", (cmd) => {
+                            ytc.on("start", (command) => {
                                 if (verbose)
-                                    console.log(cmd);
-                                progressBar(0, metaSpin$1);
+                                    console.log(command);
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
                             });
-                            ytc.on("end", () => progressBar(100, metaSpin$1));
-                            ytc.on("close", () => progressBar(100, metaSpin$1));
-                            ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin$1));
+                            ytc.on("end", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("close", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("progress", (prog) => {
+                                progressBar({
+                                    currentKbps: prog.currentKbps,
+                                    timemark: prog.timemark,
+                                    percent: prog.percent,
+                                });
+                            });
                             if (stream) {
                                 const readStream = new Readable({
                                     read() { },
@@ -3226,7 +3506,6 @@ async function ListAudioVideoLowest(input) {
     }
 }
 
-const metaSpin = randomUUID().toString();
 const ListAudioVideoHighestInputSchema = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -3294,14 +3573,36 @@ async function ListAudioVideoHighest(input) {
                             ytc.addInput(VmetaEntry.meta_dl.mediaurl);
                             ytc.addInput(AmetaEntry.meta_dl.mediaurl);
                             ytc.format(outputFormat);
-                            ytc.on("start", (cmd) => {
+                            ytc.on("start", (command) => {
                                 if (verbose)
-                                    console.log(cmd);
-                                progressBar(0, metaSpin);
+                                    console.log(command);
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
                             });
-                            ytc.on("end", () => progressBar(100, metaSpin));
-                            ytc.on("close", () => progressBar(100, metaSpin));
-                            ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
+                            ytc.on("end", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("close", () => {
+                                progressBar({
+                                    currentKbps: undefined,
+                                    timemark: undefined,
+                                    percent: undefined,
+                                });
+                            });
+                            ytc.on("progress", (prog) => {
+                                progressBar({
+                                    currentKbps: prog.currentKbps,
+                                    timemark: prog.timemark,
+                                    percent: prog.percent,
+                                });
+                            });
                             if (stream) {
                                 const readStream = new Readable({
                                     read() { },

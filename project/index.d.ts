@@ -498,7 +498,7 @@ interface ListAudioLowestOC {
     filter?: keyof AudioFilters;
 }
 type ListAudioLowestType = SuccessResult | ErrorResult | StreamResult;
-declare function ListAudioLowest(input: ListAudioLowestOC): Promise<ListAudioLowestType[]>;
+declare function ListAudioLowest(input: ListAudioLowestOC): Promise<ListAudioLowestType[] | any>;
 
 type AudioFormat$1 = "mp3" | "ogg" | "flac" | "aiff";
 interface ListAudioHighestOC {
@@ -510,7 +510,7 @@ interface ListAudioHighestOC {
     filter?: keyof AudioFilters;
 }
 type ListAudioHighestType = SuccessResult | ErrorResult | StreamResult;
-declare function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[]>;
+declare function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[] | any>;
 
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioQualities = "high" | "medium" | "low" | "ultralow";

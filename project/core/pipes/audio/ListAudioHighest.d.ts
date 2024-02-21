@@ -12,6 +12,6 @@ interface ListAudioHighestOC {
     filter?: keyof AudioFilters;
 }
 type ListAudioHighestType = SuccessResult | ErrorResult | StreamResult;
-export default function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[]>;
+export default function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioHighest.d.ts.map

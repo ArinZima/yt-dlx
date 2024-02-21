@@ -1,4 +1,4 @@
 export default function Engine({ query, }: {
     query: string;
-}): Promise<any>;
+}): Promise<any | null>;
 //# sourceMappingURL=agent.d.ts.map
