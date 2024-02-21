@@ -2,7 +2,7 @@ import { promisify } from "util";
 import { exec } from "child_process";
 
 async function exAsync({ query, retries }) {
-  const url = "'" + decodeURIComponent(query) + "'";
+  const url = "'" + query + "'";
   for (let i = 0; i < retries; i++) {
     try {
       const proLoc = "python -m yt_dlp --dump-json " + url;
