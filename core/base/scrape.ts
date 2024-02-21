@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async function scrape(query: string): Promise<string | null> {
   try {
-    const host = "https://ill-blue-bass-wear.cyclic.app/scrape";
+    const host = "http://localhost:3000/scrape";
     const response = await axios.get(
       host + "?query=" + encodeURIComponent(query)
     );
