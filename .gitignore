@@ -1,6 +1,6 @@
 temp
 .venv
+server
 **/*.env
 .env*.local
 node_modules
-yt-core-engine
