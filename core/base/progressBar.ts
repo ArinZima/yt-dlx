@@ -10,6 +10,7 @@ interface ProgressData {
 const progressBar = (prog: ProgressData) => {
   if (isNaN(prog.currentKbps)) return;
   if (prog.percent === undefined) return;
+  if (prog.timemark === undefined) return;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round((width * prog.percent) / 100);
