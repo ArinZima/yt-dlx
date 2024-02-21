@@ -2,15 +2,10 @@ import colors from "colors";
 import readline from "readline";
 import fluentffmpeg from "fluent-ffmpeg";
 
-interface ProgressData {
-  currentKbps: number;
-  timemark: string;
-  percent: number;
-}
-
-const progressBar = (prog: ProgressData) => {
+const progressBar = (prog) => {
   if (isNaN(prog.currentKbps)) return;
   if (prog.percent === undefined) return;
+  if (prog.timemark === undefined) return;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round((width * prog.percent) / 100);
@@ -41,15 +36,27 @@ media.addInput(
   )
 );
 media.format("mp3");
-media.on("start", () =>
-  progressBar({ currentKbps: 0, timemark: "", percent: 0 })
-);
-media.on("end", () =>
-  progressBar({ currentKbps: 0, timemark: "", percent: 100 })
-);
-media.on("close", () =>
-  progressBar({ currentKbps: 0, timemark: "", percent: 100 })
-);
+media.on("start", () => {
+  progressBar({
+    currentKbps: undefined,
+    timemark: undefined,
+    percent: undefined,
+  });
+});
+media.on("end", () => {
+  progressBar({
+    currentKbps: undefined,
+    timemark: undefined,
+    percent: undefined,
+  });
+});
+media.on("close", () => {
+  progressBar({
+    currentKbps: undefined,
+    timemark: undefined,
+    percent: undefined,
+  });
+});
 media.on("progress", (prog) => {
   progressBar({
     currentKbps: prog.currentKbps,
