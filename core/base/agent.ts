@@ -91,11 +91,7 @@ export default async function Engine({
     default:
       console.log(
         colors.bold.green("INFO:"),
-        "❣️ Thank you for using yt-core! If you enjoy the project, consider"
-      );
-      console.log(
-        colors.bold.green("INFO:"),
-        "starring the GitHub repo: https://github.com/shovitdutta/mixly/yt-core"
+        "❣️ Thank you for using yt-core! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-core"
       );
       return JSON.parse(TubeCore);
   }

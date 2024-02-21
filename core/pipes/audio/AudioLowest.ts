@@ -63,7 +63,13 @@ export default async function AudioLowest(
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = lowEntry(metaBody.AudioTube);
+    const metaEntry = await lowEntry(metaBody.AudioTube);
+    if (metaEntry === null) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500,
+      };
+    }
     const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.addInput(metaBody.metaTube.thumbnail);

@@ -1,11 +1,28 @@
-export default function lowEntry(metaBody: any[]) {
+import axios from "axios";
+import type TubeConfig from "../interface/TubeConfig";
+
+async function checkUrl(url: string): Promise<boolean> {
+  try {
+    const response = await axios.head(url);
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
+}
+
+export default async function lowEntry(
+  metaBody: TubeConfig[]
+): Promise<TubeConfig | null> {
   if (!metaBody || metaBody.length === 0) return null;
-  return metaBody.reduce(
-    (
-      prev: { meta_info: { filesizebytes: number } },
-      curr: { meta_info: { filesizebytes: number } }
-    ) =>
-      prev.meta_info.filesizebytes < curr.meta_info.filesizebytes ? prev : curr,
-    metaBody[0]
+
+  const sortedByFileSize = [...metaBody].sort(
+    (a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes
   );
+
+  for (const item of sortedByFileSize) {
+    const { mediaurl } = item.meta_dl;
+    if (mediaurl && (await checkUrl(mediaurl))) return item;
+  }
+
+  return null;
 }

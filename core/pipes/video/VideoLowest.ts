@@ -63,7 +63,13 @@ export default async function VideoLowest(
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
 
-    const metaEntry = lowEntry(metaBody.VideoTube);
+    const metaEntry = await lowEntry(metaBody.VideoTube);
+    if (metaEntry === null) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500,
+      };
+    }
     const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);

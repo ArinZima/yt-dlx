@@ -4,7 +4,7 @@ import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
-import lowEntry from "../../base/lowEntry";
+import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type ErrorResult from "../../interface/ErrorResult";
@@ -63,7 +63,13 @@ export default async function VideoLowest(
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
 
-    const metaEntry = lowEntry(metaBody.VideoTube);
+    const metaEntry = await bigEntry(metaBody.VideoTube);
+    if (metaEntry === null) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500,
+      };
+    }
     const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);

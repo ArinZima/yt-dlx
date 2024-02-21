@@ -75,7 +75,13 @@ export default async function AudioQualityCustom(
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
-    const metaEntry = bigEntry(metaBody);
+    const metaEntry = await bigEntry(metaBody);
+    if (metaEntry === null) {
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500,
+      };
+    }
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.addInput(metaResp.metaTube.thumbnail);
     ytc.addOutputOption("-map", "1:0");
