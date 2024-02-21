@@ -524,7 +524,7 @@ interface ListAudioQualityCustomOC {
     filter?: keyof AudioFilters;
 }
 type ListAudioQualityCustomType = SuccessResult | ErrorResult | StreamResult;
-declare function ListAudioQualityCustom(input: ListAudioQualityCustomOC): Promise<ListAudioQualityCustomType[]>;
+declare function ListAudioQualityCustom(input: ListAudioQualityCustomOC): Promise<ListAudioQualityCustomType[] | any>;
 
 type VideoFormat$1 = "mp4" | "avi" | "mov";
 interface ListAudioVideoLowestOC {
