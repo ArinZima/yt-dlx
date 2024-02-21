@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
@@ -22,35 +23,29 @@ interface VideoLowestOC {
   outputFormat?: VideoFormat;
 }
 type VideoLowestType = Promise<SuccessResult | ErrorResult | StreamResult>;
-export default async function VideoLowest({
-  query,
-  filter,
-  stream,
-  verbose,
-  folderName,
-  outputFormat = "mp4",
-}: VideoLowestOC): VideoLowestType {
+
+const VideoLowestInputSchema = z.object({
+  query: z.string(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  filter: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+});
+
+export default async function VideoLowest(
+  input: VideoLowestOC
+): VideoLowestType {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500,
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500,
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500,
-        };
-      default:
-        query = query;
-        break;
-    }
+    const {
+      query,
+      filter,
+      stream,
+      verbose,
+      folderName,
+      outputFormat = "mp4",
+    } = VideoLowestInputSchema.parse(input);
+
     const metaBody = await ytCore({ query });
     if (!metaBody) {
       return {
@@ -134,7 +129,6 @@ export default async function VideoLowest({
           stream: readStream,
           filename: folderName ? path.join(metaFold, metaName) : metaName,
         };
-
       default:
         await new Promise<void>((resolve, reject) => {
           ytc
@@ -145,24 +139,27 @@ export default async function VideoLowest({
             })
             .run();
         });
-
         return {
           message: "process ended...",
           status: 200,
         };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500,
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500,
-        };
+    if (error instanceof ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500,
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500,
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500,
+      };
     }
   }
 }

@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
@@ -22,35 +23,29 @@ interface VideoHighestOC {
   filter?: keyof VideoFilters;
 }
 type VideoHighestType = Promise<SuccessResult | ErrorResult | StreamResult>;
-export default async function VideoHighest({
-  query,
-  filter,
-  stream,
-  verbose,
-  folderName,
-  outputFormat = "mp4",
-}: VideoHighestOC): VideoHighestType {
+
+const VideoHighestInputSchema = z.object({
+  query: z.string(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z.string().optional(),
+});
+
+export default async function VideoHighest(
+  input: VideoHighestOC
+): VideoHighestType {
   try {
-    switch (true) {
-      case !query:
-        return {
-          message: "Query parameter is missing",
-          status: 500,
-        };
-      case typeof query !== "string":
-        return {
-          message: "Query parameter must be a string",
-          status: 500,
-        };
-      case query.trim().length === 0:
-        return {
-          message: "Query parameter cannot be empty",
-          status: 500,
-        };
-      default:
-        query = query;
-        break;
-    }
+    const {
+      query,
+      stream,
+      verbose,
+      folderName,
+      outputFormat = "mp4",
+      filter,
+    } = VideoHighestInputSchema.parse(input);
+
     const metaBody = await ytCore({ query });
     if (!metaBody) {
       return {
@@ -58,11 +53,11 @@ export default async function VideoHighest({
         status: 500,
       };
     }
-    let metaName: string = "";
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
+    let metaName: string = "";
     const metaFold = folderName
       ? path.join(process.cwd(), folderName)
       : process.cwd();
@@ -152,17 +147,21 @@ export default async function VideoHighest({
         };
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500,
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500,
-        };
+    if (error instanceof ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500,
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500,
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500,
+      };
     }
   }
 }

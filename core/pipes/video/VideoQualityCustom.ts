@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
-import Engine from "../../base/agent";
+import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
-import bigEntry from "../../base/bigEntry";
+import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type ErrorResult from "../../interface/ErrorResult";
@@ -13,131 +14,103 @@ import type SuccessResult from "../../interface/SuccessResult";
 
 const metaSpin = randomUUID().toString();
 type VideoFormat = "mp4" | "avi" | "mov";
-type VideoQualities =
-  | "144p"
-  | "240p"
-  | "360p"
-  | "480p"
-  | "720p"
-  | "1080p"
-  | "1440p"
-  | "2160p"
-  | "2880p"
-  | "4320p"
-  | "5760p"
-  | "8640p"
-  | "12000p";
-interface VideoQualityCustomOC {
+interface VideoLowestOC {
   query: string;
   stream?: boolean;
+  verbose?: boolean;
   folderName?: string;
-  quality: VideoQualities;
-  outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
+  outputFormat?: VideoFormat;
 }
-type VideoQualityCustomType = Promise<
-  SuccessResult | ErrorResult | StreamResult
->;
-export default async function VideoQualityCustom({
-  query,
-  filter,
-  quality,
-  stream,
-  folderName,
-  outputFormat = "mp4",
-}: VideoQualityCustomOC): VideoQualityCustomType {
+type VideoLowestType = Promise<SuccessResult | ErrorResult | StreamResult>;
+
+const VideoLowestInputSchema = z.object({
+  query: z.string(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  filter: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+});
+
+export default async function VideoLowest(
+  input: VideoLowestOC
+): VideoLowestType {
   try {
-    switch (true) {
-      case !query || typeof query !== "string" || !query.trim():
-        return {
-          message: "Query parameter is invalid or missing",
-          status: 500,
-        };
-      case !quality || typeof quality !== "string" || !quality.trim():
-        return {
-          message: "Quality parameter is invalid or missing",
-          status: 500,
-        };
-      default:
-        quality = quality;
-        query = query;
-        break;
-    }
-    const EnResp = await Engine({ query });
-    if (!EnResp) {
-      return {
-        message: "The specified quality was not found...",
-        status: 500,
-      };
-    }
-    const YSBody = EnResp.VideoTube.filter(
-      (op: { meta_dl: { formatnote: string } }) =>
-        op.meta_dl.formatnote === quality
-    );
-    if (!YSBody) {
+    const {
+      query,
+      filter,
+      stream,
+      verbose,
+      folderName,
+      outputFormat = "mp4",
+    } = VideoLowestInputSchema.parse(input);
+
+    const metaBody = await ytCore({ query });
+    if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
         status: 500,
       };
-    } else {
-      let ipop: string = "";
-      const title: string = EnResp.metaTube.title.replace(
-        /[^a-zA-Z0-9_]+/g,
-        "-"
-      );
-      const opfol = folderName
-        ? path.join(process.cwd(), folderName)
-        : process.cwd();
-      if (!fs.existsSync(opfol)) fs.mkdirSync(opfol, { recursive: true });
-      const ytc = fluentffmpeg();
-      const metaEntry = bigEntry(YSBody);
-      ytc.addInput(metaEntry.meta_dl.mediaurl);
-      ytc.format(outputFormat);
-      switch (filter) {
-        case "grayscale":
-          ytc.withVideoFilter([
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3",
-          ]);
-          ipop = `yt-core_(VideoQualityCustom-grayscale)_${title}.${outputFormat}`;
-          break;
-        case "invert":
-          ytc.withVideoFilter(["negate"]);
-          ipop = `yt-core_(VideoQualityCustom-invert)_${title}.${outputFormat}`;
-          break;
-        case "rotate90":
-          ytc.withVideoFilter(["rotate=PI/2"]);
-          ipop = `yt-core_(VideoQualityCustom-rotate90)_${title}.${outputFormat}`;
-          break;
-        case "rotate180":
-          ytc.withVideoFilter(["rotate=PI"]);
-          ipop = `yt-core_(VideoQualityCustom-rotate180)_${title}.${outputFormat}`;
-          break;
-        case "rotate270":
-          ytc.withVideoFilter(["rotate=3*PI/2"]);
-          ipop = `yt-core_(VideoQualityCustom-rotate270)_${title}.${outputFormat}`;
-          break;
-        case "flipHorizontal":
-          ytc.withVideoFilter(["hflip"]);
-          ipop = `yt-core_(VideoQualityCustom-flipHorizontal)_${title}.${outputFormat}`;
-          break;
-        case "flipVertical":
-          ytc.withVideoFilter(["vflip"]);
-          ipop = `yt-core_(VideoQualityCustom-flipVertical)_${title}.${outputFormat}`;
-          break;
-        default:
-          ytc.withVideoFilter([]);
-          ipop = `yt-core_(VideoQualityCustom)_${title}.${outputFormat}`;
-      }
-      ytc.on("start", () => {
-        progressBar(0, metaSpin);
-      });
-      ytc.on("end", () => progressBar(100, metaSpin));
-      ytc.on("close", () => progressBar(100, metaSpin));
-      ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
-      ytc.on("error", (error) => {
-        return error;
-      });
-      if (stream) {
+    }
+    let metaName: string = "";
+    const title: string = metaBody.metaTube.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "-"
+    );
+    const metaFold = folderName
+      ? path.join(process.cwd(), folderName)
+      : process.cwd();
+    if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
+
+    const metaEntry = lowEntry(metaBody.VideoTube);
+    const ytc = fluentffmpeg();
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
+    ytc.format(outputFormat);
+    switch (filter) {
+      case "grayscale":
+        ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        metaName = `yt-core_(VideoLowest-grayscale)_${title}.${outputFormat}`;
+        break;
+      case "invert":
+        ytc.withVideoFilter("negate");
+        metaName = `yt-core_(VideoLowest-invert)_${title}.${outputFormat}`;
+        break;
+      case "rotate90":
+        ytc.withVideoFilter("rotate=PI/2");
+        metaName = `yt-core_(VideoLowest-rotate90)_${title}.${outputFormat}`;
+        break;
+      case "rotate180":
+        ytc.withVideoFilter("rotate=PI");
+        metaName = `yt-core_(VideoLowest-rotate180)_${title}.${outputFormat}`;
+        break;
+      case "rotate270":
+        ytc.withVideoFilter("rotate=3*PI/2");
+        metaName = `yt-core_(VideoLowest-rotate270)_${title}.${outputFormat}`;
+        break;
+      case "flipHorizontal":
+        ytc.withVideoFilter("hflip");
+        metaName = `yt-core_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
+        break;
+      case "flipVertical":
+        ytc.withVideoFilter("vflip");
+        metaName = `yt-core_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
+        break;
+      default:
+        metaName = `yt-core_(VideoLowest)_${title}.${outputFormat}`;
+    }
+    ytc.on("start", (cmd) => {
+      if (verbose) console.log(cmd);
+      progressBar(0, metaSpin);
+    });
+    ytc.on("end", () => progressBar(100, metaSpin));
+    ytc.on("close", () => progressBar(100, metaSpin));
+    ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
+    ytc.on("error", (error) => {
+      return error;
+    });
+    switch (stream) {
+      case true:
         const readStream = new Readable({
           read() {},
         });
@@ -154,12 +127,12 @@ export default async function VideoQualityCustom({
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path.join(opfol, ipop) : ipop,
+          filename: folderName ? path.join(metaFold, metaName) : metaName,
         };
-      } else {
+      default:
         await new Promise<void>((resolve, reject) => {
           ytc
-            .output(path.join(opfol, ipop))
+            .output(path.join(metaFold, metaName))
             .on("error", reject)
             .on("end", () => {
               resolve();
@@ -170,20 +143,23 @@ export default async function VideoQualityCustom({
           message: "process ended...",
           status: 200,
         };
-      }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500,
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500,
-        };
+    if (error instanceof ZodError) {
+      return {
+        message: error.errors.map((err) => err.message).join(", "),
+        status: 500,
+      };
+    } else if (error instanceof Error) {
+      return {
+        message: error.message,
+        status: 500,
+      };
+    } else {
+      return {
+        message: "Internal server error",
+        status: 500,
+      };
     }
   }
 }
