@@ -12,6 +12,6 @@ interface ListVideoLowestOC {
     filter?: keyof VideoFilters;
 }
 type ListVideoLowestType = SuccessResult | ErrorResult | StreamResult;
-export default function ListVideoLowest(input: ListVideoLowestOC): Promise<ListVideoLowestType[]>;
+export default function ListVideoLowest(input: ListVideoLowestOC): Promise<ListVideoLowestType[] | any>;
 export {};
 //# sourceMappingURL=ListVideoLowest.d.ts.map

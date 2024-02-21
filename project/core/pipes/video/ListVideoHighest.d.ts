@@ -12,6 +12,6 @@ interface ListVideoHighestOC {
     filter?: keyof VideoFilters;
 }
 type ListVideoHighestType = SuccessResult | ErrorResult | StreamResult;
-export default function ListVideoHighest(input: ListVideoHighestOC): Promise<ListVideoHighestType[]>;
+export default function ListVideoHighest(input: ListVideoHighestOC): Promise<ListVideoHighestType[] | any>;
 export {};
 //# sourceMappingURL=ListVideoHighest.d.ts.map

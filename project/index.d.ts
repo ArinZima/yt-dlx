@@ -460,7 +460,7 @@ interface ListVideoLowestOC {
     filter?: keyof VideoFilters;
 }
 type ListVideoLowestType = SuccessResult | ErrorResult | StreamResult;
-declare function ListVideoLowest(input: ListVideoLowestOC): Promise<ListVideoLowestType[]>;
+declare function ListVideoLowest(input: ListVideoLowestOC): Promise<ListVideoLowestType[] | any>;
 
 type VideoFormat$3 = "mp4" | "avi" | "mov";
 interface ListVideoHighestOC {
@@ -472,7 +472,7 @@ interface ListVideoHighestOC {
     filter?: keyof VideoFilters;
 }
 type ListVideoHighestType = SuccessResult | ErrorResult | StreamResult;
-declare function ListVideoHighest(input: ListVideoHighestOC): Promise<ListVideoHighestType[]>;
+declare function ListVideoHighest(input: ListVideoHighestOC): Promise<ListVideoHighestType[] | any>;
 
 type VideoFormat$2 = "mp4" | "avi" | "mov";
 type VideoQualities = "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
@@ -486,7 +486,7 @@ interface ListVideoQualityCustomOC {
     filter?: keyof VideoFilters;
 }
 type ListVideoQualityCustomType = SuccessResult | ErrorResult | StreamResult;
-declare function ListVideoQualityCustom(input: ListVideoQualityCustomOC): Promise<ListVideoQualityCustomType[]>;
+declare function ListVideoQualityCustom(input: ListVideoQualityCustomOC): Promise<ListVideoQualityCustomType[] | any>;
 
 type AudioFormat$2 = "mp3" | "ogg" | "flac" | "aiff";
 interface ListAudioLowestOC {
