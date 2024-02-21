@@ -9,6 +9,8 @@ RUN apt-get install -y nodejs
 RUN git clone https://github.com/shovitdutta/yt-core.git
 WORKDIR /yt-core
 RUN yarn global add playwright
+RUN playwright install
+RUN playwright install-deps
 RUN yarn rebuild
 # WORKDIR /yt-core/frontend
 # COPY setup.sh .
