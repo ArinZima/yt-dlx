@@ -31,11 +31,25 @@ export default async function VideoLowest({
   outputFormat = "mp4",
 }: VideoLowestOC): VideoLowestType {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500,
-      };
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500,
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500,
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500,
+        };
+      default:
+        query = query;
+        break;
     }
     const metaBody = await ytCore({ query });
     if (!metaBody) {

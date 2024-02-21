@@ -27,8 +27,8 @@ import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 const ytCore = {
   info: {
     help,
-    extract,
     search,
+    extract,
     list_formats,
     get_playlist,
     get_video_data,

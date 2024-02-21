@@ -28,79 +28,92 @@ export default async function AudioVideoHighest({
   outputFormat = "mp4",
 }: AudioVideoHighestOC): AudioVideoHighest {
   try {
-    if (!query || typeof query !== "string") {
-      return {
-        message: "Invalid query parameter",
-        status: 500,
-      };
-    }
-    const metaBody = await ytCore({ query });
-    if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
-    }
-    const title: string = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    let metaName: string = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
-    const metaFold = folderName
-      ? path.join(process.cwd(), folderName)
-      : process.cwd();
-    if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg();
-    ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
-    ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
-    ytc.format(outputFormat);
-    ytc.on("start", (cmd) => {
-      if (verbose) console.log(cmd);
-      progressBar(0, metaSpin);
-    });
-    ytc.on("end", () => progressBar(100, metaSpin));
-    ytc.on("close", () => progressBar(100, metaSpin));
-    ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
-    ytc.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      const readStream = new Readable({
-        read() {},
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(null);
-          callback();
-        },
-      });
-      ytc.pipe(writeStream, { end: true });
-      return {
-        stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName,
-      };
-    } else {
-      await new Promise<void>((resolve, reject) => {
-        ytc
-          .output(path.join(metaFold, metaName))
-          .on("error", reject)
-          .on("end", () => {
-            resolve();
-            return {
-              status: 200,
-              message: "process ended...",
-            };
-          })
-          .run();
-      });
-      return {
-        status: 200,
-        message: "process ended...",
-      };
+    switch (true) {
+      case !query:
+        return {
+          message: "Query parameter is missing",
+          status: 500,
+        };
+      case typeof query !== "string":
+        return {
+          message: "Query parameter must be a string",
+          status: 500,
+        };
+      case query.trim().length === 0:
+        return {
+          message: "Query parameter cannot be empty",
+          status: 500,
+        };
+      default:
+        const metaBody = await ytCore({ query });
+        if (!metaBody) {
+          return {
+            message: "Unable to get response from YouTube...",
+            status: 500,
+          };
+        }
+        const title: string = metaBody.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "-"
+        );
+        let metaName: string = `yt-core_(AudioVideoHighest)_${title}.${outputFormat}`;
+        const metaFold = folderName
+          ? path.join(process.cwd(), folderName)
+          : process.cwd();
+        if (!fs.existsSync(metaFold))
+          fs.mkdirSync(metaFold, { recursive: true });
+        const ytc = fluentffmpeg();
+        ytc.addInput(bigEntry(metaBody.VideoTube).meta_dl.mediaurl);
+        ytc.addInput(bigEntry(metaBody.AudioTube).meta_dl.mediaurl);
+        ytc.format(outputFormat);
+        ytc.on("start", (cmd) => {
+          if (verbose) console.log(cmd);
+          progressBar(0, metaSpin);
+        });
+        ytc.on("end", () => progressBar(100, metaSpin));
+        ytc.on("close", () => progressBar(100, metaSpin));
+        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
+        ytc.on("error", (error) => {
+          return error;
+        });
+        if (stream) {
+          const readStream = new Readable({
+            read() {},
+          });
+          const writeStream = new Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
+            },
+          });
+          ytc.pipe(writeStream, { end: true });
+          return {
+            stream: readStream,
+            filename: folderName ? path.join(metaFold, metaName) : metaName,
+          };
+        } else {
+          await new Promise<void>((resolve, reject) => {
+            ytc
+              .output(path.join(metaFold, metaName))
+              .on("error", reject)
+              .on("end", () => {
+                resolve();
+                return {
+                  status: 200,
+                  message: "process ended...",
+                };
+              })
+              .run();
+          });
+          return {
+            status: 200,
+            message: "process ended...",
+          };
+        }
     }
   } catch (error) {
     switch (true) {

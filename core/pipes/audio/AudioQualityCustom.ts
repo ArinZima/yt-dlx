@@ -34,146 +34,155 @@ export default async function AudioQualityCustom({
   outputFormat = "mp3",
 }: AudioQualityCustomOC): AudioQualityCustomType {
   try {
-    if (
-      !query ||
-      typeof query !== "string" ||
-      !quality ||
-      typeof quality !== "string"
-    ) {
-      return {
-        message: "Invalid query or quality parameter",
-        status: 500,
-      };
-    }
-    const metaResp = await ytCore({ query });
-    if (!metaResp) {
-      return {
-        message: "The specified quality was not found...",
-        status: 500,
-      };
-    }
-    const metaBody = metaResp.AudioTube.filter(
-      (op: { meta_dl: { formatnote: string } }) =>
-        op.meta_dl.formatnote === quality
-    );
-    if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
-    }
-    const title: string = metaResp.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName
-      ? path.join(process.cwd(), folderName)
-      : process.cwd();
-    if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg();
-    const metaEntry = bigEntry(metaBody);
-    ytc.addInput(metaEntry.meta_dl.mediaurl);
-    ytc.addInput(metaResp.metaTube.thumbnail);
-    ytc.addOutputOption("-map", "1:0");
-    ytc.addOutputOption("-map", "0:a:0");
-    ytc.addOutputOption("-id3v2_version", "3");
-    ytc.withAudioBitrate(metaEntry.meta_audio.bitrate);
-    ytc.withAudioChannels(metaEntry.meta_audio.channels);
-    ytc.format(outputFormat);
-    switch (filter) {
-      case "bassboost":
-        ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        break;
-      case "echo":
-        ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        break;
-      case "flanger":
-        ytc.withAudioFilter(["flanger"]);
-        break;
-      case "nightcore":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        break;
-      case "panning":
-        ytc.withAudioFilter(["apulsator=hz=0.08"]);
-        break;
-      case "phaser":
-        ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-        break;
-      case "reverse":
-        ytc.withAudioFilter(["areverse"]);
-        break;
-      case "slow":
-        ytc.withAudioFilter(["atempo=0.8"]);
-        break;
-      case "speed":
-        ytc.withAudioFilter(["atempo=2"]);
-        break;
-      case "subboost":
-        ytc.withAudioFilter(["asubboost"]);
-        break;
-      case "superslow":
-        ytc.withAudioFilter(["atempo=0.5"]);
-        break;
-      case "superspeed":
-        ytc.withAudioFilter(["atempo=3"]);
-        break;
-      case "surround":
-        ytc.withAudioFilter(["surround"]);
-        break;
-      case "vaporwave":
-        ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        break;
-      case "vibrato":
-        ytc.withAudioFilter(["vibrato=f=6.5"]);
-        break;
+    switch (true) {
+      case !query || typeof query !== "string" || !query.trim():
+        return {
+          message: "Query parameter is invalid or missing",
+          status: 500,
+        };
+      case !quality || typeof quality !== "string" || !quality.trim():
+        return {
+          message: "Quality parameter is invalid or missing",
+          status: 500,
+        };
       default:
-        ytc.withAudioFilter([]);
-        break;
-    }
-    ytc.on("start", () => progressBar(0, metaSpin));
-    ytc.on("end", () => progressBar(100, metaSpin));
-    ytc.on("close", () => progressBar(100, metaSpin));
-    ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
-    ytc.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      const readStream = new Readable({
-        read() {},
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(null);
-          callback();
-        },
-      });
-      ytc.pipe(writeStream, { end: true });
-      return {
-        stream: readStream,
-        filename: folderName
-          ? path.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`)
-          : `yt-core-(${quality})-${title}.${outputFormat}`,
-      };
-    } else {
-      await new Promise<void>((resolve, reject) => {
-        ytc
-          .output(
-            path.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`)
-          )
-          .on("error", reject)
-          .on("end", () => {
-            resolve();
-          })
-          .run();
-      });
-      return {
-        message: "process ended...",
-        status: 200,
-      };
+        const metaResp = await ytCore({ query });
+        if (!metaResp) {
+          return {
+            message: "The specified quality was not found...",
+            status: 500,
+          };
+        }
+        const metaBody = metaResp.AudioTube.filter(
+          (op: { meta_dl: { formatnote: string } }) =>
+            op.meta_dl.formatnote === quality
+        );
+        if (!metaBody) {
+          return {
+            message: "Unable to get response from YouTube...",
+            status: 500,
+          };
+        }
+        const title: string = metaResp.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "-"
+        );
+        const metaFold = folderName
+          ? path.join(process.cwd(), folderName)
+          : process.cwd();
+        if (!fs.existsSync(metaFold))
+          fs.mkdirSync(metaFold, { recursive: true });
+        const ytc = fluentffmpeg();
+        const metaEntry = bigEntry(metaBody);
+        ytc.addInput(metaEntry.meta_dl.mediaurl);
+        ytc.addInput(metaResp.metaTube.thumbnail);
+        ytc.addOutputOption("-map", "1:0");
+        ytc.addOutputOption("-map", "0:a:0");
+        ytc.addOutputOption("-id3v2_version", "3");
+        ytc.withAudioBitrate(metaEntry.meta_audio.bitrate);
+        ytc.withAudioChannels(metaEntry.meta_audio.channels);
+        ytc.format(outputFormat);
+        switch (filter) {
+          case "bassboost":
+            ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            break;
+          case "echo":
+            ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            break;
+          case "flanger":
+            ytc.withAudioFilter(["flanger"]);
+            break;
+          case "nightcore":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            break;
+          case "panning":
+            ytc.withAudioFilter(["apulsator=hz=0.08"]);
+            break;
+          case "phaser":
+            ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+            break;
+          case "reverse":
+            ytc.withAudioFilter(["areverse"]);
+            break;
+          case "slow":
+            ytc.withAudioFilter(["atempo=0.8"]);
+            break;
+          case "speed":
+            ytc.withAudioFilter(["atempo=2"]);
+            break;
+          case "subboost":
+            ytc.withAudioFilter(["asubboost"]);
+            break;
+          case "superslow":
+            ytc.withAudioFilter(["atempo=0.5"]);
+            break;
+          case "superspeed":
+            ytc.withAudioFilter(["atempo=3"]);
+            break;
+          case "surround":
+            ytc.withAudioFilter(["surround"]);
+            break;
+          case "vaporwave":
+            ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            break;
+          case "vibrato":
+            ytc.withAudioFilter(["vibrato=f=6.5"]);
+            break;
+          default:
+            ytc.withAudioFilter([]);
+            break;
+        }
+        ytc.on("start", () => progressBar(0, metaSpin));
+        ytc.on("end", () => progressBar(100, metaSpin));
+        ytc.on("close", () => progressBar(100, metaSpin));
+        ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
+        ytc.on("error", (error) => {
+          return error;
+        });
+        if (stream) {
+          const readStream = new Readable({
+            read() {},
+          });
+          const writeStream = new Writable({
+            write(chunk, _encoding, callback) {
+              readStream.push(chunk);
+              callback();
+            },
+            final(callback) {
+              readStream.push(null);
+              callback();
+            },
+          });
+          ytc.pipe(writeStream, { end: true });
+          return {
+            stream: readStream,
+            filename: folderName
+              ? path.join(
+                  metaFold,
+                  `yt-core-(${quality})-${title}.${outputFormat}`
+                )
+              : `yt-core-(${quality})-${title}.${outputFormat}`,
+          };
+        } else {
+          await new Promise<void>((resolve, reject) => {
+            ytc
+              .output(
+                path.join(
+                  metaFold,
+                  `yt-core-(${quality})-${title}.${outputFormat}`
+                )
+              )
+              .on("error", reject)
+              .on("end", () => {
+                resolve();
+              })
+              .run();
+          });
+          return {
+            message: "process ended...",
+            status: 200,
+          };
+        }
     }
   } catch (error) {
     switch (true) {

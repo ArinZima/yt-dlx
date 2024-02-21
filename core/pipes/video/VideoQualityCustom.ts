@@ -47,16 +47,21 @@ export default async function VideoQualityCustom({
   outputFormat = "mp4",
 }: VideoQualityCustomOC): VideoQualityCustomType {
   try {
-    if (
-      !query ||
-      typeof query !== "string" ||
-      !quality ||
-      typeof quality !== "string"
-    ) {
-      return {
-        message: "Invalid query or quality parameter",
-        status: 500,
-      };
+    switch (true) {
+      case !query || typeof query !== "string" || !query.trim():
+        return {
+          message: "Query parameter is invalid or missing",
+          status: 500,
+        };
+      case !quality || typeof quality !== "string" || !quality.trim():
+        return {
+          message: "Quality parameter is invalid or missing",
+          status: 500,
+        };
+      default:
+        quality = quality;
+        query = query;
+        break;
     }
     const EnResp = await Engine({ query });
     if (!EnResp) {
