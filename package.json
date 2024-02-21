@@ -34,7 +34,7 @@
     "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "rebuild": "rm -rf node_modules project temp yarn.lock && yarn install && yarn upgrade --latest && yarn build",
-    "build": "yarn clearn && yarn tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs' && npm pkg fix"
+    "build": "yarn clean && yarn tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs' && npm pkg fix"
   },
   "files": [
     "project",
