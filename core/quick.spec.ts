@@ -86,7 +86,7 @@ import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 import ListAudioHighest from "./pipes/audio/ListAudioHighest";
 (async () => {
   try {
-    await ListAudioHighest({
+    await ListAudioLowest({
       playlistUrls: [
         "https://youtube.com/playlist?list=PLDIoUOhQQPlWvtxdeVTG3i7-SlSN0jfWj&si=9GB2vLYUskpGJ--C",
         "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
@@ -95,8 +95,7 @@ import ListAudioHighest from "./pipes/audio/ListAudioHighest";
       folderName: "temp",
       verbose: false,
     });
-
-    await ListAudioLowest({
+    await ListAudioHighest({
       playlistUrls: [
         "https://youtube.com/playlist?list=PLDIoUOhQQPlWvtxdeVTG3i7-SlSN0jfWj&si=9GB2vLYUskpGJ--C",
         "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",

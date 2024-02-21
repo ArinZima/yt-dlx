@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytCore from "../../base/agent";
@@ -50,7 +51,6 @@ export default async function ListAudioLowest(
     let results: ListAudioLowestType[] = [];
     const uniqueVideoIds = new Set();
     for (const url of playlistUrls) {
-      console.log("playlistUrl:", url);
       const metaList = await scrape(url);
       if (metaList === null || !metaList) {
         return {
@@ -67,7 +67,11 @@ export default async function ListAudioLowest(
         uniqueVideoIds.add(video.id)
       );
     }
-    console.log("Total Unique Videos:", parseList.length);
+    console.log(
+      colors.bold.green("INFO:"),
+      "🎁Total Unique Videos:",
+      parseList.length
+    );
     for (const i of parseList) {
       const TubeBody: string | null = await scrape(i.videoId);
       if (TubeBody === null) continue;
