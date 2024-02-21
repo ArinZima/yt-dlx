@@ -149,16 +149,16 @@ export default async function ListAudioQualityCustom(
                     });
                     ytc.on("end", () => {
                       progressBar({
-                        currentKbps: 0,
-                        timemark: "",
-                        percent: 100,
+                        currentKbps: undefined,
+                        timemark: undefined,
+                        percent: undefined,
                       });
                     });
                     ytc.on("close", () => {
                       progressBar({
-                        currentKbps: 0,
-                        timemark: "",
-                        percent: 100,
+                        currentKbps: undefined,
+                        timemark: undefined,
+                        percent: undefined,
                       });
                     });
                     ytc.on("progress", (prog) => {

@@ -73,10 +73,18 @@ export default async function AudioVideoLowest(
       progressBar({ currentKbps: 0, timemark: "", percent: 0 });
     });
     ytc.on("end", () => {
-      progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+      progressBar({
+        currentKbps: undefined,
+        timemark: undefined,
+        percent: undefined,
+      });
     });
     ytc.on("close", () => {
-      progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+      progressBar({
+        currentKbps: undefined,
+        timemark: undefined,
+        percent: undefined,
+      });
     });
     ytc.on("progress", (prog) => {
       progressBar({
