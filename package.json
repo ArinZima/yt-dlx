@@ -26,6 +26,7 @@
   },
   "scripts": {
     "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+    "scrape": "rm -rf temp && tsup 'core/scrapping.ts' --outDir 'temp' && node 'temp/scrapping.mjs'",
     "clean": "rm -rf node_modules temp project && cd frontend && rm -rf node_modules .next",
     "upload": "yarn build && yarn publish --access=public && yarn rebuild",
     "cli": "yarn yt version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",

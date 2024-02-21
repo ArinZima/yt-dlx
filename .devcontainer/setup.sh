@@ -15,7 +15,6 @@ sudo yarn global add playwright npm yt-core tsup ts-node typescript && \
 playwright install && \
 playwright install-deps && \
 sudo yarn rebuild && \
-sudo echo "Tesing playwright..." && \
-yarn spec && \
+yarn scrape && \
 cd frontend && \
 sudo yarn install && yarn build
