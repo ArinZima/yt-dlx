@@ -136,74 +136,7 @@ export default async function ListAudioLowest(
                 ytc.on("progress", ({ percent }) =>
                   progressBar(percent, metaSpin)
                 );
-                switch (filter) {
-                  case "bassboost":
-                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                    metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
-                    break;
-                  case "echo":
-                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                    metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
-                    break;
-                  case "flanger":
-                    ytc.withAudioFilter(["flanger"]);
-                    metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
-                    break;
-                  case "nightcore":
-                    ytc.withAudioFilter([
-                      "aresample=48000,asetrate=48000*1.25",
-                    ]);
-                    metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
-                    break;
-                  case "panning":
-                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
-                    metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
-                    break;
-                  case "phaser":
-                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-                    metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
-                    break;
-                  case "reverse":
-                    ytc.withAudioFilter(["areverse"]);
-                    metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
-                    break;
-                  case "slow":
-                    ytc.withAudioFilter(["atempo=0.8"]);
-                    metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
-                    break;
-                  case "speed":
-                    ytc.withAudioFilter(["atempo=2"]);
-                    metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
-                    break;
-                  case "subboost":
-                    ytc.withAudioFilter(["asubboost"]);
-                    metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
-                    break;
-                  case "superslow":
-                    ytc.withAudioFilter(["atempo=0.5"]);
-                    metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
-                    break;
-                  case "superspeed":
-                    ytc.withAudioFilter(["atempo=3"]);
-                    metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
-                    break;
-                  case "surround":
-                    ytc.withAudioFilter(["surround"]);
-                    metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
-                    break;
-                  case "vaporwave":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                    metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
-                    break;
-                  case "vibrato":
-                    ytc.withAudioFilter(["vibrato=f=6.5"]);
-                    metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
-                    break;
-                  default:
-                    ytc.withAudioFilter([]);
-                    metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
-                    break;
-                }
+
                 if (stream) {
                   const readStream = new Readable({
                     read() {},
