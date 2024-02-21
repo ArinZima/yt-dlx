@@ -13,7 +13,7 @@ RUN npm install --global yarn
 RUN yarn global add playwright bun npm yt-core
 RUN playwright install
 RUN playwright install-deps
-RUN yarn install && yarn rebuild
+RUN yarn rebuild
 WORKDIR /yt-core/frontend
 RUN yarn install && yarn build
 CMD ["yarn", "start"]

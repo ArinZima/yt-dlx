@@ -14,7 +14,7 @@ sudo npm install --global yarn bun && \
 sudo yarn global add playwright npm yt-core && \
 playwright install && \
 playwright install-deps && \
-sudo yarn install && yarn rebuild && \
+sudo yarn rebuild && \
 sudo echo "Tesing playwright..." && \
 yarn spec && \
 cd frontend && \
