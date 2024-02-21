@@ -14,6 +14,6 @@ sudo npm install --global yarn && \
 sudo yarn global add playwright bun npm yt-core && \
 playwright install && \
 playwright install-deps && \
-sudo yarn rebuild && \
+sudo yarn install && yarn rebuild && \
 cd frontend && \
-sudo yarn build
+sudo yarn install && yarn build
