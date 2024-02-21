@@ -145,7 +145,11 @@ export default async function ListAudioQualityCustom(
                     ytc.format(outputFormat);
                     ytc.on("start", (command) => {
                       if (verbose) console.log(command);
-                      progressBar({ currentKbps: 0, timemark: "", percent: 0 });
+                      progressBar({
+                        currentKbps: undefined,
+                        timemark: undefined,
+                        percent: undefined,
+                      });
                     });
                     ytc.on("end", () => {
                       progressBar({
