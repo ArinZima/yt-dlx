@@ -72,8 +72,8 @@ export default async function AudioQualityCustom({
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
     const metaEntry = bigEntry(metaBody);
-    ytc.input(metaEntry.meta_dl.mediaurl);
-    ytc.input(metaResp.metaTube.thumbnail);
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
+    ytc.addInput(metaResp.metaTube.thumbnail);
     ytc.addOutputOption("-map", "1:0");
     ytc.addOutputOption("-map", "0:a:0");
     ytc.addOutputOption("-id3v2_version", "3");

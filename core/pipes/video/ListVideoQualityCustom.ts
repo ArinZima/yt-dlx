@@ -121,7 +121,7 @@ export default async function ListVideoQualityCustom({
                   fs.mkdirSync(metaFold, { recursive: true });
                 const metaEntry = bigEntry(metaBody.VideoTube);
                 const ytc = fluentffmpeg();
-                ytc.input(metaEntry.meta_dl.mediaurl);
+                ytc.addInput(metaEntry.meta_dl.mediaurl);
                 ytc.format(outputFormat);
                 ytc.on("start", (cmd) => {
                   if (verbose) console.log(cmd);

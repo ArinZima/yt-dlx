@@ -86,7 +86,7 @@ export default async function VideoQualityCustom({
       if (!fs.existsSync(opfol)) fs.mkdirSync(opfol, { recursive: true });
       const ytc = fluentffmpeg();
       const metaEntry = bigEntry(YSBody);
-      ytc.input(metaEntry.meta_dl.mediaurl);
+      ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.format(outputFormat);
       switch (filter) {
         case "grayscale":

@@ -56,35 +56,35 @@ export default async function VideoHighest({
 
     const metaEntry = bigEntry(metaBody.VideoTube);
     const ytc = fluentffmpeg();
-    ytc.input(metaEntry.meta_dl.mediaurl);
+    ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);
     switch (filter) {
       case "grayscale":
-        ytc.videoFilters("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
         metaName = `yt-core_(VideoHighest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        ytc.videoFilters("negate");
+        ytc.withVideoFilter("negate");
         metaName = `yt-core_(VideoHighest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        ytc.videoFilters("rotate=PI/2");
+        ytc.withVideoFilter("rotate=PI/2");
         metaName = `yt-core_(VideoHighest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        ytc.videoFilters("rotate=PI");
+        ytc.withVideoFilter("rotate=PI");
         metaName = `yt-core_(VideoHighest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        ytc.videoFilters("rotate=3*PI/2");
+        ytc.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-core_(VideoHighest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        ytc.videoFilters("hflip");
+        ytc.withVideoFilter("hflip");
         metaName = `yt-core_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        ytc.videoFilters("vflip");
+        ytc.withVideoFilter("vflip");
         metaName = `yt-core_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
