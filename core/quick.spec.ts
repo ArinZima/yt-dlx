@@ -82,6 +82,7 @@
 // .catch((error) => console.error(error));
 // =====================================[ scrapping ]===========================================
 console.clear();
+import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 import ListAudioHighest from "./pipes/audio/ListAudioHighest";
 (async () => {
   try {
@@ -92,7 +93,17 @@ import ListAudioHighest from "./pipes/audio/ListAudioHighest";
         "https://youtube.com/playlist?list=PLDIoUOhQQPlWt8OpaGG43OjNYuJ2q9jEN&si=0k8__KXk8gxgPaf5",
       ],
       folderName: "temp",
-      verbose: true,
+      verbose: false,
+    });
+
+    await ListAudioLowest({
+      playlistUrls: [
+        "https://youtube.com/playlist?list=PLDIoUOhQQPlWvtxdeVTG3i7-SlSN0jfWj&si=9GB2vLYUskpGJ--C",
+        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
+        "https://youtube.com/playlist?list=PLDIoUOhQQPlWt8OpaGG43OjNYuJ2q9jEN&si=0k8__KXk8gxgPaf5",
+      ],
+      folderName: "temp",
+      verbose: false,
     });
   } catch (error) {
     console.error(error);
