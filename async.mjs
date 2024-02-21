@@ -2,10 +2,9 @@ import { promisify } from "util";
 import { exec } from "child_process";
 
 async function exAsync({ query, retries }) {
-  const url = "'" + query + "'";
   for (let i = 0; i < retries; i++) {
     try {
-      const proLoc = "python -m yt_dlp --dump-json " + url;
+      const proLoc = `python -m yt_dlp --dump-json '${query}'`;
       const result = await promisify(exec)(proLoc);
       if (result.stderr) console.error(result.stderr.toString());
       return result.stdout.toString() || null;
