@@ -17,16 +17,14 @@ export default async function Engine({
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors.bold.red("ERROR: ") +
-        "❗ 'query' is required..." +
-        colors.reset("")
+      colors.bold.red("ERROR: ") + "❗'query' is required..." + colors.reset("")
     );
     return;
   }
   if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
       colors.bold.red("ERROR: ") +
-        "❗ use extract_playlist_videos() for playlists..." +
+        "❗use extract_playlist_videos() for playlists..." +
         colors.reset("")
     );
     return;
@@ -45,7 +43,7 @@ export default async function Engine({
       if (TubeBody === null) {
         console.log(
           colors.bold.red("ERROR: ") +
-            "❗ no data returned from server..." +
+            "❗no data returned from server..." +
             colors.reset("")
         );
         return;
@@ -63,7 +61,7 @@ export default async function Engine({
       if (TubeBody === null) {
         console.log(
           colors.bold.red("ERROR: ") +
-            "❗ no data returned from server..." +
+            "❗no data returned from server..." +
             colors.reset("")
         );
         return;
@@ -82,7 +80,7 @@ export default async function Engine({
     case null:
       console.log(
         colors.bold.red("ERROR: ") +
-          "❗ no data returned from server..." +
+          "❗no data returned from server..." +
           colors.reset("")
       );
       break;
