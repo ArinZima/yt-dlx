@@ -8,11 +8,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 RUN apt-get install -y nodejs
 RUN git clone https://github.com/shovitdutta/yt-core.git
 WORKDIR /yt-core
-RUN yarn global add playwright
+RUN npm install --global yarn
+RUN yarn global add playwright bun npm yt-core
 RUN playwright install
 RUN playwright install-deps
 RUN yarn rebuild
 # WORKDIR /yt-core/frontend
-# COPY setup.sh .
-# RUN dos2unix setup.sh && chmod +x setup.sh && ./setup.sh
+# RUN yarn build
 CMD ["yarn", "start"]
