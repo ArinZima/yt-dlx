@@ -7,22 +7,7 @@
   "description": "Effortless audio-video download and streaming. yt-core does the heavy load for free.",
   "bin": {
     "yt": "project/cli/main.js",
-    "core": "project/cli/main.js",
-    "yt_dl": "project/cli/main.js",
-    "ytdlp": "project/cli/main.js",
-    "ytcore": "project/cli/main.js",
-    "yt-dlp": "project/cli/main.js",
-    "ytgrab": "project/cli/main.js",
-    "yt-cli": "project/cli/main.js",
-    "yt-core": "project/cli/main.js",
-    "yt-tool": "project/cli/main.js",
-    "yt-fetch": "project/cli/main.js",
-    "yt-utils": "project/cli/main.js",
-    "yt-helper": "project/cli/main.js",
-    "youtubedlp": "project/cli/main.js",
-    "yt-download": "project/cli/main.js",
-    "youtube-dlp": "project/cli/main.js",
-    "yt_downloader": "project/cli/main.js"
+    "yt-core": "project/cli/main.js"
   },
   "scripts": {
     "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
