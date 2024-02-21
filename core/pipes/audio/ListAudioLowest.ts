@@ -3,7 +3,6 @@ import async from "async";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
@@ -15,7 +14,6 @@ import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 import type SuccessResult from "../../interface/SuccessResult";
 
-const metaSpin = randomUUID().toString();
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 interface metaVideo {
   title: string;
@@ -127,16 +125,23 @@ export default async function ListAudioLowest(
                 ytc.addOutputOption("-map", "0:a:0");
                 ytc.addOutputOption("-id3v2_version", "3");
                 ytc.format(outputFormat);
-                ytc.on("start", (cmd) => {
-                  if (verbose) console.log(cmd);
-                  progressBar(0, metaSpin);
+                ytc.on("start", (command) => {
+                  if (verbose) console.log(command);
+                  progressBar({ currentKbps: 0, timemark: "", percent: 0 });
                 });
-                ytc.on("end", () => progressBar(100, metaSpin));
-                ytc.on("close", () => progressBar(100, metaSpin));
-                ytc.on("progress", ({ percent }) =>
-                  progressBar(percent, metaSpin)
-                );
-
+                ytc.on("end", () => {
+                  progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+                });
+                ytc.on("close", () => {
+                  progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+                });
+                ytc.on("progress", (prog) => {
+                  progressBar({
+                    currentKbps: prog.currentKbps,
+                    timemark: prog.timemark,
+                    percent: prog.percent,
+                  });
+                });
                 if (stream) {
                   const readStream = new Readable({
                     read() {},

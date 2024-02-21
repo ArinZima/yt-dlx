@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
@@ -12,7 +11,6 @@ import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 import type SuccessResult from "../../interface/SuccessResult";
 
-const metaSpin = randomUUID().toString();
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioQualities = "high" | "medium" | "low" | "ultralow";
 interface AudioQualityCustomOC {
@@ -29,11 +27,12 @@ type AudioQualityCustomType = Promise<
 
 const AudioQualityCustomInputSchema = z.object({
   query: z.string(),
+  filter: z.string().optional(),
   stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
   folderName: z.string().optional(),
   quality: z.enum(["high", "medium", "low", "ultralow"]),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
-  filter: z.string().optional(),
 });
 
 export default async function AudioQualityCustom(
@@ -42,11 +41,12 @@ export default async function AudioQualityCustom(
   try {
     const {
       query,
-      stream,
-      folderName,
-      quality,
-      outputFormat = "mp3",
       filter,
+      stream,
+      verbose,
+      quality,
+      folderName,
+      outputFormat = "mp3",
     } = AudioQualityCustomInputSchema.parse(input);
 
     const metaResp = await ytCore({ query });
@@ -140,10 +140,23 @@ export default async function AudioQualityCustom(
         ytc.withAudioFilter([]);
         break;
     }
-    ytc.on("start", () => progressBar(0, metaSpin));
-    ytc.on("end", () => progressBar(100, metaSpin));
-    ytc.on("close", () => progressBar(100, metaSpin));
-    ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
+    ytc.on("start", (command) => {
+      if (verbose) console.log(command);
+      progressBar({ currentKbps: 0, timemark: "", percent: 0 });
+    });
+    ytc.on("end", () => {
+      progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+    });
+    ytc.on("close", () => {
+      progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+    });
+    ytc.on("progress", (prog) => {
+      progressBar({
+        currentKbps: prog.currentKbps,
+        timemark: prog.timemark,
+        percent: prog.percent,
+      });
+    });
     ytc.on("error", (error) => {
       return error;
     });

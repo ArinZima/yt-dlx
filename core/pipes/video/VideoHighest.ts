@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
@@ -12,7 +11,6 @@ import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 import type SuccessResult from "../../interface/SuccessResult";
 
-const metaSpin = randomUUID().toString();
 type VideoFormat = "mp4" | "avi" | "mov";
 interface VideoHighestOC {
   query: string;
@@ -105,13 +103,23 @@ export default async function VideoHighest(
       default:
         metaName = `yt-core_(VideoHighest)_${title}.${outputFormat}`;
     }
-    ytc.on("start", (cmd) => {
-      if (verbose) console.log(cmd);
-      progressBar(0, metaSpin);
+    ytc.on("start", (command) => {
+      if (verbose) console.log(command);
+      progressBar({ currentKbps: 0, timemark: "", percent: 0 });
     });
-    ytc.on("end", () => progressBar(100, metaSpin));
-    ytc.on("close", () => progressBar(100, metaSpin));
-    ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
+    ytc.on("end", () => {
+      progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+    });
+    ytc.on("close", () => {
+      progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+    });
+    ytc.on("progress", (prog) => {
+      progressBar({
+        currentKbps: prog.currentKbps,
+        timemark: prog.timemark,
+        percent: prog.percent,
+      });
+    });
     ytc.on("error", (error) => {
       return error;
     });

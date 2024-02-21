@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import scrape from "../../base/scrape";
 import fluentffmpeg from "fluent-ffmpeg";
@@ -14,7 +13,6 @@ import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 import type SuccessResult from "../../interface/SuccessResult";
 
-const metaSpin = randomUUID().toString();
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 interface ListAudioHighestOC {
   stream?: boolean;
@@ -95,13 +93,23 @@ export default async function ListAudioHighest(
       ytc.addOutputOption("-map", "0:a:0");
       ytc.addOutputOption("-id3v2_version", "3");
       ytc.format(outputFormat);
-      ytc.on("start", (cmd) => {
-        if (verbose) console.log(cmd);
-        progressBar(0, metaSpin);
+      ytc.on("start", (command) => {
+        if (verbose) console.log(command);
+        progressBar({ currentKbps: 0, timemark: "", percent: 0 });
       });
-      ytc.on("end", () => progressBar(100, metaSpin));
-      ytc.on("close", () => progressBar(100, metaSpin));
-      ytc.on("progress", ({ percent }) => progressBar(percent, metaSpin));
+      ytc.on("end", () => {
+        progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+      });
+      ytc.on("close", () => {
+        progressBar({ currentKbps: 0, timemark: "", percent: 100 });
+      });
+      ytc.on("progress", (prog) => {
+        progressBar({
+          currentKbps: prog.currentKbps,
+          timemark: prog.timemark,
+          percent: prog.percent,
+        });
+      });
       switch (filter) {
         case "bassboost":
           ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
