@@ -11,7 +11,7 @@ sudo rm -rf /var/lib/apt/lists/* && \
 sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
 sudo aptitude install -y nodejs && \
 sudo npm install --global yarn bun && \
-sudo yarn global add playwright npm yt-core && \
+sudo yarn global add playwright npm yt-core tsup ts-node typescript && \
 playwright install && \
 playwright install-deps && \
 sudo yarn rebuild && \
