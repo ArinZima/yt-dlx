@@ -2,6 +2,7 @@ import * as fs from "fs";
 import async from "async";
 import colors from "colors";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
@@ -38,20 +39,34 @@ interface ListAudioHighestOC {
   filter?: keyof AudioFilters;
 }
 type ListAudioHighestType = SuccessResult | ErrorResult | StreamResult;
-export default async function ListAudioHighest({
-  filter,
-  stream,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp3",
-}: ListAudioHighestOC): Promise<ListAudioHighestType[]> {
+
+const ListAudioHighestInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string()),
+  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z.string().optional(),
+});
+
+export default async function ListAudioHighest(
+  input: ListAudioHighestOC
+): Promise<ListAudioHighestType[]> {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      filter,
+      stream,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp3",
+    } = ListAudioHighestInputSchema.parse(input);
+
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500,
           },
         ];
@@ -59,13 +74,6 @@ export default async function ListAudioHighest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500,
-          },
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500,
           },
         ];
@@ -237,21 +245,29 @@ export default async function ListAudioHighest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500,
-          },
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500,
-          },
-        ];
+    if (error instanceof ZodError) {
+      return [
+        {
+          message:
+            "Validation error: " +
+            error.errors.map((e) => e.message).join(", "),
+          status: 500,
+        },
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500,
+        },
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500,
+        },
+      ];
     }
   }
 }

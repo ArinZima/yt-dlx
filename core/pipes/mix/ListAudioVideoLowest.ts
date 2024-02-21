@@ -2,6 +2,7 @@ import * as fs from "fs";
 import async from "async";
 import colors from "colors";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
 import ytCore from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
@@ -36,19 +37,32 @@ interface ListAudioVideoLowestOC {
   outputFormat?: VideoFormat;
 }
 type ListAudioVideoLowestType = SuccessResult | ErrorResult | StreamResult;
-export default async function ListAudioVideoLowest({
-  stream,
-  verbose,
-  folderName,
-  playlistUrls,
-  outputFormat = "mp4",
-}: ListAudioVideoLowestOC): Promise<ListAudioVideoLowestType[]> {
+
+const ListAudioVideoLowestInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string()),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+});
+
+export default async function ListAudioVideoLowest(
+  input: ListAudioVideoLowestOC
+): Promise<ListAudioVideoLowestType[]> {
   try {
-    switch (playlistUrls.length > 0) {
-      case !playlistUrls:
+    const {
+      stream,
+      verbose,
+      folderName,
+      playlistUrls,
+      outputFormat = "mp4",
+    } = ListAudioVideoLowestInputSchema.parse(input);
+
+    switch (true) {
+      case playlistUrls.length === 0:
         return [
           {
-            message: "playlistUrls parameter is missing",
+            message: "playlistUrls parameter cannot be empty",
             status: 500,
           },
         ];
@@ -56,13 +70,6 @@ export default async function ListAudioVideoLowest({
         return [
           {
             message: "playlistUrls parameter must be an array",
-            status: 500,
-          },
-        ];
-      case false:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
             status: 500,
           },
         ];
@@ -162,21 +169,29 @@ export default async function ListAudioVideoLowest({
         }
     }
   } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return [
-          {
-            message: error.message,
-            status: 500,
-          },
-        ];
-      default:
-        return [
-          {
-            message: "Internal server error",
-            status: 500,
-          },
-        ];
+    if (error instanceof ZodError) {
+      return [
+        {
+          message:
+            "Validation error: " +
+            error.errors.map((e) => e.message).join(", "),
+          status: 500,
+        },
+      ];
+    } else if (error instanceof Error) {
+      return [
+        {
+          message: error.message,
+          status: 500,
+        },
+      ];
+    } else {
+      return [
+        {
+          message: "Internal server error",
+          status: 500,
+        },
+      ];
     }
   }
 }
