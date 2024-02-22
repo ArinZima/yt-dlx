@@ -29,7 +29,7 @@
     "remake": "yarn clean && yarn make && yarn update",
     "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
     "test": "tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
-    "cli": "yarn link && yarn cli && yarn unlink",
+    "cli": "yarn link && yarn cli:test && yarn unlink",
     "cli:test": "yarn yt-core version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
     "spec": "rm -rf temp && tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn remake"
