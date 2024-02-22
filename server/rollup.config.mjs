@@ -39,13 +39,13 @@ export default [
     input: "base/index.ts",
     output: [
       {
-        file: "project/index.esm.js",
+        file: "core/index.esm.js",
         footer: banner,
         format: "es",
         banner,
       },
       {
-        file: "project/index.cjs.js",
+        file: "core/index.cjs.js",
         footer: banner,
         format: "cjs",
         banner,
@@ -89,7 +89,7 @@ export default [
     input: "base/index.ts",
     output: [
       {
-        file: "project/index.d.ts",
+        file: "core/index.d.ts",
         footer: banner,
         format: "es",
         banner,
