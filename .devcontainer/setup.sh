@@ -14,7 +14,4 @@ sudo npm install --global yarn bun && \
 sudo yarn global add playwright npm yt-core tsup ts-node typescript && \
 playwright install && \
 playwright install-deps && \
-sudo yarn rebuild && \
-yarn scrape && \
-cd frontend && \
-sudo yarn install && yarn build
+sudo yarn remake
