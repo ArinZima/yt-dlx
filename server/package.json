@@ -7,7 +7,7 @@
   "scripts": {
     "start": "yarn ts-node src",
     "build": "rollup -c 'rollup.config.mjs'",
-    "test": "yarn ts-node src & yarn ts-node src/test",
+    "test": "rm -rf temp && tsup 'base/test.ts' --outDir 'temp' && node 'temp/test.mjs'",
     "scrape": "rm -rf temp && tsup 'base/scrapping.ts' --outDir 'temp' && node 'temp/scrapping.mjs'"
   },
   "dependencies": {
