@@ -70,6 +70,7 @@ export default [
       "readline",
       "spinnies",
       "yt-search",
+      "playwright",
       "@shovit/ytid",
       "child_process",
       "fluent-ffmpeg",

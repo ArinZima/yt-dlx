@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytCore from "../../base/agent";
+import ytDlp from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
@@ -49,7 +49,7 @@ export default async function AudioQualityCustom(
       outputFormat = "mp3",
     } = AudioQualityCustomInputSchema.parse(input);
 
-    const metaResp = await ytCore({ query });
+    const metaResp = await ytDlp({ query });
     if (!metaResp) {
       return {
         message: "The specified quality was not found...",
@@ -190,14 +190,14 @@ export default async function AudioQualityCustom(
       return {
         stream: readStream,
         filename: folderName
-          ? path.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`)
-          : `yt-core-(${quality})-${title}.${outputFormat}`,
+          ? path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
+          : `yt-dlp-(${quality})-${title}.${outputFormat}`,
       };
     } else {
       await new Promise<void>((resolve, reject) => {
         ytc
           .output(
-            path.join(metaFold, `yt-core-(${quality})-${title}.${outputFormat}`)
+            path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
           )
           .on("error", reject)
           .on("end", () => {

@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import async from "async";
-import ytCore from "../..";
+import ytDlp from "../..";
 import colors from "colors";
 import * as chai from "chai";
 
@@ -11,13 +11,13 @@ import * as chai from "chai";
       runTest: async () => {
         console.log(
           colors.bold.yellow("\n\nTEST: ") +
-            "<( ytCore.video.single.custom({ " +
+            "<( ytDlp.video.single.custom({ " +
             colors.italic.yellow(
               "query: 'SuaeRys5tTc', outputFormat: 'mp4', folderName: 'temp', quality: '720p', stream: false"
             ) +
             " })>"
         );
-        metaTube = await ytCore.video.single.custom({
+        metaTube = await ytDlp.video.single.custom({
           query: "SuaeRys5tTc",
           outputFormat: "mp4",
           folderName: "temp",
@@ -29,7 +29,7 @@ import * as chai from "chai";
             chai.expect(metaTube.status).to.equal(200);
             console.log(
               colors.bold.green("\nPASS: ") +
-                "<( ytCore.video.single.custom({ " +
+                "<( ytDlp.video.single.custom({ " +
                 colors.italic.green(
                   "query: 'SuaeRys5tTc', outputFormat: 'mp4', folderName: 'temp', quality: '720p', stream: false"
                 ) +
@@ -51,13 +51,13 @@ import * as chai from "chai";
       runTest: async () => {
         console.log(
           colors.bold.yellow("\n\nTEST: ") +
-            "<( ytCore.video.single.custom({ " +
+            "<( ytDlp.video.single.custom({ " +
             colors.italic.yellow(
               "query: 'SuaeRys5tTc', filter: 'grayscale', outputFormat: 'mp4', folderName: 'temp', quality: '720p', stream: true"
             ) +
             " })>"
         );
-        metaTube = await ytCore.video.single.custom({
+        metaTube = await ytDlp.video.single.custom({
           query: "SuaeRys5tTc",
           filter: "grayscale",
           outputFormat: "mp4",
@@ -71,7 +71,7 @@ import * as chai from "chai";
             metaTube.stream.pipe(fs.createWriteStream(metaTube.filename));
             console.log(
               colors.bold.green("\nPASS: ") +
-                "<( ytCore.video.single.custom({ " +
+                "<( ytDlp.video.single.custom({ " +
                 colors.italic.green(
                   "query: 'SuaeRys5tTc', filter: 'grayscale', outputFormat: 'mp4', folderName: 'temp', quality: '720p', stream: true"
                 ) +

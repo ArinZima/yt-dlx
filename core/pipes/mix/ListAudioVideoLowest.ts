@@ -3,7 +3,7 @@ import async from "async";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytCore from "../../base/agent";
+import ytDlp from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
@@ -98,7 +98,7 @@ export default async function ListAudioVideoLowest(
             videos as metaVideo[],
             async (video: metaVideo) => {
               try {
-                const metaBody = await ytCore({ query: video.url });
+                const metaBody = await ytDlp({ query: video.url });
                 if (!metaBody) {
                   throw new Error("Unable to get response from YouTube...");
                 }
@@ -106,7 +106,7 @@ export default async function ListAudioVideoLowest(
                   /[^a-zA-Z0-9_]+/g,
                   "-"
                 );
-                let metaName: string = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
+                let metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
                 const metaFold = folderName
                   ? path.join(process.cwd(), folderName)
                   : process.cwd();

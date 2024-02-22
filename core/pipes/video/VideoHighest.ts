@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytCore from "../../base/agent";
+import ytDlp from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
@@ -44,7 +44,7 @@ export default async function VideoHighest(
       filter,
     } = VideoHighestInputSchema.parse(input);
 
-    const metaBody = await ytCore({ query });
+    const metaBody = await ytDlp({ query });
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
@@ -74,34 +74,34 @@ export default async function VideoHighest(
     switch (filter) {
       case "grayscale":
         ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-        metaName = `yt-core_(VideoHighest-grayscale)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
         ytc.withVideoFilter("negate");
-        metaName = `yt-core_(VideoHighest-invert)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
         ytc.withVideoFilter("rotate=PI/2");
-        metaName = `yt-core_(VideoHighest-rotate90)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
         ytc.withVideoFilter("rotate=PI");
-        metaName = `yt-core_(VideoHighest-rotate180)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
         ytc.withVideoFilter("rotate=3*PI/2");
-        metaName = `yt-core_(VideoHighest-rotate270)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
         ytc.withVideoFilter("hflip");
-        metaName = `yt-core_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
         ytc.withVideoFilter("vflip");
-        metaName = `yt-core_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
-        metaName = `yt-core_(VideoHighest)_${title}.${outputFormat}`;
+        metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
     }
     ytc.on("start", (command) => {
       if (verbose) console.log(command);

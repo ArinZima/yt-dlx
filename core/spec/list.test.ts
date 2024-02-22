@@ -1,4 +1,4 @@
-import ytCore from "..";
+import ytDlp from "..";
 import colors from "colors";
 const playlistUrls = [
   "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
@@ -12,9 +12,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.audio.playlist.custom() )>"
+        " 🔬running test for <( ytDlp.audio.playlist.custom() )>"
     );
-    await ytCore.audio.playlist.custom({
+    await ytDlp.audio.playlist.custom({
       outputFormat: "mp3",
       folderName: "temp",
       quality: "medium",
@@ -25,9 +25,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.audio.playlist.highest() )>"
+        " 🔬running test for <( ytDlp.audio.playlist.highest() )>"
     );
-    await ytCore.audio.playlist.highest({
+    await ytDlp.audio.playlist.highest({
       outputFormat: "mp3",
       folderName: "temp",
       playlistUrls,
@@ -37,9 +37,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.audio.playlist.lowest() )>"
+        " 🔬running test for <( ytDlp.audio.playlist.lowest() )>"
     );
-    await ytCore.audio.playlist.lowest({
+    await ytDlp.audio.playlist.lowest({
       outputFormat: "mp3",
       filter: "nightcore",
       folderName: "temp",
@@ -51,9 +51,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.video.playlist.custom() )>"
+        " 🔬running test for <( ytDlp.video.playlist.custom() )>"
     );
-    await ytCore.video.playlist.custom({
+    await ytDlp.video.playlist.custom({
       outputFormat: "mp4",
       folderName: "temp",
       quality: "720p",
@@ -64,9 +64,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.video.playlist.highest() )>"
+        " 🔬running test for <( ytDlp.video.playlist.highest() )>"
     );
-    await ytCore.video.playlist.highest({
+    await ytDlp.video.playlist.highest({
       outputFormat: "mp4",
       folderName: "temp",
       playlistUrls,
@@ -76,9 +76,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.video.playlist.lowest() )>"
+        " 🔬running test for <( ytDlp.video.playlist.lowest() )>"
     );
-    await ytCore.video.playlist.lowest({
+    await ytDlp.video.playlist.lowest({
       outputFormat: "mp4",
       filter: "grayscale",
       folderName: "temp",
@@ -90,9 +90,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.audio_video.playlist.highest() )>"
+        " 🔬running test for <( ytDlp.audio_video.playlist.highest() )>"
     );
-    await ytCore.audio_video.playlist.highest({
+    await ytDlp.audio_video.playlist.highest({
       outputFormat: "mp4",
       folderName: "temp",
       playlistUrls,
@@ -102,9 +102,9 @@ const playlistUrls = [
         new Date().toLocaleString() +
         " " +
         colors.bold.blue("INFO:") +
-        " 🔬running test for <( ytCore.audio_video.playlist.lowest() )>"
+        " 🔬running test for <( ytDlp.audio_video.playlist.lowest() )>"
     );
-    await ytCore.audio_video.playlist.lowest({
+    await ytDlp.audio_video.playlist.lowest({
       outputFormat: "mp4",
       folderName: "temp",
       playlistUrls,

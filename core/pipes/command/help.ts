@@ -13,19 +13,19 @@ export default function help(): Promise<string> {
 ┃                   Full support for CommonJS (CJS), ECMAScript (ESM), and TypeScript (TS)                    ┃
 ┃─────────────────────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃ INSTALLATION  ┃ ❝ LOCALLY: ❞                                                                                ┃
-┃               ┃   bun add yt-core                                                                           ┃
-┃               ┃   yarn add yt-core                                                                          ┃
-┃               ┃   npm install yt-core                                                                       ┃
-┃               ┃   pnpm install yt-core                                                                      ┃
+┃               ┃   bun add yt-dlp                                                                           ┃
+┃               ┃   yarn add yt-dlp                                                                          ┃
+┃               ┃   npm install yt-dlp                                                                       ┃
+┃               ┃   pnpm install yt-dlp                                                                      ┃
 ┃               ┃                                                                                             ┃
 ┃               ┃ ❝ GLOBALLY: ❞                                                                               ┃
-┃               ┃   yarn global add yt-core                                                   (use cli)       ┃
-┃               ┃   npm install --global yt-core                                              (use cli)       ┃
-┃               ┃   pnpm install --global yt-core                                             (use cli)       ┃
+┃               ┃   yarn global add yt-dlp                                                   (use cli)       ┃
+┃               ┃   npm install --global yt-dlp                                              (use cli)       ┃
+┃               ┃   pnpm install --global yt-dlp                                             (use cli)       ┃
 ┃               ┃─────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃    FILTERS    ┃ ❝ AUDIO ONLY: ❞                                                                             ┃
 ┃               ┃   bassboost                  echo                                                           ┃
-┃               ┃   flanger                    nightcore                                                      ┃
+┃               ┃   flanger                    nightdlp                                                      ┃
 ┃               ┃   panning                    phaser                                                         ┃
 ┃               ┃   reverse                    slow                                                           ┃
 ┃               ┃   speed                      subboost                                                       ┃
@@ -43,43 +43,43 @@ export default function help(): Promise<string> {
 ┃               ┃   flipVertical                                                                              ┃
 ┃               ┃─────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃   CLI USAGE   ┃ ❝ INFO GRABBERS: ❞                                                                          ┃
-┃               ┃   yt-core version                                                             (alias: v)    ┃
-┃               ┃   yt-core help                                                                (alias: h)    ┃
-┃               ┃   yt-core extract --query="video/url"                                         (alias: e)    ┃
-┃               ┃   yt-core search-yt --query="video/url"                                       (alias: s)    ┃
-┃               ┃   yt-core list-formats --query="video/url"                                    (alias: f)    ┃ 
-┃               ┃   yt-core get-video-data --query="video/url"                                  (alias: gvd)  ┃
+┃               ┃   yt-dlp version                                                             (alias: v)    ┃
+┃               ┃   yt-dlp help                                                                (alias: h)    ┃
+┃               ┃   yt-dlp extract --query="video/url"                                         (alias: e)    ┃
+┃               ┃   yt-dlp search-yt --query="video/url"                                       (alias: s)    ┃
+┃               ┃   yt-dlp list-formats --query="video/url"                                    (alias: f)    ┃ 
+┃               ┃   yt-dlp get-video-data --query="video/url"                                  (alias: gvd)  ┃
 ┃               ┃                                                                                             ┃
 ┃               ┃                                                                                             ┃
 ┃               ┃ ❝ AUDIO ONLY: ❞                                                                             ┃
-┃               ┃   yt-core audio-lowest --query="video/url"                                    (alias: al)   ┃
-┃               ┃   yt-core audio-highest --query="video/url"                                   (alias: ah)   ┃
-┃               ┃   yt-core audio-quality-custom --query="video/url" --format="valid-format"    (alias: aqc)  ┃
+┃               ┃   yt-dlp audio-lowest --query="video/url"                                    (alias: al)   ┃
+┃               ┃   yt-dlp audio-highest --query="video/url"                                   (alias: ah)   ┃
+┃               ┃   yt-dlp audio-quality-custom --query="video/url" --format="valid-format"    (alias: aqc)  ┃
 ┃               ┃       ──────────────────────────────────────────────────────────────                        ┃
-┃               ┃   yt-core audio-lowest --query="video/url" --filter="valid-filter"            (filter)      ┃
-┃               ┃   yt-core audio-highest --query="video/url" --filter="valid-filter"           (filter)      ┃
-┃               ┃   yt-core audio-quality-custom --query="video/url" --format="valid-format"    ........      ┃
+┃               ┃   yt-dlp audio-lowest --query="video/url" --filter="valid-filter"            (filter)      ┃
+┃               ┃   yt-dlp audio-highest --query="video/url" --filter="valid-filter"           (filter)      ┃
+┃               ┃   yt-dlp audio-quality-custom --query="video/url" --format="valid-format"    ........      ┃
 ┃               ┃                                                   --filter="valid-filter"    (filter)       ┃
 ┃               ┃                                                                                             ┃
 ┃               ┃                                                                                             ┃
 ┃               ┃ ❝ VIDEO ONLY: ❞                                                                             ┃
-┃               ┃   yt-core video-lowest --query="video/url"                                    (alias: vl)   ┃
-┃               ┃   yt-core video-highest --query="video/url"                                   (alias: vh)   ┃
-┃               ┃   yt-core video-quality-custom --query="video/url" --format="valid-format"    (alias: vqc)  ┃
+┃               ┃   yt-dlp video-lowest --query="video/url"                                    (alias: vl)   ┃
+┃               ┃   yt-dlp video-highest --query="video/url"                                   (alias: vh)   ┃
+┃               ┃   yt-dlp video-quality-custom --query="video/url" --format="valid-format"    (alias: vqc)  ┃
 ┃               ┃       ──────────────────────────────────────────────────────────────                        ┃
-┃               ┃   yt-core video-lowest --query="video/url" --filter="valid-filter"            (filter)      ┃
-┃               ┃   yt-core video-highest --query="video/url" --filter="valid-filter"           (filter)      ┃
-┃               ┃   yt-core video-quality-custom --query="video/url" --format="valid-format"    ........      ┃
+┃               ┃   yt-dlp video-lowest --query="video/url" --filter="valid-filter"            (filter)      ┃
+┃               ┃   yt-dlp video-highest --query="video/url" --filter="valid-filter"           (filter)      ┃
+┃               ┃   yt-dlp video-quality-custom --query="video/url" --format="valid-format"    ........      ┃
 ┃               ┃                                                   --filter="valid-filter"    (filter)       ┃
 ┃               ┃                                                                                             ┃
 ┃               ┃                                                                                             ┃
 ┃               ┃ ❝ AUDIO + VIDEO MIX: ❞                                                                      ┃
-┃               ┃   yt-core audio-video-lowest --query="video/url"                              (alias: avl)  ┃
-┃               ┃   yt-core audio-video-highest --query="video/url"                             (alias: avh)  ┃
+┃               ┃   yt-dlp audio-video-lowest --query="video/url"                              (alias: avl)  ┃
+┃               ┃   yt-dlp audio-video-highest --query="video/url"                             (alias: avh)  ┃
 ┃               ┃─────────────────────────────────────────────────────────────────────────────────────────────┃
-┃   IMPORTING   ┃   import ytdlp from "yt-core";                                            TypeScript (ts)   ┃
-┃               ┃   import ytdlp from "yt-core";                                            ECMAScript (esm)  ┃
-┃               ┃   const ytdlp = require("yt-core");                                       CommonJS   (cjs)  ┃
+┃   IMPORTING   ┃   import ytdlp from "yt-dlp";                                            TypeScript (ts)   ┃
+┃               ┃   import ytdlp from "yt-dlp";                                            ECMAScript (esm)  ┃
+┃               ┃   const ytdlp = require("yt-dlp");                                       CommonJS   (cjs)  ┃
 ┃               ┃─────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃ INFO GRABBERS ┃   ytdlp.info.help();                                                                        ┃
 ┃               ┃   ytdlp.info.search({ query: "" });                                                         ┃

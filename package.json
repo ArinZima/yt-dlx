@@ -1,13 +1,13 @@
 {
-  "name": "yt-core",
-  "version": "4.5.0",
+  "name": "yt-dlp",
+  "version": "20.0.0",
   "types": "project/index.d.ts",
   "main": "project/index.cjs.js",
   "module": "project/index.esm.js",
-  "description": "Effortless audio-video download and streaming. yt-core does the heavy load for free.",
+  "description": "Effortless audio-video download and streaming. yt-dlp does the heavy load for free.",
   "bin": {
     "yt": "project/cli/main.js",
-    "yt-core": "project/cli/main.js"
+    "yt-dlp": "project/cli/main.js"
   },
   "scripts": {
     "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
@@ -15,7 +15,7 @@
     "clean": "rm -rf node_modules temp project && cd frontend && rm -rf node_modules .next",
     "upload": "yarn build && yarn publish --access=public && yarn rebuild",
     "cli": "yarn yt version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
-    "relink": "yarn build && yarn unlink && yarn link && yarn link yt-core && yarn cli",
+    "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
     "test:fresh": "yarn rebuild && yarn test && yarn test",
     "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
@@ -46,7 +46,6 @@
     "url": "https://mixly-shovitdutta.koyeb.app/pkg"
   },
   "keywords": [
-    "yt-core",
     "yt-dlp",
     "ytdlp",
     "cli",
@@ -66,7 +65,6 @@
     "readline-sync": "^1.4.10",
     "spinnies": "^0.5.1",
     "stream": "^0.0.2",
-    "yt-core": "^4.4.0",
     "yt-search": "^2.10.4",
     "ytdl-core": "^4.11.5",
     "zod": "^3.22.4"

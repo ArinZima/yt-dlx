@@ -1,6 +1,6 @@
 // import * as fs from "fs";
 import async from "async";
-import ytCore from "../..";
+import ytDlp from "../..";
 import colors from "colors";
 import * as chai from "chai";
 
@@ -14,13 +14,13 @@ const playlistUrls = [
       runTest: async () => {
         console.log(
           colors.bold.yellow("\n\nTEST: ") +
-            "<( ytCore.audio.playlist.highest({ " +
+            "<( ytDlp.audio.playlist.highest({ " +
             colors.italic.yellow(
               "playlistUrls: [''], outputFormat: 'mp3', folderName: 'temp', stream: false"
             ) +
             " })>"
         );
-        metaTube = await ytCore.audio.playlist.highest({
+        metaTube = await ytDlp.audio.playlist.highest({
           outputFormat: "mp3",
           folderName: "temp",
           stream: false,
@@ -31,7 +31,7 @@ const playlistUrls = [
             chai.expect(metaTube.status).to.equal(200);
             console.log(
               colors.bold.green("\nPASS: ") +
-                "<( ytCore.audio.playlist.highest({ " +
+                "<( ytDlp.audio.playlist.highest({ " +
                 colors.italic.green(
                   "playlistUrls: [''], outputFormat: 'mp3', folderName: 'temp', stream: false"
                 ) +
@@ -53,13 +53,13 @@ const playlistUrls = [
     // runTest: async () => {
     // console.log(
     // colors.bold.yellow("\n\nTEST: ") +
-    // "<( ytCore.audio.playlist.highest({ " +
+    // "<( ytDlp.audio.playlist.highest({ " +
     // colors.italic.yellow(
     // "playlistUrls: [''], filter: 'superspeed', outputFormat: 'mp3', folderName: 'temp', stream: true"
     // ) +
     // " })>"
     // );
-    // metaTube = await ytCore.audio.playlist.highest({
+    // metaTube = await ytDlp.audio.playlist.highest({
     // filter: "superspeed",
     // outputFormat: "mp3",
     // folderName: "temp",
@@ -72,7 +72,7 @@ const playlistUrls = [
     // metaTube.stream.pipe(fs.createWriteStream(metaTube.filename));
     // console.log(
     // colors.bold.green("\nPASS: ") +
-    // "<( ytCore.audio.playlist.highest({ " +
+    // "<( ytDlp.audio.playlist.highest({ " +
     // colors.italic.green(
     // "playlistUrls: [''], filter: 'superspeed', outputFormat: 'mp3', folderName: 'temp', stream: true"
     // ) +

@@ -1,6 +1,6 @@
 import ytcprox from "./ytcprox";
 
-export default async function ytCore(query: string): Promise<string | null> {
+export default async function ytdlp(query: string): Promise<string | null> {
   try {
     const response = await ytcprox({
       query,

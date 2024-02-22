@@ -1,6 +1,6 @@
 import colors from "colors";
 import scrape from "./scrape";
-import ytCore from "./ytCore";
+import ytDlp from "./ytdlp";
 import YouTubeID from "@shovit/ytid";
 import { version } from "../../package.json";
 
@@ -9,10 +9,10 @@ export default async function Engine({
 }: {
   query: string;
 }): Promise<any | null> {
-  let videoId: string | null, TubeCore: any, TubeBody: any;
+  let videoId: string | null, TubeDlp: any, TubeBody: any;
   console.log(
     colors.bold.green("\n\nINFO: ") +
-      `⭕ using yt-core version <(${version})>` +
+      `⭕ using yt-dlp version <(${version})>` +
       colors.reset("")
   );
   if (!query || query.trim() === "") {
@@ -51,7 +51,7 @@ export default async function Engine({
           `📡preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
           colors.reset("")
       );
-      TubeCore = await ytCore(TubeBody.Link);
+      TubeDlp = await ytDlp(TubeBody.Link);
       break;
     default:
       TubeBody = await scrape(videoId);
@@ -68,10 +68,10 @@ export default async function Engine({
           `📡preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
           colors.reset("")
       );
-      TubeCore = await ytCore(TubeBody[0].Link);
+      TubeDlp = await ytDlp(TubeBody[0].Link);
       break;
   }
-  switch (TubeCore) {
+  switch (TubeDlp) {
     case null:
       console.log(
         colors.bold.red("ERROR: ") +
@@ -82,8 +82,8 @@ export default async function Engine({
     default:
       console.log(
         colors.bold.green("INFO:"),
-        "❣️ Thank you for using yt-core! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-core"
+        "❣️ Thank you for using yt-dlp! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlp"
       );
-      return JSON.parse(TubeCore);
+      return JSON.parse(TubeDlp);
   }
 }

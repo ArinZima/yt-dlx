@@ -2,7 +2,7 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytCore from "../../base/agent";
+import ytDlp from "../../base/agent";
 import scrape from "../../base/scrape";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
@@ -76,7 +76,7 @@ export default async function ListAudioLowest(
       const TubeBody: string | null = await scrape(i.videoId);
       if (TubeBody === null) continue;
       const parseTube = await JSON.parse(TubeBody);
-      const metaBody = await ytCore({
+      const metaBody = await ytDlp({
         query: parseTube.Link,
       });
       if (metaBody === null) continue;
@@ -129,67 +129,67 @@ export default async function ListAudioLowest(
       switch (filter) {
         case "bassboost":
           ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-          metaName = `yt-core-(AudioLowest_bassboost)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_bassboost)-${title}.${outputFormat}`;
           break;
         case "echo":
           ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-          metaName = `yt-core-(AudioLowest_echo)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_echo)-${title}.${outputFormat}`;
           break;
         case "flanger":
           ytc.withAudioFilter(["flanger"]);
-          metaName = `yt-core-(AudioLowest_flanger)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_flanger)-${title}.${outputFormat}`;
           break;
         case "nightcore":
           ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-          metaName = `yt-core-(AudioLowest_nightcore)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_nightcore)-${title}.${outputFormat}`;
           break;
         case "panning":
           ytc.withAudioFilter(["apulsator=hz=0.08"]);
-          metaName = `yt-core-(AudioLowest_panning)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_panning)-${title}.${outputFormat}`;
           break;
         case "phaser":
           ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
-          metaName = `yt-core-(AudioLowest_phaser)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_phaser)-${title}.${outputFormat}`;
           break;
         case "reverse":
           ytc.withAudioFilter(["areverse"]);
-          metaName = `yt-core-(AudioLowest_reverse)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_reverse)-${title}.${outputFormat}`;
           break;
         case "slow":
           ytc.withAudioFilter(["atempo=0.8"]);
-          metaName = `yt-core-(AudioLowest_slow)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_slow)-${title}.${outputFormat}`;
           break;
         case "speed":
           ytc.withAudioFilter(["atempo=2"]);
-          metaName = `yt-core-(AudioLowest_speed)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_speed)-${title}.${outputFormat}`;
           break;
         case "subboost":
           ytc.withAudioFilter(["asubboost"]);
-          metaName = `yt-core-(AudioLowest_subboost)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_subboost)-${title}.${outputFormat}`;
           break;
         case "superslow":
           ytc.withAudioFilter(["atempo=0.5"]);
-          metaName = `yt-core-(AudioLowest_superslow)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_superslow)-${title}.${outputFormat}`;
           break;
         case "superspeed":
           ytc.withAudioFilter(["atempo=3"]);
-          metaName = `yt-core-(AudioLowest_superspeed)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_superspeed)-${title}.${outputFormat}`;
           break;
         case "surround":
           ytc.withAudioFilter(["surround"]);
-          metaName = `yt-core-(AudioLowest_surround)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_surround)-${title}.${outputFormat}`;
           break;
         case "vaporwave":
           ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-          metaName = `yt-core-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
           break;
         case "vibrato":
           ytc.withAudioFilter(["vibrato=f=6.5"]);
-          metaName = `yt-core-(AudioLowest_vibrato)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest_vibrato)-${title}.${outputFormat}`;
           break;
         default:
           ytc.withAudioFilter([]);
-          metaName = `yt-core-(AudioLowest)-${title}.${outputFormat}`;
+          metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
           break;
       }
       switch (true) {

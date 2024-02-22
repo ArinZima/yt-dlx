@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytCore from "../../base/agent";
+import ytDlp from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
@@ -40,7 +40,7 @@ export default async function AudioVideoLowest(
       outputFormat = "mp4",
     } = AudioVideoLowestInputSchema.parse(input);
 
-    const metaBody = await ytCore({ query });
+    const metaBody = await ytDlp({ query });
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
@@ -51,7 +51,7 @@ export default async function AudioVideoLowest(
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaName: string = `yt-core_(AudioVideoLowest)_${title}.${outputFormat}`;
+    const metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
     const metaFold = folderName
       ? path.join(process.cwd(), folderName)
       : process.cwd();

@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import async from "async";
-import ytCore from "../..";
+import ytDlp from "../..";
 import colors from "colors";
 import * as chai from "chai";
 
@@ -11,13 +11,13 @@ import * as chai from "chai";
       runTest: async () => {
         console.log(
           colors.bold.yellow("\n\nTEST: ") +
-            "<( ytCore.video.single.lowest({ " +
+            "<( ytDlp.video.single.lowest({ " +
             colors.italic.yellow(
               "query: 'SuaeRys5tTc', outputFormat: 'mp4', folderName: 'temp', stream: false"
             ) +
             " })>"
         );
-        metaTube = await ytCore.video.single.lowest({
+        metaTube = await ytDlp.video.single.lowest({
           query: "SuaeRys5tTc",
           outputFormat: "mp4",
           folderName: "temp",
@@ -28,7 +28,7 @@ import * as chai from "chai";
             chai.expect(metaTube.status).to.equal(200);
             console.log(
               colors.bold.green("\nPASS: ") +
-                "<( ytCore.video.single.lowest({ " +
+                "<( ytDlp.video.single.lowest({ " +
                 colors.italic.green(
                   "query: 'SuaeRys5tTc', outputFormat: 'mp4', folderName: 'temp', stream: false"
                 ) +
@@ -50,13 +50,13 @@ import * as chai from "chai";
       runTest: async () => {
         console.log(
           colors.bold.yellow("\n\nTEST: ") +
-            "<( ytCore.video.single.lowest({ " +
+            "<( ytDlp.video.single.lowest({ " +
             colors.italic.yellow(
               "query: 'SuaeRys5tTc', filter: 'grayscale', outputFormat: 'mp4', folderName: 'temp', stream: true"
             ) +
             " })>"
         );
-        metaTube = await ytCore.video.single.lowest({
+        metaTube = await ytDlp.video.single.lowest({
           query: "SuaeRys5tTc",
           filter: "grayscale",
           outputFormat: "mp4",
@@ -69,7 +69,7 @@ import * as chai from "chai";
             metaTube.stream.pipe(fs.createWriteStream(metaTube.filename));
             console.log(
               colors.bold.green("\nPASS: ") +
-                "<( ytCore.video.single.lowest({ " +
+                "<( ytDlp.video.single.lowest({ " +
                 colors.italic.green(
                   "query: 'SuaeRys5tTc', filter: 'grayscale', outputFormat: 'mp4', folderName: 'temp', stream: true"
                 ) +
