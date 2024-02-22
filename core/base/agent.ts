@@ -83,7 +83,7 @@ export default async function Engine({
           "❗no data returned from server..." +
           colors.reset("")
       );
-      return null; // Add a return statement here
+      return null;
     default:
       console.log(
         colors.bold.green("INFO:"),
