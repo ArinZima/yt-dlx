@@ -14,7 +14,7 @@
     "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
     "cli": "yarn yt-core version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
-    "clean": "yarn clean:base && clean:server && yarn clean:frontend",
+    "clean": "yarn clean:base && yarn clean:server && yarn clean:frontend",
     "clean:base": "rm -rf node_modules temp core yarn.lock",
     "clean:server": "cd server && rm -rf node_modules temp core yarn.lock",
     "clean:frontend": "cd frontend && rm -rf node_modules .next yarn.lock",
