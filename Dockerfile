@@ -34,4 +34,5 @@ RUN yarn install \
 WORKDIR /yt-dlp/server
 RUN yarn install \
     && rollup -c 'rollup.config.mjs'
-CMD ["yarn", "start"]
+WORKDIR /yt-dlp
+CMD ["yarn", "spec"]
