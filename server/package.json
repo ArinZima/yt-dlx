@@ -1,8 +1,8 @@
 {
   "name": "protube",
   "scripts": {
-    "start": "ts-node app",
-    "test": "ts-node app & ts-node app/test"
+    "start": "yarn ts-node app",
+    "test": "yarn ts-node app & yarn ts-node app/test"
   },
   "dependencies": {
     "@ngrok/ngrok": "^1.0.0",
