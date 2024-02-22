@@ -28,10 +28,10 @@
     "update:frontend": "cd frontend && yarn upgrade --latest",
     "remake": "yarn clean && yarn make && yarn update",
     "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
-    "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+    "test": "tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "cli": "yarn yt-core version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
     "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
-    "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+    "spec": "rm -rf temp && tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn remake"
   },
   "engines": {
