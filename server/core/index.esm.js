@@ -42,10 +42,14 @@ import YouTubeID from '@shovit/ytid';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 
-async function exAsync({ query, retries, }) {
+async function exAsync({ query, proxy, retries, }) {
     for (let i = 0; i < retries; i++) {
         try {
-            const proLoc = `python -m yt_dlp --dump-json '${query}'`;
+            let proLoc = "python -m yt_dlp ";
+            if (proxy)
+                proLoc += `--proxy '${proxy}' --dump-json '${query}'`;
+            else
+                proLoc += `--dump-json '${query}'`;
             const result = await promisify(exec)(proLoc);
             if (result.stderr)
                 console.error(result.stderr.toString());
@@ -98,13 +102,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/core", async (req, res) => {
     try {
         let pushTube = [];
+        let proTube;
         if (!req.query.query)
             return res.status(200).json(null);
         const query = decodeURIComponent(req.query.query);
-        const proTube = await exAsync({
-            retries: 2,
-            query,
-        });
+        if (req.query.proxy) {
+            const proxy = decodeURIComponent(req.query.proxy);
+            console.log(colors.green("with-proxy @addr:"), proxy);
+            proTube = await exAsync({
+                retries: 4,
+                proxy,
+                query,
+            });
+        }
+        else {
+            proTube = await exAsync({
+                retries: 4,
+                query,
+            });
+        }
         if (proTube === null)
             return res.status(200).json(null);
         const metaTube = await JSON.parse(proTube);
