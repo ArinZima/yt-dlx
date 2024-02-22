@@ -1,5 +1,4 @@
 FROM node:latest
-RUN hostname -I | awk '{print $1}'
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     apt-utils \
@@ -29,9 +28,4 @@ RUN playwright install \
     && playwright install-deps
 RUN git clone https://github.com/shovitdutta/yt-dlp /yt-dlp
 WORKDIR /yt-dlp
-RUN yarn install && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'
-WORKDIR /yt-dlp/frontend
-RUN yarn install && yarn build
-WORKDIR /yt-dlp/server
-RUN yarn install && rollup -c 'rollup.config.mjs'
-CMD ["yarn", "start"]
+CMD ["sh", "-c", "yarn remake && yarn start"]
