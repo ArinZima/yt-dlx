@@ -1,5 +1,6 @@
 console.clear();
-import ytCore from ".";
+// import ytCore from ".";
+import Agent from "./base/agent";
 // import * as async from "async";
 // import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 // import ListAudioHighest from "./pipes/audio/ListAudioHighest";
@@ -13,11 +14,10 @@ import ytCore from ".";
 
 (async () => {
   try {
-    await ytCore.audio.single.lowest({
+    const data = await Agent({
       query: "wWR0VD6qgt8",
-      folderName: "temp",
-      verbose: false,
     });
+    console.log(data);
   } catch (error) {
     console.error(error);
   }

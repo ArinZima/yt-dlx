@@ -9,7 +9,7 @@ export default async function Engine({
 }: {
   query: string;
 }): Promise<any | null> {
-  let videoId: string | null, TubeCore: any, TubeBody;
+  let videoId: string | null, TubeCore: any, TubeBody: any;
   console.log(
     colors.bold.green("\n\nINFO: ") +
       `⭕ using yt-core version <(${version})>` +
@@ -20,8 +20,7 @@ export default async function Engine({
       colors.bold.red("ERROR: ") + "❗'query' is required..." + colors.reset("")
     );
     return null;
-  }
-  if (/https/i.test(query) && /list/i.test(query)) {
+  } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
       colors.bold.red("ERROR: ") +
         "❗use extract_playlist_videos() for playlists..." +
@@ -36,7 +35,6 @@ export default async function Engine({
     );
     videoId = await YouTubeID(query);
   } else videoId = await YouTubeID(query);
-
   switch (videoId) {
     case null:
       TubeBody = await scrape(query);
@@ -47,14 +45,13 @@ export default async function Engine({
             colors.reset("")
         );
         return null;
-      }
-      TubeBody = JSON.parse(TubeBody);
+      } else TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("INFO: ") +
-          `📡preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
+          `📡preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
           colors.reset("")
       );
-      TubeCore = await ytCore(TubeBody[0].Link);
+      TubeCore = await ytCore(TubeBody.Link);
       break;
     default:
       TubeBody = await scrape(videoId);
@@ -65,17 +62,15 @@ export default async function Engine({
             colors.reset("")
         );
         return null;
-      }
-      TubeBody = JSON.parse(TubeBody);
+      } else TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("INFO: ") +
-          `📡preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
+          `📡preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
           colors.reset("")
       );
-      TubeCore = await ytCore(TubeBody.Link);
+      TubeCore = await ytCore(TubeBody[0].Link);
       break;
   }
-
   switch (TubeCore) {
     case null:
       console.log(
