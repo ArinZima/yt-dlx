@@ -1,13 +1,13 @@
-import axios from "axios";
+import ytcprox from "./ytcprox";
 
 export default async function ytCore(query: string) {
-  // const host = "http://localhost:3000/core";
-  const host = "https://multiply-ample-hornet.ngrok-free.app/core";
   try {
-    const response = await axios.get(
-      host + "?query=" + encodeURIComponent(query)
-    );
-    if (response.data !== null) return decodeURIComponent(response.data);
+    const response = await ytcprox({
+      query,
+      route: "core",
+      domain: "https://casual-insect-sunny.ngrok-free.app",
+    });
+    if (response !== null) return decodeURIComponent(response);
     else return null;
   } catch (error) {
     return null;
