@@ -22,7 +22,8 @@ COPY . /yt-core
 WORKDIR /yt-core
 RUN npm install --global yarn bun \
     && yarn install \
-    && cd frontend \
+    && yarn build \
+    && cd server \
     && yarn install \
     && yarn build
 EXPOSE 8080 8000 3000
