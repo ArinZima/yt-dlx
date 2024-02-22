@@ -21,16 +21,17 @@ RUN npm install --global --force \
     yt-dlp \
     playwright \
     tsup \
+    rollup \
     ts-node \
     typescript
 RUN playwright install \
     && playwright install-deps
-WORKDIR /core
-COPY . .
+RUN git clone https://github.com/shovitdutta/yt-dlp /yt-dlp
+WORKDIR /yt-dlp
 RUN yarn install \
-    && yarn tsup --config 'tsup.config.ts' \
-    && yarn rollup -c 'rollup.config.mjs'
-WORKDIR /core/server
+    && tsup --config 'tsup.config.ts' \
+    && rollup -c 'rollup.config.mjs'
+WORKDIR /yt-dlp/server
 RUN yarn install \
-    && yarn rollup -c 'rollup.config.mjs'
+    && rollup -c 'rollup.config.mjs'
 CMD ["yarn", "start"]
