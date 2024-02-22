@@ -25,7 +25,7 @@
     "build:base": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
     "build:source": "cd source && rollup -c 'rollup.config.mjs'",
     "build:frontend": "cd frontend && yarn run build",
-    "update": "yarn run update:base && yarn run update:source && yarn run update:frontend",
+    "update": "yarn run make && yarn run update:base && yarn run update:source && yarn run update:frontend",
     "update:base": "yarn upgrade --latest",
     "update:source": "cd source && yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
