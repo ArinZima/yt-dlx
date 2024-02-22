@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async function scrape(query: string): Promise<string | null> {
   try {
-    const host = "https://yt-core-engine-shovit.koyeb.app/scrape";
+    const host = "https://multiply-ample-hornet.ngrok-free.app/scrape";
     const response = await axios.get(
       host + "?query=" + encodeURIComponent(query)
     );
