@@ -1,28 +1,28 @@
 {
   "name": "yt-dlp",
   "version": "20.1.0",
-  "types": "project/index.d.ts",
-  "main": "project/index.cjs.js",
-  "module": "project/index.esm.js",
+  "types": "core/index.d.ts",
+  "main": "core/index.cjs.js",
+  "module": "core/index.esm.js",
   "description": "Effortless audio-video download and streaming. yt-dlp does the heavy load for free.",
   "bin": {
-    "yt": "project/cli/main.js",
-    "yt-dlp": "project/cli/main.js"
+    "yt": "core/cli/main.js",
+    "yt-dlp": "core/cli/main.js"
   },
   "scripts": {
     "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
-    "clean": "rm -rf node_modules temp project && cd frontend && rm -rf node_modules .next",
+    "clean": "rm -rf node_modules temp core && cd frontend && rm -rf node_modules .next",
     "upload": "yarn build && yarn publish --access=public && yarn rebuild",
     "cli": "yarn yt version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
     "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
     "test:fresh": "yarn rebuild && yarn test && yarn test",
     "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-    "rebuild": "rm -rf node_modules project temp && cd server && rm -rf node_modules && yarn install && yarn install --cwd server && yarn upgrade --latest && yarn upgrade --latest --cwd server && yarn build",
+    "rebuild": "rm -rf node_modules core temp && cd server && rm -rf node_modules && yarn install && yarn install --cwd server && yarn upgrade --latest && yarn upgrade --latest --cwd server && yarn build",
     "build": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs' && npm pkg fix"
   },
   "files": [
-    "project",
+    "core",
     "LICENSE",
     "README.md",
     "yarn.lock"
