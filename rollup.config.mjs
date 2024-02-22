@@ -63,6 +63,7 @@ export default [
       "body-parser",
       "colors",
       "readline",
+      "path",
       "fs",
       "dotenv",
       "async",
