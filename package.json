@@ -32,7 +32,7 @@
     "spec": "rm -rf temp && tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "cli": "yarn link && yarn cli:test && yarn unlink",
     "cli:test": "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
-    "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn remake"
+    "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update"
   },
   "engines": {
     "node": ">=18"
