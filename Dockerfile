@@ -23,8 +23,8 @@ WORKDIR /core
 RUN npm install --global --force yarn bun yt-dlp \
     && yarn global add playwright npm tsup ts-node typescript \
     && playwright install \
-    && playwright install-deps \
-    yarn remake
+    && playwright install-deps
+RUN yarn clean && yarn make && yarn update
 # RUN yarn clean:base && yarn clean:server
 # RUN yarn make:base && yarn make:server
 # RUN yarn build:base && yarn build:server
