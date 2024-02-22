@@ -1,6 +1,5 @@
 temp
 .venv
-server
 frontend
 **/*.env
 .env*.local
