@@ -34,12 +34,6 @@
     "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn remake"
   },
-  "files": [
-    "core",
-    "LICENSE",
-    "README.md",
-    "yarn.lock"
-  ],
   "engines": {
     "node": ">=18"
   },
