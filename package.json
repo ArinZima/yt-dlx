@@ -10,16 +10,18 @@
     "yt-dlp": "core/cli/main.js"
   },
   "scripts": {
-    "upload": "yarn build && npm pkg fix && yarn publish --access=public && yarn rebuild",
-    "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
-    "clean": "rm -rf node_modules temp core && cd frontend && rm -rf node_modules .next && cd server && rm -rf node_modules temp core",
-    "cli": "yarn yt version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
     "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
+    "cli": "yarn yt-core version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
+    "clean": "yarn clean:frontend && yarn clean:server",
+    "clean:frontend": "rm -rf frontend/node_modules frontend/.next",
+    "clean:server": "rm -rf server/node_modules server/temp server/core",
+    "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
     "test:fresh": "yarn rebuild && yarn test && yarn test",
     "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "build": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs' && cd server && rollup -c 'rollup.config.mjs'",
-    "rebuild": "rm -rf node_modules core temp && cd server && rm -rf node_modules && yarn install && yarn install --cwd server && yarn upgrade --latest && yarn upgrade --latest --cwd server && yarn build"
+    "rebuild": "rm -rf node_modules core temp && cd server && rm -rf node_modules && yarn install && yarn install --cwd server && yarn upgrade --latest && yarn upgrade --latest --cwd server && yarn build",
+    "upload": "yarn build && npm pkg fix && yarn publish --access=public && yarn rebuild"
   },
   "files": [
     "core",
