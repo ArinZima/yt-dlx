@@ -15,4 +15,4 @@ RUN yarn remake
 EXPOSE 8080
 EXPOSE 8000
 EXPOSE 3000
-CMD ["yarn", "start"]
+CMD ["yarn", "spec"]
