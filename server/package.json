@@ -6,7 +6,6 @@
   "module": "core/index.esm.js",
   "scripts": {
     "start": "node 'core/index.cjs.js'",
-    "build": "rollup -c 'rollup.config.mjs'",
     "test": "rm -rf temp && tsup 'app/test.ts' --outDir 'temp' && node 'temp/test.js'",
     "scrape": "rm -rf temp && tsup 'app/scrapping.ts' --outDir 'temp' && node 'temp/scrapping.js'"
   },
