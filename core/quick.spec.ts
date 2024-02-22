@@ -1,4 +1,8 @@
 console.clear();
+import AudioLowest from "./pipes/audio/AudioLowest";
+import AudioHighest from "./pipes/audio/AudioHighest";
+import VideoLowest from "./pipes/video/VideoLowest";
+import VideoHighest from "./pipes/video/VideoHighest";
 import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 import ListAudioHighest from "./pipes/audio/ListAudioHighest";
 import ListVideoLowest from "./pipes/video/ListVideoLowest";
@@ -9,6 +13,27 @@ const playlistUrls: string[] = [
 
 (async () => {
   try {
+    await AudioLowest({
+      query: "SuaeRys5tTc",
+      folderName: "temp",
+      verbose: false,
+    });
+    await AudioHighest({
+      query: "SuaeRys5tTc",
+      folderName: "temp",
+      verbose: false,
+    });
+    await VideoLowest({
+      query: "SuaeRys5tTc",
+      folderName: "temp",
+      verbose: false,
+    });
+    await VideoHighest({
+      query: "SuaeRys5tTc",
+      folderName: "temp",
+      verbose: false,
+    });
+
     await ListAudioLowest({
       folderName: "temp",
       verbose: false,
