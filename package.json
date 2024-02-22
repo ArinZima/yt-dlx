@@ -28,8 +28,8 @@
     "update:frontend": "cd frontend && yarn upgrade --latest",
     "remake": "yarn clean && yarn make && yarn update",
     "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
-    "test": "yarn start --cwd 'server' & tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
-    "spec": "yarn start --cwd 'server' & tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+    "test": "cd server && yarn start & tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+    "spec": "cd server && yarn start & tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "cli": "yarn link && yarn cli:test && yarn unlink",
     "cli:test": "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
     "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update"
