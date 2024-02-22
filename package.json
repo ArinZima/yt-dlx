@@ -10,9 +10,9 @@
     "yt-dlp": "core/cli/main.js"
   },
   "scripts": {
-    "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
-    "clean": "rm -rf node_modules temp core && cd frontend && rm -rf node_modules .next",
     "upload": "yarn build && npm pkg fix && yarn publish --access=public && yarn rebuild",
+    "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+    "clean": "rm -rf node_modules temp core && cd frontend && rm -rf node_modules .next && cd server && rm -rf node_modules temp core",
     "cli": "yarn yt version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
     "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
     "test:fresh": "yarn rebuild && yarn test && yarn test",
