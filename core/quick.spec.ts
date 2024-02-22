@@ -5,8 +5,6 @@ import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 import ListAudioHighest from "./pipes/audio/ListAudioHighest";
 import ListVideoLowest from "./pipes/video/ListVideoLowest";
 import ListVideoHighest from "./pipes/video/ListVideoHighest";
-import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
-import ListVideoQualityCustom from "./pipes/video/ListVideoQualityCustom";
 const playlistUrls: string[] = [
   "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
 ];
@@ -15,12 +13,6 @@ async.waterfall(
   [
     async (callback: (arg0: unknown) => void) => {
       try {
-        await ytCore.audio.playlist.custom({
-          folderName: "temp",
-          quality: "medium",
-          verbose: false,
-          playlistUrls,
-        });
         await ytCore.audio.playlist.highest({
           folderName: "temp",
           verbose: false,
@@ -28,13 +20,6 @@ async.waterfall(
         });
         await ytCore.audio.playlist.lowest({
           folderName: "temp",
-          verbose: false,
-          playlistUrls,
-        });
-
-        await ytCore.video.playlist.custom({
-          folderName: "temp",
-          quality: "720p",
           verbose: false,
           playlistUrls,
         });
@@ -65,12 +50,6 @@ async.waterfall(
           verbose: false,
           playlistUrls,
         });
-        await ListAudioQualityCustom({
-          folderName: "temp",
-          quality: "medium",
-          verbose: false,
-          playlistUrls,
-        });
         await ListVideoLowest({
           folderName: "temp",
           verbose: false,
@@ -78,12 +57,6 @@ async.waterfall(
         });
         await ListVideoHighest({
           folderName: "temp",
-          verbose: false,
-          playlistUrls,
-        });
-        await ListVideoQualityCustom({
-          folderName: "temp",
-          quality: "720p",
           verbose: false,
           playlistUrls,
         });
