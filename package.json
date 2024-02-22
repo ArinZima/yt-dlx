@@ -31,7 +31,7 @@
     "test": "cd source && yarn start & tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "test:spec": "cd source && yarn start & tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "test:source": "cd source && yarn start & tsup 'app/play.spec.ts' --outDir 'temp' && node 'temp/play.spec.mjs'",
-    "test:scrape": "cd source && yarn start & tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+    "test:scrape": "cd source && yarn start & tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
     "cli": "yarn link && yarn cli:test && yarn unlink",
     "cli:test": "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
     "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update"
