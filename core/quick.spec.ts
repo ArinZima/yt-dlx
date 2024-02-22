@@ -1,5 +1,4 @@
 console.clear();
-import ytCore from ".";
 import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 import ListAudioHighest from "./pipes/audio/ListAudioHighest";
 import ListVideoLowest from "./pipes/video/ListVideoLowest";
@@ -10,27 +9,6 @@ const playlistUrls: string[] = [
 
 (async () => {
   try {
-    await ytCore.audio.playlist.highest({
-      folderName: "temp",
-      verbose: false,
-      playlistUrls,
-    });
-    await ytCore.audio.playlist.lowest({
-      folderName: "temp",
-      verbose: false,
-      playlistUrls,
-    });
-    await ytCore.video.playlist.highest({
-      folderName: "temp",
-      verbose: false,
-      playlistUrls,
-    });
-    await ytCore.video.playlist.lowest({
-      folderName: "temp",
-      verbose: false,
-      playlistUrls,
-    });
-
     await ListAudioLowest({
       folderName: "temp",
       verbose: false,
