@@ -10,6 +10,9 @@
     "yt-dlp": "core/cli/main.js"
   },
   "scripts": {
+    "server": "cd source && yarn run start",
+    "remake": "yarn run clean && yarn run make && yarn run update",
+    "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
     "clean": "yarn run clean:base && yarn run clean:source && yarn run clean:frontend",
     "clean:base": "rm -rf node_modules temp core yarn.lock",
     "clean:source": "cd source && rm -rf node_modules temp core yarn.lock",
@@ -26,9 +29,6 @@
     "update:base": "yarn upgrade --latest",
     "update:source": "cd source && yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
-    "remake": "yarn run clean && yarn run make && yarn run update",
-    "setup": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
-    "server": "cd source && yarn run start",
     "spec": "tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "test": "yarn run test:base && yarn run test:source && yarn run test:scrape",
     "test:base": "yarn run server & tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
