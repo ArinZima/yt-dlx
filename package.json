@@ -18,7 +18,7 @@
     "test:fresh": "yarn rebuild && yarn test && yarn test",
     "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-    "rebuild": "rm -rf node_modules project temp && yarn install && yarn upgrade --latest && yarn build",
+    "rebuild": "rm -rf node_modules project temp && cd server && rm -rf node_modules && yarn install && yarn install --cwd server && yarn upgrade --latest && yarn upgrade --latest --cwd server && yarn build",
     "build": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs' && npm pkg fix"
   },
   "files": [
