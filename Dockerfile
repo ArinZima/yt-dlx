@@ -27,5 +27,4 @@ RUN npm install --global --force yarn bun yt-dlp \
 RUN yarn clean:base && yarn clean:server
 RUN yarn make:base && yarn make:server
 RUN yarn build:base && yarn build:server
-RUN yarn spec
 CMD ["yarn", "spec"]
