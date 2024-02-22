@@ -31,6 +31,6 @@ WORKDIR /yt-dlp
 # RUN yarn install && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'
 # WORKDIR /yt-dlp/frontend
 # RUN yarn install && yarn build
-# WORKDIR /yt-dlp/server
+# WORKDIR /yt-dlp/source
 # RUN yarn install && rollup -c 'rollup.config.mjs'
 CMD ["sh", "-c", "yarn remake && yarn start"]

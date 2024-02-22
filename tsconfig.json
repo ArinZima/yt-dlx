@@ -31,5 +31,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["app/**/*.ts"],
-  "exclude": ["node_modules", "server"]
+  "exclude": ["node_modules", "source"]
 }
