@@ -173,7 +173,7 @@ function help() {
 
 async function scrape(query) {
     try {
-        const host = "http://localhost:3000/scrape";
+        const host = "https://yt-core-engine-shovit.koyeb.app/scrape";
         const response = await axios.get(host + "?query=" + encodeURIComponent(query));
         if (response.data !== null)
             return decodeURIComponent(response.data);
@@ -214,7 +214,8 @@ async function search({ query }) {
 }
 
 async function ytCore$1(query) {
-    const host = "http://localhost:3000/core";
+    // const host = "http://localhost:3000/core";
+    const host = "https://yt-core-engine-shovit.koyeb.app/core";
     try {
         const response = await axios.get(host + "?query=" + encodeURIComponent(query));
         if (response.data !== null)
