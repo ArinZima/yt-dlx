@@ -11,7 +11,7 @@
   },
   "scripts": {
     "server": "cd source && yarn run start",
-    "setup": "chmod +x linux-setup.sh && linux-setup.sh",
+    "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "yarn run clean && yarn run make && yarn run build",
     "clean": "yarn run clean:base && yarn run clean:source && yarn run clean:frontend",
     "clean:base": "rm -rf node_modules temp core yarn.lock",
