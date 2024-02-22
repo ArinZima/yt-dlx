@@ -18,9 +18,12 @@ RUN apt-get update \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install --global yarn bun
-COPY . /base
-WORKDIR /base
+COPY . /core
+WORKDIR /core
+RUN npm install --global --force yarn bun yt-dlp \
+    && yarn global add playwright npm tsup ts-node typescript \
+    && playwright install \
+    && playwright install-deps
 RUN yarn clean:base && yarn clean:server
 RUN yarn make:base && yarn make:server
 RUN yarn build:base && yarn build:server
