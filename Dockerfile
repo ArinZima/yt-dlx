@@ -28,4 +28,5 @@ RUN yarn clean && yarn make && yarn update
 # RUN yarn clean:base && yarn clean:server
 # RUN yarn make:base && yarn make:server
 # RUN yarn build:base && yarn build:server
-CMD ["yarn", "spec"]
+WORKDIR /core/server
+CMD ["yarn", "start"]
