@@ -1,24 +1,38 @@
-import server from "../app";
+import cors from "cors";
 import colors from "colors";
+import helmet from "helmet";
+import morgan from "morgan";
+import express from "express";
 import search from "yt-search";
+import ngrok from "@ngrok/ngrok";
 import exAsync from "./exAsync";
 import YouTubeID from "@shovit/ytid";
+import bodyParser from "body-parser";
 import sizeFormat from "./sizeFormat";
 import formatCount from "./formatCount";
-import TubeFormat from "../interface/TubeFormat";
-import TubeConfig from "../interface/TubeConfig";
-import metaTubeConfig from "../interface/metaTubeConfig";
+import cookieParser from "cookie-parser";
+import type TubeFormat from "../interface/TubeFormat";
+import type TubeConfig from "../interface/TubeConfig";
+import type metaTubeConfig from "../interface/metaTubeConfig";
 
-server.get("/core", async (req, res) => {
+const app = express();
+app.use(cors());
+app.use(helmet());
+app.use(morgan("dev"));
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get("/core", async (req, res) => {
   try {
     let pushTube: any[] = [];
-    if (!req.query.query) return res.status(200).send(null);
+    if (!req.query.query) return res.status(200).json(null);
     const query = decodeURIComponent(req.query.query as string);
     const proTube: string | null = await exAsync({
       retries: 2,
       query,
     });
-    if (proTube === null) return res.status(200).send(null);
+    if (proTube === null) return res.status(200).json(null);
     const metaTube = await JSON.parse(proTube);
     await metaTube.formats.forEach((ipop: TubeFormat) => {
       const rmval = new Set(["storyboard", "Default"]);
@@ -102,7 +116,7 @@ server.get("/core", async (req, res) => {
         }
       }
     });
-    return res.status(200).send({
+    return res.status(200).json({
       AudioTube:
         pushTube
           .filter((item) => item.Tube === "AudioTube")
@@ -122,17 +136,13 @@ server.get("/core", async (req, res) => {
     });
   } catch (error) {
     console.log(new Date().toLocaleString(), colors.bold.red("ERROR:"), error);
-    return res.status(200).send(null);
+    return res.status(200).json(null);
   }
 });
-
-server.get("/scrape", async (req, res) => {
+app.get("/scrape", async (req, res) => {
   try {
+    let meta: any;
     let videoId: string | null;
-    let meta:
-      | search.PlaylistMetadataResult
-      | search.VideoMetadataResult
-      | search.SearchResult;
     let metaTube: metaTubeConfig[] = [];
     const query: string = decodeURIComponent(req.query.query as string);
     const PlaylistRegex =
@@ -141,17 +151,13 @@ server.get("/scrape", async (req, res) => {
       /(https?:\/\/(www\.)?youtube\.com\/watch\?(?!.*v=)[a-zA-Z0-9]+|https:\/\/youtu\.be\/[a-zA-Z0-9\-_])/;
     switch (true) {
       case !req.query.query:
-        return res.status(200).send(null);
+        res.status(200).json(null);
+        break;
       case PlaylistRegex.test(query):
-        console.info(
-          new Date().toLocaleString(),
-          colors.bold.yellow("INFO:"),
-          "is a playlist link"
-        );
         const playlistId = await YouTubeID(query);
         if (playlistId) {
           meta = await search({ listId: playlistId });
-          return res.status(200).send({
+          return res.status(200).json({
             Link: meta.url,
             Title: meta.title,
             UploadDate: meta.date,
@@ -161,21 +167,16 @@ server.get("/scrape", async (req, res) => {
             ChannelLink: meta.author.url,
             ViewCount: formatCount(meta.views),
             ThumbnailLink: meta.image || meta.thumbnail,
-            Videos: meta.videos.map((meta) => ({
+            Videos: meta.videos.map((meta: { videoId: any; title: any }) => ({
               videoId: meta.videoId,
               Title: meta.title,
             })),
           });
-        } else return res.status(200).send(null);
+        } else return res.status(200).json(null);
       case /^PL?[a-zA-Z0-9_-]+$/.test(query):
-        console.info(
-          new Date().toLocaleString(),
-          colors.bold.yellow("INFO:"),
-          "is a playlist id"
-        );
         meta = await search({ listId: query });
         if (meta) {
-          return res.status(200).send({
+          return res.status(200).json({
             Link: meta.url,
             Title: meta.title,
             UploadDate: meta.date,
@@ -185,22 +186,17 @@ server.get("/scrape", async (req, res) => {
             ChannelLink: meta.author.url,
             ViewCount: formatCount(meta.views),
             ThumbnailLink: meta.image || meta.thumbnail,
-            Videos: meta.videos.map((meta) => ({
+            Videos: meta.videos.map((meta: { videoId: any; title: any }) => ({
               videoId: meta.videoId,
               Title: meta.title,
             })),
           });
-        } else return res.status(200).send(null);
+        } else return res.status(200).json(null);
       case VideoRegex.test(query):
-        console.info(
-          new Date().toLocaleString(),
-          colors.bold.yellow("INFO:"),
-          "is a video link"
-        );
         videoId = await YouTubeID(query);
         if (videoId) {
           meta = await search({ videoId });
-          return res.status(200).send({
+          return res.status(200).json({
             Link: meta.url,
             Title: meta.title,
             UploadDate: meta.ago,
@@ -212,16 +208,11 @@ server.get("/scrape", async (req, res) => {
             ViewCount: formatCount(meta.views),
             ThumbnailLink: meta.image || meta.thumbnail,
           });
-        } else return res.status(200).send(null);
+        } else return res.status(200).json(null);
       case /^[a-zA-Z0-9_-]{11}$/.test(query):
-        console.info(
-          new Date().toLocaleString(),
-          colors.bold.yellow("INFO:"),
-          "is a video id"
-        );
         meta = await search({ videoId: query });
         if (meta) {
-          return res.status(200).send({
+          return res.status(200).json({
             Link: meta.url,
             Title: meta.title,
             UploadDate: meta.ago,
@@ -233,13 +224,8 @@ server.get("/scrape", async (req, res) => {
             ViewCount: formatCount(meta.views),
             ThumbnailLink: meta.image || meta.thumbnail,
           });
-        } else return res.status(200).send(null);
+        } else return res.status(200).json(null);
       default:
-        console.info(
-          new Date().toLocaleString(),
-          colors.bold.yellow("INFO:"),
-          "is query"
-        );
         meta = await search(query);
         if (meta) {
           for (let i = 0; i < meta.videos.length; i++) {
@@ -256,11 +242,32 @@ server.get("/scrape", async (req, res) => {
               ThumbnailLink: meta.videos[i].image || meta.videos[i].thumbnail,
             });
           }
-          return res.status(200).send(metaTube);
-        } else return res.status(200).send(null);
+          return res.status(200).json(metaTube);
+        } else return res.status(200).json(null);
     }
   } catch (error) {
     console.log(new Date().toLocaleString(), colors.bold.red("ERROR:"), error);
-    return res.status(200).send(null);
+    return res.status(200).json(null);
   }
 });
+
+const port = process.env.PORT || 8080;
+const server = app.listen(port, async () => {
+  console.log(colors.green("express @port:"), port);
+  const ng = await ngrok.connect({
+    addr: port,
+    domain: "casual-insect-sunny.ngrok-free.app",
+    key: "2ciOiqJgbB4WYJLE5D2r7E69ZZc_3T1do81AnZCe2GRHWNKhn",
+    authtoken: "2ciO4xagu003RCLd9oHR2kNwlu7_aAaBTHudAQV89KRri8RS",
+  });
+  console.log(colors.green("proxy @url:"), ng.url());
+});
+
+async function handleSIGINT() {
+  await new Promise((resolve) => {
+    server.close(resolve);
+    ngrok.disconnect();
+  });
+  process.exit(0);
+}
+process.on("SIGINT", handleSIGINT);

@@ -1,5 +1,6 @@
 import colors from "colors";
-import { Browser, chromium } from "playwright";
+import { chromium } from "playwright";
+import type { Browser } from "playwright";
 
 async function ytcprox({ query, route, domain }: any) {
   const browser: Browser = await chromium.launch({ headless: true });
