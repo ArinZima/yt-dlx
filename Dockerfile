@@ -1,4 +1,5 @@
 FROM node:latest
+RUN hostname -I | awk '{print $1}'
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     apt-utils \
