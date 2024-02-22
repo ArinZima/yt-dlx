@@ -12,14 +12,15 @@ import ytCore from ".";
 // ];
 
 (async () => {
-  await ytCore.audio.playlist.custom({
-    folderName: "temp",
-    quality: "medium",
-    verbose: false,
-    playlistUrls: [
-      "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=9U7vYacjbIfSOKr3",
-    ],
-  });
+  try {
+    await ytCore.audio.single.lowest({
+      query: "wWR0VD6qgt8",
+      folderName: "temp",
+      verbose: false,
+    });
+  } catch (error) {
+    console.error(error);
+  }
 })();
 
 // async.waterfall(
