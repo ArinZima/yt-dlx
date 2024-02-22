@@ -24,9 +24,9 @@ RUN npm install --global --force yarn bun yt-dlp \
     && yarn global add playwright npm tsup ts-node typescript \
     && playwright install \
     && playwright install-deps
-RUN yarn clean && yarn make && yarn update
-# RUN yarn clean:base && yarn clean:server
-# RUN yarn make:base && yarn make:server
-# RUN yarn build:base && yarn build:server
+RUN yarn tsup --config 'tsup.config.ts' 
+RUN yarn rollup -c 'rollup.config.mjs'
 WORKDIR /core/server
+RUN yarn install
+RUN yarn rollup -c 'rollup.config.mjs'
 CMD ["yarn", "start"]
