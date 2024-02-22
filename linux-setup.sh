@@ -1,14 +1,20 @@
 #!/bin/bash
 
-log_file="/var/log/script.log"
+NC='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+
 log_error() {
     local message="$1"
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - ERROR: $message" >> "$log_file"
+    echo -e "$(date +'%Y-%m-%d %H:%M:%S') - ${RED}ERROR:${NC} $message"
 }
+
 log_info() {
     local message="$1"
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - INFO: $message" >> "$log_file"
+    echo -e "$(date +'%Y-%m-%d %H:%M:%S') - ${GREEN}INFO:${NC} $message"
 }
+
 run_command() {
     local command="$1"
     local error_message="$2"
@@ -32,4 +38,4 @@ run_command "sudo yarn global add playwright npm yt-dlp tsup ts-node typescript"
 run_command "playwright install" "Failed to install Playwright dependencies"
 run_command "playwright install-deps" "Failed to install Playwright dependencies"
 run_command "yarn remake" "Failed to run yarn remake"
-log_info "Script execution completed"
+echo -e "${GREEN}Script execution completed${NC}"
