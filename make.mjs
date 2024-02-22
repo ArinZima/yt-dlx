@@ -7,7 +7,7 @@ const rl = readline.createInterface({
 });
 
 rl.question(
-  "What operation do you want to perform? (clean/build/make/update/remake/setup/test/spec/cli/upload)\n",
+  "What operation do you want to perform?\n (clean/build/make/update/remake/setup/test/spec/cli/upload)\n\n",
   (answer) => {
     switch (answer.trim()) {
       case "clean":
