@@ -481,6 +481,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/estree@0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
+  integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
+
 "@types/estree@1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
@@ -549,6 +554,14 @@
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.7.tgz#50ae4353eaaddc04044279812f52c8c65857dbcb"
   integrity sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==
+
+"@types/rollup-plugin-progress@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@types/rollup-plugin-progress/-/rollup-plugin-progress-1.1.4.tgz#c38d4aeab7b993b0eb9c69ecf0532a139bad30aa"
+  integrity sha512-HvHdpsC/1RmT7B5YYOQQW7SBta1zOp1ieEMui6ByC6AQXHzU5WWrldek5OwtvWRN/H+M21PCB+fOT/1YdYI3yw==
+  dependencies:
+    "@types/node" "*"
+    rollup "^0.63.4"
 
 "@types/send@*":
   version "0.17.4"
@@ -2575,6 +2588,14 @@ rollup-plugin-visualizer@^5.12.0:
     picomatch "^2.3.1"
     source-map "^0.7.4"
     yargs "^17.5.1"
+
+rollup@^0.63.4:
+  version "0.63.5"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.63.5.tgz#5543eecac9a1b83b7e1be598b5be84c9c0a089db"
+  integrity sha512-dFf8LpUNzIj3oE0vCvobX6rqOzHzLBoblyFp+3znPbjiSmSvOoK2kMKx+Fv9jYduG1rvcCfCveSgEaQHjWRF6g==
+  dependencies:
+    "@types/estree" "0.0.39"
+    "@types/node" "*"
 
 rollup@^4.0.2, rollup@^4.12.0:
   version "4.12.0"

@@ -1,5 +1,4 @@
 import typescript from "rollup-plugin-typescript2";
-import visualizer from "rollup-plugin-visualizer";
 import progress from "rollup-plugin-progress";
 import json from "@rollup/plugin-json";
 import dts from "rollup-plugin-dts";
@@ -55,7 +54,6 @@ export default [
     plugins: [
       json(),
       progress(),
-      visualizer(),
       typescript({
         tsconfig: "./tsconfig.json",
       }),
@@ -79,7 +77,7 @@ export default [
     ],
   },
   {
-    plugins: [dts(), progress(), visualizer()],
+    plugins: [dts(), progress()],
     input: "app/index.ts",
     output: [
       {
