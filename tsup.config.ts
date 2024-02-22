@@ -1,9 +1,9 @@
 import * as tsup from "tsup";
 
 export default tsup.defineConfig({
-  entry: ["core/cli/**/*.ts"],
+  entry: ["app/cli/**/*.ts"],
   format: ["cjs", "esm"],
-  outDir: "project/cli",
+  outDir: "core/cli",
   platform: "node",
   minifyIdentifiers: false,
   minifyWhitespace: false,

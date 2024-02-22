@@ -30,6 +30,6 @@
     "strictPropertyInitialization": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["base/**/*.ts"],
+  "include": ["app/**/*.ts"],
   "exclude": ["node_modules"]
 }
