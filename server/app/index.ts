@@ -26,12 +26,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/core", async (req, res) => {
   try {
     let pushTube: any[] = [];
+    let proTube: string | null;
     if (!req.query.query) return res.status(200).json(null);
     const query = decodeURIComponent(req.query.query as string);
-    const proTube: string | null = await exAsync({
-      retries: 2,
-      query,
-    });
+    if (req.query.proxy) {
+      const proxy: string = decodeURIComponent(req.query.proxy as string);
+      console.log(colors.green("with-proxy @addr:"), proxy);
+      proTube = await exAsync({
+        retries: 4,
+        proxy,
+        query,
+      });
+    } else {
+      proTube = await exAsync({
+        retries: 4,
+        query,
+      });
+    }
     if (proTube === null) return res.status(200).json(null);
     const metaTube = await JSON.parse(proTube);
     await metaTube.formats.forEach((ipop: TubeFormat) => {

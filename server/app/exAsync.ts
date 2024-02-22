@@ -4,11 +4,14 @@ import type ExAsyncParams from "./interface/ExAsyncParams";
 
 export default async function exAsync({
   query,
+  proxy,
   retries,
 }: ExAsyncParams): Promise<string | null> {
   for (let i = 0; i < retries; i++) {
     try {
-      const proLoc = `python -m yt_dlp --dump-json '${query}'`;
+      let proLoc: string = "python -m yt_dlp ";
+      if (proxy) proLoc += `--proxy '${proxy}' --dump-json '${query}'`;
+      else proLoc += `--dump-json '${query}'`;
       const result = await promisify(exec)(proLoc);
       if (result.stderr) console.error(result.stderr.toString());
       return result.stdout.toString() || null;
