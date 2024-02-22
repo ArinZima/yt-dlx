@@ -15,8 +15,8 @@
     "clean:server": "cd server && rm -rf node_modules temp core yarn.lock",
     "clean:frontend": "cd frontend && rm -rf node_modules .next yarn.lock",
     "build": "yarn build:base && yarn build:server && yarn build:frontend",
-    "build:base": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs' --verbose",
-    "build:server": "cd server && rollup -c 'rollup.config.mjs' --verbose",
+    "build:base": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
+    "build:server": "cd server && rollup -c 'rollup.config.mjs'",
     "build:frontend": "cd frontend && yarn build",
     "make": "yarn make:base && yarn make:server && yarn make:frontend",
     "make:base": "yarn install",
@@ -88,6 +88,7 @@
     "rollup": "^4.12.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-typescript2": "^0.36.0",
+    "rollup-plugin-visualizer": "^5.12.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
