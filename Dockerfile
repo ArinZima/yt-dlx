@@ -21,7 +21,7 @@ RUN apt-get update \
 RUN npm install --global yarn bun
 COPY . /base
 WORKDIR /base
-RUN yarn clean:base && yarn clean:server && yarn clean:frontend
+RUN yarn clean:base && yarn clean:server
 RUN yarn build:base && yarn build:server
 RUN yarn spec
 CMD ["yarn", "spec"]
