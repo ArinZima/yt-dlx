@@ -10,10 +10,6 @@
     "yt-dlp": "core/cli/main.js"
   },
   "scripts": {
-    "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-    "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
-    "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
-    "cli": "yarn yt-core version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
     "clean": "yarn clean:base && yarn clean:server && yarn clean:frontend",
     "clean:base": "rm -rf node_modules temp core yarn.lock",
     "clean:server": "cd server && rm -rf node_modules temp core yarn.lock",
@@ -32,7 +28,11 @@
     "update:server": "cd server && yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
     "rebuild": "yarn clean && yarn make && yarn update",
-    "upload": "yarn test && yarn rebuild && npm pkg fix && yarn publish --access=public && yarn rebuild"
+    "spec": "rm -rf temp && tsup 'core/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+    "test": "tsup 'core/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+    "relink": "yarn build && yarn unlink && yarn link && yarn link yt-dlp && yarn cli",
+    "cli": "yarn yt-core version && yarn yt audio-lowest --query 'PERSONAL BY PLAZA'",
+    "upload": "yarn test && yarn cli && yarn rebuild && npm pkg fix && yarn publish --access=public && yarn rebuild"
   },
   "files": [
     "core",
