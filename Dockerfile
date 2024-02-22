@@ -18,13 +18,14 @@ RUN apt-get update \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-COPY . /yt-core
-WORKDIR /yt-core
-RUN npm install --global yarn bun \
-    && yarn install \
-    && yarn build \
-    && cd server \
-    && yarn install \
+RUN npm install --global yarn bun
+COPY . /base
+WORKDIR /base
+RUN yarn install \
+    && yarn build
+WORKDIR /base/server
+RUN yarn install \
     && yarn build
 EXPOSE 8080 8000 3000
+WORKDIR /base
 CMD ["yarn", "spec"]
