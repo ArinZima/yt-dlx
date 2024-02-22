@@ -1,5 +1,9 @@
 {
-  "name": "protube",
+  "version": "0.0.0",
+  "name": "yt-dlp-engine",
+  "types": "core/index.d.ts",
+  "main": "core/index.cjs.js",
+  "module": "core/index.esm.js",
   "scripts": {
     "start": "yarn ts-node src",
     "build": "rollup -c 'rollup.config.mjs'",
