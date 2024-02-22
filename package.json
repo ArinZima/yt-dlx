@@ -32,7 +32,7 @@
     "update:server": "cd server && yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
     "rebuild": "yarn clean && yarn make && yarn update",
-    "upload": "yarn build && npm pkg fix && yarn publish --access=public && yarn rebuild"
+    "upload": "yarn test && yarn rebuild && npm pkg fix && yarn publish --access=public && yarn rebuild"
   },
   "files": [
     "core",
