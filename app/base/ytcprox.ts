@@ -14,10 +14,8 @@ export default async function ytcprox({
 }: ytcprox): Promise<string | null> {
   const browser: Browser = await chromium.launch({ headless: true });
   try {
-    const proxy: string = "proxy";
-    const host: string = `${domain}/${route}?query=${decodeURIComponent(
-      query
-    )}&proxy=${proxy}`;
+    const item: string = decodeURIComponent(query);
+    const host: string = `${domain}/${route}?query=${item}`;
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto(host);
