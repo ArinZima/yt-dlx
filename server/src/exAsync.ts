@@ -1,0 +1,20 @@
+import { promisify } from "util";
+import { exec } from "child_process";
+import ExAsyncParams from "../interface/ExAsyncParams";
+
+export default async function exAsync({
+  query,
+  retries,
+}: ExAsyncParams): Promise<string | null> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const proLoc = `python -m yt_dlp --dump-json '${query}'`;
+      const result = await promisify(exec)(proLoc);
+      if (result.stderr) console.error(result.stderr.toString());
+      return result.stdout.toString() || null;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return null;
+}
