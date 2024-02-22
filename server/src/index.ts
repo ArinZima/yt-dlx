@@ -4,8 +4,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import express from "express";
 import search from "yt-search";
-import ngrok from "@ngrok/ngrok";
 import exAsync from "./exAsync";
+import ngrok from "@ngrok/ngrok";
 import YouTubeID from "@shovit/ytid";
 import bodyParser from "body-parser";
 import sizeFormat from "./sizeFormat";
@@ -151,8 +151,7 @@ app.get("/scrape", async (req, res) => {
       /(https?:\/\/(www\.)?youtube\.com\/watch\?(?!.*v=)[a-zA-Z0-9]+|https:\/\/youtu\.be\/[a-zA-Z0-9\-_])/;
     switch (true) {
       case !req.query.query:
-        res.status(200).json(null);
-        break;
+        return res.status(400).json({ error: "Query parameter is missing." });
       case PlaylistRegex.test(query):
         const playlistId = await YouTubeID(query);
         if (playlistId) {
@@ -250,7 +249,6 @@ app.get("/scrape", async (req, res) => {
     return res.status(200).json(null);
   }
 });
-
 const port = process.env.PORT || 8080;
 const server = app.listen(port, async () => {
   console.log(colors.green("express @port:"), port);
@@ -262,7 +260,6 @@ const server = app.listen(port, async () => {
   });
   console.log(colors.green("proxy @url:"), ng.url());
 });
-
 async function handleSIGINT() {
   await new Promise((resolve) => {
     server.close(resolve);
