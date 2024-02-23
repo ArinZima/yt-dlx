@@ -2,7 +2,11 @@ console.clear();
 import async from "async";
 import colors from "colors";
 import retry from "async-retry";
+import spinClient from "spinnies";
+import { randomUUID } from "crypto";
 import { chromium } from "playwright";
+
+const spinnies = new spinClient();
 
 async function YouTubeSearch(query) {
   const retryOptions = {
@@ -10,12 +14,15 @@ async function YouTubeSearch(query) {
     maxTimeout: 4000,
     retries: 4,
   };
+  const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
       let videos = [];
       const data = [];
       const browser = await chromium.launch({ headless: true });
-      console.log(colors.yellow("@scrape:"), "spinning chromium...");
+      spinnies.add(spin, {
+        text: colors.green("@scrape: ") + "started chromium...",
+      });
       const context = await browser.newContext({
         ignoreHTTPSErrors: true,
         serviceWorkers: "allow",
@@ -28,7 +35,9 @@ async function YouTubeSearch(query) {
         "https://www.youtube.com/results?search_query=" +
         encodeURIComponent(query);
       await page.goto(searchUrl);
-      console.log(colors.yellow("@scrape:"), "waiting for hydration...");
+      spinnies.update(spin, {
+        text: colors.yellow("@scrape: ") + "waiting for hydration...",
+      });
       while (videos.length < 40) {
         await page.waitForSelector(".ytd-video-renderer");
         const newVideos = await page.$$(
@@ -84,9 +93,14 @@ async function YouTubeSearch(query) {
       await browser.close();
       return data;
     }, retryOptions);
+    spinnies.succeed(spin, {
+      text: colors.yellow("@info: ") + "scrapping done...",
+    });
     return metaTube;
   } catch (error) {
-    console.error(colors.red("@error:"), error.message);
+    spinnies.fail(spin, {
+      text: colors.yellow("@error: ") + error.message,
+    });
     return null;
   }
 }
@@ -97,10 +111,13 @@ async function YouTubeVideo(videoUrl) {
     maxTimeout: 4000,
     retries: 4,
   };
+  const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
       const browser = await chromium.launch({ headless: true });
-      console.log(colors.yellow("@scrape:"), "spinning chromium...");
+      spinnies.add(spin, {
+        text: colors.green("@scrape: ") + "started chromium...",
+      });
       const context = await browser.newContext({
         ignoreHTTPSErrors: true,
         serviceWorkers: "allow",
@@ -110,7 +127,9 @@ async function YouTubeVideo(videoUrl) {
       });
       const page = await context.newPage();
       await page.goto(videoUrl);
-      console.log(colors.yellow("@scrape:"), "waiting for hydration...");
+      spinnies.update(spin, {
+        text: colors.yellow("@scrape: ") + "waiting for hydration...",
+      });
       await page.waitForSelector(".style-scope.ytd-watch-metadata");
       const title = await page.$eval(".style-scope.ytd-watch-metadata", (el) =>
         el.textContent.trim()
@@ -150,9 +169,14 @@ async function YouTubeVideo(videoUrl) {
       await browser.close();
       return data;
     }, retryOptions);
+    spinnies.succeed(spin, {
+      text: colors.yellow("@info: ") + "scrapping done...",
+    });
     return metaTube;
   } catch (error) {
-    console.error(colors.red("@error:"), error.message);
+    spinnies.fail(spin, {
+      text: colors.yellow("@error: ") + error.message,
+    });
     return null;
   }
 }

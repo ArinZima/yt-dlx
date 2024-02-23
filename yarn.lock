@@ -458,6 +458,11 @@
     "@types/node" "*"
     rollup "^0.63.4"
 
+"@types/spinnies@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@types/spinnies/-/spinnies-0.5.3.tgz#53530f0e7cfacc46f7992b3155a5440e5301d0ac"
+  integrity sha512-HYrOubG2TVgRQRKcW1HJ/1eJIIBpLqDoJo551McJgWdO8xzxnaxu/bPKdqC/7okoEy4ZZjy3I4/DwK1sz2OCog==
+
 "@types/yt-search@^2.10.3":
   version "2.10.3"
   resolved "https://registry.yarnpkg.com/@types/yt-search/-/yt-search-2.10.3.tgz#3cbb0fe16958b3ebb50631150a0602a48d388ded"
@@ -482,6 +487,11 @@ ansi-regex@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-3.0.1.tgz#123d6479e92ad45ad897d4054e3c7ca7db4944e1"
   integrity sha512-+O9Jct8wf++lXxxFc4hc8LsjaSq0HFzzL7cVsw8pRDIPdjKD2mT4ytDZlLuSBZ4cLKZFXIrMGO7DbQCtMJJMKw==
+
+ansi-regex@^4.1.0:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-4.1.1.tgz#164daac87ab2d6f6db3a29875e2d1766582dabed"
+  integrity sha512-ILlv4k/3f6vfQ4OoP2AGvirOktlQ98ZEL1k9FaQjxa3L1abBgbuTDAdPOpvbGncC0BTVQrl+OM8xZGK6tWXt7g==
 
 ansi-regex@^5.0.1:
   version "5.0.1"
@@ -820,6 +830,13 @@ cli-color@~1.2.0:
     es6-iterator "2"
     memoizee "^0.4.3"
     timers-ext "0.1"
+
+cli-cursor@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/cli-cursor/-/cli-cursor-3.1.0.tgz#264305a7ae490d1d03bf0c9ba7c925d1753af307"
+  integrity sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==
+  dependencies:
+    restore-cursor "^3.1.0"
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -1811,7 +1828,7 @@ on-finished@2.4.1:
   dependencies:
     ee-first "1.1.1"
 
-onetime@^5.1.2:
+onetime@^5.1.0, onetime@^5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-5.1.2.tgz#d0e96ebb56b07476df1dd9c4806e5237985ca45e"
   integrity sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
@@ -2050,6 +2067,14 @@ responselike@^3.0.0:
   dependencies:
     lowercase-keys "^3.0.0"
 
+restore-cursor@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/restore-cursor/-/restore-cursor-3.1.0.tgz#39f67c54b3a7a58cea5236d95cf0034239631f7e"
+  integrity sha512-l+sSefzHpj5qimhFSE5a8nufZYAM3sBSVMAPtYkmC+4EH2anSGaEMXSD0izRQbu9nfyQ9y5JrVmp7E8oZrUjvA==
+  dependencies:
+    onetime "^5.1.0"
+    signal-exit "^3.0.2"
+
 retry@0.13.1:
   version "0.13.1"
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.13.1.tgz#185b1587acf67919d63b357349e03537b2484658"
@@ -2180,7 +2205,7 @@ side-channel@^1.0.4:
     get-intrinsic "^1.2.4"
     object-inspect "^1.13.1"
 
-signal-exit@^3.0.3:
+signal-exit@^3.0.2, signal-exit@^3.0.3:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
@@ -2201,6 +2226,15 @@ source-map@0.8.0-beta.0:
   integrity sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==
   dependencies:
     whatwg-url "^7.0.0"
+
+spinnies@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/spinnies/-/spinnies-0.5.1.tgz#6ac88455d9117c7712d52898a02c969811819a7e"
+  integrity sha512-WpjSXv9NQz0nU3yCT9TFEOfpFrXADY9C5fG6eAJqixLhvTX1jP3w92Y8IE5oafIe42nlF9otjhllnXN/QCaB3A==
+  dependencies:
+    chalk "^2.4.2"
+    cli-cursor "^3.0.0"
+    strip-ansi "^5.2.0"
 
 statuses@2.0.1:
   version "2.0.1"
@@ -2255,6 +2289,13 @@ strip-ansi@^4.0.0:
   integrity sha512-4XaJ2zQdCzROZDivEVIDPkcQn8LMFSa8kj8Gxb/Lnwzv9A8VctNZ+lfivC/sV3ivW8ElJTERXZoPBRrZKkNKow==
   dependencies:
     ansi-regex "^3.0.0"
+
+strip-ansi@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-5.2.0.tgz#8c9a536feb6afc962bdfa5b104a5091c1ad9c0ae"
+  integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
+  dependencies:
+    ansi-regex "^4.1.0"
 
 strip-ansi@^7.0.1:
   version "7.1.0"
