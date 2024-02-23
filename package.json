@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "20.1.0",
+  "version": "1.0.1",
   "types": "proto/index.d.ts",
   "main": "proto/index.cjs.js",
   "module": "proto/index.esm.js",
