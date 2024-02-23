@@ -150,8 +150,9 @@ async function ytDlpx({
 }) {
   const browser = await chromium.launch({ headless: true });
   try {
-    const item = "query=" + decodeURIComponent(query);
-    const host = `${domain}/${route}?${item}`;
+    const host = `${decodeURIComponent(domain)}/${decodeURIComponent(
+      route
+    )}?query=${decodeURIComponent(query)}`;
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto(host);
@@ -171,7 +172,7 @@ async function ytDlpx({
               resolve(null);
           }
         } catch (error) {
-          console.log(colors17.red("response @error:"), error);
+          console.log(colors17.red("@error:"), error);
           resolve(null);
         }
       });
@@ -181,15 +182,12 @@ async function ytDlpx({
       await browser.close();
       return JSON.stringify(payLoad);
     } else {
-      console.log(colors17.red("fail @query:"), query);
       await browser.close();
       return null;
     }
   } catch (error) {
     console.log(colors17.red("@error:"), error);
     return null;
-  } finally {
-    await browser.close();
   }
 }
 
@@ -726,7 +724,7 @@ var progressBar = (prog) => {
     color = colors17.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
-    color("PROG: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("NETWORK: ") + prog.currentKbps + "kbps " + color("TIMEMARK: ") + prog.timemark
+    color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("NETWORK: ") + prog.currentKbps + "kbps " + color("TIMEMARK: ") + prog.timemark
   );
   if (prog.percent >= 99)
     process.stdout.write("\n");

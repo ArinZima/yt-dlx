@@ -197,8 +197,7 @@ function help() {
 async function ytDlpx({ query, route, domain, }) {
     const browser = await playwright.chromium.launch({ headless: true });
     try {
-        const item = "query=" + decodeURIComponent(query);
-        const host = `${domain}/${route}?${item}`;
+        const host = `${decodeURIComponent(domain)}/${decodeURIComponent(route)}?query=${decodeURIComponent(query)}`;
         const context = await browser.newContext();
         const page = await context.newPage();
         await page.goto(host);
@@ -220,7 +219,7 @@ async function ytDlpx({ query, route, domain, }) {
                     }
                 }
                 catch (error) {
-                    console.log(colors.red("response @error:"), error);
+                    console.log(colors.red("@error:"), error);
                     resolve(null);
                 }
             });
@@ -231,7 +230,6 @@ async function ytDlpx({ query, route, domain, }) {
             return JSON.stringify(payLoad);
         }
         else {
-            console.log(colors.red("fail @query:"), query);
             await browser.close();
             return null;
         }
@@ -239,9 +237,6 @@ async function ytDlpx({ query, route, domain, }) {
     catch (error) {
         console.log(colors.red("@error:"), error);
         return null;
-    }
-    finally {
-        await browser.close();
     }
 }
 
@@ -732,7 +727,7 @@ const progressBar = (prog) => {
     else if (prog.percent < 80)
         color = colors.yellow;
     const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
-    process.stdout.write(color("PROG: ") +
+    process.stdout.write(color("@prog: ") +
         sprog +
         " " +
         prog.percent.toFixed(2) +
