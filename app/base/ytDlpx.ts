@@ -34,7 +34,7 @@ export default async function ytDlpx({
     });
     return JSON.stringify(payLoad);
   } catch (error) {
-    console.log(colors.red("ERROR:"), error);
+    console.log(colors.red("@error:"), error);
     return null;
   } finally {
     await browser.close();

@@ -17,7 +17,7 @@ export default async function bigEntry(
   switch (true) {
     case !metaBody || metaBody.length === 0:
       console.log(
-        colors.bold.red("ERROR:"),
+        colors.bold.red("@error:"),
         "❗sorry no downloadable data found"
       );
       return null;
@@ -30,7 +30,7 @@ export default async function bigEntry(
         if (mediaurl && (await checkUrl(mediaurl))) return item;
       }
       console.log(
-        colors.bold.red("ERROR:"),
+        colors.bold.red("@error:"),
         "❗sorry no downloadable data found"
       );
       return null;

@@ -17,7 +17,7 @@ export default async function extract_playlist_videos({
       const ispUrl: any = url.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors.bold.red("ERROR: "),
+          colors.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           url
         );
@@ -26,7 +26,7 @@ export default async function extract_playlist_videos({
       const resp: any = await scrape(ispUrl[1]);
       if (!resp) {
         console.error(
-          colors.bold.red("ERROR: "),
+          colors.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -41,7 +41,7 @@ export default async function extract_playlist_videos({
           else proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors.bold.red("ERROR: "), error);
+          console.error(colors.bold.red("@error: "), error);
         }
       }
     }
