@@ -1,6 +1,6 @@
 console.clear();
 import readline from "readline";
-import { exec } from "child_process";
+import { spawn } from "child_process";
 
 const colors = {
   red: "\x1b[31m",
@@ -65,12 +65,20 @@ rl.question("Enter the number of the script you want to run: ", (answer) => {
     const scriptName = scriptKeys[scriptIndex];
     const command = scripts[scriptName];
     console.log(`${colors.green}@script:${colors.reset}`, scriptName);
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        return console.error(`${colors.red}@error:${colors.reset}`, error);
-      } else if (stderr) {
-        return console.error(`${colors.red}@stderr:${colors.reset}`, stderr);
-      } else console.log(`${colors.green}@stdout:${colors.reset}`, stdout);
+    const childProcess = spawn(command, {
+      shell: true,
+      stdio: "inherit",
+    });
+    childProcess.on("error", (error) => {
+      console.error(`${colors.red}@error:${colors.reset}`, error);
+    });
+    childProcess.on("exit", (code) => {
+      if (code !== 0) {
+        console.error(
+          `${colors.red}@error:${colors.reset}`,
+          `Exited with code ${code}`
+        );
+      }
     });
   } else console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
   rl.close();
