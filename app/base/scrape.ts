@@ -5,7 +5,7 @@ export default async function scrape(query: string): Promise<string | null> {
     const response = await ytDlpx({
       query,
       route: "scrape",
-      domain: "https://stirring-physically-piglet.ngrok-free.app",
+      domain: "https://firm-filly-terribly.ngrok-free.app",
     });
     if (response !== null) return decodeURIComponent(response);
     else return null;
