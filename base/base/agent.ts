@@ -11,7 +11,7 @@ export default async function Engine({
 }): Promise<any | null> {
   let videoId: string | null, TubeDlp: any, TubeBody: any;
   console.log(
-    colors.bold.green("\n\nINFO: ") +
+    colors.bold.green("@info: ") +
       `⭕ using yt-dlp version <(${version})>` +
       colors.reset("")
   );
