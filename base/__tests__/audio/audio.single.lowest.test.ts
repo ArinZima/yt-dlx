@@ -1,8 +1,8 @@
 import * as fs from "fs";
+import ytDlp from "../..";
 import fsx from "fs-extra";
 import colors from "colors";
 import * as chai from "chai";
-import ytDlp from "../../../proto";
 
 async function AutoDownloadTest() {
   try {
