@@ -1,4 +1,4 @@
-import ytDlp from "..";
+import ytDlp from "../../../proto";
 import * as fs from "fs";
 import fsx from "fs-extra";
 import colors from "colors";
@@ -7,15 +7,17 @@ import * as chai from "chai";
 async function AutoDownloadTest() {
   try {
     let holder: any;
-    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.lowest()");
+    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "query: SuaeRys5tTc");
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
+    console.log(colors.bold.yellow("@info:"), "quality: medium");
     console.log(colors.bold.yellow("@info:"), "folderName: bin");
     console.log(colors.bold.yellow("@info:"), "stream: false");
-    holder = await ytDlp.audio.single.lowest({
+    holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       folderName: "bin",
+      quality: "medium",
       stream: false,
     });
     switch (true) {
@@ -32,17 +34,19 @@ async function AutoDownloadTest() {
         await fsx.remove("bin");
         process.exit(0);
     }
-    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.lowest()");
+    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "query: SuaeRys5tTc");
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
     console.log(colors.bold.yellow("@info:"), "filter: nightcore");
+    console.log(colors.bold.yellow("@info:"), "quality: medium");
     console.log(colors.bold.yellow("@info:"), "folderName: bin");
     console.log(colors.bold.yellow("@info:"), "stream: false");
-    holder = await ytDlp.audio.single.lowest({
+    holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       filter: "nightcore",
       folderName: "bin",
+      quality: "medium",
       stream: false,
     });
     switch (true) {
@@ -68,15 +72,17 @@ async function AutoDownloadTest() {
 async function StreamingTest() {
   try {
     let holder: any;
-    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.lowest()");
+    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "query: SuaeRys5tTc");
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
+    console.log(colors.bold.yellow("@info:"), "quality: medium");
     console.log(colors.bold.yellow("@info:"), "folderName: bin");
     console.log(colors.bold.yellow("@info:"), "stream: true");
-    holder = await ytDlp.audio.single.lowest({
+    holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       folderName: "bin",
+      quality: "medium",
       stream: true,
     });
     switch (true) {
@@ -95,16 +101,18 @@ async function StreamingTest() {
         process.exit(0);
     }
 
-    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.lowest()");
+    console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "query: SuaeRys5tTc");
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
     console.log(colors.bold.yellow("@info:"), "filter: bassboost");
+    console.log(colors.bold.yellow("@info:"), "quality: medium");
     console.log(colors.bold.yellow("@info:"), "folderName: bin");
     console.log(colors.bold.yellow("@info:"), "stream: true");
-    holder = await ytDlp.audio.single.lowest({
+    holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       filter: "bassboost",
+      quality: "medium",
       folderName: "bin",
       stream: true,
     });
