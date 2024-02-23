@@ -64,7 +64,6 @@
     "yt"
   ],
   "dependencies": {
-    "@shovit/ytid": "^1.0.0",
     "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "colors": "^1.4.0",
