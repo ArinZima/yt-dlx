@@ -1,7 +1,7 @@
 /**
- * ============================================[ 📢YOUTUBE DOWNLOADER CORE <( YT-CORE )/>📹 ]====================================
- * 🚀 Unlock effortless audio/video downloads with YT-CORE—a command-line, Node.js, and streaming powerhouse.
- * 🎵 Meticulously designed for enthusiasts, YT-CORE stands ipop as a feature-rich package, evolving with state-of-the-art
+ * ============================================[ 📢YOUTUBE DOWNLOADER DLX <( YT-DLX )/>📹 ]====================================
+ * 🚀 Unlock effortless audio/video downloads with YT-DLX—a command-line, Node.js, and streaming powerhouse.
+ * 🎵 Meticulously designed for enthusiasts, YT-DLX stands ipop as a feature-rich package, evolving with state-of-the-art
  * 🔥 functionalities from Youtube-DL and Python yt-dlx.
  * 🚀 Elevate your media experience!
  * 🌈 Dive into the world of limitless possibilities.

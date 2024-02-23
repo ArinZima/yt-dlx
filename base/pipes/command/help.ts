@@ -4,7 +4,7 @@ export default function help(): Promise<string> {
   return Promise.resolve(
     colors.bold.white(`
 ✕─────────────────────────────────────────────────────────────────────────────────────────────────────────────✕
-┃                                     YOUTUBE DOWNLOADER CORE <( YT-CORE /)>                                   ┃
+┃                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   ┃
 ┃                                            (License: MIT)                                                    ┃
 ┃                                         [Owner: ShovitDutta]                                                 ┃
 ┃                                       { Web: rebrand.ly/mixly }                                              ┃
@@ -120,7 +120,7 @@ export default function help(): Promise<string> {
 ┃               ┃   ytdlp.audio_video.pipe.lowest({ query: "" });                                              ┃
 ┃               ┃   ytdlp.audio_video.pipe.highest({ query: "" });                                             ┃
 ┃──────────────────────────────────────────────────────────────────────────────────────────────────────────────┃
-┃                                     YOUTUBE DOWNLOADER CORE <( YT-CORE /)>                                   ┃
+┃                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   ┃
 ┃                                            (License: MIT)                                                    ┃
 ┃                                         [Owner: ShovitDutta]                                                 ┃
 ┃                                       { Web: rebrand.ly/mixly }                                              ┃
