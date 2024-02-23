@@ -82,6 +82,7 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/async": "^3.2.24",
+    "@types/async-retry": "^1.4.8",
     "@types/chai": "^4.3.11",
     "@types/fluent-ffmpeg": "^2.1.24",
     "@types/fs-extra": "^11.0.4",

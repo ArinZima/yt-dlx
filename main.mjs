@@ -6,12 +6,12 @@ import { chromium } from "playwright";
 
 async function YouTubeSearch(query) {
   const retryOptions = {
-    retries: 3,
-    minTimeout: 1000,
-    maxTimeout: 3000,
+    minTimeout: 2000,
+    maxTimeout: 4000,
+    retries: 4,
   };
   try {
-    const searchData = await retry(async () => {
+    const metaTube = await retry(async () => {
       let videos = [];
       const data = [];
       const browser = await chromium.launch({ headless: true });
@@ -75,33 +75,30 @@ async function YouTubeSearch(query) {
           videoId,
           authorUrl,
           videoLink,
-          thumbnailUrl:
-            "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg",
           description,
           views: views.replace(/ views/g, ""),
+          thumbnailUrl:
+            "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg",
         });
       }
       await browser.close();
       return data;
     }, retryOptions);
-    return searchData;
+    return metaTube;
   } catch (error) {
-    console.error(
-      colors.red("@error:"),
-      `Failed to search YouTube: ${error.message}`
-    );
+    console.error(colors.red("@error:"), error.message);
     return null;
   }
 }
 
 async function YouTubeVideo(videoUrl) {
   const retryOptions = {
-    retries: 3,
-    minTimeout: 1000,
-    maxTimeout: 3000,
+    minTimeout: 2000,
+    maxTimeout: 4000,
+    retries: 4,
   };
   try {
-    const videoData = await retry(async () => {
+    const metaTube = await retry(async () => {
       const browser = await chromium.launch({ headless: true });
       console.log(colors.yellow("@scrape:"), "spinning chromium...");
       const context = await browser.newContext({
@@ -141,25 +138,21 @@ async function YouTubeVideo(videoUrl) {
             : null;
         }
       );
-      const uploadOn = uploadDateElements;
       const data = {
-        title: title.split("\n")[0].trim(),
         author,
         videoId,
         videoUrl,
         thumbnailUrl,
+        uploadOn: uploadDateElements,
+        title: title.split("\n")[0].trim(),
         views: views.replace(/ views/g, ""),
-        uploadOn,
       };
       await browser.close();
       return data;
     }, retryOptions);
-    return videoData;
+    return metaTube;
   } catch (error) {
-    console.error(
-      colors.red("@error:"),
-      `Failed to get video info: ${error.message}`
-    );
+    console.error(colors.red("@error:"), error.message);
     return null;
   }
 }
@@ -177,6 +170,7 @@ async.waterfall(
   ],
   function (error, result) {
     if (error) console.error(colors.red("@error:"), error);
-    else console.log(colors.blue("@stdout:"), result);
+    console.log(colors.blue("@stdout:"), result);
+    process.exit(0);
   }
 );
