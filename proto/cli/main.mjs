@@ -252,7 +252,10 @@ async function ytxc(query) {
   }
 }
 
-// YouTubeId/index.ts
+// package.json
+var version = "1.0.2";
+
+// backend/util/YouTubeId/index.ts
 function YouTubeID(url) {
   return new Promise((resolve, _) => {
     if (/youtu\.?be/.test(url)) {
@@ -281,9 +284,6 @@ function YouTubeID(url) {
     resolve(null);
   });
 }
-
-// package.json
-var version = "1.0.2";
 
 // base/base/agent.ts
 async function Engine({
