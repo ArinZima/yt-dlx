@@ -275,7 +275,8 @@ async function handleSIGINT() {
     server.close(resolve);
     ngrok.disconnect();
   });
-  console.log(colors.blue("server @info:"), "servers stopped...");
+  console.clear();
+  console.log(colors.blue("server @info:"), "server & proxy stopped...");
   process.exit(0);
 }
 process.on("SIGINT", handleSIGINT);
