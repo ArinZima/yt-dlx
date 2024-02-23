@@ -265,8 +265,8 @@ const server = app.listen(port, async () => {
   console.log(colors.green("express @port:"), port);
   const ng = await ngrok.connect({
     addr: port,
-    domain: "firm-filly-terribly.ngrok-free.app",
-    authtoken: "2ckwzkAqtiZjCy92I5aHm8TVMyj_GFT29HsfL69XYS2WKMtW",
+    domain: "possible-willingly-yeti.ngrok-free.app",
+    authtoken: "2ckx63TtY6U2VWZ9hPLLF3Uw2zJ_7vA1a9mHRFKDEvQAT8YNg",
   });
   console.log(colors.green("proxy @url:"), ng.url());
 });
