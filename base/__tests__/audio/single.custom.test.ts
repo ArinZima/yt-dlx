@@ -13,7 +13,7 @@ async function AutoDownloadTest() {
       query: "SuaeRys5tTc",
       outputFormat: "ogg",
       quality: "medium",
-      folderName: "temp",
+      folderName: "audio",
       stream: false,
     });
     switch (true) {
@@ -23,11 +23,11 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         process.exit(0);
     }
     console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
@@ -37,7 +37,7 @@ async function AutoDownloadTest() {
       outputFormat: "mp3",
       filter: "nightcore",
       quality: "medium",
-      folderName: "temp",
+      folderName: "audio",
       stream: false,
     });
     switch (true) {
@@ -47,16 +47,16 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("temp");
+    await fsx.remove("audio");
   }
 }
 async function StreamingTest() {
@@ -68,7 +68,7 @@ async function StreamingTest() {
       query: "SuaeRys5tTc",
       outputFormat: "flac",
       quality: "medium",
-      folderName: "temp",
+      folderName: "audio",
       stream: true,
     });
     switch (true) {
@@ -79,11 +79,11 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         process.exit(0);
     }
 
@@ -94,7 +94,7 @@ async function StreamingTest() {
       outputFormat: "aiff",
       filter: "bassboost",
       quality: "medium",
-      folderName: "temp",
+      folderName: "audio",
       stream: true,
     });
     switch (true) {
@@ -105,16 +105,16 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("audio");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("temp");
+    await fsx.remove("audio");
   }
 }
 

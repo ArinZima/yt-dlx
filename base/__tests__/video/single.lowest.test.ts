@@ -12,7 +12,7 @@ async function AutoDownloadTest() {
     holder = await ytDlp.video.single.lowest({
       query: "SuaeRys5tTc",
       outputFormat: "mp4",
-      folderName: "temp",
+      folderName: "video",
       stream: false,
     });
     switch (true) {
@@ -22,11 +22,11 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("video");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("video");
         process.exit(0);
     }
     console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.lowest()");
@@ -35,7 +35,7 @@ async function AutoDownloadTest() {
       query: "SuaeRys5tTc",
       outputFormat: "mov",
       filter: "grayscale",
-      folderName: "temp",
+      folderName: "video",
       stream: false,
     });
     switch (true) {
@@ -45,16 +45,16 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("video");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("video");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("temp");
+    await fsx.remove("video");
   }
 }
 async function StreamingTest() {
@@ -65,7 +65,7 @@ async function StreamingTest() {
     holder = await ytDlp.video.single.lowest({
       query: "SuaeRys5tTc",
       outputFormat: "avi",
-      folderName: "temp",
+      folderName: "video",
       stream: true,
     });
     switch (true) {
@@ -76,11 +76,11 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("video");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("video");
         process.exit(0);
     }
 
@@ -90,7 +90,7 @@ async function StreamingTest() {
       query: "SuaeRys5tTc",
       outputFormat: "mp4",
       filter: "invert",
-      folderName: "temp",
+      folderName: "video",
       stream: true,
     });
     switch (true) {
@@ -101,16 +101,16 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("temp");
+        await fsx.remove("video");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("temp");
+        await fsx.remove("video");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("temp");
+    await fsx.remove("video");
   }
 }
 (async () => {
