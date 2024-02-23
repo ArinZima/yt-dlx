@@ -13,7 +13,8 @@ const scripts = {
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
   remake: "yarn clean && yarn make && yarn build",
   remake_update: "yarn clean && yarn make && yarn update && yarn build",
-  upload: "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
+  upload:
+    "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
   clean: "yarn clean_base && yarn clean_backend && yarn clean_frontend",
   clean_base: "rm -rf node_modules temp proto yarn.lock",
   clean_backend: "cd backend && rm -rf node_modules temp proto yarn.lock",
@@ -26,17 +27,21 @@ const scripts = {
   build_base: "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
   build_backend: "cd backend && rollup -c 'rollup.config.mjs'",
   build_frontend: "cd frontend && yarn build",
-  update: "yarn make && yarn update_base && yarn update_backend && yarn update_frontend",
+  update:
+    "yarn make && yarn update_base && yarn update_backend && yarn update_frontend",
   update_base: "yarn upgrade --latest",
   update_backend: "cd backend && yarn upgrade --latest",
   update_frontend: "cd frontend && yarn upgrade --latest",
-  spec: "yarn ingress & tsup 'base/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+  spec: "tsup 'base/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
   test: "yarn ingress & yarn test_base && yarn test_backend && yarn test_scrape && yarn cli",
   test_base: "tsup 'base/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
-  test_scrape: "tsup 'base/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
-  test_backend: "tsup 'base/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
+  test_scrape:
+    "tsup 'base/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
+  test_backend:
+    "tsup 'base/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
   cli: "yarn link && yarn cli_test && yarn unlink",
-  cli_test: "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
+  cli_test:
+    "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
 };
 
 function runScript() {

@@ -32,7 +32,7 @@
     "update_base": "yarn upgrade --latest",
     "update_backend": "cd backend && yarn upgrade --latest",
     "update_frontend": "cd frontend && yarn upgrade --latest",
-    "spec": "yarn ingress & tsup 'base/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+    "spec": "tsup 'base/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
     "test": "yarn ingress & yarn test_base && yarn test_backend && yarn test_scrape && yarn cli",
     "test_base": "tsup 'base/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "test_scrape": "tsup 'base/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
