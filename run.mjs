@@ -1,5 +1,12 @@
+console.clear();
 import readline from "readline";
 import { exec } from "child_process";
+
+const colors = {
+  red: "\x1b[31m",
+  green: "\x1b[32m",
+  reset: "\x1b[0m",
+};
 
 const scripts = {
   ingress: "cd stack && yarn ingress",
@@ -43,22 +50,28 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-console.log("Available scripts:");
 Object.keys(scripts).forEach((script, index) => {
-  console.log(`${index + 1}. ${script}`);
+  console.log(
+    `${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${
+      colors.reset
+    }`,
+    script
+  );
 });
-
 rl.question("Enter the number of the script you want to run: ", (answer) => {
   const scriptIndex = parseInt(answer) - 1;
   const scriptKeys = Object.keys(scripts);
   if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
     const scriptName = scriptKeys[scriptIndex];
     const command = scripts[scriptName];
-    console.log(`Running script: ${scriptName}`);
-    exec(command, { stdio: "inherit" }, (error, stdout, stderr) => {
-      if (error) return console.error(`Error: ${error.message}`);
-      if (stderr) return console.error(`stderr: ${stderr}`);
+    console.log(`${colors.green}@script:${colors.reset}`, scriptName);
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        return console.error(`${colors.red}@error:${colors.reset}`, error);
+      } else if (stderr) {
+        return console.error(`${colors.red}@stderr:${colors.reset}`, stderr);
+      } else console.log(`${colors.green}@stdout:${colors.reset}`, stdout);
     });
-  } else console.log("Invalid choice.");
+  } else console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
   rl.close();
 });

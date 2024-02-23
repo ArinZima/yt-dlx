@@ -9,6 +9,18 @@
     "test": "yarn ingress & tsup 'app/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'",
     "scrape": "yarn ingress & tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'"
   },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": {
+    "name": "shovitdutta"
+  },
+  "licenses": [
+    {
+      "type": "AGPL-3.0",
+      "url": "https://opensource.org/licenses/AGPL-3.0"
+    }
+  ],
   "dependencies": {
     "@ngrok/ngrok": "^1.0.0",
     "@shovit/ytid": "^1.0.0",
