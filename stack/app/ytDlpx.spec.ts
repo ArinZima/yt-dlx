@@ -57,7 +57,6 @@ async function runTests() {
     });
     if (metaTube === null) process.exit(0);
     else console.log(metaTube);
-    await delay(2000);
 
     metaTube = await ytDlpx({
       route: "scrape",
@@ -66,7 +65,6 @@ async function runTests() {
     });
     if (metaTube === null) process.exit(0);
     else console.log(metaTube);
-    await delay(2000);
 
     metaTube = await ytDlpx({
       route: "scrape",
@@ -75,7 +73,6 @@ async function runTests() {
     });
     if (metaTube === null) process.exit(0);
     else console.log(metaTube);
-    await delay(2000);
 
     metaTube = await ytDlpx({
       route: "scrape",
@@ -84,7 +81,6 @@ async function runTests() {
     });
     if (metaTube === null) process.exit(0);
     else console.log(metaTube);
-    await delay(2000);
 
     metaTube = await ytDlpx({
       route: "scrape",
@@ -93,7 +89,6 @@ async function runTests() {
     });
     if (metaTube === null) process.exit(0);
     else console.log(metaTube);
-    await delay(2000);
 
     metaTube = await ytDlpx({
       route: "scrape",
@@ -103,7 +98,6 @@ async function runTests() {
     });
     if (metaTube === null) process.exit(0);
     else console.log(metaTube);
-    await delay(2000);
 
     process.exit(0);
   } catch (error) {
@@ -112,8 +106,4 @@ async function runTests() {
   }
 }
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-setTimeout(runTests, 4000);
+runTests();
