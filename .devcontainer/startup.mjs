@@ -49,6 +49,7 @@ const scripts = {
 };
 
 function runScript() {
+  console.clear();
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
