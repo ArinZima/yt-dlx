@@ -12,9 +12,9 @@ import bodyParser from "body-parser";
 import sizeFormat from "./sizeFormat";
 import formatCount from "./formatCount";
 import cookieParser from "cookie-parser";
-import type TubeConfig from "../../app/interface/TubeConfig";
-import type TubeFormat from "../../app/interface/TubeFormat";
-import type metaTubeConfig from "../../app/interface/metaTubeConfig";
+import type TubeConfig from "../../base/interface/TubeConfig";
+import type TubeFormat from "../../base/interface/TubeFormat";
+import type metaTubeConfig from "../../base/interface/metaTubeConfig";
 
 const app = express();
 app.use(cors());

@@ -1,7 +1,7 @@
 import { join } from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
-import type ExAsyncParams from "../../app/interface/ExAsyncParams";
+import type ExAsyncParams from "../../base/interface/ExAsyncParams";
 
 export default async function exAsync({
   query,
