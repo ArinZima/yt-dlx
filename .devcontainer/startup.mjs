@@ -12,36 +12,36 @@ console.log(
   `${colors.green}@yt-dlp: welcome to the startup script${colors.reset}`
 );
 const scripts = {
-  ingress: "cd stack && yarn ingress",
+  ingress: "cd backend && yarn ingress",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
   remake: "yarn clean && yarn make && yarn build",
   "remake:update": "yarn clean && yarn make && yarn update && yarn build",
   upload:
     "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
-  clean: "yarn clean:base && yarn clean:stack && yarn clean:frontend",
+  clean: "yarn clean:base && yarn clean:backend && yarn clean:frontend",
   "clean:base": "rm -rf node_modules temp core yarn.lock",
-  "clean:stack": "cd stack && rm -rf node_modules temp core yarn.lock",
+  "clean:backend": "cd backend && rm -rf node_modules temp core yarn.lock",
   "clean:frontend": "cd frontend && rm -rf node_modules .next yarn.lock",
-  make: "yarn make:base && yarn make:stack && yarn make:frontend",
+  make: "yarn make:base && yarn make:backend && yarn make:frontend",
   "make:base": "yarn install",
-  "make:stack": "cd stack && yarn install",
+  "make:backend": "cd backend && yarn install",
   "make:frontend": "cd frontend && yarn install",
-  build: "yarn build:base && yarn build:stack && yarn build:frontend",
+  build: "yarn build:base && yarn build:backend && yarn build:frontend",
   "build:base":
     "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
-  "build:stack": "cd stack && rollup -c 'rollup.config.mjs'",
+  "build:backend": "cd backend && rollup -c 'rollup.config.mjs'",
   "build:frontend": "cd frontend && yarn build",
   update:
-    "yarn make && yarn update:base && yarn update:stack && yarn update:frontend",
+    "yarn make && yarn update:base && yarn update:backend && yarn update:frontend",
   "update:base": "yarn upgrade --latest",
-  "update:stack": "cd stack && yarn upgrade --latest",
+  "update:backend": "cd backend && yarn upgrade --latest",
   "update:frontend": "cd frontend && yarn upgrade --latest",
   spec: "yarn ingress & tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-  test: "yarn ingress & yarn test:base && yarn test:stack && yarn test:scrape && yarn cli",
+  test: "yarn ingress & yarn test:base && yarn test:backend && yarn test:scrape && yarn cli",
   "test:base": "tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
   "test:scrape":
     "tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
-  "test:stack":
+  "test:backend":
     "tsup 'app/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
   cli: "yarn link && yarn cli:test && yarn unlink",
   "cli:test":
