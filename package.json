@@ -14,7 +14,7 @@
     "start": "node .devcontainer/startup.mjs",
     "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "yarn clean && yarn make && yarn build",
-    "remake:update": "yarn clean && yarn make && yarn udpdate && yarn build",
+    "remake:update": "yarn clean && yarn make && yarn update && yarn build",
     "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
     "clean": "yarn clean:base && yarn clean:stack && yarn clean:frontend",
     "clean:base": "rm -rf node_modules temp core yarn.lock",
