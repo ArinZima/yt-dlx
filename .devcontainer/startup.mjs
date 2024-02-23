@@ -48,46 +48,53 @@ const scripts = {
     "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
 };
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+function runScript() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
 
-Object.keys(scripts).forEach((script, index) => {
-  console.log(
-    `${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${
-      colors.reset
-    }`,
-    script
+  Object.keys(scripts).forEach((script, index) => {
+    console.log(
+      `${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${
+        colors.reset
+      }`,
+      script
+    );
+  });
+  rl.question(
+    `${colors.green}@info:${colors.reset} enter the ${colors.green}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
+    (answer) => {
+      console.log(colors.reset);
+      const scriptIndex = parseInt(answer) - 1;
+      const scriptKeys = Object.keys(scripts);
+      if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
+        const scriptName = scriptKeys[scriptIndex];
+        const command = scripts[scriptName];
+        console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
+        const childProcess = spawn(command, {
+          shell: true,
+          stdio: "inherit",
+        });
+        childProcess.on("error", (error) => {
+          console.error(`${colors.red}@error:${colors.reset}`, error);
+        });
+        childProcess.on("exit", (code) => {
+          if (code !== 0) {
+            console.error(
+              `${colors.red}@error:${colors.reset}`,
+              `Exited with code ${code}`
+            );
+          }
+          runScript();
+        });
+      } else {
+        console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
+        runScript();
+      }
+      rl.close();
+    }
   );
-});
-rl.question(
-  `${colors.green}@info:${colors.reset} enter the ${colors.green}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
-  (answer) => {
-    console.log(colors.reset);
-    const scriptIndex = parseInt(answer) - 1;
-    const scriptKeys = Object.keys(scripts);
-    if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
-      const scriptName = scriptKeys[scriptIndex];
-      const command = scripts[scriptName];
-      console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
-      const childProcess = spawn(command, {
-        shell: true,
-        stdio: "inherit",
-      });
-      childProcess.on("error", (error) => {
-        console.error(`${colors.red}@error:${colors.reset}`, error);
-      });
-      childProcess.on("exit", (code) => {
-        if (code !== 0) {
-          console.error(
-            `${colors.red}@error:${colors.reset}`,
-            `Exited with code ${code}`
-          );
-        }
-      });
-    } else
-      console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
-    rl.close();
-  }
-);
+}
+
+runScript();
