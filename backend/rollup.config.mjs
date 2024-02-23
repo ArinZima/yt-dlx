@@ -6,7 +6,7 @@ const banner = `/**
  * ============================================[ 📢YOUTUBE DOWNLOADER CORE <( YT-CORE )/>📹 ]====================================
  * 🚀 Unlock effortless audio/video downloads with YT-CORE—a command-line, Node.js, and streaming powerhouse.
  * 🎵 Meticulously designed for enthusiasts, YT-CORE stands out as a feature-rich package, evolving with state-of-the-art
- * 🔥 functionalities from Youtube-DL and Python yt-core.
+ * 🔥 functionalities from Youtube-DL and Python yt-dlp.
  * 🚀 Elevate your media experience!
  * 🌈 Dive into the world of limitless possibilities.
  * ============================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]====================================
@@ -39,13 +39,13 @@ export default [
     input: "app/index.ts",
     output: [
       {
-        file: "core/index.esm.js",
+        file: "proto/index.esm.js",
         footer: banner,
         format: "es",
         banner,
       },
       {
-        file: "core/index.cjs.js",
+        file: "proto/index.cjs.js",
         footer: banner,
         format: "cjs",
         banner,
@@ -100,7 +100,7 @@ export default [
     input: "app/index.ts",
     output: [
       {
-        file: "core/index.d.ts",
+        file: "proto/index.d.ts",
         footer: banner,
         format: "es",
         banner,

@@ -19,8 +19,8 @@ const scripts = {
   upload:
     "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
   clean: "yarn clean:base && yarn clean:backend && yarn clean:frontend",
-  "clean:base": "rm -rf node_modules temp core yarn.lock",
-  "clean:backend": "cd backend && rm -rf node_modules temp core yarn.lock",
+  "clean:base": "rm -rf node_modules temp proto yarn.lock",
+  "clean:backend": "cd backend && rm -rf node_modules temp proto yarn.lock",
   "clean:frontend": "cd frontend && rm -rf node_modules .next yarn.lock",
   make: "yarn make:base && yarn make:backend && yarn make:frontend",
   "make:base": "yarn install",

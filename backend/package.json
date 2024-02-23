@@ -1,11 +1,11 @@
 {
   "version": "0.0.0",
   "name": "yt-dlp-engine",
-  "types": "core/index.d.ts",
-  "main": "core/index.cjs.js",
-  "module": "core/index.esm.js",
+  "types": "proto/index.d.ts",
+  "main": "proto/index.cjs.js",
+  "module": "proto/index.esm.js",
   "scripts": {
-    "ingress": "node 'core/index.cjs.js'",
+    "ingress": "node 'proto/index.cjs.js'",
     "test": "npm run ingress & tsup 'app/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'",
     "scrape": "npm run ingress & tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'"
   },
