@@ -6,8 +6,8 @@
   "module": "proto/index.esm.js",
   "scripts": {
     "ingress": "node 'proto/index.cjs.js'",
-    "test": "npm run ingress & tsup 'app/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'",
-    "scrape": "npm run ingress & tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'"
+    "test": "npm run ingress & tsup 'base/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'",
+    "scrape": "npm run ingress & tsup 'base/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'"
   },
   "engines": {
     "node": ">=18"

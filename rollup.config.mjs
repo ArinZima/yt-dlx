@@ -36,7 +36,7 @@ const banner = `/**
 
 export default [
   {
-    input: "app/index.ts",
+    input: "base/index.ts",
     output: [
       {
         file: "proto/index.esm.js",
@@ -100,7 +100,7 @@ export default [
   },
   {
     plugins: [dts(), progress()],
-    input: "app/index.ts",
+    input: "base/index.ts",
     output: [
       {
         file: "proto/index.d.ts",
