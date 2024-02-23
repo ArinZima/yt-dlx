@@ -32,59 +32,59 @@ async function ytcprox({ query, route, domain }: any) {
   }
 }
 
-setTimeout(async () => {
+async function runTests() {
   try {
-    setTimeout(async () => {
-      await ytcprox({
-        route: "core",
-        query: "wWR0VD6qgt8",
-        domain: "https://casual-insect-sunny.ngrok-free.app",
-      });
-    }, 2000);
-    //
-    setTimeout(async () => {
-      await ytcprox({
-        route: "scrape",
-        query: "angel numbers",
-        domain: "https://casual-insect-sunny.ngrok-free.app",
-      });
-    }, 2000);
-    //
-    setTimeout(async () => {
-      await ytcprox({
-        route: "scrape",
-        query: "wWR0VD6qgt8",
-        domain: "https://casual-insect-sunny.ngrok-free.app",
-      });
-    }, 2000);
-    //
-    setTimeout(async () => {
-      await ytcprox({
-        route: "scrape",
-        domain: "https://casual-insect-sunny.ngrok-free.app",
-        query: "https://youtu.be/wWR0VD6qgt8?si=S8os0alEDZ6875lD",
-      });
-    }, 2000);
-    //
-    setTimeout(async () => {
-      await ytcprox({
-        route: "scrape",
-        query: "PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM",
-        domain: "https://casual-insect-sunny.ngrok-free.app",
-      });
-    }, 2000);
-    //
-    setTimeout(async () => {
-      await ytcprox({
-        route: "scrape",
-        domain: "https://casual-insect-sunny.ngrok-free.app",
-        query:
-          "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
-      });
-    }, 2000);
+    await ytcprox({
+      route: "core",
+      query: "wWR0VD6qgt8",
+      domain: "https://casual-insect-sunny.ngrok-free.app",
+    });
+    await delay(2000);
+
+    await ytcprox({
+      route: "scrape",
+      query: "angel numbers",
+      domain: "https://casual-insect-sunny.ngrok-free.app",
+    });
+    await delay(2000);
+
+    await ytcprox({
+      route: "scrape",
+      query: "wWR0VD6qgt8",
+      domain: "https://casual-insect-sunny.ngrok-free.app",
+    });
+    await delay(2000);
+
+    await ytcprox({
+      route: "scrape",
+      domain: "https://casual-insect-sunny.ngrok-free.app",
+      query: "https://youtu.be/wWR0VD6qgt8?si=S8os0alEDZ6875lD",
+    });
+    await delay(2000);
+
+    await ytcprox({
+      route: "scrape",
+      query: "PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM",
+      domain: "https://casual-insect-sunny.ngrok-free.app",
+    });
+    await delay(2000);
+
+    await ytcprox({
+      route: "scrape",
+      domain: "https://casual-insect-sunny.ngrok-free.app",
+      query:
+        "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
+    });
+    await delay(2000);
+
     process.exit(0);
   } catch (error) {
     console.error(error);
     process.exit(0);
   }
-}, 4000);
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+setTimeout(runTests, 4000);
