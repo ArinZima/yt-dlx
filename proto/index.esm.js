@@ -184,20 +184,35 @@ async function ytDlpx({ query, route, domain, }) {
             timeout: 10000,
         });
         await page.click("button[class*=ring-blue-600]");
-        const payLoad = await new Promise((resolve) => {
+        const requestFinished = new Promise((resolve) => {
             page.on("requestfinished", async (request) => {
-                if (request.url().includes("/" + route)) {
-                    const response = await request.response();
-                    if (!response)
-                        return resolve(null);
-                    else
-                        return resolve(await response.json());
+                try {
+                    if (request.url().includes("/" + route)) {
+                        const response = await request.response();
+                        if (response) {
+                            const json = await response.json();
+                            resolve(json);
+                        }
+                        else
+                            resolve(null);
+                    }
                 }
-                else
-                    return resolve(null);
+                catch (error) {
+                    console.log(colors.red("response @error:"), error);
+                    resolve(null);
+                }
             });
         });
-        return JSON.stringify(payLoad);
+        const payLoad = await requestFinished;
+        if (payLoad) {
+            await browser.close();
+            return JSON.stringify(payLoad);
+        }
+        else {
+            console.log(colors.red("fail @query:"), query);
+            await browser.close();
+            return null;
+        }
     }
     catch (error) {
         console.log(colors.red("@error:"), error);

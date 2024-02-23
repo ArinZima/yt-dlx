@@ -159,19 +159,32 @@ async function ytDlpx({
       timeout: 1e4
     });
     await page.click("button[class*=ring-blue-600]");
-    const payLoad = await new Promise((resolve) => {
+    const requestFinished = new Promise((resolve) => {
       page.on("requestfinished", async (request) => {
-        if (request.url().includes("/" + route)) {
-          const response = await request.response();
-          if (!response)
-            return resolve(null);
-          else
-            return resolve(await response.json());
-        } else
-          return resolve(null);
+        try {
+          if (request.url().includes("/" + route)) {
+            const response = await request.response();
+            if (response) {
+              const json = await response.json();
+              resolve(json);
+            } else
+              resolve(null);
+          }
+        } catch (error) {
+          console.log(colors17.red("response @error:"), error);
+          resolve(null);
+        }
       });
     });
-    return JSON.stringify(payLoad);
+    const payLoad = await requestFinished;
+    if (payLoad) {
+      await browser.close();
+      return JSON.stringify(payLoad);
+    } else {
+      console.log(colors17.red("fail @query:"), query);
+      await browser.close();
+      return null;
+    }
   } catch (error) {
     console.log(colors17.red("@error:"), error);
     return null;
@@ -180,7 +193,7 @@ async function ytDlpx({
   }
 }
 
-// app/base/scrape.ts
+// base/base/scrape.ts
 async function scrape(query) {
   try {
     const response = await ytDlpx({
@@ -197,7 +210,7 @@ async function scrape(query) {
   }
 }
 
-// app/pipes/command/search.ts
+// base/pipes/command/search.ts
 async function search({ query }) {
   try {
     switch (true) {
@@ -225,7 +238,7 @@ async function search({ query }) {
   }
 }
 
-// app/base/ytdlp.ts
+// base/base/ytdlp.ts
 async function ytdlp(query) {
   try {
     const response = await ytDlpx({
@@ -245,7 +258,7 @@ async function ytdlp(query) {
 // package.json
 var version = "20.1.0";
 
-// app/base/agent.ts
+// base/base/agent.ts
 async function Engine({
   query
 }) {
@@ -315,7 +328,7 @@ async function Engine({
   }
 }
 
-// app/pipes/command/extract.ts
+// base/pipes/command/extract.ts
 async function extract({ query }) {
   try {
     let calculateUploadAgo2 = function(days) {
@@ -720,7 +733,7 @@ var progressBar = (prog) => {
 };
 var progressBar_default = progressBar;
 
-// app/pipes/audio/AudioLowest.ts
+// base/pipes/audio/AudioLowest.ts
 var AudioLowestInputSchema = z.object({
   query: z.string(),
   filter: z.string().optional(),
@@ -5490,7 +5503,7 @@ async function ListAudioVideoHighest(input) {
   }
 }
 
-// app/index.ts
+// base/index.ts
 var ytdlp2 = {
   info: {
     help,
@@ -5533,7 +5546,7 @@ var ytdlp2 = {
     playlist: { lowest: ListAudioVideoLowest, highest: ListAudioVideoHighest }
   }
 };
-var app_default = ytdlp2;
+var base_default = ytdlp2;
 var proTube = minimist(process.argv.slice(2), {
   string: ["query", "format"],
   alias: {
@@ -5562,7 +5575,7 @@ var program = async () => {
       break;
     case "help":
     case "h":
-      app_default.info.help().then((data) => {
+      base_default.info.help().then((data) => {
         console.log(data);
         process.exit();
       }).catch((error) => {
@@ -5575,7 +5588,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.info.extract({
+        base_default.info.extract({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5590,7 +5603,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.info.search({
+        base_default.info.search({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5605,7 +5618,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.info.list_formats({
+        base_default.info.list_formats({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5620,7 +5633,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.info.get_video_data({
+        base_default.info.get_video_data({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5635,7 +5648,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.audio.single.highest({
+        base_default.audio.single.highest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5650,7 +5663,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.audio.single.lowest({
+        base_default.audio.single.lowest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5665,7 +5678,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.video.single.highest({
+        base_default.video.single.highest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5680,7 +5693,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.video.single.lowest({
+        base_default.video.single.lowest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5695,7 +5708,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.audio_video.single.highest({
+        base_default.audio_video.single.highest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5710,7 +5723,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors17.red("error: no query"));
       } else
-        app_default.audio_video.single.lowest({
+        base_default.audio_video.single.lowest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -5728,7 +5741,7 @@ var program = async () => {
       if (!proTube || !proTube.format || proTube.format.length === 0) {
         console.error(colors17.red("error: no format"));
       }
-      app_default.audio.single.custom({
+      base_default.audio.single.custom({
         query: proTube.query,
         quality: proTube.format
       }).then((data) => {
@@ -5747,7 +5760,7 @@ var program = async () => {
       if (!proTube || !proTube.format || proTube.format.length === 0) {
         console.error(colors17.red("error: no format"));
       }
-      app_default.video.single.custom({
+      base_default.video.single.custom({
         query: proTube.query,
         quality: proTube.format
       }).then((data) => {
@@ -5759,7 +5772,7 @@ var program = async () => {
       });
       break;
     default:
-      app_default.info.help().then((data) => {
+      base_default.info.help().then((data) => {
         console.log(data);
         process.exit();
       }).catch((error) => {
@@ -5770,7 +5783,7 @@ var program = async () => {
   }
 };
 if (!proTube._[0]) {
-  app_default.info.help().then((data) => {
+  base_default.info.help().then((data) => {
     console.log(data);
     process.exit();
   }).catch((error) => {
