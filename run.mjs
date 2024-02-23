@@ -1,6 +1,7 @@
 console.clear();
 import readline from "readline";
 import { spawn } from "child_process";
+import { version } from "./package.json";
 
 const colors = {
   red: "\x1b[31m",
@@ -8,6 +9,7 @@ const colors = {
   green: "\x1b[32m",
 };
 
+console.log(`${colors.red}@yt-dlp:${colors.reset}`, `using version ${version}`);
 const scripts = {
   ingress: "cd stack && yarn ingress",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
