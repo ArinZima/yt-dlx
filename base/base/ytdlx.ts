@@ -1,6 +1,6 @@
 import ytDlpx from "./ytDlpx";
 
-export default async function ytdlp(query: string): Promise<string | null> {
+export default async function ytdlx(query: string): Promise<string | null> {
   try {
     const response = await ytDlpx({
       query,
