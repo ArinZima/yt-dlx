@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import ytDlp from "../..";
-import fsx from "fs-extra";
+// import fsx from "fs-extra";
 import colors from "colors";
 import * as chai from "chai";
 
@@ -15,7 +15,7 @@ async function AutoDownloadTest() {
     holder = await ytDlp.audio_video.single.highest({
       query: "SuaeRys5tTc",
       outputFormat: "mp4",
-      folderName: "video",
+      folderName: "mix",
       stream: false,
     });
     switch (true) {
@@ -25,11 +25,11 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         process.exit(0);
     }
     console.log(
@@ -40,7 +40,7 @@ async function AutoDownloadTest() {
     holder = await ytDlp.audio_video.single.highest({
       query: "SuaeRys5tTc",
       outputFormat: "mov",
-      folderName: "video",
+      folderName: "mix",
       stream: false,
     });
     switch (true) {
@@ -50,16 +50,16 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("video");
+    // await fsx.remove("mix");
   }
 }
 async function StreamingTest() {
@@ -73,7 +73,7 @@ async function StreamingTest() {
     holder = await ytDlp.audio_video.single.highest({
       query: "SuaeRys5tTc",
       outputFormat: "avi",
-      folderName: "video",
+      folderName: "mix",
       stream: true,
     });
     switch (true) {
@@ -84,11 +84,11 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         process.exit(0);
     }
 
@@ -100,7 +100,7 @@ async function StreamingTest() {
     holder = await ytDlp.audio_video.single.highest({
       query: "SuaeRys5tTc",
       outputFormat: "mp4",
-      folderName: "video",
+      folderName: "mix",
       stream: true,
     });
     switch (true) {
@@ -111,16 +111,16 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("video");
+        // await fsx.remove("mix");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("video");
+    // await fsx.remove("mix");
   }
 }
 
