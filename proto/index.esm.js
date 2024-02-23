@@ -290,23 +290,21 @@ var version = "20.1.0";
 async function Engine({ query, }) {
     let videoId, TubeDlp, TubeBody;
     console.log(colors.bold.green("@info: ") +
-        `⭕ using yt-dlp version <(${version})>` +
+        `using yt-dlp version <(${version})>` +
         colors.reset(""));
     if (!query || query.trim() === "") {
-        console.log(colors.bold.red("@error: ") +
-            "❗'query' is required..." +
-            colors.reset(""));
+        console.log(colors.bold.red("@error: ") + "'query' is required..." + colors.reset(""));
         return null;
     }
     else if (/https/i.test(query) && /list/i.test(query)) {
         console.log(colors.bold.red("@error: ") +
-            "❗use extract_playlist_videos() for playlists..." +
+            "use extract_playlist_videos() for playlists..." +
             colors.reset(""));
         return null;
     }
     else if (/https/i.test(query) && !/list/i.test(query)) {
         console.log(colors.bold.green("@info: ") +
-            `🛰️ fetching metadata for: <(${query})>` +
+            `fetching metadata for: <(${query})>` +
             colors.reset(""));
         videoId = await YouTubeID(query);
     }
@@ -317,14 +315,14 @@ async function Engine({ query, }) {
             TubeBody = await scrape(query);
             if (TubeBody === null) {
                 console.log(colors.bold.red("@error: ") +
-                    "❗no data returned from server..." +
+                    "no data returned from server..." +
                     colors.reset(""));
                 return null;
             }
             else
                 TubeBody = JSON.parse(TubeBody);
             console.log(colors.bold.green("@info: ") +
-                `📡preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
+                `preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
                 colors.reset(""));
             TubeDlp = await ytdlp$1(TubeBody.Link);
             break;
@@ -332,14 +330,14 @@ async function Engine({ query, }) {
             TubeBody = await scrape(videoId);
             if (TubeBody === null) {
                 console.log(colors.bold.red("@error: ") +
-                    "❗no data returned from server..." +
+                    "no data returned from server..." +
                     colors.reset(""));
                 return null;
             }
             else
                 TubeBody = JSON.parse(TubeBody);
             console.log(colors.bold.green("@info: ") +
-                `📡preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
+                `preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
                 colors.reset(""));
             TubeDlp = await ytdlp$1(TubeBody[0].Link);
             break;
@@ -347,7 +345,7 @@ async function Engine({ query, }) {
     switch (TubeDlp) {
         case null:
             console.log(colors.bold.red("@error: ") +
-                "❗no data returned from server..." +
+                "no data returned from server..." +
                 colors.reset(""));
             return null;
         default:
@@ -682,7 +680,7 @@ async function checkUrl$1(url) {
 async function bigEntry$1(metaBody) {
     switch (true) {
         case !metaBody || metaBody.length === 0:
-            console.log(colors.bold.red("@error:"), "❗sorry no downloadable data found");
+            console.log(colors.bold.red("@error:"), "sorry no downloadable data found");
             return null;
         default:
             const sortedByFileSize = [...metaBody].sort((a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes);
@@ -691,7 +689,7 @@ async function bigEntry$1(metaBody) {
                 if (mediaurl && (await checkUrl$1(mediaurl)))
                     return item;
             }
-            console.log(colors.bold.red("@error:"), "❗sorry no downloadable data found");
+            console.log(colors.bold.red("@error:"), "sorry no downloadable data found");
             return null;
     }
 }
@@ -938,7 +936,7 @@ async function checkUrl(url) {
 async function bigEntry(metaBody) {
     switch (true) {
         case !metaBody || metaBody.length === 0:
-            console.log(colors.bold.red("@error:"), "❗sorry no downloadable data found");
+            console.log(colors.bold.red("@error:"), "sorry no downloadable data found");
             return null;
         default:
             const sortedByFileSize = [...metaBody].sort((a, b) => b.meta_info.filesizebytes - a.meta_info.filesizebytes);
@@ -947,7 +945,7 @@ async function bigEntry(metaBody) {
                 if (mediaurl && (await checkUrl(mediaurl)))
                     return item;
             }
-            console.log(colors.bold.red("@error:"), "❗sorry no downloadable data found");
+            console.log(colors.bold.red("@error:"), "sorry no downloadable data found");
             return null;
     }
 }

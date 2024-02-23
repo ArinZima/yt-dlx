@@ -264,21 +264,21 @@ async function Engine({
 }) {
   let videoId, TubeDlp, TubeBody;
   console.log(
-    colors17.bold.green("@info: ") + `\u2B55 using yt-dlp version <(${version})>` + colors17.reset("")
+    colors17.bold.green("@info: ") + `using yt-dlp version <(${version})>` + colors17.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors17.bold.red("@error: ") + "\u2757'query' is required..." + colors17.reset("")
+      colors17.bold.red("@error: ") + "'query' is required..." + colors17.reset("")
     );
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors17.bold.red("@error: ") + "\u2757use extract_playlist_videos() for playlists..." + colors17.reset("")
+      colors17.bold.red("@error: ") + "use extract_playlist_videos() for playlists..." + colors17.reset("")
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors17.bold.green("@info: ") + `\u{1F6F0}\uFE0F fetching metadata for: <(${query})>` + colors17.reset("")
+      colors17.bold.green("@info: ") + `fetching metadata for: <(${query})>` + colors17.reset("")
     );
     videoId = await YouTubeID(query);
   } else
@@ -288,13 +288,13 @@ async function Engine({
       TubeBody = await scrape(query);
       if (TubeBody === null) {
         console.log(
-          colors17.bold.red("@error: ") + "\u2757no data returned from server..." + colors17.reset("")
+          colors17.bold.red("@error: ") + "no data returned from server..." + colors17.reset("")
         );
         return null;
       } else
         TubeBody = JSON.parse(TubeBody);
       console.log(
-        colors17.bold.green("@info: ") + `\u{1F4E1}preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` + colors17.reset("")
+        colors17.bold.green("@info: ") + `preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` + colors17.reset("")
       );
       TubeDlp = await ytdlp(TubeBody.Link);
       break;
@@ -302,13 +302,13 @@ async function Engine({
       TubeBody = await scrape(videoId);
       if (TubeBody === null) {
         console.log(
-          colors17.bold.red("@error: ") + "\u2757no data returned from server..." + colors17.reset("")
+          colors17.bold.red("@error: ") + "no data returned from server..." + colors17.reset("")
         );
         return null;
       } else
         TubeBody = JSON.parse(TubeBody);
       console.log(
-        colors17.bold.green("@info: ") + `\u{1F4E1}preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` + colors17.reset("")
+        colors17.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` + colors17.reset("")
       );
       TubeDlp = await ytdlp(TubeBody[0].Link);
       break;
@@ -316,7 +316,7 @@ async function Engine({
   switch (TubeDlp) {
     case null:
       console.log(
-        colors17.bold.red("@error: ") + "\u2757no data returned from server..." + colors17.reset("")
+        colors17.bold.red("@error: ") + "no data returned from server..." + colors17.reset("")
       );
       return null;
     default:
@@ -690,7 +690,7 @@ async function bigEntry(metaBody) {
     case (!metaBody || metaBody.length === 0):
       console.log(
         colors17.bold.red("@error:"),
-        "\u2757sorry no downloadable data found"
+        "sorry no downloadable data found"
       );
       return null;
     default:
@@ -704,7 +704,7 @@ async function bigEntry(metaBody) {
       }
       console.log(
         colors17.bold.red("@error:"),
-        "\u2757sorry no downloadable data found"
+        "sorry no downloadable data found"
       );
       return null;
   }
@@ -947,7 +947,7 @@ async function bigEntry2(metaBody) {
     case (!metaBody || metaBody.length === 0):
       console.log(
         colors17.bold.red("@error:"),
-        "\u2757sorry no downloadable data found"
+        "sorry no downloadable data found"
       );
       return null;
     default:
@@ -961,7 +961,7 @@ async function bigEntry2(metaBody) {
       }
       console.log(
         colors17.bold.red("@error:"),
-        "\u2757sorry no downloadable data found"
+        "sorry no downloadable data found"
       );
       return null;
   }
