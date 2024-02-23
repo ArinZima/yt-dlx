@@ -1,5 +1,5 @@
+import ytxc from "./ytxc";
 import colors from "colors";
-import ytDlp from "./ytdlx";
 import scrape from "./scrape";
 import YouTubeID from "../../YouTubeId";
 import { version } from "../../package.json";
@@ -51,7 +51,7 @@ export default async function Engine({
           `preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
           colors.reset("")
       );
-      TubeDlp = await ytDlp(TubeBody.Link);
+      TubeDlp = await ytxc(TubeBody.Link);
       break;
     default:
       TubeBody = await scrape(videoId);
@@ -68,7 +68,7 @@ export default async function Engine({
           `preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
           colors.reset("")
       );
-      TubeDlp = await ytDlp(TubeBody[0].Link);
+      TubeDlp = await ytxc(TubeBody[0].Link);
       break;
   }
   switch (TubeDlp) {

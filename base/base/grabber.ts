@@ -2,16 +2,16 @@ import colors from "colors";
 import { chromium } from "playwright";
 import type { Browser } from "playwright";
 
-interface ytDlpx {
+interface grabber {
   domain: string;
   query: string;
   route: string;
 }
-export default async function ytDlpx({
+export default async function grabber({
   query,
   route,
   domain,
-}: ytDlpx): Promise<string | null> {
+}: grabber): Promise<string | null> {
   const browser: Browser = await chromium.launch({ headless: true });
   try {
     const host = `${decodeURIComponent(domain)}/${decodeURIComponent(

@@ -1,8 +1,8 @@
-import ytDlpx from "./ytDlpx";
+import grabber from "./grabber";
 
-export default async function ytdlx(query: string): Promise<string | null> {
+export default async function ytxc(query: string): Promise<string | null> {
   try {
-    const response = await ytDlpx({
+    const response = await grabber({
       query,
       route: "core",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
