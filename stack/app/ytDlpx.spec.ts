@@ -43,7 +43,6 @@ async function ytDlpx({ query, route, domain }: any) {
     console.log(colors.red("ERROR:"), error);
     return null;
   } finally {
-    // Close the context and browser properly
     await browser.close();
   }
 }
@@ -53,27 +52,27 @@ async function runTests() {
     await ytDlpx({
       route: "core",
       query: "wWR0VD6qgt8",
-      domain: "https://stirring-physically-piglet.ngrok-free.app",
+      domain: "https://harmless-man-correctly.ngrok-free.app",
     });
     await delay(2000);
 
     await ytDlpx({
       route: "scrape",
       query: "angel numbers",
-      domain: "https://stirring-physically-piglet.ngrok-free.app",
+      domain: "https://harmless-man-correctly.ngrok-free.app",
     });
     await delay(2000);
 
     await ytDlpx({
       route: "scrape",
       query: "wWR0VD6qgt8",
-      domain: "https://stirring-physically-piglet.ngrok-free.app",
+      domain: "https://harmless-man-correctly.ngrok-free.app",
     });
     await delay(2000);
 
     await ytDlpx({
       route: "scrape",
-      domain: "https://stirring-physically-piglet.ngrok-free.app",
+      domain: "https://harmless-man-correctly.ngrok-free.app",
       query: "https://youtu.be/wWR0VD6qgt8?si=S8os0alEDZ6875lD",
     });
     await delay(2000);
@@ -81,13 +80,13 @@ async function runTests() {
     await ytDlpx({
       route: "scrape",
       query: "PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM",
-      domain: "https://stirring-physically-piglet.ngrok-free.app",
+      domain: "https://harmless-man-correctly.ngrok-free.app",
     });
     await delay(2000);
 
     await ytDlpx({
       route: "scrape",
-      domain: "https://stirring-physically-piglet.ngrok-free.app",
+      domain: "https://harmless-man-correctly.ngrok-free.app",
       query:
         "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
     });

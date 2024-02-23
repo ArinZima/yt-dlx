@@ -10,7 +10,7 @@
     "yt-dlp": "core/cli/main.js"
   },
   "scripts": {
-    "server": "cd stack && yarn start",
+    "start": "cd stack && yarn start",
     "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "yarn clean && yarn make && yarn build",
     "clean": "yarn clean:base && yarn clean:stack && yarn clean:frontend",
