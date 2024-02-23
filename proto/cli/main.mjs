@@ -264,7 +264,7 @@ async function Engine({
 }) {
   let videoId, TubeDlp, TubeBody;
   console.log(
-    colors17.bold.green("\n\nINFO: ") + `\u2B55 using yt-dlp version <(${version})>` + colors17.reset("")
+    colors17.bold.green("@info: ") + `\u2B55 using yt-dlp version <(${version})>` + colors17.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(

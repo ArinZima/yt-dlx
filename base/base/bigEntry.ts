@@ -18,7 +18,7 @@ export default async function bigEntry(
     case !metaBody || metaBody.length === 0:
       console.log(
         colors.bold.red("@error:"),
-        "❗sorry no downloadable data found"
+        "sorry no downloadable data found"
       );
       return null;
     default:
@@ -31,7 +31,7 @@ export default async function bigEntry(
       }
       console.log(
         colors.bold.red("@error:"),
-        "❗sorry no downloadable data found"
+        "sorry no downloadable data found"
       );
       return null;
   }

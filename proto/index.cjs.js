@@ -311,7 +311,7 @@ var version = "20.1.0";
 
 async function Engine({ query, }) {
     let videoId, TubeDlp, TubeBody;
-    console.log(colors.bold.green("\n\nINFO: ") +
+    console.log(colors.bold.green("@info: ") +
         `⭕ using yt-dlp version <(${version})>` +
         colors.reset(""));
     if (!query || query.trim() === "") {

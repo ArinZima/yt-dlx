@@ -12,27 +12,25 @@ export default async function Engine({
   let videoId: string | null, TubeDlp: any, TubeBody: any;
   console.log(
     colors.bold.green("@info: ") +
-      `⭕ using yt-dlp version <(${version})>` +
+      `using yt-dlp version <(${version})>` +
       colors.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors.bold.red("@error: ") +
-        "❗'query' is required..." +
-        colors.reset("")
+      colors.bold.red("@error: ") + "'query' is required..." + colors.reset("")
     );
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
       colors.bold.red("@error: ") +
-        "❗use extract_playlist_videos() for playlists..." +
+        "use extract_playlist_videos() for playlists..." +
         colors.reset("")
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
       colors.bold.green("@info: ") +
-        `🛰️ fetching metadata for: <(${query})>` +
+        `fetching metadata for: <(${query})>` +
         colors.reset("")
     );
     videoId = await YouTubeID(query);
@@ -43,14 +41,14 @@ export default async function Engine({
       if (TubeBody === null) {
         console.log(
           colors.bold.red("@error: ") +
-            "❗no data returned from server..." +
+            "no data returned from server..." +
             colors.reset("")
         );
         return null;
       } else TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("@info: ") +
-          `📡preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
+          `preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
           colors.reset("")
       );
       TubeDlp = await ytDlp(TubeBody.Link);
@@ -60,14 +58,14 @@ export default async function Engine({
       if (TubeBody === null) {
         console.log(
           colors.bold.red("@error: ") +
-            "❗no data returned from server..." +
+            "no data returned from server..." +
             colors.reset("")
         );
         return null;
       } else TubeBody = JSON.parse(TubeBody);
       console.log(
         colors.bold.green("@info: ") +
-          `📡preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
+          `preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
           colors.reset("")
       );
       TubeDlp = await ytDlp(TubeBody[0].Link);
@@ -77,7 +75,7 @@ export default async function Engine({
     case null:
       console.log(
         colors.bold.red("@error: ") +
-          "❗no data returned from server..." +
+          "no data returned from server..." +
           colors.reset("")
       );
       return null;
