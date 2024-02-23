@@ -4,7 +4,7 @@ import { chromium } from "playwright";
 import type { Browser } from "playwright";
 
 async function ytDlpx({ query, route, domain }: any) {
-  const browser: Browser = await chromium.launch({ headless: false });
+  const browser: Browser = await chromium.launch({ headless: true });
   try {
     const host = `${domain}/${route}?query=${decodeURIComponent(query)}`;
     console.log(colors.blue("testing @url:"), host);
@@ -15,7 +15,8 @@ async function ytDlpx({ query, route, domain }: any) {
       timeout: 10000,
     });
     await page.click("button[class*=ring-blue-600]");
-    const payLoadPromise = new Promise((resolve) => {
+
+    const requestFinished = new Promise((resolve) => {
       page.on("requestfinished", async (request) => {
         try {
           if (request.url().includes("/" + route)) {
@@ -26,12 +27,13 @@ async function ytDlpx({ query, route, domain }: any) {
             } else resolve(null);
           }
         } catch (error) {
-          console.log(colors.red("Error handling response:"), error);
+          console.log(colors.red("response @error:"), error);
           resolve(null);
         }
       });
     });
-    const payLoad = await payLoadPromise;
+
+    const payLoad = await requestFinished;
     if (payLoad) {
       console.log(colors.green("pass @url:"), host);
       await browser.close();
