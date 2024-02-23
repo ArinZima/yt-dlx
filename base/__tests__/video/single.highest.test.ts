@@ -1,94 +1,122 @@
 import * as fs from "fs";
-import async from "async";
 import ytDlp from "../..";
+import fsx from "fs-extra";
 import colors from "colors";
 import * as chai from "chai";
 
-(async () => {
-  let metaTube;
+async function AutoDownloadTest() {
   try {
-    await async.auto({
-      runTest: async () => {
-        console.log(
-          colors.bold.yellow("\n\nTEST: ") +
-            "<( ytDlp.video.single.highest({ " +
-            colors.italic.yellow(
-              "query: 'SuaeRys5tTc', outputFormat: 'mp4', folderName: 'temp', stream: false"
-            ) +
-            " })>"
-        );
-        metaTube = await ytDlp.video.single.highest({
-          query: "SuaeRys5tTc",
-          outputFormat: "mp4",
-          folderName: "temp",
-          stream: false,
-        });
-        switch (true) {
-          case "status" in metaTube:
-            chai.expect(metaTube.status).to.equal(200);
-            console.log(
-              colors.bold.green("\nPASS: ") +
-                "<( ytDlp.video.single.highest({ " +
-                colors.italic.green(
-                  "query: 'SuaeRys5tTc', outputFormat: 'mp4', folderName: 'temp', stream: false"
-                ) +
-                " })>"
-            );
-            break;
-          default:
-            console.error(
-              "\n",
-              new Date().toLocaleString(),
-              colors.bold.red("ERROR:"),
-              metaTube
-            );
-            process.exit(1);
-        }
-      },
+    let holder: any;
+    console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
+    console.log(colors.bold.yellow("@info:"), "stream: false");
+    holder = await ytDlp.video.single.highest({
+      query: "SuaeRys5tTc",
+      outputFormat: "mp4",
+      folderName: "temp",
+      stream: false,
     });
-    await async.auto({
-      runTest: async () => {
+    switch (true) {
+      case "status" in holder:
+        chai.expect(holder.status).to.equal(200);
         console.log(
-          colors.bold.yellow("\n\nTEST: ") +
-            "<( ytDlp.video.single.highest({ " +
-            colors.italic.yellow(
-              "query: 'SuaeRys5tTc', filter: 'grayscale', outputFormat: 'mp4', folderName: 'temp', stream: true"
-            ) +
-            " })>"
+          colors.bold.green("\n@pass:"),
+          `with status ${holder.status}`
         );
-        metaTube = await ytDlp.video.single.highest({
-          query: "SuaeRys5tTc",
-          filter: "grayscale",
-          outputFormat: "mp4",
-          folderName: "temp",
-          stream: true,
-        });
-        switch (true) {
-          case "stream" in metaTube && "filename" in metaTube:
-            chai.expect(metaTube.stream && metaTube.filename).to.exist;
-            metaTube.stream.pipe(fs.createWriteStream(metaTube.filename));
-            console.log(
-              colors.bold.green("\nPASS: ") +
-                "<( ytDlp.video.single.highest({ " +
-                colors.italic.green(
-                  "query: 'SuaeRys5tTc', filter: 'grayscale', outputFormat: 'mp4', folderName: 'temp', stream: true"
-                ) +
-                " })>"
-            );
-            break;
-          default:
-            console.error(
-              "\n",
-              new Date().toLocaleString(),
-              colors.bold.red("ERROR:"),
-              metaTube
-            );
-            process.exit(1);
-        }
-      },
+        await fsx.remove("temp");
+        break;
+      default:
+        console.error("\n", colors.bold.red("\n@error:"), holder);
+        await fsx.remove("temp");
+        process.exit(0);
+    }
+    console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
+    console.log(colors.bold.yellow("@info:"), "stream: false");
+    holder = await ytDlp.video.single.highest({
+      query: "SuaeRys5tTc",
+      outputFormat: "mov",
+      filter: "grayscale",
+      folderName: "temp",
+      stream: false,
     });
-  } catch (metaError) {
-    console.error(metaError);
-    process.exit(1);
+    switch (true) {
+      case "status" in holder:
+        chai.expect(holder.status).to.equal(200);
+        console.log(
+          colors.bold.green("\n@pass:"),
+          `with status ${holder.status}`
+        );
+        await fsx.remove("temp");
+        break;
+      default:
+        console.error("\n", colors.bold.red("\n@error:"), holder);
+        await fsx.remove("temp");
+        process.exit(0);
+    }
+  } catch (error) {
+    console.error("\n", colors.bold.red("\n@error:"), error);
+    await fsx.remove("temp");
   }
+}
+async function StreamingTest() {
+  try {
+    let holder: any;
+    console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
+    console.log(colors.bold.yellow("@info:"), "stream: true");
+    holder = await ytDlp.video.single.highest({
+      query: "SuaeRys5tTc",
+      outputFormat: "avi",
+      folderName: "temp",
+      stream: true,
+    });
+    switch (true) {
+      case "stream" in holder && "filename" in holder:
+        chai.expect(holder.stream && holder.filename).to.exist;
+        holder.stream.pipe(fs.createWriteStream(holder.filename));
+        console.log(
+          colors.bold.green("\n@pass:"),
+          `with filename ${holder.filename}`
+        );
+        await fsx.remove("temp");
+        break;
+      default:
+        console.error("\n", colors.bold.red("\n@error:"), holder);
+        await fsx.remove("temp");
+        process.exit(0);
+    }
+
+    console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
+    console.log(colors.bold.yellow("@info:"), "stream: true");
+    holder = await ytDlp.video.single.highest({
+      query: "SuaeRys5tTc",
+      outputFormat: "mp4",
+      filter: "invert",
+      folderName: "temp",
+      stream: true,
+    });
+    switch (true) {
+      case "stream" in holder && "filename" in holder:
+        chai.expect(holder.stream && holder.filename).to.exist;
+        holder.stream.pipe(fs.createWriteStream(holder.filename));
+        console.log(
+          colors.bold.green("\n@pass:"),
+          `with filename ${holder.filename}`
+        );
+        await fsx.remove("temp");
+        break;
+      default:
+        console.error("\n", colors.bold.red("\n@error:"), holder);
+        await fsx.remove("temp");
+        process.exit(0);
+    }
+  } catch (error) {
+    console.error("\n", colors.bold.red("\n@error:"), error);
+    await fsx.remove("temp");
+  }
+}
+
+(async () => {
+  console.log(colors.bold.blue("\n@test type:"), "AutoDownloadTest()");
+  await AutoDownloadTest();
+  console.log(colors.bold.blue("\n@test type:"), "StreamingTest()");
+  await StreamingTest();
 })();
