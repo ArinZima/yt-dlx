@@ -93,7 +93,6 @@ function formatCount(count) {
     return `${count}`;
 }
 
-console.clear();
 const app = express();
 app.use(cors());
 app.use(helmet());
