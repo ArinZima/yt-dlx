@@ -29,7 +29,7 @@
     "update:base": "yarn upgrade --latest",
     "update:stack": "cd stack && yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
-    "spec": "tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+    "spec": "cd stack && yarn start & tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
     "test": "cd stack && yarn start & yarn test:base && yarn test:stack && yarn test:scrape && yarn cli",
     "test:base": "tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "test:scrape": "tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
