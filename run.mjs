@@ -61,28 +61,32 @@ Object.keys(scripts).forEach((script, index) => {
     script
   );
 });
-rl.question("Enter the number of the script you want to run: ", (answer) => {
-  const scriptIndex = parseInt(answer) - 1;
-  const scriptKeys = Object.keys(scripts);
-  if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
-    const scriptName = scriptKeys[scriptIndex];
-    const command = scripts[scriptName];
-    console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
-    const childProcess = spawn(command, {
-      shell: true,
-      stdio: "inherit",
-    });
-    childProcess.on("error", (error) => {
-      console.error(`${colors.red}@error:${colors.reset}`, error);
-    });
-    childProcess.on("exit", (code) => {
-      if (code !== 0) {
-        console.error(
-          `${colors.red}@error:${colors.reset}`,
-          `Exited with code ${code}`
-        );
-      }
-    });
-  } else console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
-  rl.close();
-});
+rl.question(
+  `Enter the ${colors.green}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: `,
+  (answer) => {
+    const scriptIndex = parseInt(answer) - 1;
+    const scriptKeys = Object.keys(scripts);
+    if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
+      const scriptName = scriptKeys[scriptIndex];
+      const command = scripts[scriptName];
+      console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
+      const childProcess = spawn(command, {
+        shell: true,
+        stdio: "inherit",
+      });
+      childProcess.on("error", (error) => {
+        console.error(`${colors.red}@error:${colors.reset}`, error);
+      });
+      childProcess.on("exit", (code) => {
+        if (code !== 0) {
+          console.error(
+            `${colors.red}@error:${colors.reset}`,
+            `Exited with code ${code}`
+          );
+        }
+      });
+    } else
+      console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
+    rl.close();
+  }
+);
