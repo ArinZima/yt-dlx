@@ -50,57 +50,38 @@ async function ytDlpx({ query, route, domain }: any) {
 }
 
 async function runTests() {
-  let metaTube;
   try {
-    metaTube = await ytDlpx({
-      route: "core",
-      query: "wWR0VD6qgt8",
-      domain: "https://possible-willingly-yeti.ngrok-free.app",
-    });
-    if (metaTube === null) process.exit(0);
-    else console.log(metaTube);
-
-    metaTube = await ytDlpx({
+    console.log(colors.yellow("testing @topic:"), "with video name");
+    await ytDlpx({
       route: "scrape",
       query: "angel numbers",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
     });
-    if (metaTube === null) process.exit(0);
-    else console.log(metaTube);
-
-    metaTube = await ytDlpx({
-      route: "scrape",
+    console.log(colors.yellow("testing @topic:"), "with videoid");
+    await ytDlpx({
+      route: "core",
       query: "wWR0VD6qgt8",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
     });
-    if (metaTube === null) process.exit(0);
-    else console.log(metaTube);
-
-    metaTube = await ytDlpx({
+    console.log(colors.yellow("testing @topic:"), "with video link");
+    await ytDlpx({
       route: "scrape",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
       query: "https://youtu.be/wWR0VD6qgt8?si=S8os0alEDZ6875lD",
     });
-    if (metaTube === null) process.exit(0);
-    else console.log(metaTube);
-
-    metaTube = await ytDlpx({
+    console.log(colors.yellow("testing @topic:"), "with playlist id");
+    await ytDlpx({
       route: "scrape",
       query: "PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
     });
-    if (metaTube === null) process.exit(0);
-    else console.log(metaTube);
-
-    metaTube = await ytDlpx({
+    console.log(colors.yellow("testing @topic:"), "with playlist link");
+    await ytDlpx({
       route: "scrape",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
       query:
         "https://youtube.com/playlist?list=PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM&si=RW12dM2je3XvbH2g",
     });
-    if (metaTube === null) process.exit(0);
-    else console.log(metaTube);
-
     process.exit(0);
   } catch (error) {
     console.error(error);
