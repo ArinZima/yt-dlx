@@ -28,7 +28,7 @@ const program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors.green("Installed Version: yt-dlp@" + version));
+      console.error(colors.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":

@@ -13,15 +13,15 @@ export default function help(): Promise<string> {
 ┃                   Full support for CommonJS (CJS), ECMAScript (ESM), and TypeScript (TS)                     ┃
 ┃──────────────────────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃ INSTALLATION  ┃ ❝ LOCALLY: ❞                                                                                 ┃
-┃               ┃   bun add yt-dlp                                                                             ┃
-┃               ┃   yarn add yt-dlp                                                                            ┃
-┃               ┃   npm install yt-dlp                                                                         ┃
-┃               ┃   pnpm install yt-dlp                                                                        ┃
+┃               ┃   bun add yt-dlx                                                                             ┃
+┃               ┃   yarn add yt-dlx                                                                            ┃
+┃               ┃   npm install yt-dlx                                                                         ┃
+┃               ┃   pnpm install yt-dlx                                                                        ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ GLOBALLY: ❞                                                                                ┃
-┃               ┃   yarn global add yt-dlp                                                   (use cli)         ┃
-┃               ┃   npm install --global yt-dlp                                              (use cli)         ┃
-┃               ┃   pnpm install --global yt-dlp                                             (use cli)         ┃
+┃               ┃   yarn global add yt-dlx                                                   (use cli)         ┃
+┃               ┃   npm install --global yt-dlx                                              (use cli)         ┃
+┃               ┃   pnpm install --global yt-dlx                                             (use cli)         ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃    FILTERS    ┃ ❝ AUDIO ONLY: ❞                                                                              ┃
 ┃               ┃   bassboost                  echo                                                            ┃
@@ -43,43 +43,43 @@ export default function help(): Promise<string> {
 ┃               ┃   flipVertical                                                                               ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃   CLI USAGE   ┃ ❝ INFO GRABBERS: ❞                                                                           ┃
-┃               ┃   yt-dlp version                                                             (alias: v)      ┃
-┃               ┃   yt-dlp help                                                                (alias: h)      ┃
-┃               ┃   yt-dlp extract --query="video/url"                                         (alias: e)      ┃
-┃               ┃   yt-dlp search-yt --query="video/url"                                       (alias: s)      ┃
-┃               ┃   yt-dlp list-formats --query="video/url"                                    (alias: f)      ┃ 
-┃               ┃   yt-dlp get-video-data --query="video/url"                                  (alias: gvd)    ┃
+┃               ┃   yt-dlx version                                                             (alias: v)      ┃
+┃               ┃   yt-dlx help                                                                (alias: h)      ┃
+┃               ┃   yt-dlx extract --query="video/url"                                         (alias: e)      ┃
+┃               ┃   yt-dlx search-yt --query="video/url"                                       (alias: s)      ┃
+┃               ┃   yt-dlx list-formats --query="video/url"                                    (alias: f)      ┃ 
+┃               ┃   yt-dlx get-video-data --query="video/url"                                  (alias: gvd)    ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ AUDIO ONLY: ❞                                                                              ┃
-┃               ┃   yt-dlp audio-lowest --query="video/url"                                    (alias: al)     ┃
-┃               ┃   yt-dlp audio-highest --query="video/url"                                   (alias: ah)     ┃
-┃               ┃   yt-dlp audio-quality-custom --query="video/url" --format="valid-format"    (alias: aqc)    ┃
+┃               ┃   yt-dlx audio-lowest --query="video/url"                                    (alias: al)     ┃
+┃               ┃   yt-dlx audio-highest --query="video/url"                                   (alias: ah)     ┃
+┃               ┃   yt-dlx audio-quality-custom --query="video/url" --format="valid-format"    (alias: aqc)    ┃
 ┃               ┃       ──────────────────────────────────────────────────────────────                         ┃
-┃               ┃   yt-dlp audio-lowest --query="video/url" --filter="valid-filter"            (filter)        ┃
-┃               ┃   yt-dlp audio-highest --query="video/url" --filter="valid-filter"           (filter)        ┃
-┃               ┃   yt-dlp audio-quality-custom --query="video/url" --format="valid-format"    ........        ┃
+┃               ┃   yt-dlx audio-lowest --query="video/url" --filter="valid-filter"            (filter)        ┃
+┃               ┃   yt-dlx audio-highest --query="video/url" --filter="valid-filter"           (filter)        ┃
+┃               ┃   yt-dlx audio-quality-custom --query="video/url" --format="valid-format"    ........        ┃
 ┃               ┃                                                   --filter="valid-filter"    (filter)        ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ VIDEO ONLY: ❞                                                                              ┃
-┃               ┃   yt-dlp video-lowest --query="video/url"                                    (alias: vl)     ┃
-┃               ┃   yt-dlp video-highest --query="video/url"                                   (alias: vh)     ┃
-┃               ┃   yt-dlp video-quality-custom --query="video/url" --format="valid-format"    (alias: vqc)    ┃
+┃               ┃   yt-dlx video-lowest --query="video/url"                                    (alias: vl)     ┃
+┃               ┃   yt-dlx video-highest --query="video/url"                                   (alias: vh)     ┃
+┃               ┃   yt-dlx video-quality-custom --query="video/url" --format="valid-format"    (alias: vqc)    ┃
 ┃               ┃       ──────────────────────────────────────────────────────────────                         ┃
-┃               ┃   yt-dlp video-lowest --query="video/url" --filter="valid-filter"            (filter)        ┃
-┃               ┃   yt-dlp video-highest --query="video/url" --filter="valid-filter"           (filter)        ┃
-┃               ┃   yt-dlp video-quality-custom --query="video/url" --format="valid-format"    ........        ┃
+┃               ┃   yt-dlx video-lowest --query="video/url" --filter="valid-filter"            (filter)        ┃
+┃               ┃   yt-dlx video-highest --query="video/url" --filter="valid-filter"           (filter)        ┃
+┃               ┃   yt-dlx video-quality-custom --query="video/url" --format="valid-format"    ........        ┃
 ┃               ┃                                                   --filter="valid-filter"    (filter)        ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ AUDIO + VIDEO MIX: ❞                                                                       ┃
-┃               ┃   yt-dlp audio-video-lowest --query="video/url"                              (alias: avl)    ┃
-┃               ┃   yt-dlp audio-video-highest --query="video/url"                             (alias: avh)    ┃
+┃               ┃   yt-dlx audio-video-lowest --query="video/url"                              (alias: avl)    ┃
+┃               ┃   yt-dlx audio-video-highest --query="video/url"                             (alias: avh)    ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
-┃   IMPORTING   ┃   import ytdlp from "yt-dlp";                                            TypeScript (ts)     ┃
-┃               ┃   import ytdlp from "yt-dlp";                                            ECMAScript (esm)    ┃
-┃               ┃   const ytdlp = require("yt-dlp");                                       CommonJS   (cjs)    ┃
+┃   IMPORTING   ┃   import ytdlp from "yt-dlx";                                            TypeScript (ts)     ┃
+┃               ┃   import ytdlp from "yt-dlx";                                            ECMAScript (esm)    ┃
+┃               ┃   const ytdlp = require("yt-dlx");                                       CommonJS   (cjs)    ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃ INFO GRABBERS ┃   ytdlp.info.help();                                                                         ┃
 ┃               ┃   ytdlp.info.search({ query: "" });                                                          ┃

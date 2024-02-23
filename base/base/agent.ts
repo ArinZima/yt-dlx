@@ -12,7 +12,7 @@ export default async function Engine({
   let videoId: string | null, TubeDlp: any, TubeBody: any;
   console.log(
     colors.bold.green("@info: ") +
-      `using yt-dlp version <(${version})>` +
+      `using yt-dlx version <(${version})>` +
       colors.reset("")
   );
   if (!query || query.trim() === "") {
@@ -82,7 +82,7 @@ export default async function Engine({
     default:
       console.log(
         colors.bold.green("@info:"),
-        "❣️ Thank you for using yt-dlp! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlp"
+        "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlx"
       );
       return JSON.parse(TubeDlp);
   }

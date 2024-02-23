@@ -1,13 +1,13 @@
 {
-  "name": "yt-dlp",
+  "name": "yt-dlx",
   "version": "20.1.0",
   "types": "proto/index.d.ts",
   "main": "proto/index.cjs.js",
   "module": "proto/index.esm.js",
-  "description": "Effortless audio-video download and streaming. yt-dlp does the heavy load for free.",
+  "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "bin": {
     "yt": "proto/cli/main.js",
-    "yt-dlp": "proto/cli/main.js"
+    "yt-dlx": "proto/cli/main.js"
   },
   "scripts": {
     "ingress": "cd backend && yarn ingress",
@@ -38,7 +38,7 @@
     "test_scrape": "tsup 'base/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
     "test_backend": "tsup 'base/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
     "cli": "yarn link && yarn cli_test && yarn unlink",
-    "cli_test": "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'"
+    "cli_test": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
   },
   "engines": {
     "node": ">=18"
@@ -58,7 +58,7 @@
     "url": "https://mixly-shovitdutta.koyeb.app/pkg"
   },
   "keywords": [
-    "yt-dlp",
+    "yt-dlx",
     "ytdlp",
     "cli",
     "yt"
