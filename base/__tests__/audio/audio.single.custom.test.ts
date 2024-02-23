@@ -11,13 +11,13 @@ async function AutoDownloadTest() {
     console.log(colors.bold.yellow("@info:"), "query: SuaeRys5tTc");
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
     console.log(colors.bold.yellow("@info:"), "quality: medium");
-    console.log(colors.bold.yellow("@info:"), "folderName: bin");
+    console.log(colors.bold.yellow("@info:"), "folderName: temp");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       quality: "medium",
-      folderName: "bin",
+      folderName: "temp",
       stream: false,
     });
     switch (true) {
@@ -27,11 +27,11 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         process.exit(0);
     }
     console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
@@ -39,14 +39,14 @@ async function AutoDownloadTest() {
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
     console.log(colors.bold.yellow("@info:"), "filter: nightcore");
     console.log(colors.bold.yellow("@info:"), "quality: medium");
-    console.log(colors.bold.yellow("@info:"), "folderName: bin");
+    console.log(colors.bold.yellow("@info:"), "folderName: temp");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       filter: "nightcore",
       quality: "medium",
-      folderName: "bin",
+      folderName: "temp",
       stream: false,
     });
     switch (true) {
@@ -56,16 +56,16 @@ async function AutoDownloadTest() {
           colors.bold.green("\n@pass:"),
           `with status ${holder.status}`
         );
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("bin");
+    await fsx.remove("temp");
   }
 }
 async function StreamingTest() {
@@ -75,13 +75,13 @@ async function StreamingTest() {
     console.log(colors.bold.yellow("@info:"), "query: SuaeRys5tTc");
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
     console.log(colors.bold.yellow("@info:"), "quality: medium");
-    console.log(colors.bold.yellow("@info:"), "folderName: bin");
+    console.log(colors.bold.yellow("@info:"), "folderName: temp");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       quality: "medium",
-      folderName: "bin",
+      folderName: "temp",
       stream: true,
     });
     switch (true) {
@@ -92,11 +92,11 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         process.exit(0);
     }
 
@@ -105,14 +105,14 @@ async function StreamingTest() {
     console.log(colors.bold.yellow("@info:"), "outputFormat: mp3");
     console.log(colors.bold.yellow("@info:"), "filter: bassboost");
     console.log(colors.bold.yellow("@info:"), "quality: medium");
-    console.log(colors.bold.yellow("@info:"), "folderName: bin");
+    console.log(colors.bold.yellow("@info:"), "folderName: temp");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.audio.single.custom({
       query: "SuaeRys5tTc",
       outputFormat: "mp3",
       filter: "bassboost",
       quality: "medium",
-      folderName: "bin",
+      folderName: "temp",
       stream: true,
     });
     switch (true) {
@@ -123,16 +123,16 @@ async function StreamingTest() {
           colors.bold.green("\n@pass:"),
           `with filename ${holder.filename}`
         );
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         break;
       default:
         console.error("\n", colors.bold.red("\n@error:"), holder);
-        await fsx.remove("bin");
+        await fsx.remove("temp");
         process.exit(0);
     }
   } catch (error) {
     console.error("\n", colors.bold.red("\n@error:"), error);
-    await fsx.remove("bin");
+    await fsx.remove("temp");
   }
 }
 
