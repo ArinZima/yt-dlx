@@ -1,3 +1,4 @@
+console.clear();
 import cors from "cors";
 import colors from "colors";
 import helmet from "helmet";
