@@ -32,13 +32,13 @@ const scripts = {
   update_base: "yarn upgrade --latest",
   update_backend: "cd backend && yarn upgrade --latest",
   update_frontend: "cd frontend && yarn upgrade --latest",
-  spec: "tsup 'base/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
+  spec: "tsup 'delta/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
   test: "yarn ingress & yarn test_base && yarn test_backend && yarn test_scrape && yarn cli",
-  test_base: "tsup 'base/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+  test_base: "tsup 'delta/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
   test_scrape:
-    "tsup 'base/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
+    "tsup 'delta/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
   test_backend:
-    "tsup 'base/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
+    "tsup 'src/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
   cli: "yarn link && yarn cli_test && yarn unlink",
   cli_test:
     "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
