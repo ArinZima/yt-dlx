@@ -30,7 +30,6 @@ export default async function ytDlpx({
           if (request.url().includes("/" + route)) {
             const response = await request.response();
             if (response) {
-              console.log(response);
               const json = await response.json();
               resolve(json);
             } else resolve(null);
