@@ -5,9 +5,9 @@
   "main": "core/index.cjs.js",
   "module": "core/index.esm.js",
   "scripts": {
-    "start": "node 'core/index.cjs.js'",
-    "test": "yarn start & tsup 'app/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'",
-    "scrape": "yarn start & tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'"
+    "ingress": "node 'core/index.cjs.js'",
+    "test": "yarn ingress & tsup 'app/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'",
+    "scrape": "yarn ingress & tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'"
   },
   "dependencies": {
     "@ngrok/ngrok": "^1.0.0",

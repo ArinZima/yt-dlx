@@ -10,9 +10,11 @@
     "yt-dlp": "core/cli/main.js"
   },
   "scripts": {
-    "start": "cd stack && yarn start",
+    "ingress": "cd stack && yarn ingress",
     "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "yarn clean && yarn make && yarn build",
+    "remake:update": "yarn clean && yarn make && yarn udpdate && yarn build",
+    "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
     "clean": "yarn clean:base && yarn clean:stack && yarn clean:frontend",
     "clean:base": "rm -rf node_modules temp core yarn.lock",
     "clean:stack": "cd stack && rm -rf node_modules temp core yarn.lock",
@@ -35,8 +37,7 @@
     "test:scrape": "tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
     "test:stack": "tsup 'app/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
     "cli": "yarn link && yarn cli:test && yarn unlink",
-    "cli:test": "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
-    "upload": "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update"
+    "cli:test": "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'"
   },
   "engines": {
     "node": ">=18"
