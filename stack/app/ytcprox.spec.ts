@@ -1,3 +1,4 @@
+console.clear();
 import colors from "colors";
 import { chromium } from "playwright";
 import type { Browser } from "playwright";
