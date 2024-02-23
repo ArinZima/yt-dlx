@@ -6,8 +6,8 @@
   "module": "core/index.esm.js",
   "scripts": {
     "start": "node 'core/index.cjs.js'",
-    "ytcprox": "rm -rf temp && tsup 'app/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.js'",
-    "scrape": "rm -rf temp && tsup 'app/scrapping.spec.ts' --outDir 'temp' && node 'temp/scrapping.spec.js'"
+    "scrape": "rm -rf temp && tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'",
+    "ytcprox": "rm -rf temp && tsup 'app/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.js'"
   },
   "dependencies": {
     "@ngrok/ngrok": "^1.0.0",
