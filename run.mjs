@@ -64,7 +64,7 @@ rl.question("Enter the number of the script you want to run: ", (answer) => {
   if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
     const scriptName = scriptKeys[scriptIndex];
     const command = scripts[scriptName];
-    console.log(`${colors.green}@script:${colors.reset}`, scriptName);
+    console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
     const childProcess = spawn(command, {
       shell: true,
       stdio: "inherit",
