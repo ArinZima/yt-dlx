@@ -35,6 +35,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import express from 'express';
 import search from 'yt-search';
+import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import ngrok from '@ngrok/ngrok';
@@ -45,11 +46,11 @@ import cookieParser from 'cookie-parser';
 async function exAsync({ query, proxy, retries, }) {
     for (let i = 0; i < retries; i++) {
         try {
-            let proLoc = "python -m yt_dlp ";
+            let proLoc = join(__dirname, "ytDlp");
             if (proxy)
-                proLoc += `--proxy '${proxy}' --dump-json '${query}'`;
+                proLoc += ` --proxy '${proxy}' --dump-json '${query}'`;
             else
-                proLoc += `--dump-json '${query}'`;
+                proLoc += ` --dump-json '${query}'`;
             const result = await promisify(exec)(proLoc);
             if (result.stderr)
                 console.error(result.stderr.toString());

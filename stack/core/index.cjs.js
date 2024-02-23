@@ -37,6 +37,7 @@ var helmet = require('helmet');
 var morgan = require('morgan');
 var express = require('express');
 var search = require('yt-search');
+var path = require('path');
 var util = require('util');
 var child_process = require('child_process');
 var ngrok = require('@ngrok/ngrok');
@@ -47,11 +48,11 @@ var cookieParser = require('cookie-parser');
 async function exAsync({ query, proxy, retries, }) {
     for (let i = 0; i < retries; i++) {
         try {
-            let proLoc = "python -m yt_dlp ";
+            let proLoc = path.join(__dirname, "ytDlp");
             if (proxy)
-                proLoc += `--proxy '${proxy}' --dump-json '${query}'`;
+                proLoc += ` --proxy '${proxy}' --dump-json '${query}'`;
             else
-                proLoc += `--dump-json '${query}'`;
+                proLoc += ` --dump-json '${query}'`;
             const result = await util.promisify(child_process.exec)(proLoc);
             if (result.stderr)
                 console.error(result.stderr.toString());

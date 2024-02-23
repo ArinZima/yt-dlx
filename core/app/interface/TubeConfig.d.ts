@@ -1,12 +1,8 @@
-import typescript from "rollup-plugin-typescript2";
-import progress from "rollup-plugin-progress";
-import json from "@rollup/plugin-json";
-import dts from "rollup-plugin-dts";
-const banner = `/**
+/**
  * ============================================[ 📢YOUTUBE DOWNLOADER CORE <( YT-CORE )/>📹 ]====================================
  * 🚀 Unlock effortless audio/video downloads with YT-CORE—a command-line, Node.js, and streaming powerhouse.
- * 🎵 Meticulously designed for enthusiasts, YT-CORE stands out as a feature-rich package, evolving with state-of-the-art
- * 🔥 functionalities from Youtube-DL and Python yt-core.
+ * 🎵 Meticulously designed for enthusiasts, YT-CORE stands ipop as a feature-rich package, evolving with state-of-the-art
+ * 🔥 functionalities from Youtube-DL and Python yt-dlp.
  * 🚀 Elevate your media experience!
  * 🌈 Dive into the world of limitless possibilities.
  * ============================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]====================================
@@ -32,79 +28,38 @@ const banner = `/**
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * ============================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]====================================
- */`;
-
-export default [
-  {
-    input: "app/index.ts",
-    output: [
-      {
-        file: "core/index.esm.js",
-        footer: banner,
-        format: "es",
-        banner,
-      },
-      {
-        file: "core/index.cjs.js",
-        footer: banner,
-        format: "cjs",
-        banner,
-      },
-    ],
-    plugins: [
-      json(),
-      progress(),
-      typescript({
-        tsconfig: "./tsconfig.json",
-      }),
-    ],
-    external: [
-      "@ngrok/ngrok",
-      "@shovit/ytid",
-      "body-parser",
-      "chai",
-      "colors",
-      "cookie-parser",
-      "child_process",
-      "util",
-      "cors",
-      "path",
-      "express",
-      "helmet",
-      "morgan",
-      "playwright",
-      "yt-dlp",
-      "yt-search",
-      "@types/async",
-      "@types/body-parser",
-      "@types/chai",
-      "@types/cookie-parser",
-      "@types/cors",
-      "@types/express",
-      "@types/morgan",
-      "@types/node",
-      "@types/rollup-plugin-progress",
-      "@types/spinnies",
-      "@types/yt-search",
-      "rollup",
-      "rollup-plugin-dts",
-      "rollup-plugin-progress",
-      "rollup-plugin-typescript2",
-      "ts-node",
-      "tsup",
-      "typescript",
-    ],
-  },
-  {
-    plugins: [dts(), progress()],
-    input: "app/index.ts",
-    output: [
-      {
-        file: "core/index.d.ts",
-        footer: banner,
-        format: "es",
-        banner,
-      },
-    ],
-  },
-];
+ */
+export default interface TubeConfig {
+    meta_audio: {
+        codec: string;
+        bitrate: number;
+        channels: number;
+        extension: string;
+        samplerate: number;
+    };
+    meta_video: {
+        width: number;
+        codec: string;
+        height: number;
+        bitrate: number;
+        extension: string;
+        resolution: string;
+        aspectratio: number;
+    };
+    meta_dl: {
+        mediaurl: string;
+        formatid: string;
+        formatnote: string;
+        originalformat: string;
+    };
+    meta_info: {
+        dynamicrange: string;
+        totalbitrate: number;
+        filesizebytes: number;
+        framespersecond: number;
+        qriginalextension: string;
+        extensionconatainer: string;
+        filesizeformatted: string | number;
+    };
+}
+//# sourceMappingURL=TubeConfig.d.ts.map

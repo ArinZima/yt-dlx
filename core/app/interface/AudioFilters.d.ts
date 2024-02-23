@@ -1,12 +1,8 @@
-import typescript from "rollup-plugin-typescript2";
-import progress from "rollup-plugin-progress";
-import json from "@rollup/plugin-json";
-import dts from "rollup-plugin-dts";
-const banner = `/**
+/**
  * ============================================[ 📢YOUTUBE DOWNLOADER CORE <( YT-CORE )/>📹 ]====================================
  * 🚀 Unlock effortless audio/video downloads with YT-CORE—a command-line, Node.js, and streaming powerhouse.
- * 🎵 Meticulously designed for enthusiasts, YT-CORE stands out as a feature-rich package, evolving with state-of-the-art
- * 🔥 functionalities from Youtube-DL and Python yt-core.
+ * 🎵 Meticulously designed for enthusiasts, YT-CORE stands ipop as a feature-rich package, evolving with state-of-the-art
+ * 🔥 functionalities from Youtube-DL and Python yt-dlp.
  * 🚀 Elevate your media experience!
  * 🌈 Dive into the world of limitless possibilities.
  * ============================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]====================================
@@ -32,79 +28,22 @@ const banner = `/**
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * ============================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]====================================
- */`;
-
-export default [
-  {
-    input: "app/index.ts",
-    output: [
-      {
-        file: "core/index.esm.js",
-        footer: banner,
-        format: "es",
-        banner,
-      },
-      {
-        file: "core/index.cjs.js",
-        footer: banner,
-        format: "cjs",
-        banner,
-      },
-    ],
-    plugins: [
-      json(),
-      progress(),
-      typescript({
-        tsconfig: "./tsconfig.json",
-      }),
-    ],
-    external: [
-      "@ngrok/ngrok",
-      "@shovit/ytid",
-      "body-parser",
-      "chai",
-      "colors",
-      "cookie-parser",
-      "child_process",
-      "util",
-      "cors",
-      "path",
-      "express",
-      "helmet",
-      "morgan",
-      "playwright",
-      "yt-dlp",
-      "yt-search",
-      "@types/async",
-      "@types/body-parser",
-      "@types/chai",
-      "@types/cookie-parser",
-      "@types/cors",
-      "@types/express",
-      "@types/morgan",
-      "@types/node",
-      "@types/rollup-plugin-progress",
-      "@types/spinnies",
-      "@types/yt-search",
-      "rollup",
-      "rollup-plugin-dts",
-      "rollup-plugin-progress",
-      "rollup-plugin-typescript2",
-      "ts-node",
-      "tsup",
-      "typescript",
-    ],
-  },
-  {
-    plugins: [dts(), progress()],
-    input: "app/index.ts",
-    output: [
-      {
-        file: "core/index.d.ts",
-        footer: banner,
-        format: "es",
-        banner,
-      },
-    ],
-  },
-];
+ */
+export default interface AudioFilters {
+    bassboost: string;
+    echo: string;
+    flanger: string;
+    nightcore: string;
+    panning: string;
+    phaser: string;
+    reverse: string;
+    slow: string;
+    speed: string;
+    subboost: string;
+    superslow: string;
+    superspeed: string;
+    surround: string;
+    vaporwave: string;
+    vibrato: string;
+}
+//# sourceMappingURL=AudioFilters.d.ts.map
