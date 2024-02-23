@@ -11,9 +11,9 @@ import sizeFormat from "./sizeFormat";
 import formatCount from "./formatCount";
 import cookieParser from "cookie-parser";
 import YouTubeID from "../util/YouTubeId";
-import type TubeConfig from "../../base/interface/TubeConfig";
-import type TubeFormat from "../../base/interface/TubeFormat";
-import type metaTubeConfig from "../../base/interface/metaTubeConfig";
+import type TubeConfig from "../../delta/interface/TubeConfig";
+import type TubeFormat from "../../delta/interface/TubeFormat";
+import type metaTubeConfig from "../../delta/interface/metaTubeConfig";
 
 const app = express();
 app.use(cors());
