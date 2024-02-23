@@ -2,16 +2,16 @@ import colors from "colors";
 import { chromium } from "playwright";
 import type { Browser } from "playwright";
 
-interface ytcprox {
+interface ytDlpx {
   domain: string;
   query: string;
   route: string;
 }
-export default async function ytcprox({
+export default async function ytDlpx({
   query,
   route,
   domain,
-}: ytcprox): Promise<string | null> {
+}: ytDlpx): Promise<string | null> {
   const browser: Browser = await chromium.launch({ headless: true });
   try {
     const item: string = "query=" + decodeURIComponent(query);

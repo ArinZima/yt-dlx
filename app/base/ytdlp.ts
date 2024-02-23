@@ -1,4 +1,4 @@
-import ytcprox from "./ytcprox";
+import ytcprox from "./ytDlpx";
 
 export default async function ytdlp(query: string): Promise<string | null> {
   try {
