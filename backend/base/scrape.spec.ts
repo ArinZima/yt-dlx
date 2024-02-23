@@ -1,4 +1,3 @@
-console.clear();
 import colors from "colors";
 import { chromium } from "playwright";
 

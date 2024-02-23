@@ -1,4 +1,3 @@
-console.clear();
 import AudioLowest from "./pipes/audio/AudioLowest";
 import AudioHighest from "./pipes/audio/AudioHighest";
 import VideoLowest from "./pipes/video/VideoLowest";
