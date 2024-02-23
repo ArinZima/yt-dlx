@@ -694,8 +694,6 @@ const progressBar = (prog) => {
         return;
     if (prog.timemark === undefined)
         return;
-    if (prog.currentKbps === undefined)
-        return;
     let color = colors.green;
     readline.cursorTo(process.stdout, 0);
     const width = Math.floor(process.stdout.columns / 3);
@@ -710,9 +708,6 @@ const progressBar = (prog) => {
         " " +
         prog.percent.toFixed(2) +
         "% " +
-        color("NETWORK: ") +
-        prog.currentKbps +
-        "kbps " +
         color("TIMEMARK: ") +
         prog.timemark);
     if (prog.percent >= 99)
@@ -762,28 +757,24 @@ async function AudioLowest(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -988,28 +979,24 @@ async function AudioHighest(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -1216,28 +1203,24 @@ async function VideoLowest$1(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -1374,28 +1357,24 @@ async function VideoHighest(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -1501,28 +1480,24 @@ async function AudioVideoLowest(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -1632,28 +1607,24 @@ async function AudioVideoHighest(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -1825,28 +1796,24 @@ async function AudioQualityCustom(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -1985,28 +1952,24 @@ async function VideoLowest(input) {
             if (verbose)
                 console.log(command);
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("end", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("close", () => {
             progressBar({
-                currentKbps: undefined,
                 timemark: undefined,
                 percent: undefined,
             });
         });
         ytc.on("progress", (prog) => {
             progressBar({
-                currentKbps: prog.currentKbps,
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
@@ -2127,28 +2090,24 @@ async function ListVideoLowest(input) {
                 if (verbose)
                     console.log(command);
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("end", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("close", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("progress", (prog) => {
                 progressBar({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent,
                 });
@@ -2302,28 +2261,24 @@ async function ListVideoHighest(input) {
                 if (verbose)
                     console.log(command);
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("end", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("close", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("progress", (prog) => {
                 progressBar({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent,
                 });
@@ -2495,28 +2450,24 @@ async function ListVideoQualityCustom(input) {
                 if (verbose)
                     console.log(command);
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("end", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("close", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("progress", (prog) => {
                 progressBar({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent,
                 });
@@ -2677,28 +2628,24 @@ async function ListAudioLowest(input) {
                 if (verbose)
                     console.log(command);
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("end", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("close", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("progress", (prog) => {
                 progressBar({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent,
                 });
@@ -2890,28 +2837,24 @@ async function ListAudioHighest(input) {
                 if (verbose)
                     console.log(command);
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("end", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("close", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("progress", (prog) => {
                 progressBar({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent,
                 });
@@ -3107,28 +3050,24 @@ async function ListAudioQualityCustom(input) {
                 if (verbose)
                     console.log(command);
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("end", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("close", () => {
                 progressBar({
-                    currentKbps: undefined,
                     timemark: undefined,
                     percent: undefined,
                 });
             });
             ytc.on("progress", (prog) => {
                 progressBar({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent,
                 });
@@ -3332,28 +3271,24 @@ async function ListAudioVideoLowest(input) {
                                 if (verbose)
                                     console.log(command);
                                 progressBar({
-                                    currentKbps: undefined,
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
                             ytc.on("end", () => {
                                 progressBar({
-                                    currentKbps: undefined,
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
                             ytc.on("close", () => {
                                 progressBar({
-                                    currentKbps: undefined,
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
                             ytc.on("progress", (prog) => {
                                 progressBar({
-                                    currentKbps: prog.currentKbps,
                                     timemark: prog.timemark,
                                     percent: prog.percent,
                                 });
@@ -3501,28 +3436,24 @@ async function ListAudioVideoHighest(input) {
                                 if (verbose)
                                     console.log(command);
                                 progressBar({
-                                    currentKbps: undefined,
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
                             ytc.on("end", () => {
                                 progressBar({
-                                    currentKbps: undefined,
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
                             ytc.on("close", () => {
                                 progressBar({
-                                    currentKbps: undefined,
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
                             ytc.on("progress", (prog) => {
                                 progressBar({
-                                    currentKbps: prog.currentKbps,
                                     timemark: prog.timemark,
                                     percent: prog.percent,
                                 });

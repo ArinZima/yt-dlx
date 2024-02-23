@@ -1,5 +1,4 @@
 interface ProgressData {
-    currentKbps: number | undefined;
     timemark: string | undefined;
     percent: number | undefined;
 }

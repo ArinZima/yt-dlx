@@ -712,8 +712,6 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  if (prog.currentKbps === void 0)
-    return;
   let color = colors17.green;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
@@ -724,7 +722,7 @@ var progressBar = (prog) => {
     color = colors17.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
-    color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("NETWORK: ") + prog.currentKbps + "kbps " + color("TIMEMARK: ") + prog.timemark
+    color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
   );
   if (prog.percent >= 99)
     process.stdout.write("\n");
@@ -783,28 +781,24 @@ async function AudioLowest(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -1015,28 +1009,24 @@ async function AudioHighest(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -1243,28 +1233,24 @@ async function VideoLowest(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -1402,28 +1388,24 @@ async function VideoHighest(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -1529,28 +1511,24 @@ async function AudioVideoLowest(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -1659,28 +1637,24 @@ async function AudioVideoHighest(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -1855,28 +1829,24 @@ async function AudioQualityCustom(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -2015,28 +1985,24 @@ async function VideoLowest2(input) {
       if (verbose)
         console.log(command);
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("end", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("close", () => {
       progressBar_default({
-        currentKbps: void 0,
         timemark: void 0,
         percent: void 0
       });
     });
     ytc.on("progress", (prog) => {
       progressBar_default({
-        currentKbps: prog.currentKbps,
         timemark: prog.timemark,
         percent: prog.percent
       });
@@ -2166,28 +2132,24 @@ async function ListVideoLowest(input) {
         if (verbose)
           console.log(command);
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("end", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("close", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("progress", (prog) => {
         progressBar_default({
-          currentKbps: prog.currentKbps,
           timemark: prog.timemark,
           percent: prog.percent
         });
@@ -2351,28 +2313,24 @@ async function ListVideoHighest(input) {
         if (verbose)
           console.log(command);
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("end", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("close", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("progress", (prog) => {
         progressBar_default({
-          currentKbps: prog.currentKbps,
           timemark: prog.timemark,
           percent: prog.percent
         });
@@ -2557,28 +2515,24 @@ async function ListVideoQualityCustom(input) {
         if (verbose)
           console.log(command);
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("end", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("close", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("progress", (prog) => {
         progressBar_default({
-          currentKbps: prog.currentKbps,
           timemark: prog.timemark,
           percent: prog.percent
         });
@@ -2747,28 +2701,24 @@ async function ListAudioLowest(input) {
         if (verbose)
           console.log(command);
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("end", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("close", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("progress", (prog) => {
         progressBar_default({
-          currentKbps: prog.currentKbps,
           timemark: prog.timemark,
           percent: prog.percent
         });
@@ -2968,28 +2918,24 @@ async function ListAudioHighest(input) {
         if (verbose)
           console.log(command);
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("end", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("close", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("progress", (prog) => {
         progressBar_default({
-          currentKbps: prog.currentKbps,
           timemark: prog.timemark,
           percent: prog.percent
         });
@@ -3196,28 +3142,24 @@ async function ListAudioQualityCustom(input) {
         if (verbose)
           console.log(command);
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("end", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("close", () => {
         progressBar_default({
-          currentKbps: void 0,
           timemark: void 0,
           percent: void 0
         });
       });
       ytc.on("progress", (prog) => {
         progressBar_default({
-          currentKbps: prog.currentKbps,
           timemark: prog.timemark,
           percent: prog.percent
         });
@@ -5245,28 +5187,24 @@ async function ListAudioVideoLowest(input) {
                   if (verbose)
                     console.log(command);
                   progressBar_default({
-                    currentKbps: void 0,
                     timemark: void 0,
                     percent: void 0
                   });
                 });
                 ytc.on("end", () => {
                   progressBar_default({
-                    currentKbps: void 0,
                     timemark: void 0,
                     percent: void 0
                   });
                 });
                 ytc.on("close", () => {
                   progressBar_default({
-                    currentKbps: void 0,
                     timemark: void 0,
                     percent: void 0
                   });
                 });
                 ytc.on("progress", (prog) => {
                   progressBar_default({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent
                   });
@@ -5413,28 +5351,24 @@ async function ListAudioVideoHighest(input) {
                   if (verbose)
                     console.log(command);
                   progressBar_default({
-                    currentKbps: void 0,
                     timemark: void 0,
                     percent: void 0
                   });
                 });
                 ytc.on("end", () => {
                   progressBar_default({
-                    currentKbps: void 0,
                     timemark: void 0,
                     percent: void 0
                   });
                 });
                 ytc.on("close", () => {
                   progressBar_default({
-                    currentKbps: void 0,
                     timemark: void 0,
                     percent: void 0
                   });
                 });
                 ytc.on("progress", (prog) => {
                   progressBar_default({
-                    currentKbps: prog.currentKbps,
                     timemark: prog.timemark,
                     percent: prog.percent
                   });
