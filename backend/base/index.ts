@@ -31,7 +31,7 @@ app.get("/core", async (req, res) => {
     const query = decodeURIComponent(req.query.query as string);
     if (req.query.proxy) {
       const proxy: string = decodeURIComponent(req.query.proxy as string);
-      console.log(colors.green("with-proxy @addr:"), proxy);
+      console.log(colors.bold.green("with-proxy @addr:"), proxy);
       proTube = await exAsync({
         retries: 4,
         proxy,
@@ -146,7 +146,7 @@ app.get("/core", async (req, res) => {
           .map((item) => item.reTube)[0] || null,
     });
   } catch (error) {
-    console.log(new Date().toLocaleString(), colors.bold.red("ERROR:"), error);
+    console.log(colors.bold.red("@error:"), error);
     return res.status(200).json(null);
   }
 });
@@ -162,7 +162,7 @@ app.get("/scrape", async (req, res) => {
       /(https?:\/\/(www\.)?youtube\.com\/watch\?(?!.*v=)[a-zA-Z0-9]+|https:\/\/youtu\.be\/[a-zA-Z0-9\-_])/;
     switch (true) {
       case !req.query.query:
-        return res.status(400).json({ error: "Query parameter is missing." });
+        return res.status(200).json(null);
       case PlaylistRegex.test(query):
         const playlistId = await YouTubeID(query);
         if (playlistId) {
@@ -256,27 +256,27 @@ app.get("/scrape", async (req, res) => {
         } else return res.status(200).json(null);
     }
   } catch (error) {
-    console.log(new Date().toLocaleString(), colors.bold.red("ERROR:"), error);
+    console.log(colors.bold.red("@error:"), error);
     return res.status(200).json(null);
   }
 });
 const port = process.env.PORT || 8080;
 const server = app.listen(port, async () => {
-  console.log(colors.green("express @port:"), port);
+  console.log(colors.bold.green("@express:"), port);
   const ng = await ngrok.connect({
     addr: port,
     domain: "possible-willingly-yeti.ngrok-free.app",
     authtoken: "2ckx63TtY6U2VWZ9hPLLF3Uw2zJ_7vA1a9mHRFKDEvQAT8YNg",
   });
-  console.log(colors.green("ingress @url:"), ng.url());
+  console.log(colors.bold.green("@ingress:"), ng.url());
 });
 async function handleSIGINT() {
   await new Promise((resolve) => {
     server.close(resolve);
     ngrok.disconnect();
   });
-  console.clear();
-  console.log(colors.blue("server @info:"), "server & ingress stopped...");
+  console.log(colors.bold.blue("@info:"), "received SIGINT...");
+  console.log(colors.bold.blue("@info:"), "server & ingress stopped...");
   process.exit(0);
 }
 process.on("SIGINT", handleSIGINT);
