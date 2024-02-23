@@ -5,7 +5,7 @@ export default async function ytdlp(query: string): Promise<string | null> {
     const response = await ytDlpx({
       query,
       route: "core",
-      domain: "https://casual-insect-sunny.ngrok-free.app",
+      domain: "https://stirring-physically-piglet.ngrok-free.app",
     });
     if (response !== null) return decodeURIComponent(response);
     else return null;

@@ -265,7 +265,7 @@ const server = app.listen(port, async () => {
   console.log(colors.green("express @port:"), port);
   const ng = await ngrok.connect({
     addr: port,
-    domain: "casual-insect-sunny.ngrok-free.app",
+    domain: "stirring-physically-piglet.ngrok-free.app",
     key: "2ciOiqJgbB4WYJLE5D2r7E69ZZc_3T1do81AnZCe2GRHWNKhn",
     authtoken: "2ciO4xagu003RCLd9oHR2kNwlu7_aAaBTHudAQV89KRri8RS",
   });
