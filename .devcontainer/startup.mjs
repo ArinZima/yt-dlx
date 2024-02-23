@@ -46,7 +46,6 @@ const scripts = {
 };
 
 function runScript() {
-  console.clear();
   console.log(
     `${colors.green}@yt-dlp: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`
   );
