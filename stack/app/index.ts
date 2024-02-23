@@ -268,7 +268,7 @@ const server = app.listen(port, async () => {
     domain: "possible-willingly-yeti.ngrok-free.app",
     authtoken: "2ckx63TtY6U2VWZ9hPLLF3Uw2zJ_7vA1a9mHRFKDEvQAT8YNg",
   });
-  console.log(colors.green("proxy @url:"), ng.url());
+  console.log(colors.green("ingress @url:"), ng.url());
 });
 async function handleSIGINT() {
   await new Promise((resolve) => {
@@ -276,7 +276,7 @@ async function handleSIGINT() {
     ngrok.disconnect();
   });
   console.clear();
-  console.log(colors.blue("server @info:"), "server & proxy stopped...");
+  console.log(colors.blue("server @info:"), "server & ingress stopped...");
   process.exit(0);
 }
 process.on("SIGINT", handleSIGINT);
