@@ -62,7 +62,7 @@ Object.keys(scripts).forEach((script, index) => {
   );
 });
 rl.question(
-  `Enter the ${colors.green}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: `,
+  `${colors.green}@info:${colors.reset} enter the ${colors.green}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: `,
   (answer) => {
     const scriptIndex = parseInt(answer) - 1;
     const scriptKeys = Object.keys(scripts);
