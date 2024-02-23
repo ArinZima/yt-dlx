@@ -48,7 +48,7 @@ var cookieParser = require('cookie-parser');
 async function exAsync({ query, proxy, retries, }) {
     for (let i = 0; i < retries; i++) {
         try {
-            let proLoc = path.join(__dirname, "ytDlp");
+            let proLoc = path.join(__dirname, "..", "util", "ytDlp");
             if (proxy)
                 proLoc += ` --proxy '${proxy}' --dump-json '${query}'`;
             else
