@@ -2,7 +2,6 @@ import colors from "colors";
 import readline from "readline";
 
 interface ProgressData {
-  currentKbps: number | undefined;
   timemark: string | undefined;
   percent: number | undefined;
 }
@@ -10,7 +9,6 @@ interface ProgressData {
 const progressBar = (prog: ProgressData) => {
   if (prog.percent === undefined) return;
   if (prog.timemark === undefined) return;
-  if (prog.currentKbps === undefined) return;
   let color = colors.green;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
@@ -24,9 +22,6 @@ const progressBar = (prog: ProgressData) => {
       " " +
       prog.percent.toFixed(2) +
       "% " +
-      color("NETWORK: ") +
-      prog.currentKbps +
-      "kbps " +
       color("TIMEMARK: ") +
       prog.timemark
   );
