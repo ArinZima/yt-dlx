@@ -8,9 +8,6 @@ const colors = {
   green: "\x1b[32m",
 };
 
-console.log(
-  `${colors.green}@yt-dlp: welcome to the startup script${colors.reset}`
-);
 const scripts = {
   ingress: "cd backend && yarn ingress",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
@@ -36,13 +33,13 @@ const scripts = {
   "update:base": "yarn upgrade --latest",
   "update:backend": "cd backend && yarn upgrade --latest",
   "update:frontend": "cd frontend && yarn upgrade --latest",
-  spec: "yarn ingress & tsup 'app/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+  spec: "yarn ingress & tsup 'base/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
   test: "yarn ingress & yarn test:base && yarn test:backend && yarn test:scrape && yarn cli",
-  "test:base": "tsup 'app/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+  "test:base": "tsup 'base/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
   "test:scrape":
-    "tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
+    "tsup 'base/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
   "test:backend":
-    "tsup 'app/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
+    "tsup 'base/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
   cli: "yarn link && yarn cli:test && yarn unlink",
   "cli:test":
     "yt version && yt-dlp audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlp al --query 'SuaeRys5tTc'",
@@ -50,6 +47,9 @@ const scripts = {
 
 function runScript() {
   console.clear();
+  console.log(
+    `${colors.green}@yt-dlp: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`
+  );
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
