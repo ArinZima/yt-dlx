@@ -1,21 +1,18 @@
 import colors from "colors";
-import Spinnies from "spinnies";
-const spinnies = new Spinnies();
-import { randomUUID } from "crypto";
 import { chromium } from "playwright";
-const metaSpin = randomUUID().toString();
 
 async function YouTubeScraper(query: string | number | boolean) {
-  spinnies.add(metaSpin, { text: colors.yellow("Spinning Chromium...") });
+  console.log(colors.yellow("browser @scrape:"), "spinning chromium...");
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
   const searchUrl =
     "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
   await page.goto(searchUrl);
-  spinnies.update(metaSpin, {
-    text: colors.yellow("Hydrating dynamic content..."),
-  });
+  console.log(
+    colors.yellow("browser @scrape:"),
+    "hydrating dynamic content..."
+  );
   let videos: string | any[] = [];
   while (videos.length < 100) {
     await page.waitForSelector(".ytd-video-renderer");
@@ -71,9 +68,11 @@ async function YouTubeScraper(query: string | number | boolean) {
     });
   }
   await browser.close();
-  spinnies.succeed(metaSpin, {
-    text: colors.green("Total videos: ") + videos.length,
-  });
+  console.log(
+    colors.green("browser @scrape:"),
+    "found total videos:",
+    videos.length
+  );
   return data;
 }
 YouTubeScraper("ZULFAAN (Official Audio) SARRB | Starboy X")
