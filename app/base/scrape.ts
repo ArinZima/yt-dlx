@@ -1,8 +1,8 @@
-import ytcprox from "./ytDlpx";
+import ytDlpx from "./ytDlpx";
 
 export default async function scrape(query: string): Promise<string | null> {
   try {
-    const response = await ytcprox({
+    const response = await ytDlpx({
       query,
       route: "scrape",
       domain: "https://casual-insect-sunny.ngrok-free.app",
