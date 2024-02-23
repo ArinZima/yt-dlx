@@ -99,7 +99,7 @@ async function YouTubeSearch(query) {
     return metaTube;
   } catch (error) {
     spinnies.fail(spin, {
-      text: colors.yellow("@error: ") + error.message,
+      text: colors.red("@error: ") + error.message,
     });
     return null;
   }
@@ -175,7 +175,7 @@ async function YouTubeVideo(videoUrl) {
     return metaTube;
   } catch (error) {
     spinnies.fail(spin, {
-      text: colors.yellow("@error: ") + error.message,
+      text: colors.re("@error: ") + error.message,
     });
     return null;
   }
