@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node 'core/index.cjs.js'",
     "scrape": "rm -rf temp && tsup 'app/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'",
-    "test": "rm -rf temp && tsup 'app/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.js'"
+    "test": "rm -rf temp && tsup 'app/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'"
   },
   "dependencies": {
     "@ngrok/ngrok": "^1.0.0",
