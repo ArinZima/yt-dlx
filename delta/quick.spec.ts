@@ -28,9 +28,9 @@ async function YouTubeSearch({
   number,
 }: YouTubeSearch): Promise<reYouTubeSearch[] | null> {
   const retryOptions = {
-    minTimeout: 2000,
     maxTimeout: 4000,
-    retries: 4,
+    minTimeout: 2000,
+    retries: 2,
   };
   const spin = randomUUID();
   try {
@@ -152,13 +152,12 @@ async function YouTubeSearch({
     return null;
   }
 }
-
 async function YouTubeVideo(videoUrl: string) {
   if (!videoUrl) return null;
   const retryOptions = {
-    minTimeout: 2000,
     maxTimeout: 4000,
-    retries: 4,
+    minTimeout: 2000,
+    retries: 2,
   };
   const spin = randomUUID();
   try {
@@ -208,18 +207,10 @@ async function YouTubeVideo(videoUrl: string) {
             : null;
         }
       );
-      const comments = await page.$eval(
-        ".count-text.style-scope.ytd-comments-header-renderer",
-        (el: any) => {
-          const spans = el.querySelectorAll(".style-scope.yt-formatted-string");
-          return spans.length > 0 ? spans[0].textContent.trim() : null;
-        }
-      );
       const data = {
         author,
         videoId,
         videoUrl,
-        comments,
         thumbnailUrl,
         uploadOn: uploadDateElements,
         title: title.split("\n")[0].trim(),
