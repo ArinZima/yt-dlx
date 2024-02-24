@@ -152,8 +152,22 @@ async function YouTubeSearch({
     return null;
   }
 }
-async function YouTubeVideo(videoUrl: string) {
-  if (!videoUrl) return null;
+
+interface reYouTubeVideo {
+  title: string;
+  views?: string;
+  author?: string;
+  videoId: string;
+  uploadOn?: string;
+  videoLink: string;
+  thumbnailUrls: string[];
+}
+async function YouTubeVideo({
+  videoLink,
+}: {
+  videoLink: string;
+}): Promise<reYouTubeVideo | null> {
+  if (!videoLink) return null;
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
@@ -174,7 +188,7 @@ async function YouTubeVideo(videoUrl: string) {
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36",
       });
       const page = await context.newPage();
-      await page.goto(videoUrl);
+      await page.goto(videoLink);
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
@@ -191,11 +205,17 @@ async function YouTubeVideo(videoUrl: string) {
         ".bold.style-scope.yt-formatted-string",
         (el: any) => el.textContent.trim()
       );
-      const matchResult = videoUrl.match(
+      const matchResult: any = videoLink.match(
         /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/
       );
-      const videoId = matchResult ? matchResult[1] : null;
-      const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      const videoId = matchResult[1];
+      const thumbnailUrls = [
+        `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/default.jpg`,
+      ];
       const uploadDateElements = await page.$$eval(
         ".bold.style-scope.yt-formatted-string",
         (spans: any) => {
@@ -210,8 +230,8 @@ async function YouTubeVideo(videoUrl: string) {
       const data = {
         author,
         videoId,
-        videoUrl,
-        thumbnailUrl,
+        videoLink,
+        thumbnailUrls,
         uploadOn: uploadDateElements,
         title: title.split("\n")[0].trim(),
         views: views.replace(/ views/g, ""),
