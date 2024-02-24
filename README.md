@@ -1,11 +1,11 @@
-# YT-DLX: Elevate Your Video Downloading Experience
+# YT-DLX: Elevate Your Video Downloading & Streaming Experience
 
 [![npm version](https://img.shields.io/npm/v/yt-dlx.svg)](https://www.npmjs.com/package/yt-dlx)
 ![License](https://img.shields.io/npm/l/yt-dlx.svg)
 
 ## Overview
 
-YT-DLX is a powerful video downloading tool designed to enhance your media experience. With a combination of features inspired by YT-DLP, YouTube-DL, YT-CORE, and ytdl-core, YT-DLX offers a comprehensive solution for effortlessly downloading audio and video content from various sources.
+YT-DLX is a powerful video downloading tool designed to enhance your media experience. With a combination of features inspired by python-yt-dlp, python-youtube-dl, puppeteer & playwright, YT-DLX offers a comprehensive solution for effortlessly downloading audio and video content from various sources.
 
 ## Key Features
 
@@ -26,15 +26,9 @@ npm install yt-dlx
 Using YT-DLX is easy! Here's a quick example of downloading a video:
 
 ```bash
-yt-dlx <video-url>
+coming soon.....
 ```
-
-For more advanced usage and options, refer to the [documentation](#) or run `yt-dlx --help`.
 
 ## Get Involved
 
 We welcome contributions and feedback! If you encounter any issues or have suggestions for improvements, please [open an issue](#) or [submit a pull request](#).
-
-## License
-
-YT-DLX is licensed under the [MIT License](LICENSE).
