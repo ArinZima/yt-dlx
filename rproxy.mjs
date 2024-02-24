@@ -110,9 +110,9 @@ const proxyList = [
 ];
 const reops = {
   factor: 2,
-  retries: 3,
+  retries: 4,
   minTimeout: 1000,
-  maxTimeout: 5000,
+  maxTimeout: 6000,
 };
 
 (async () => {
