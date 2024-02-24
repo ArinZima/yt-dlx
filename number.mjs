@@ -19,7 +19,7 @@ try {
   const filePath = join(dirname(__filename), "output.json");
   fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
   console.log("JSON data saved to:", filePath);
-} catch (error) {
+} catch {
   const __filename = fileURLToPath(import.meta.url);
   let proLoc =
     join(dirname(__filename), "backend", "util", "Engine") +
