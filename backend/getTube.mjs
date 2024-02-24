@@ -1,4 +1,3 @@
-import puppeteer from "puppeteer";
 import retry from "async-retry";
 import express from "express";
 import helmet from "helmet";
@@ -6,26 +5,28 @@ import chalk from "chalk";
 import cors from "cors";
 
 async function autoScroll(page, number) {
-  await page.evaluate(async () => {
-    await new Promise((resolve, _reject) => {
-      let height = 0;
+  await page.evaluate(async (number) => {
+    await new Promise((resolve) => {
+      let count = 0;
       const distance = 100;
       const timer = setInterval(() => {
-        const sheight = document.documentElement.scrollHeight;
-        window.scrollBy(0, distance);
-        height += distance;
-        if (
-          height >= sheight ||
-          document.querySelectorAll("ytd-video-renderer").length >= number
-        ) {
+        const videosCount =
+          document.querySelectorAll("ytd-video-renderer").length;
+        if (videosCount >= number) {
           clearInterval(timer);
           resolve();
+        } else {
+          window.scrollBy(0, distance);
+          count++;
+          if (count >= 1000) {
+            clearInterval(timer);
+            resolve();
+          }
         }
       }, 200);
     });
-  });
+  }, number);
 }
-
 export default async function getTube({ query, number = 10 }) {
   const retryOptions = {
     minTimeout: 2000,
@@ -34,15 +35,12 @@ export default async function getTube({ query, number = 10 }) {
   };
   let browser;
   try {
-    browser = await puppeteer.launch({
-      userDataDir: "other",
+    browser = await chromium.launch({
       headless: true,
-      args: [
-        "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
-      ],
     });
+    const context = await browser.newContext();
     const results = await retry(async () => {
-      const page = await browser.newPage();
+      const page = await context.newPage();
       try {
         await page.goto(
           "https://www.youtube.com/results?search_query=" +
@@ -58,9 +56,8 @@ export default async function getTube({ query, number = 10 }) {
             const videos = [];
             vCards.forEach((card) => {
               const titleElement = card.querySelector("#video-title");
-              const linkElement = card.querySelector("#thumbnail");
-              const link = linkElement ? linkElement.href : undefined;
-              const videoId = new URL(link).searchParams.get("v");
+              const videoUrl = card.querySelector("#thumbnail").href;
+              const videoId = new URL(videoUrl).searchParams.get("v");
               const viewsElement = card.querySelector(
                 ".inline-metadata-item.style-scope.ytd-video-meta-block"
               );
@@ -76,16 +73,10 @@ export default async function getTube({ query, number = 10 }) {
               const descriptionElement = card.querySelector(
                 ".metadata-snippet-text.style-scope.ytd-video-renderer"
               );
-              const timeStampElement = card.querySelector(
-                "#text.style-scope.ytd-thumbnail-overlay-time-status-renderer"
-              );
-              const isShorts = card.querySelector(
-                ".style-scope.ytd-thumbnail-overlay-time-status-renderer[aria-label='Shorts']"
-              );
               const views = viewsElement
                 ? viewsElement.textContent.trim()
                 : undefined;
-              const uploadedOn = uploadedOnElement
+              const uploadOn = uploadedOnElement
                 ? uploadedOnElement.textContent.trim()
                 : undefined;
               const authorName = authorNameElement
@@ -97,25 +88,29 @@ export default async function getTube({ query, number = 10 }) {
               const description = descriptionElement
                 ? descriptionElement.textContent.trim()
                 : undefined;
-              const timeStamp = timeStampElement
-                ? timeStampElement.textContent.trim()
-                : undefined;
               const authorUrl = authorNameElement
                 ? authorNameElement.href
                 : undefined;
+              const thumbnails = [
+                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/default.jpg`,
+              ];
+              if (views.includes("watching")) return;
+              if (videoUrl.includes("shorts")) return;
               videos.push({
-                link,
                 videoId,
                 authorUrl,
-                timeStamp,
-                uploadedOn,
+                uploadOn,
                 authorName,
                 authorImage,
                 description,
+                thumbnails,
                 views: views.replace(/ views/g, ""),
-                type: isShorts ? "shorts" : "video",
                 title: titleElement.textContent.trim(),
-                thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                videoUrl: "https://www.youtube.com/watch?v=" + videoId,
               });
             });
             return videos;
