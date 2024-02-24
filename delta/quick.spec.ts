@@ -38,7 +38,7 @@ async function YouTubeSearch({
     const metaTube = await retry(async () => {
       let videos: string | any[] = [];
       const data = [];
-      const browser = await chromium.launch({ headless: true });
+      const browser = await chromium.launch({ headless: false });
       spinnies.add(spin, {
         text: colors.green("@scrape: ") + "started chromium...",
       });
@@ -163,7 +163,7 @@ async function YouTubeVideo({ videoLink }: { videoLink: string }) {
   const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
-      const browser = await chromium.launch({ headless: true });
+      const browser = await chromium.launch({ headless: false });
       spinnies.add(spin, {
         text: colors.green("@scrape: ") + "started chromium...",
       });
@@ -240,7 +240,7 @@ async.waterfall(
     async function searchYouTube() {
       const searchData = await YouTubeSearch({
         query: "Angel Numbers / Ten Toes",
-        number: 20,
+        number: 10,
       });
       if (!searchData) return null;
       console.log(colors.green("@videos:"), searchData.length);
