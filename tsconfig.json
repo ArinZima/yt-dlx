@@ -31,5 +31,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["delta/**/*.ts"],
-  "exclude": ["node_modules", "backend"]
+  "exclude": ["node_modules", "backend", "frontend", "scrape"]
 }

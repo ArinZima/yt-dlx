@@ -72,6 +72,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "minimist": "^1.2.8",
     "package-json": "^9.0.0",
+    "puppeteer": "^22.2.0",
     "readline-sync": "^1.4.10",
     "spinnies": "^0.5.1",
     "stream": "^0.0.2",
