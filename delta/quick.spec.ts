@@ -1,4 +1,3 @@
-console.clear();
 import async from "async";
 import colors from "colors";
 import retry from "async-retry";

@@ -22,7 +22,7 @@
   "dependencies": {
     "@koa/cors": "^5.0.0",
     "@ngrok/ngrok": "^1.0.0",
-    "@shovit/ytid": "^1.0.0",
+    "@shovit/ytid": "^2.0.0",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query": "^5.17.19",
