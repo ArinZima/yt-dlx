@@ -208,6 +208,10 @@ async function YouTubeVideo(videoUrl: string) {
             : null;
         }
       );
+      const commentsCount = await page.$eval(
+        ".count-text.style-scope.ytd-comments-header-renderer > span:nth-child(1)",
+        (el: any) => el.textContent.trim()
+      );
       const data = {
         author,
         videoId,
@@ -216,6 +220,7 @@ async function YouTubeVideo(videoUrl: string) {
         uploadOn: uploadDateElements,
         title: title.split("\n")[0].trim(),
         views: views.replace(/ views/g, ""),
+        comments: commentsCount,
       };
       await browser.close();
       return data;
