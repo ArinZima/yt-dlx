@@ -40,17 +40,107 @@ async function proxyIP(url, proxyHost, proxyPort, fileName) {
   });
 }
 
-const proxys = [
+proxies = [
+  "http://38.62.222.219:3128",
+  "http://154.6.97.227:3128",
+  "http://154.6.97.129:3128",
   "http://154.6.99.45:3128",
   "http://38.62.220.3:3128",
-  "http://154.6.97.24:3128",
   "http://154.6.96.253:3128",
-  "http://154.6.97.129:3128",
-  "http://38.62.221.46:3128",
-  "http://154.6.97.227:3128",
-  "http://38.62.222.219:3128",
   "http://38.62.222.236:3128",
+  "http://38.62.221.46:3128",
+  "http://154.6.97.24:3128",
   "http://38.62.222.102:3128",
+  "http://154.6.97.130:3128",
+  "http://154.6.96.148:3128",
+  "http://38.62.221.70:3128",
+  "http://38.62.220.225:3128",
+  "http://154.6.99.166:3128",
+  "http://38.62.221.105:3128",
+  "http://154.6.96.102:3128",
+  "http://154.6.99.255:3128",
+  "http://154.6.97.235:3128",
+  "http://38.62.222.180:3128",
+  "http://38.62.221.173:3128",
+  "http://38.62.221.240:3128",
+  "http://38.62.220.123:3128",
+  "http://38.62.223.208:3128",
+  "http://38.62.222.52:3128",
+  "http://38.62.221.58:3128",
+  "http://38.62.223.233:3128",
+  "http://38.62.220.67:3128",
+  "http://154.6.98.95:3128",
+  "http://38.62.223.113:3128",
+  "http://154.6.98.172:3128",
+  "http://154.6.97.170:3128",
+  "http://38.62.220.21:3128",
+  "http://154.6.97.177:3128",
+  "http://154.6.96.214:3128",
+  "http://38.62.220.81:3128",
+  "http://38.62.220.218:3128",
+  "http://38.62.221.237:3128",
+  "http://38.62.222.172:3128",
+  "http://154.6.98.60:3128",
+  "http://154.6.97.43:3128",
+  "http://38.62.220.51:3128",
+  "http://38.62.223.72:3128",
+  "http://154.6.98.151:3128",
+  "http://38.62.223.133:3128",
+  "http://154.6.99.141:3128",
+  "http://38.62.220.244:3128",
+  "http://38.62.220.222:3128",
+  "http://154.6.99.24:3128",
+  "http://154.6.98.45:3128",
+  "http://38.62.221.226:3128",
+  "http://154.6.99.42:3128",
+  "http://154.6.97.184:3128",
+  "http://154.6.96.228:3128",
+  "http://154.6.97.107:3128",
+  "http://38.62.223.74:3128",
+  "http://38.62.222.63:3128",
+  "http://38.62.222.33:3128",
+  "http://154.6.96.75:3128",
+  "http://38.62.221.28:3128",
+  "http://154.6.99.95:3128",
+  "http://154.6.97.152:3128",
+  "http://38.62.223.185:3128",
+  "http://38.62.223.102:3128",
+  "http://154.6.99.214:3128",
+  "http://38.62.223.119:3128",
+  "http://38.62.220.240:3128",
+  "http://38.62.222.238:3128",
+  "http://38.62.222.36:3128",
+  "http://38.62.223.215:3128",
+  "http://154.6.97.39:3128",
+  "http://154.6.98.66:3128",
+  "http://154.6.96.183:3128",
+  "http://154.6.99.169:3128",
+  "http://38.62.220.22:3128",
+  "http://154.6.97.178:3128",
+  "http://154.6.97.48:3128",
+  "http://154.6.98.185:3128",
+  "http://38.62.220.87:3128",
+  "http://154.6.98.253:3128",
+  "http://38.62.222.43:3128",
+  "http://38.62.221.76:3128",
+  "http://38.62.223.57:3128",
+  "http://154.6.99.53:3128",
+  "http://38.62.222.154:3128",
+  "http://38.62.223.159:3128",
+  "http://38.62.223.43:3128",
+  "http://38.62.221.248:3128",
+  "http://154.6.98.67:3128",
+  "http://154.6.96.83:3128",
+  "http://154.6.96.22:3128",
+  "http://154.6.99.75:3128",
+  "http://38.62.223.187:3128",
+  "http://38.62.221.113:3128",
+  "http://154.6.98.191:3128",
+  "http://154.6.97.100:3128",
+  "http://154.6.98.146:3128",
+  "http://38.62.220.5:3128",
+  "http://38.62.220.226:3128",
+  "http://154.6.96.26:3128",
 ];
 
 const reops = {
@@ -70,11 +160,8 @@ async function metaTube(proxy, port) {
   console.log(colors.green("@cmd:"), proLoc);
   const result = await retry(async (bail) => {
     const proc = await promisify(exec)(proLoc);
-    if (proc.stderr) {
-      console.error(colors.red("@error:"), proc.stderr.toString());
-      bail(new Error(proc.stderr.toString()));
-    }
-    return proc.stdout;
+    if (proc.stderr) bail(new Error(proc.stderr.toString()));
+    else return proc.stdout;
   }, reops);
   const metaTube = JSON.parse(result.toString());
   await async.forEach(metaTube.formats, async (ipop) => {
@@ -123,8 +210,7 @@ async function metaTube(proxy, port) {
     ) {
       console.log(reTube.meta_audio);
       console.log(colors.green("@proxy:"), proxy);
-      console.log(colors.green("@file:"), metaTube.title + ".mp3");
-      await proxyIP(reTube.meta_audio, proxy, port, metaTube.title + ".mp3");
+      await proxyIP(reTube.meta_audio, proxy, port, "title.mp3");
       process.exit(0);
     }
   });
@@ -132,4 +218,7 @@ async function metaTube(proxy, port) {
 
 const rproxy = proxys[Math.floor(Math.random() * proxys.length)];
 console.log(colors.green("@proxy:"), rproxy);
-metaTube(rproxy, 3128);
+const parts = rproxy.split(":");
+const proxyAddress = parts[0];
+const proxyPort = parts[1];
+metaTube(proxyAddress + proxyPort, proxyPort);
