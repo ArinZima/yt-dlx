@@ -40,7 +40,7 @@ async function proxyIP(url, proxyHost, proxyPort, fileName) {
   });
 }
 
-const proxies = [
+const proxys = [
   "http://38.62.222.219:3128",
   "http://154.6.97.227:3128",
   "http://154.6.97.129:3128",
