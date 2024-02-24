@@ -4,6 +4,7 @@ import retry from "async-retry";
 import spinClient from "spinnies";
 import { randomUUID } from "crypto";
 import { chromium } from "playwright";
+import YouTubeID from "../backend/util/YouTubeId";
 
 const spinnies = new spinClient();
 
@@ -152,21 +153,7 @@ async function YouTubeSearch({
     return null;
   }
 }
-
-interface reYouTubeVideo {
-  title: string;
-  views?: string;
-  author?: string;
-  videoId: string;
-  uploadOn?: string;
-  videoLink: string;
-  thumbnailUrls: string[];
-}
-async function YouTubeVideo({
-  videoLink,
-}: {
-  videoLink: string;
-}): Promise<reYouTubeVideo | null> {
+async function YouTubeVideo({ videoLink }: { videoLink: string }) {
   if (!videoLink) return null;
   const retryOptions = {
     maxTimeout: 4000,
@@ -205,10 +192,7 @@ async function YouTubeVideo({
         ".bold.style-scope.yt-formatted-string",
         (el: any) => el.textContent.trim()
       );
-      const matchResult: any = videoLink.match(
-        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/
-      );
-      const videoId = matchResult[1];
+      const videoId: any = await YouTubeID(videoLink);
       const thumbnailUrls = [
         `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
@@ -264,7 +248,9 @@ async.waterfall(
     },
     async function getVideoInfo(searchData: any) {
       if (!searchData) return null;
-      const videoData = await YouTubeVideo(searchData[0].videoLink);
+      const videoData = await YouTubeVideo({
+        videoLink: searchData[0].videoLink,
+      });
       return videoData;
     },
   ],
