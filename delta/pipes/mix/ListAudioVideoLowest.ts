@@ -3,7 +3,7 @@ import async from "async";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytDlp from "../../base/agent";
+import ytdlx from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
@@ -98,7 +98,7 @@ export default async function ListAudioVideoLowest(
             videos as metaVideo[],
             async (video: metaVideo) => {
               try {
-                const metaBody = await ytDlp({ query: video.url });
+                const metaBody = await ytdlx({ query: video.url });
                 if (!metaBody) {
                   throw new Error("Unable to get response from YouTube...");
                 }

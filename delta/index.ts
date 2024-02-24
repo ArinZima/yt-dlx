@@ -24,7 +24,7 @@ import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
 import ListAudioVideoLowest from "./pipes/mix/ListAudioVideoLowest";
 import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 
-const ytdlp = {
+const ytdlx = {
   info: {
     help,
     search,
@@ -67,4 +67,4 @@ const ytdlp = {
   },
 };
 
-export default ytdlp;
+export default ytdlx;

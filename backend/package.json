@@ -6,7 +6,7 @@
   "module": "proto/index.esm.js",
   "scripts": {
     "ingress": "node 'proto/index.cjs.js'",
-    "test": "npm run ingress & tsup 'src/ytDlpx.spec.ts' --outDir 'temp' && node 'temp/ytDlpx.spec.js'",
+    "test": "npm run ingress & tsup 'src/ytdlx.spec.ts' --outDir 'temp' && node 'temp/ytdlx.spec.js'",
     "scrape": "npm run ingress & tsup 'src/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'"
   },
   "engines": {

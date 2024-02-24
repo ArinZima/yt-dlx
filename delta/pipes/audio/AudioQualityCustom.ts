@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytDlp from "../../base/agent";
+import ytdlx from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
@@ -49,7 +49,7 @@ export default async function AudioQualityCustom(
       outputFormat = "mp3",
     } = AudioQualityCustomInputSchema.parse(input);
 
-    const metaResp = await ytDlp({ query });
+    const metaResp = await ytdlx({ query });
     if (!metaResp) {
       return {
         message: "The specified quality was not found...",

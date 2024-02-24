@@ -77,48 +77,48 @@ export default function help(): Promise<string> {
 ┃               ┃   yt-dlx audio-video-lowest --query="video/url"                              (alias: avl)    ┃
 ┃               ┃   yt-dlx audio-video-highest --query="video/url"                             (alias: avh)    ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
-┃   IMPORTING   ┃   import ytdlp from "yt-dlx";                                            TypeScript (ts)     ┃
-┃               ┃   import ytdlp from "yt-dlx";                                            ECMAScript (esm)    ┃
-┃               ┃   const ytdlp = require("yt-dlx");                                       CommonJS   (cjs)    ┃
+┃   IMPORTING   ┃   import ytdlx from "yt-dlx";                                            TypeScript (ts)     ┃
+┃               ┃   import ytdlx from "yt-dlx";                                            ECMAScript (esm)    ┃
+┃               ┃   const ytdlx = require("yt-dlx");                                       CommonJS   (cjs)    ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
-┃ INFO GRABBERS ┃   ytdlp.info.help();                                                                         ┃
-┃               ┃   ytdlp.info.search({ query: "" });                                                          ┃
-┃               ┃   ytdlp.info.extract({ query: "" });                                                         ┃
-┃               ┃   ytdlp.info.list_formats({ query: "" });                                                    ┃
-┃               ┃   ytdlp.info.get_video_data({ query: "" });                                                  ┃
-┃               ┃   ytdlp.extract_playlist_videos({ playlistUrls: ["", "", "", ""] });                         ┃
+┃ INFO GRABBERS ┃   ytdlx.info.help();                                                                         ┃
+┃               ┃   ytdlx.info.search({ query: "" });                                                          ┃
+┃               ┃   ytdlx.info.extract({ query: "" });                                                         ┃
+┃               ┃   ytdlx.info.list_formats({ query: "" });                                                    ┃
+┃               ┃   ytdlx.info.get_video_data({ query: "" });                                                  ┃
+┃               ┃   ytdlx.extract_playlist_videos({ playlistUrls: ["", "", "", ""] });                         ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃  DOWNLOADERS  ┃ ❝ AUDIO ONLY: ❞                                                                              ┃
-┃               ┃   ytdlp.audio.download.lowest({ query: "", filter: "" });                                    ┃
-┃               ┃   ytdlp.audio.download.highest({ query: "", filter: "" });                                   ┃
-┃               ┃   ytdlp.audio.download.custom({ query: "", format: "", filter: "" });                        ┃
+┃               ┃   ytdlx.audio.download.lowest({ query: "", filter: "" });                                    ┃
+┃               ┃   ytdlx.audio.download.highest({ query: "", filter: "" });                                   ┃
+┃               ┃   ytdlx.audio.download.custom({ query: "", format: "", filter: "" });                        ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ VIDEO ONLY: ❞                                                                              ┃
-┃               ┃   ytdlp.video.download.lowest({ query: "", filter: "" });                                    ┃
-┃               ┃   ytdlp.video.download.highest({ query: "", filter: "" });                                   ┃
-┃               ┃   ytdlp.video.download.custom({ query: "", filter: "" });                                    ┃
+┃               ┃   ytdlx.video.download.lowest({ query: "", filter: "" });                                    ┃
+┃               ┃   ytdlx.video.download.highest({ query: "", filter: "" });                                   ┃
+┃               ┃   ytdlx.video.download.custom({ query: "", filter: "" });                                    ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ AUDIO + VIDEO MIX: ❞                                                                       ┃
-┃               ┃   ytdlp.audio_video.download.lowest({ query: "" });                                          ┃
-┃               ┃   ytdlp.audio_video.download.highest({ query: "" });                                         ┃
+┃               ┃   ytdlx.audio_video.download.lowest({ query: "" });                                          ┃
+┃               ┃   ytdlx.audio_video.download.highest({ query: "" });                                         ┃
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃  MEDIA PIPE   ┃ ❝ AUDIO ONLY: ❞                                                                              ┃
-┃               ┃   ytdlp.audio.pipe.lowest({ query: "", filter: "" });                                        ┃
-┃               ┃   ytdlp.audio.pipe.highest({ query: "", filter: "" });                                       ┃
-┃               ┃   ytdlp.audio.pipe.custom({ query: "", format: "", filter: "" });                            ┃
+┃               ┃   ytdlx.audio.pipe.lowest({ query: "", filter: "" });                                        ┃
+┃               ┃   ytdlx.audio.pipe.highest({ query: "", filter: "" });                                       ┃
+┃               ┃   ytdlx.audio.pipe.custom({ query: "", format: "", filter: "" });                            ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ VIDEO ONLY: ❞                                                                              ┃
-┃               ┃   ytdlp.video.pipe.lowest({ query: "", filter: "" });                                        ┃
-┃               ┃   ytdlp.video.pipe.highest({ query: "", filter: "" });                                       ┃
-┃               ┃   ytdlp.video.pipe.custom({ query: "", filter: "" });                                        ┃
+┃               ┃   ytdlx.video.pipe.lowest({ query: "", filter: "" });                                        ┃
+┃               ┃   ytdlx.video.pipe.highest({ query: "", filter: "" });                                       ┃
+┃               ┃   ytdlx.video.pipe.custom({ query: "", filter: "" });                                        ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃                                                                                              ┃
 ┃               ┃ ❝ AUDIO + VIDEO MIX: ❞                                                                       ┃
-┃               ┃   ytdlp.audio_video.pipe.lowest({ query: "" });                                              ┃
-┃               ┃   ytdlp.audio_video.pipe.highest({ query: "" });                                             ┃
+┃               ┃   ytdlx.audio_video.pipe.lowest({ query: "" });                                              ┃
+┃               ┃   ytdlx.audio_video.pipe.highest({ query: "" });                                             ┃
 ┃──────────────────────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   ┃
 ┃                                            (License: MIT)                                                    ┃

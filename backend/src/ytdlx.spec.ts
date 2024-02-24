@@ -2,7 +2,7 @@ import colors from "colors";
 import { chromium } from "playwright";
 import type { Browser } from "playwright";
 
-async function ytDlpx({ query, route, domain }: any) {
+async function ytdlx({ query, route, domain }: any) {
   const browser: Browser = await chromium.launch({ headless: true });
   try {
     const host = `${domain}/${route}?query=${decodeURIComponent(query)}`;
@@ -51,31 +51,31 @@ async function ytDlpx({ query, route, domain }: any) {
 async function runTests() {
   try {
     console.log(colors.yellow("testing @topic:"), "with video name");
-    await ytDlpx({
+    await ytdlx({
       route: "scrape",
       query: "angel numbers",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
     });
     console.log(colors.yellow("testing @topic:"), "with videoid");
-    await ytDlpx({
+    await ytdlx({
       route: "core",
       query: "wWR0VD6qgt8",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
     });
     console.log(colors.yellow("testing @topic:"), "with video link");
-    await ytDlpx({
+    await ytdlx({
       route: "scrape",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
       query: "https://youtu.be/wWR0VD6qgt8?si=S8os0alEDZ6875lD",
     });
     console.log(colors.yellow("testing @topic:"), "with playlist id");
-    await ytDlpx({
+    await ytdlx({
       route: "scrape",
       query: "PL2vrmw2gup2Jre1MK2FL72rQkzbQzFnFM",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
     });
     console.log(colors.yellow("testing @topic:"), "with playlist link");
-    await ytDlpx({
+    await ytdlx({
       route: "scrape",
       domain: "https://possible-willingly-yeti.ngrok-free.app",
       query:

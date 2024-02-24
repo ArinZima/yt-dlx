@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import ytDlp from "..";
+import ytdlx from "..";
 import colors from "colors";
 import minimist from "minimist";
 import { version } from "../../package.json";
@@ -32,7 +32,7 @@ const program = async () => {
       break;
     case "help":
     case "h":
-      ytDlp.info
+      ytdlx.info
         .help()
         .then((data: any) => {
           console.log(data);
@@ -48,7 +48,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.info
+        ytdlx.info
           .extract({
             query: proTube.query,
           })
@@ -66,7 +66,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.info
+        ytdlx.info
           .search({
             query: proTube.query,
           })
@@ -84,7 +84,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.info
+        ytdlx.info
           .list_formats({
             query: proTube.query,
           })
@@ -102,7 +102,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.info
+        ytdlx.info
           .get_video_data({
             query: proTube.query,
           })
@@ -120,7 +120,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.audio.single
+        ytdlx.audio.single
           .highest({
             query: proTube.query,
           })
@@ -138,7 +138,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.audio.single
+        ytdlx.audio.single
           .lowest({
             query: proTube.query,
           })
@@ -156,7 +156,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.video.single
+        ytdlx.video.single
           .highest({
             query: proTube.query,
           })
@@ -174,7 +174,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.video.single
+        ytdlx.video.single
           .lowest({
             query: proTube.query,
           })
@@ -192,7 +192,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.audio_video.single
+        ytdlx.audio_video.single
           .highest({
             query: proTube.query,
           })
@@ -210,7 +210,7 @@ const program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors.red("error: no query"));
       } else
-        ytDlp.audio_video.single
+        ytdlx.audio_video.single
           .lowest({
             query: proTube.query,
           })
@@ -231,7 +231,7 @@ const program = async () => {
       if (!proTube || !proTube.format || proTube.format.length === 0) {
         console.error(colors.red("error: no format"));
       }
-      ytDlp.audio.single
+      ytdlx.audio.single
         .custom({
           query: proTube.query,
           quality: proTube.format,
@@ -253,7 +253,7 @@ const program = async () => {
       if (!proTube || !proTube.format || proTube.format.length === 0) {
         console.error(colors.red("error: no format"));
       }
-      ytDlp.video.single
+      ytdlx.video.single
         .custom({
           query: proTube.query,
           quality: proTube.format,
@@ -268,7 +268,7 @@ const program = async () => {
         });
       break;
     default:
-      ytDlp.info
+      ytdlx.info
         .help()
         .then((data: any) => {
           console.log(data);
@@ -283,7 +283,7 @@ const program = async () => {
 };
 
 if (!proTube._[0]) {
-  ytDlp.info
+  ytdlx.info
     .help()
     .then((data: any) => {
       console.log(data);

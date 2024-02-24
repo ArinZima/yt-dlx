@@ -2,7 +2,7 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytDlp from "../../base/agent";
+import ytdlx from "../../base/agent";
 import scrape from "../../base/scrape";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
@@ -76,7 +76,7 @@ export default async function ListVideoLowest(
       const TubeBody: string | null = await scrape(i.videoId);
       if (TubeBody === null) continue;
       const parseTube = await JSON.parse(TubeBody);
-      const metaBody = await ytDlp({
+      const metaBody = await ytdlx({
         query: parseTube.Link,
       });
       if (metaBody === null) continue;

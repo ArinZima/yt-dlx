@@ -10,7 +10,7 @@ export default async function exAsync({
 }: ExAsyncParams): Promise<string | null> {
   for (let i = 0; i < retries; i++) {
     try {
-      let proLoc: string = join(__dirname, "..", "util", "ytDlp");
+      let proLoc: string = join(__dirname, "..", "util", "Engine");
       if (proxy) proLoc += ` --proxy '${proxy}' --dump-json '${query}'`;
       else proLoc += ` --dump-json '${query}'`;
       const result = await promisify(exec)(proLoc);
