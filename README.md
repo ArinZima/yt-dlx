@@ -26,15 +26,9 @@ npm install yt-dlx
 Using YT-DLX is easy! Here's a quick example of downloading a video:
 
 ```bash
-yt-dlx <video-url>
+coming soon.....
 ```
-
-For more advanced usage and options, refer to the [documentation](#) or run `yt-dlx --help`.
 
 ## Get Involved
 
 We welcome contributions and feedback! If you encounter any issues or have suggestions for improvements, please [open an issue](#) or [submit a pull request](#).
-
-## License
-
-YT-DLX is licensed under the [MIT License](LICENSE).
