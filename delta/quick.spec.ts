@@ -6,19 +6,27 @@ import { randomUUID } from "crypto";
 import { chromium } from "playwright";
 
 const spinnies = new spinClient();
-interface YouTubeSearch {
-  views: string;
+
+interface reYouTubeSearch {
   title: string;
-  author: string;
+  views?: string;
+  author?: string;
   videoId: string;
-  authorUrl: string;
+  uploadOn?: string;
   videoLink: string;
-  description: string;
+  authorUrl?: string;
+  description?: string;
+  authorImage?: string;
   thumbnailUrls: string[];
 }
-async function YouTubeSearch(
-  query: string | number | boolean
-): Promise<YouTubeSearch[] | null> {
+interface YouTubeSearch {
+  query: string;
+  number: number;
+}
+async function YouTubeSearch({
+  query,
+  number,
+}: YouTubeSearch): Promise<reYouTubeSearch[] | null> {
   const retryOptions = {
     minTimeout: 2000,
     maxTimeout: 4000,
@@ -48,7 +56,7 @@ async function YouTubeSearch(
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
-      while (videos.length < 40) {
+      while (videos.length < number) {
         await page.waitForSelector(".ytd-video-renderer");
         const newVideos = await page.$$(
           'ytd-video-renderer:not([class*="ytd-rich-grid-video-renderer"])'
@@ -91,6 +99,17 @@ async function YouTubeSearch(
         const views = await viewsContainer
           .getProperty("innerText")
           .then((property: { jsonValue: () => any }) => property.jsonValue());
+        const uploadedOnElement = await vid.$$(
+          ".inline-metadata-item.style-scope.ytd-video-meta-block"
+        );
+        const uploadOn =
+          uploadedOnElement && uploadedOnElement.length >= 2
+            ? await uploadedOnElement[1]
+                .getProperty("innerText")
+                .then((property: { jsonValue: () => any }) =>
+                  property.jsonValue()
+                )
+            : undefined;
         const thumbnailUrls = [
           `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
           `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
@@ -98,13 +117,23 @@ async function YouTubeSearch(
           `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
           `https://img.youtube.com/vi/${videoId}/default.jpg`,
         ];
+        const authorImageElement = await vid.$(".style-scope.yt-img-shadow");
+        const authorImage = authorImageElement
+          ? await authorImageElement
+              .getProperty("src")
+              .then((property: { jsonValue: () => any }) =>
+                property.jsonValue()
+              )
+          : undefined;
         data.push({
           title,
           author,
           videoId,
+          uploadOn,
           authorUrl,
           videoLink,
           description,
+          authorImage,
           thumbnailUrls,
           views: views.replace(/ views/g, ""),
         });
@@ -206,9 +235,12 @@ async function YouTubeVideo(videoUrl: string) {
 async.waterfall(
   [
     async function searchYouTube() {
-      const searchData = await YouTubeSearch("Angel Numbers / Ten Toes");
+      const searchData = await YouTubeSearch({
+        query: "Angel Numbers / Ten Toes",
+        number: 20,
+      });
       if (!searchData) return null;
-      console.log(searchData[0]);
+      console.log(colors.green("@videos:"), searchData.length);
       return searchData;
     },
     async function getVideoInfo(searchData: any) {
