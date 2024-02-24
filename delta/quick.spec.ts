@@ -6,8 +6,19 @@ import { randomUUID } from "crypto";
 import { chromium } from "playwright";
 
 const spinnies = new spinClient();
-
-async function YouTubeSearch(query: string | number | boolean) {
+interface YouTubeSearch {
+  views: string;
+  title: string;
+  author: string;
+  videoId: string;
+  authorUrl: string;
+  videoLink: string;
+  description: string;
+  thumbnailUrls: string[];
+}
+async function YouTubeSearch(
+  query: string | number | boolean
+): Promise<YouTubeSearch[] | null> {
   const retryOptions = {
     minTimeout: 2000,
     maxTimeout: 4000,
@@ -80,6 +91,13 @@ async function YouTubeSearch(query: string | number | boolean) {
         const views = await viewsContainer
           .getProperty("innerText")
           .then((property: { jsonValue: () => any }) => property.jsonValue());
+        const thumbnailUrls = [
+          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/default.jpg`,
+        ];
         data.push({
           title,
           author,
@@ -87,9 +105,8 @@ async function YouTubeSearch(query: string | number | boolean) {
           authorUrl,
           videoLink,
           description,
+          thumbnailUrls,
           views: views.replace(/ views/g, ""),
-          thumbnailUrl:
-            "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg",
         });
       }
       await browser.close();
@@ -107,7 +124,8 @@ async function YouTubeSearch(query: string | number | boolean) {
   }
 }
 
-async function YouTubeVideo(videoUrl: any) {
+async function YouTubeVideo(videoUrl: string) {
+  if (!videoUrl) return null;
   const retryOptions = {
     minTimeout: 2000,
     maxTimeout: 4000,
@@ -145,9 +163,10 @@ async function YouTubeVideo(videoUrl: any) {
         ".bold.style-scope.yt-formatted-string",
         (el: any) => el.textContent.trim()
       );
-      const videoId = videoUrl.match(
+      const matchResult = videoUrl.match(
         /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/
-      )[1];
+      );
+      const videoId = matchResult ? matchResult[1] : null;
       const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
       const uploadDateElements = await page.$$eval(
         ".bold.style-scope.yt-formatted-string",
@@ -188,9 +207,12 @@ async.waterfall(
   [
     async function searchYouTube() {
       const searchData = await YouTubeSearch("Angel Numbers / Ten Toes");
+      if (!searchData) return null;
+      console.log(searchData[0]);
       return searchData;
     },
     async function getVideoInfo(searchData: any) {
+      if (!searchData) return null;
       const videoData = await YouTubeVideo(searchData[0].videoLink);
       return videoData;
     },
