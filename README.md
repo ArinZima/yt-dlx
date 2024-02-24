@@ -1,4 +1,4 @@
-# YT-DLX: Elevate Your Video Downloading Experience
+# YT-DLX: Elevate Your Video Downloading & Streaming Experience
 
 [![npm version](https://img.shields.io/npm/v/yt-dlx.svg)](https://www.npmjs.com/package/yt-dlx)
 ![License](https://img.shields.io/npm/l/yt-dlx.svg)
