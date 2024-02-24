@@ -208,19 +208,22 @@ async function YouTubeVideo(videoUrl: string) {
             : null;
         }
       );
-      const commentsCount = await page.$eval(
-        ".count-text.style-scope.ytd-comments-header-renderer > span:nth-child(1)",
-        (el: any) => el.textContent.trim()
+      const comments = await page.$eval(
+        ".count-text.style-scope.ytd-comments-header-renderer",
+        (el: any) => {
+          const spans = el.querySelectorAll(".style-scope.yt-formatted-string");
+          return spans.length > 0 ? spans[0].textContent.trim() : null;
+        }
       );
       const data = {
         author,
         videoId,
         videoUrl,
+        comments,
         thumbnailUrl,
         uploadOn: uploadDateElements,
         title: title.split("\n")[0].trim(),
         views: views.replace(/ views/g, ""),
-        comments: commentsCount,
       };
       await browser.close();
       return data;
