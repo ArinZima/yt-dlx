@@ -1,5 +1,6 @@
 import fs from "fs";
 import colors from "colors";
+import retry from "async-retry";
 import { promisify } from "util";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -107,20 +108,35 @@ const proxyList = [
   "http://38.62.220.226:3128",
   "http://154.6.96.26:3128",
 ];
+const reops = {
+  factor: 2,
+  retries: 3,
+  minTimeout: 1000,
+  maxTimeout: 5000,
+};
 
-const rproxy = proxyList[Math.floor(Math.random() * proxyList.length)];
-console.log(colors.blue("@info:"), "using proxy " + rproxy);
-const __filename = fileURLToPath(import.meta.url);
-let proLoc =
-  join(dirname(__filename), "backend", "util", "Engine") +
-  " " +
-  `--proxy '${rproxy}' ` +
-  "--dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass " +
-  "--user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36' " +
-  "'https://www.youtube.com/watch?v=wWR0VD6qgt8'";
-const result = await promisify(exec)(proLoc);
-if (result.stderr) console.error(result.stderr.toString());
-const jsonData = JSON.parse(result.stdout.toString());
-const filePath = join(dirname(__filename), "Engine.json");
-fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
-console.info(colors.green("@info:"), "data saved to Engine.json");
+(async () => {
+  try {
+    const rproxy = proxyList[Math.floor(Math.random() * proxyList.length)];
+    console.log(colors.blue("@info:"), "using proxy " + rproxy);
+    const __filename = fileURLToPath(import.meta.url);
+    let proLoc =
+      join(dirname(__filename), "backend", "util", "Engine") +
+      " " +
+      `--proxy '${rproxy}' ` +
+      "--dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass " +
+      "--user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36' " +
+      "'https://www.youtube.com/watch?v=wWR0VD6qgt8'";
+    const result = await retry(async (bail) => {
+      const proc = await promisify(exec)(proLoc);
+      if (proc.stderr) bail(new Error(proc.stderr.toString()));
+      return proc.stdout;
+    }, reops);
+    const jsonData = JSON.parse(result.toString());
+    const filePath = join(dirname(__filename), "Engine.json");
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.info(colors.green("@info:"), "data saved in", filePath);
+  } catch (error) {
+    console.error(colors.red("@error:"), error.message);
+  }
+})();
