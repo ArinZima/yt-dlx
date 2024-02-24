@@ -1,3 +1,4 @@
+import { chromium } from "playwright";
 import retry from "async-retry";
 import express from "express";
 import helmet from "helmet";
