@@ -5,7 +5,7 @@
 
 ## Overview
 
-YT-DLX is a powerful video downloading tool designed to enhance your media experience. With a combination of features inspired by YT-DLP, YouTube-DL, YT-SEARCH, YT-DLX offers a comprehensive solution for effortlessly downloading audio and video content from various sources.
+YT-DLX is a powerful video downloading tool designed to enhance your media experience. With a combination of features inspired by python-yt-dlp, python-youtube-dl, puppeteer & playwright, YT-DLX offers a comprehensive solution for effortlessly downloading audio and video content from various sources.
 
 ## Key Features
 
