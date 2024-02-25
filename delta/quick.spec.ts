@@ -1,10 +1,10 @@
 import async from "async";
 import colors from "colors";
-import metaGrab from "./metaGrab";
+import ytdlx_web from "./web/ytdlx_web";
 
 async.waterfall([
   async function searchPlaylist() {
-    const metaTube = await metaGrab.YouTubePlaylist({
+    const metaTube = await ytdlx_web.YouTubePlaylist({
       playlistLink:
         "https://youtube.com/playlist?list=PL3oW2tjiIxvQ60uIjLdo7vrUe4ukSpbKl&si=Z6SMzOT_2xNMfGlg",
     });
@@ -21,7 +21,7 @@ async.waterfall([
     return metaTube;
   },
   async function searchYouTube() {
-    const metaTube = await metaGrab.YouTubeSearch({
+    const metaTube = await ytdlx_web.YouTubeSearch({
       query: "Ek chaturnar",
       number: 10,
     });
@@ -37,7 +37,7 @@ async.waterfall([
       console.log(colors.red("@error:"), "no data found from YouTubeSearch()");
       process.exit(500);
     }
-    const videoData = await metaGrab.YouTubeVideo({
+    const videoData = await ytdlx_web.YouTubeVideo({
       videoLink: metaTube[0].videoLink,
     });
     if (!videoData) {
