@@ -6,16 +6,27 @@ import { chromium } from "playwright";
 import YouTubeID from "../../backend/util/YouTubeId";
 
 const spinnies = new spinClient();
+
+export interface YouTubeVideo {
+  videoLink: string;
+}
+export interface reYouTubeVideo {
+  thumbnailUrls: string[];
+  videoLink: string;
+  uploadOn: string;
+  videoId: string;
+  author: string;
+  title: string;
+  views: string;
+}
 export default async function YouTubeVideo({
   videoLink,
-}: {
-  videoLink: string;
-}) {
+}: YouTubeVideo): Promise<reYouTubeVideo | undefined> {
   if (!videoLink) return undefined;
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
-    retries: 2,
+    retries: 4,
   };
   const spin = randomUUID();
   try {

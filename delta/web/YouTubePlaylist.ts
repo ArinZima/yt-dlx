@@ -5,15 +5,17 @@ import { randomUUID } from "crypto";
 import { chromium } from "playwright";
 
 const spinnies = new spinClient();
+
+export interface YouTubePlaylist {
+  playlistLink: string;
+}
 export default async function YouTubePlaylist({
   playlistLink,
-}: {
-  playlistLink: string;
-}) {
+}: YouTubePlaylist) {
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
-    retries: 2,
+    retries: 4,
   };
   const spin = randomUUID();
   try {
