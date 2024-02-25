@@ -6,12 +6,30 @@ import { Readable } from 'stream';
 
 declare function help(): Promise<string>;
 
-declare function search({ query }: {
+interface webSearch {
+    title: string;
+    views?: string;
+    author?: string;
+    videoId: string;
+    uploadOn?: string;
+    videoLink: string;
+    authorUrl?: string;
+    description?: string;
+    authorImage?: string;
+    thumbnailUrls: string[];
+}
+declare function webSearch({ query, number, }: {
     query: string;
-}): Promise<string | {
+    number: number;
+}): Promise<webSearch[] | undefined>;
+
+declare function search({ query, number, }: {
+    query: string;
+    number: number;
+}): Promise<webSearch[] | {
     message: string;
     status: number;
-} | null>;
+} | undefined>;
 
 declare function extract({ query }: {
     query: string;

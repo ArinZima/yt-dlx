@@ -3,14 +3,17 @@
  * ===========================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]===================================
  */
 import colors from 'colors';
+import retry from 'async-retry';
+import spinClient from 'spinnies';
+import { randomUUID } from 'crypto';
 import { chromium } from 'playwright';
+import * as path from 'path';
+import path__default from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import * as z from 'zod';
 import { z as z$1, ZodError } from 'zod';
-import search$1 from 'yt-search';
 import * as fs from 'fs';
-import * as path from 'path';
 import fluentffmpeg from 'fluent-ffmpeg';
 import axios from 'axios';
 import { Readable, Writable } from 'stream';
@@ -146,70 +149,312 @@ function help() {
 ✕─────────────────────────────────────────────────────────────────────────────────────────────────────────────✕`));
 }
 
-async function grabber({ query, route, domain, }) {
-    const browser = await chromium.launch({ headless: true });
-    try {
-        const host = `${decodeURIComponent(domain)}/${decodeURIComponent(route)}?query=${decodeURIComponent(query)}`;
-        const context = await browser.newContext();
-        const page = await context.newPage();
-        await page.goto(host);
-        await page.waitForSelector("button[class*=ring-blue-600]", {
-            timeout: 10000,
-        });
-        await page.click("button[class*=ring-blue-600]");
-        const requestFinished = new Promise((resolve) => {
-            page.on("requestfinished", async (request) => {
-                try {
-                    if (request.url().includes("/" + route)) {
-                        const response = await request.response();
-                        if (response) {
-                            const json = await response.json();
-                            resolve(json);
-                        }
-                        else
-                            resolve(null);
+function YouTubeID(url) {
+    return new Promise((resolve, _) => {
+        if (/youtu\.?be/.test(url)) {
+            var i;
+            var patterns = [
+                /youtu\.be\/([^#\&\?]{11})/,
+                /\?v=([^#\&\?]{11})/,
+                /\&v=([^#\&\?]{11})/,
+                /embed\/([^#\&\?]{11})/,
+                /\/v\/([^#\&\?]{11})/,
+                /list=([^#\&\?]+)/,
+                /playlist\?list=([^#\&\?]+)/,
+            ];
+            for (i = 0; i < patterns.length; ++i) {
+                if (patterns[i].test(url)) {
+                    if (i === patterns.length - 1) {
+                        const match = patterns[i].exec(url);
+                        const playlistParams = new URLSearchParams(match[0]);
+                        const videoId = playlistParams.get("v");
+                        return resolve(videoId);
                     }
+                    else
+                        return resolve(patterns[i].exec(url)[1]);
                 }
-                catch (error) {
-                    console.log(colors.red("@error:"), error);
-                    resolve(null);
-                }
-            });
-        });
-        const payLoad = await requestFinished;
-        if (payLoad) {
-            await browser.close();
-            return JSON.stringify(payLoad);
+            }
         }
-        else {
-            await browser.close();
-            return null;
-        }
-    }
-    catch (error) {
-        console.log(colors.red("@error:"), error);
-        return null;
-    }
+        resolve(null);
+    });
 }
 
-async function scrape(query) {
+const spinnies$2 = new spinClient();
+async function webVideo({ videoLink, }) {
+    if (!videoLink)
+        return undefined;
+    const retryOptions = {
+        maxTimeout: 4000,
+        minTimeout: 2000,
+        retries: 4,
+    };
+    const spin = randomUUID();
     try {
-        const response = await grabber({
-            query,
-            route: "scrape",
-            domain: "https://possible-willingly-yeti.ngrok-free.app",
+        const metaTube = await retry(async () => {
+            const browser = await chromium.launch({
+                headless: true,
+            });
+            spinnies$2.add(spin, {
+                text: colors.green("@scrape: ") + "started chromium...",
+            });
+            const context = await browser.newContext({
+                ignoreHTTPSErrors: true,
+                serviceWorkers: "allow",
+                bypassCSP: true,
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36",
+            });
+            const page = await context.newPage();
+            await page.goto(videoLink);
+            spinnies$2.update(spin, {
+                text: colors.yellow("@scrape: ") + "waiting for hydration...",
+            });
+            await page.waitForSelector(".style-scope.ytd-watch-metadata");
+            const title = await page.$eval(".style-scope.ytd-watch-metadata", (el) => el.textContent.trim());
+            const author = await page.$eval(".yt-simple-endpoint.style-scope.yt-formatted-string", (el) => el.textContent.trim());
+            const views = await page.$eval(".bold.style-scope.yt-formatted-string", (el) => el.textContent.trim());
+            const videoId = await YouTubeID(videoLink);
+            const thumbnailUrls = [
+                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/default.jpg`,
+            ];
+            const uploadDateElements = await page.$$eval(".bold.style-scope.yt-formatted-string", (spans) => {
+                const uploadDateIndex = spans.findIndex((span) => span.textContent.includes("ago"));
+                return uploadDateIndex >= 0
+                    ? spans[uploadDateIndex].textContent.trim()
+                    : undefined;
+            });
+            const data = {
+                author,
+                videoId,
+                videoLink,
+                thumbnailUrls,
+                uploadOn: uploadDateElements,
+                title: title.split("\n")[0].trim(),
+                views: views.replace(/ views/g, ""),
+            };
+            await browser.close();
+            return data;
+        }, retryOptions);
+        spinnies$2.succeed(spin, {
+            text: colors.yellow("@info: ") + "scrapping done...",
         });
-        if (response !== null)
-            return decodeURIComponent(response);
-        else
-            return null;
+        return metaTube;
     }
     catch (error) {
-        return null;
+        spinnies$2.fail(spin, {
+            text: colors.red("@error: ") + error.message,
+        });
+        return undefined;
     }
 }
 
-async function search({ query }) {
+const spinnies$1 = new spinClient();
+async function webSearch({ query, number, }) {
+    const retryOptions = {
+        maxTimeout: 4000,
+        minTimeout: 2000,
+        retries: 4,
+    };
+    const spin = randomUUID();
+    try {
+        const metaTube = await retry(async () => {
+            let videos = [];
+            const data = [];
+            const browser = await chromium.launch({
+                headless: true,
+            });
+            spinnies$1.add(spin, {
+                text: colors.green("@scrape: ") + "started chromium...",
+            });
+            const context = await browser.newContext({
+                ignoreHTTPSErrors: true,
+                serviceWorkers: "allow",
+                bypassCSP: true,
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36",
+            });
+            const page = await context.newPage();
+            const searchUrl = "https://www.youtube.com/results?search_query=" +
+                encodeURIComponent(query);
+            await page.goto(searchUrl);
+            spinnies$1.update(spin, {
+                text: colors.yellow("@scrape: ") + "waiting for hydration...",
+            });
+            while (videos.length < number) {
+                await page.waitForSelector(".ytd-video-renderer");
+                const newVideos = await page.$$('ytd-video-renderer:not([class*="ytd-rich-grid-video-renderer"])');
+                videos = [...videos, ...newVideos];
+                await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+            }
+            for (const vid of videos) {
+                const title = await vid.$eval("#video-title", (el) => el.textContent.trim());
+                const videoLink = "https://www.youtube.com" +
+                    (await vid.$eval("a", (el) => el.getAttribute("href")));
+                const videoId = videoLink.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/)[1];
+                const authorContainer = await vid.$(".ytd-channel-name a");
+                const author = await authorContainer
+                    .getProperty("textContent")
+                    .then((property) => property.jsonValue());
+                const authorUrl = await authorContainer
+                    .getProperty("href")
+                    .then((property) => property.jsonValue());
+                let description = "";
+                const descriptionElement = await vid.$(".metadata-snippet-text");
+                if (descriptionElement) {
+                    description = await descriptionElement
+                        .getProperty("innerText")
+                        .then((property) => property.jsonValue());
+                }
+                const viewsContainer = await vid.$(".inline-metadata-item.style-scope.ytd-video-meta-block");
+                const views = await viewsContainer
+                    .getProperty("innerText")
+                    .then((property) => property.jsonValue());
+                const uploadedOnElement = await vid.$$(".inline-metadata-item.style-scope.ytd-video-meta-block");
+                const uploadOn = uploadedOnElement && uploadedOnElement.length >= 2
+                    ? await uploadedOnElement[1]
+                        .getProperty("innerText")
+                        .then((property) => property.jsonValue())
+                    : undefined;
+                const thumbnailUrls = [
+                    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/default.jpg`,
+                ];
+                const authorImageElement = await vid.$(".style-scope.yt-img-shadow");
+                const authorImage = authorImageElement
+                    ? await authorImageElement
+                        .getProperty("src")
+                        .then((property) => property.jsonValue())
+                    : undefined;
+                data.push({
+                    title,
+                    author,
+                    videoId,
+                    uploadOn,
+                    authorUrl,
+                    videoLink,
+                    description,
+                    authorImage,
+                    thumbnailUrls,
+                    views: views.replace(/ views/g, ""),
+                });
+            }
+            await browser.close();
+            return data;
+        }, retryOptions);
+        spinnies$1.succeed(spin, {
+            text: colors.yellow("@info: ") + "scrapping done...",
+        });
+        return metaTube;
+    }
+    catch (error) {
+        spinnies$1.fail(spin, {
+            text: colors.red("@error: ") + error.message,
+        });
+        return undefined;
+    }
+}
+
+const spinnies = new spinClient();
+async function webPlaylist({ playlistLink, }) {
+    const retryOptions = {
+        maxTimeout: 4000,
+        minTimeout: 2000,
+        retries: 4,
+    };
+    const spin = randomUUID();
+    try {
+        const metaTube = await retry(async () => {
+            const playlistData = [];
+            const browser = await chromium.launch({
+                headless: true,
+            });
+            spinnies.add(spin, {
+                text: colors.green("@scrape: ") + "started chromium...",
+            });
+            const context = await browser.newContext({
+                ignoreHTTPSErrors: true,
+                serviceWorkers: "allow",
+                bypassCSP: true,
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36",
+            });
+            const page = await context.newPage();
+            await page.goto(playlistLink);
+            spinnies.update(spin, {
+                text: colors.yellow("@scrape: ") + "waiting for hydration...",
+            });
+            const titleElement = await page.$("yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string");
+            const playlistTitle = await titleElement.textContent();
+            const videoCountElement = await page.$("yt-formatted-string.byline-item");
+            const videoCountText = await videoCountElement.textContent();
+            const videoCount = parseInt(videoCountText.match(/\d+/)[0]);
+            const viewsElement = await page.$$("yt-formatted-string.byline-item");
+            const viewsText = await viewsElement[1].textContent();
+            const views = viewsText.replace(/,/g, "").match(/\d+/)[0];
+            const descriptionElement = await page.$("span#plain-snippet-text");
+            let playlistDescription = await descriptionElement.textContent();
+            const VideoElements = await page.$$("ytd-playlist-video-renderer");
+            for (const vide of VideoElements) {
+                const TitleElement = await vide.$("h3");
+                let title = await TitleElement.textContent();
+                title = title.trim();
+                const urlElement = await vide.$("a");
+                const url = "https://www.youtube.com" + (await urlElement.getAttribute("href"));
+                const videoId = url.match(/(?<=v=)[^&\s]+/)[0];
+                const AuthorElement = await vide.$(".yt-simple-endpoint.style-scope.yt-formatted-string");
+                const author = await AuthorElement.textContent();
+                const authorUrl = await AuthorElement.getAttribute("href");
+                const ViewsElement = await vide.$(".style-scope.ytd-video-meta-block span:first-child");
+                const views = await ViewsElement.textContent();
+                const AgoElement = await vide.$(".style-scope.ytd-video-meta-block span:last-child");
+                const ago = await AgoElement.textContent();
+                const thumbnailUrls = [
+                    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/default.jpg`,
+                ];
+                playlistData.push({
+                    ago,
+                    url,
+                    title,
+                    author,
+                    videoId,
+                    thumbnailUrls,
+                    views: views.replace(/ views/g, ""),
+                    authorUrl: "https://www.youtube.com" + authorUrl,
+                });
+            }
+            await browser.close();
+            return {
+                views,
+                count: videoCount,
+                title: playlistTitle,
+                description: playlistDescription.trim(),
+                videos: playlistData,
+            };
+        }, retryOptions);
+        spinnies.succeed(spin, {
+            text: colors.yellow("@info: ") + "scrapping done...",
+        });
+        return metaTube;
+    }
+    catch (error) {
+        spinnies.fail(spin, {
+            text: colors.red("@error: ") + error.message,
+        });
+        return undefined;
+    }
+}
+
+const ytdlx_web = { webPlaylist, webSearch, webVideo };
+
+async function search({ query, number, }) {
     try {
         switch (true) {
             case !query || typeof query !== "string":
@@ -217,8 +462,13 @@ async function search({ query }) {
                     message: "Invalid query parameter",
                     status: 500,
                 };
+            case !number || typeof number !== "number":
+                return {
+                    message: "Invalid number parameter",
+                    status: 500,
+                };
             default:
-                return await scrape(query);
+                return await ytdlx_web.webSearch({ query, number });
         }
     }
     catch (error) {
@@ -255,9 +505,9 @@ function sizeFormat(filesize) {
         return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
 }
 
-async function ytxc(query, proxy, port, username, password) {
+async function ytxc(query, port, proxy, username, password) {
     let pushTube = [];
-    let proLoc = "python -m yt_dlp";
+    let proLoc = path__default.join("backend", "util", "Engine");
     if (proxy && port && username && password) {
         proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
     }
@@ -364,36 +614,6 @@ async function ytxc(query, proxy, port, username, password) {
 
 var version = "1.0.2";
 
-function YouTubeID(url) {
-    return new Promise((resolve, _) => {
-        if (/youtu\.?be/.test(url)) {
-            var i;
-            var patterns = [
-                /youtu\.be\/([^#\&\?]{11})/,
-                /\?v=([^#\&\?]{11})/,
-                /\&v=([^#\&\?]{11})/,
-                /embed\/([^#\&\?]{11})/,
-                /\/v\/([^#\&\?]{11})/,
-                /list=([^#\&\?]+)/,
-                /playlist\?list=([^#\&\?]+)/,
-            ];
-            for (i = 0; i < patterns.length; ++i) {
-                if (patterns[i].test(url)) {
-                    if (i === patterns.length - 1) {
-                        const match = patterns[i].exec(url);
-                        const playlistParams = new URLSearchParams(match[0]);
-                        const videoId = playlistParams.get("v");
-                        return resolve(videoId);
-                    }
-                    else
-                        return resolve(patterns[i].exec(url)[1]);
-                }
-            }
-        }
-        resolve(null);
-    });
-}
-
 async function Engine({ query, }) {
     let videoId, TubeDlp, TubeBody;
     console.log(colors.bold.green("@info: ") +
@@ -419,34 +639,30 @@ async function Engine({ query, }) {
         videoId = await YouTubeID(query);
     switch (videoId) {
         case null:
-            TubeBody = await scrape(query);
+            TubeBody = await ytdlx_web.webSearch({ query: query, number: 4 });
             if (TubeBody === null) {
                 console.log(colors.bold.red("@error: ") +
                     "no data returned from server..." +
                     colors.reset(""));
                 return null;
             }
-            else
-                TubeBody = JSON.parse(TubeBody);
             console.log(colors.bold.green("@info: ") +
-                `preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
+                `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` +
                 colors.reset(""));
-            TubeDlp = await ytxc(TubeBody.Link);
+            TubeDlp = await ytxc(TubeBody[0].videoLink);
             break;
         default:
-            TubeBody = await scrape(videoId);
+            TubeBody = await ytdlx_web.webVideo({ videoLink: query });
             if (TubeBody === null) {
                 console.log(colors.bold.red("@error: ") +
                     "no data returned from server..." +
                     colors.reset(""));
                 return null;
             }
-            else
-                TubeBody = JSON.parse(TubeBody);
             console.log(colors.bold.green("@info: ") +
-                `preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
+                `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` +
                 colors.reset(""));
-            TubeDlp = await ytxc(TubeBody[0].Link);
+            TubeDlp = await ytxc(TubeBody.videoLink);
             break;
     }
     switch (TubeDlp) {
@@ -570,22 +786,25 @@ async function get_playlist({ playlistUrls, }) {
                 console.error(colors.bold.red("@error: "), "Invalid YouTube Playlist URL:", url);
                 continue;
             }
-            const resp = await search$1({ listId: ispUrl[1] });
-            if (!resp) {
+            const resp = await ytdlx_web.webPlaylist({
+                playlistLink: ispUrl[1],
+            });
+            if (resp === undefined) {
                 console.error(colors.bold.red("@error: "), "Invalid Data Found For:", ispUrl[1]);
                 continue;
             }
             for (let i = 0; i < resp.videos.length; i++) {
                 try {
-                    const videoId = resp.videos[i].videoId;
-                    const metaTube = await search$1({ videoId: videoId });
-                    console.log(colors.bold.green("INFO:"), colors.bold.green("<("), metaTube.title, colors.bold.green("by"), metaTube.author.name, colors.bold.green(")>"));
+                    const videoLink = resp.videos[i]?.url;
+                    if (videoLink === undefined)
+                        continue;
+                    const metaTube = await ytdlx_web.webVideo({ videoLink });
+                    if (metaTube === undefined)
+                        continue;
+                    console.log(colors.bold.green("INFO:"), colors.bold.green("<("), metaTube.title, colors.bold.green("by"), metaTube.author, colors.bold.green(")>"));
                     if (preTube.has(metaTube.videoId))
                         continue;
-                    else {
-                        const { author: { name: authorName, url: authorUrl }, duration, seconds, genre, ...newTube } = metaTube;
-                        proTubeArr.push({ ...newTube, authorName, authorUrl });
-                    }
+                    proTubeArr.push({ ...metaTube });
                 }
                 catch (error) {
                     console.error(colors.bold.red("@error: "), error);
@@ -746,14 +965,18 @@ async function extract_playlist_videos({ playlistUrls, }) {
                 console.error(colors.bold.red("@error: "), "Invalid YouTube Playlist URL:", url);
                 continue;
             }
-            const resp = await scrape(ispUrl[1]);
-            if (!resp) {
+            const resp = await ytdlx_web.webPlaylist({
+                playlistLink: ispUrl[1],
+            });
+            if (resp === undefined) {
                 console.error(colors.bold.red("@error: "), "Invalid Data Found For:", ispUrl[1]);
                 continue;
             }
             for (let i = 0; i < resp.videos.length; i++) {
                 try {
-                    const videoId = resp.videos[i].videoId;
+                    const videoId = resp.videos[i]?.videoId;
+                    if (videoId === undefined)
+                        continue;
                     if (processedVideoIds.has(videoId))
                         continue;
                     const data = await Engine({ query: videoId });
@@ -2163,26 +2386,26 @@ async function ListVideoLowest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const url of playlistUrls) {
-            const metaList = await scrape(url);
+            const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
                 };
             }
-            const parsedMetaList = await JSON.parse(metaList);
-            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            const uniqueVideos = metaList.videos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
-            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await scrape(i.videoId);
-            if (TubeBody === null)
+            const TubeBody = await ytdlx_web.webVideo({
+                videoLink: i.url,
+            });
+            if (TubeBody === undefined)
                 continue;
-            const parseTube = await JSON.parse(TubeBody);
             const metaBody = await Engine({
-                query: parseTube.Link,
+                query: TubeBody.videoLink,
             });
             if (metaBody === null)
                 continue;
@@ -2334,26 +2557,26 @@ async function ListVideoHighest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const url of playlistUrls) {
-            const metaList = await scrape(url);
+            const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
                 };
             }
-            const parsedMetaList = await JSON.parse(metaList);
-            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            const uniqueVideos = metaList.videos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
-            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await scrape(i.videoId);
-            if (TubeBody === null)
+            const TubeBody = await ytdlx_web.webVideo({
+                videoLink: i.url,
+            });
+            if (TubeBody === undefined)
                 continue;
-            const parseTube = await JSON.parse(TubeBody);
             const metaBody = await Engine({
-                query: parseTube.Link,
+                query: TubeBody.videoLink,
             });
             if (metaBody === null)
                 continue;
@@ -2520,26 +2743,26 @@ async function ListVideoQualityCustom(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const url of playlistUrls) {
-            const metaList = await scrape(url);
+            const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
                 };
             }
-            const parsedMetaList = await JSON.parse(metaList);
-            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            const uniqueVideos = metaList.videos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
-            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await scrape(i.videoId);
-            if (TubeBody === null)
+            const TubeBody = await ytdlx_web.webVideo({
+                videoLink: i.url,
+            });
+            if (TubeBody === undefined)
                 continue;
-            const parseTube = await JSON.parse(TubeBody);
             const metaBody = await Engine({
-                query: parseTube.Link,
+                query: TubeBody.videoLink,
             });
             if (metaBody === null)
                 continue;
@@ -2697,26 +2920,26 @@ async function ListAudioLowest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const url of playlistUrls) {
-            const metaList = await scrape(url);
+            const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
                 };
             }
-            const parsedMetaList = await JSON.parse(metaList);
-            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            const uniqueVideos = metaList.videos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
-            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await scrape(i.videoId);
-            if (TubeBody === null)
+            const TubeBody = await ytdlx_web.webVideo({
+                videoLink: i.url,
+            });
+            if (TubeBody === undefined)
                 continue;
-            const parseTube = await JSON.parse(TubeBody);
             const metaBody = await Engine({
-                query: parseTube.Link,
+                query: TubeBody.videoLink,
             });
             if (metaBody === null)
                 continue;
@@ -2906,26 +3129,26 @@ async function ListAudioHighest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const url of playlistUrls) {
-            const metaList = await scrape(url);
+            const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
                 };
             }
-            const parsedMetaList = await JSON.parse(metaList);
-            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            const uniqueVideos = metaList.videos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
-            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await scrape(i.videoId);
-            if (TubeBody === null)
+            const TubeBody = await ytdlx_web.webVideo({
+                videoLink: i.url,
+            });
+            if (TubeBody === undefined)
                 continue;
-            const parseTube = await JSON.parse(TubeBody);
             const metaBody = await Engine({
-                query: parseTube.Link,
+                query: TubeBody.videoLink,
             });
             if (metaBody === null)
                 continue;
@@ -3116,26 +3339,26 @@ async function ListAudioQualityCustom(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const url of playlistUrls) {
-            const metaList = await scrape(url);
+            const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
                 };
             }
-            const parsedMetaList = await JSON.parse(metaList);
-            const uniqueVideos = parsedMetaList.Videos.filter((video) => !uniqueVideoIds.has(video.id));
+            const uniqueVideos = metaList.videos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
-            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.id));
+            uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await scrape(i.videoId);
-            if (TubeBody === null)
+            const TubeBody = await ytdlx_web.webVideo({
+                videoLink: i.url,
+            });
+            if (TubeBody === undefined)
                 continue;
-            const parseTube = await JSON.parse(TubeBody);
             const metaBody = await Engine({
-                query: parseTube.Link,
+                query: TubeBody.videoLink,
             });
             if (metaBody === null)
                 continue;

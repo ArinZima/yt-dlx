@@ -1,7 +1,8 @@
-export default function search({ query }: {
+export default function search({ query, number, }: {
     query: string;
-}): Promise<string | {
+    number: number;
+}): Promise<import("../../web/webSearch").webSearch[] | {
     message: string;
     status: number;
-} | null>;
+} | undefined>;
 //# sourceMappingURL=search.d.ts.map
