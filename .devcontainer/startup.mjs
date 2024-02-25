@@ -9,38 +9,30 @@ const colors = {
 };
 
 const scripts = {
-  ingress: "cd backend && yarn ingress",
   start: "node .devcontainer/startup.mjs",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
   remake: "yarn clean && yarn make && yarn build",
   "remake:update": "yarn clean && yarn make && yarn update && yarn build",
   upload:
     "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
-  clean: "yarn clean:base && yarn clean:backend && yarn clean:frontend",
+  clean: "yarn clean:base && yarn clean:frontend",
   "clean:base": "rm -rf node_modules temp proto yarn.lock",
-  "clean:backend": "cd backend && rm -rf node_modules temp proto yarn.lock",
   "clean:frontend": "cd frontend && rm -rf node_modules .next yarn.lock",
-  make: "yarn make:base && yarn make:backend && yarn make:frontend",
+  make: "yarn make:base && yarn make:frontend",
   "make:base": "yarn install",
-  "make:backend": "cd backend && yarn install",
   "make:frontend": "cd frontend && yarn install",
-  build: "yarn build:base && yarn build:backend && yarn build:frontend",
+  build: "yarn build:base && yarn build:frontend",
   "build:base":
     "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
-  "build:backend": "cd backend && rollup -c 'rollup.config.mjs'",
   "build:frontend": "cd frontend && yarn build",
-  update:
-    "yarn make && yarn update:base && yarn update:backend && yarn update:frontend",
+  update: "yarn make && yarn update:base && yarn update:frontend",
   "update:base": "yarn upgrade --latest",
-  "update:backend": "cd backend && yarn upgrade --latest",
   "update:frontend": "cd frontend && yarn upgrade --latest",
   spec: "tsup 'delta/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
-  test: "yarn ingress & yarn test:base && yarn test:backend && yarn test:scrape && yarn cli",
+  test: "yarn ingress & yarn test:base && yarn test:scrape && yarn cli",
   "test:base": "tsup 'delta/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
   "test:scrape":
     "tsup 'delta/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
-  "test:backend":
-    "tsup 'delta/ytcprox.spec.ts' --outDir 'temp' && node 'temp/ytcprox.spec.mjs'",
   cli: "yarn link && yarn cli:test && yarn unlink",
   "cli:test":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
