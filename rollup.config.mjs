@@ -32,6 +32,13 @@ export default [
       }),
     ],
     external: [
+      "crypto",
+      "path",
+      "util",
+      "child_process",
+      "readline",
+      "fs",
+      "async",
       "async-retry",
       "axios",
       "body-parser",
