@@ -1,4 +1,4 @@
-FROM node:latest
+FROM mcr.microsoft.com/playwright
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     apt-utils \
@@ -20,8 +20,5 @@ WORKDIR /yt-dlx
 RUN npm install --global --force \
     yarn \
     yt-dlx \
-    playwright
-RUN npx playwright install \
-    && npx playwright install-deps
 RUN yarn remake
 CMD ["sh", "-c", "yarn ingress && yarn test"]
