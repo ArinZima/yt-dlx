@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-import { fileURLToPath } from 'url';
-import * as path2 from 'path';
-import path2__default, { join } from 'path';
 import colors17 from 'colors';
 import { chromium } from 'playwright';
 import { promisify } from 'util';
@@ -10,15 +7,13 @@ import * as z3 from 'zod';
 import { z, ZodError } from 'zod';
 import search2 from 'yt-search';
 import * as fs from 'fs';
+import * as path from 'path';
 import fluentffmpeg from 'fluent-ffmpeg';
 import axios from 'axios';
 import { Readable, Writable } from 'stream';
 import readline from 'readline';
 import minimist from 'minimist';
 
-var getFilename = () => fileURLToPath(import.meta.url);
-var getDirname = () => path2__default.dirname(getFilename());
-var __dirname = /* @__PURE__ */ getDirname();
 function help() {
   return Promise.resolve(
     colors17.bold.white(`
@@ -262,7 +257,7 @@ function sizeFormat(filesize) {
 // delta/base/ytxc.ts
 async function ytxc(query) {
   let pushTube = [];
-  let proLoc = join(__dirname, "backend", "util", "Engine");
+  let proLoc = "python -m yt_dlp";
   proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
   proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
   proLoc += ` '${query}'`;
@@ -270,85 +265,85 @@ async function ytxc(query) {
   const metaTube = await JSON.parse(result.stdout.toString());
   await metaTube.formats.forEach((ipop) => {
     const rmval = /* @__PURE__ */ new Set(["storyboard", "Default"]);
-    if (!rmval.has(ipop.format_note) && ipop.filesize !== null) {
-      const reTube = {
-        meta_audio: {
-          samplerate: ipop.asr,
-          channels: ipop.audio_channels,
-          codec: ipop.acodec,
-          extension: ipop.audio_ext,
-          bitrate: ipop.abr
-        },
-        meta_video: {
-          height: ipop.height,
-          width: ipop.width,
-          codec: ipop.vcodec,
-          resolution: ipop.resolution,
-          aspectratio: ipop.aspect_ratio,
-          extension: ipop.video_ext,
-          bitrate: ipop.vbr
-        },
-        meta_dl: {
-          formatid: ipop.format_id,
-          formatnote: ipop.format_note,
-          originalformat: ipop.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
-          mediaurl: ipop.url
-        },
-        meta_info: {
-          filesizebytes: ipop.filesize,
-          filesizeformatted: sizeFormat(ipop.filesize),
-          framespersecond: ipop.fps,
-          totalbitrate: ipop.tbr,
-          qriginalextension: ipop.ext,
-          dynamicrange: ipop.dynamic_range,
-          extensionconatainer: ipop.container
-        }
-      };
-      pushTube.push({
-        Tube: "metaTube",
-        reTube: {
-          id: metaTube.id,
-          title: metaTube.title,
-          channel: metaTube.channel,
-          uploader: metaTube.uploader,
-          duration: metaTube.duration,
-          thumbnail: metaTube.thumbnail,
-          age_limit: metaTube.age_limit,
-          channel_id: metaTube.channel_id,
-          categories: metaTube.categories,
-          display_id: metaTube.display_id,
-          Description: metaTube.Description,
-          channel_url: metaTube.channel_url,
-          webpage_url: metaTube.webpage_url,
-          live_status: metaTube.live_status,
-          upload_date: metaTube.upload_date,
-          uploader_id: metaTube.uploader_id,
-          original_url: metaTube.original_url,
-          uploader_url: metaTube.uploader_url,
-          duration_string: metaTube.duration_string
-        }
-      });
-      if (reTube.meta_dl.formatnote) {
-        switch (true) {
-          case ((reTube.meta_dl.formatnote.includes("ultralow") || reTube.meta_dl.formatnote.includes("medium") || reTube.meta_dl.formatnote.includes("high") || reTube.meta_dl.formatnote.includes("low")) && reTube.meta_video.resolution && reTube.meta_video.resolution.includes("audio")):
-            pushTube.push({ Tube: "AudioTube", reTube });
-            break;
-          case reTube.meta_dl.formatnote.includes("HDR"):
-            pushTube.push({ Tube: "HDRVideoTube", reTube });
-            break;
-          default:
-            pushTube.push({ Tube: "VideoTube", reTube });
-            break;
-        }
+    if (rmval.has(ipop.format_note) && ipop.filesize === null)
+      return;
+    const reTube = {
+      meta_audio: {
+        samplerate: ipop.asr,
+        channels: ipop.audio_channels,
+        codec: ipop.acodec,
+        extension: ipop.audio_ext,
+        bitrate: ipop.abr
+      },
+      meta_video: {
+        height: ipop.height,
+        width: ipop.width,
+        codec: ipop.vcodec,
+        resolution: ipop.resolution,
+        aspectratio: ipop.aspect_ratio,
+        extension: ipop.video_ext,
+        bitrate: ipop.vbr
+      },
+      meta_dl: {
+        formatid: ipop.format_id,
+        formatnote: ipop.format_note,
+        originalformat: ipop.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
+        mediaurl: ipop.url
+      },
+      meta_info: {
+        filesizebytes: ipop.filesize,
+        filesizeformatted: sizeFormat(ipop.filesize),
+        framespersecond: ipop.fps,
+        totalbitrate: ipop.tbr,
+        qriginalextension: ipop.ext,
+        dynamicrange: ipop.dynamic_range,
+        extensionconatainer: ipop.container
+      }
+    };
+    pushTube.push({
+      Tube: "metaTube",
+      reTube: {
+        id: metaTube.id,
+        title: metaTube.title,
+        channel: metaTube.channel,
+        uploader: metaTube.uploader,
+        duration: metaTube.duration,
+        thumbnail: metaTube.thumbnail,
+        age_limit: metaTube.age_limit,
+        channel_id: metaTube.channel_id,
+        categories: metaTube.categories,
+        display_id: metaTube.display_id,
+        Description: metaTube.Description,
+        channel_url: metaTube.channel_url,
+        webpage_url: metaTube.webpage_url,
+        live_status: metaTube.live_status,
+        upload_date: metaTube.upload_date,
+        uploader_id: metaTube.uploader_id,
+        original_url: metaTube.original_url,
+        uploader_url: metaTube.uploader_url,
+        duration_string: metaTube.duration_string
+      }
+    });
+    if (reTube.meta_dl.formatnote) {
+      switch (true) {
+        case ((reTube.meta_dl.formatnote.includes("ultralow") || reTube.meta_dl.formatnote.includes("medium") || reTube.meta_dl.formatnote.includes("high") || reTube.meta_dl.formatnote.includes("low")) && reTube.meta_video.resolution && reTube.meta_video.resolution.includes("audio")):
+          pushTube.push({ Tube: "AudioTube", reTube });
+          break;
+        case reTube.meta_dl.formatnote.includes("HDR"):
+          pushTube.push({ Tube: "HDRVideoTube", reTube });
+          break;
+        default:
+          pushTube.push({ Tube: "VideoTube", reTube });
+          break;
       }
     }
   });
-  return {
+  return JSON.stringify({
     AudioTube: pushTube.filter((item) => item.Tube === "AudioTube").map((item) => item.reTube) || null,
     VideoTube: pushTube.filter((item) => item.Tube === "VideoTube").map((item) => item.reTube) || null,
     HDRVideoTube: pushTube.filter((item) => item.Tube === "HDRVideoTube").map((item) => item.reTube) || null,
     metaTube: pushTube.filter((item) => item.Tube === "metaTube").map((item) => item.reTube)[0] || null
-  };
+  });
 }
 
 // package.json
@@ -888,7 +883,7 @@ async function AudioLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioTube);
@@ -1018,11 +1013,11 @@ async function AudioLowest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path2.join(metaFold, metaName) : metaName
+        filename: folderName ? path.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1116,7 +1111,7 @@ async function AudioHighest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.AudioTube);
@@ -1246,11 +1241,11 @@ async function AudioHighest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path2.join(metaFold, metaName) : metaName
+        filename: folderName ? path.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1312,7 +1307,7 @@ async function VideoLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoTube);
@@ -1405,11 +1400,11 @@ async function VideoLowest(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path2.join(metaFold, metaName) : metaName
+          filename: folderName ? path.join(metaFold, metaName) : metaName
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -1467,7 +1462,7 @@ async function VideoHighest(input) {
       "-"
     );
     let metaName = "";
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.VideoTube);
@@ -1560,11 +1555,11 @@ async function VideoHighest(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path2.join(metaFold, metaName) : metaName
+          filename: folderName ? path.join(metaFold, metaName) : metaName
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -1620,7 +1615,7 @@ async function AudioVideoLowest(input) {
       "-"
     );
     const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
@@ -1682,11 +1677,11 @@ async function AudioVideoLowest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path2.join(metaFold, metaName) : metaName
+        filename: folderName ? path.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1746,7 +1741,7 @@ async function AudioVideoHighest(input) {
       "-"
     );
     const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
@@ -1808,11 +1803,11 @@ async function AudioVideoHighest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path2.join(metaFold, metaName) : metaName
+        filename: folderName ? path.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1884,7 +1879,7 @@ async function AudioQualityCustom(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
@@ -2000,12 +1995,12 @@ async function AudioQualityCustom(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path2.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`) : `yt-dlp-(${quality})-${title}.${outputFormat}`
+        filename: folderName ? path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`) : `yt-dlp-(${quality})-${title}.${outputFormat}`
       };
     } else {
       await new Promise((resolve, reject2) => {
         ytc.output(
-          path2.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
+          path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
         ).on("error", reject2).on("end", () => {
           resolve();
         }).run();
@@ -2064,7 +2059,7 @@ async function VideoLowest2(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.VideoTube);
@@ -2157,11 +2152,11 @@ async function VideoLowest2(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path2.join(metaFold, metaName) : metaName
+          filename: folderName ? path.join(metaFold, metaName) : metaName
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -2247,7 +2242,7 @@ async function ListVideoLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry(metaBody.VideoTube);
@@ -2335,12 +2330,12 @@ async function ListVideoLowest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path2.join(metaFold, metaName) : metaName
+            filename: folderName ? path.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -2428,7 +2423,7 @@ async function ListVideoHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(metaBody.VideoTube);
@@ -2516,12 +2511,12 @@ async function ListVideoHighest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path2.join(metaFold, metaName) : metaName
+            filename: folderName ? path.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -2630,7 +2625,7 @@ async function ListVideoQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(newBody);
@@ -2719,12 +2714,12 @@ async function ListVideoQualityCustom(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path2.join(metaFold, metaName) : metaName
+            filename: folderName ? path.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -2812,7 +2807,7 @@ async function ListAudioLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry(metaBody.AudioTube);
@@ -2936,12 +2931,12 @@ async function ListAudioLowest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path2.join(metaFold, metaName) : metaName
+            filename: folderName ? path.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -3029,7 +3024,7 @@ async function ListAudioHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(metaBody.AudioTube);
@@ -3153,12 +3148,12 @@ async function ListAudioHighest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path2.join(metaFold, metaName) : metaName
+            filename: folderName ? path.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -3253,7 +3248,7 @@ async function ListAudioQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(newBody);
@@ -3377,12 +3372,12 @@ async function ListAudioQualityCustom(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path2.join(metaFold, metaName) : metaName
+            filename: folderName ? path.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -5300,7 +5295,7 @@ async function ListAudioVideoLowest(input) {
                   "-"
                 );
                 let metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg();
@@ -5355,11 +5350,11 @@ async function ListAudioVideoLowest(input) {
                   ytc.pipe(writeStream, { end: true });
                   results.push({
                     stream: readStream,
-                    filename: folderName ? path2.join(metaFold, metaName) : metaName
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
                   });
                 } else {
                   await new Promise((resolve, reject2) => {
-                    ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
                   });
                 }
               } catch (error) {
@@ -5464,7 +5459,7 @@ async function ListAudioVideoHighest(input) {
                   "-"
                 );
                 let metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg();
@@ -5519,11 +5514,11 @@ async function ListAudioVideoHighest(input) {
                   ytc.pipe(writeStream, { end: true });
                   results.push({
                     stream: readStream,
-                    filename: folderName ? path2.join(metaFold, metaName) : metaName
+                    filename: folderName ? path.join(metaFold, metaName) : metaName
                   });
                 } else {
                   await new Promise((resolve, reject2) => {
-                    ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
                   });
                 }
               } catch (error) {
