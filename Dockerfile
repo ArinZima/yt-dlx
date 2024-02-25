@@ -1,6 +1,4 @@
 FROM mcr.microsoft.com/playwright
-
-# Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git \
@@ -15,22 +13,12 @@ RUN apt-get update \
         opus-tools \
         python3-pip \
         python3-venv \
+        nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# Copy application code
+RUN npm install --global --force yarn yt-dlx
+WORKDIR /app
 COPY . .
-
-# Set working directory
-WORKDIR .
-
-# Install Node.js dependencies
-RUN npm install --global --force \
-    yarn \
-    yt-dlx
-
-# Install project dependencies
+RUN pip3 install --no-cache-dir yt-dlp youtube-dl
 RUN yarn run remake
-
-# Set default command
 CMD ["yarn", "run", "ingress"]
