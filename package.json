@@ -35,6 +35,7 @@
     "cli:test": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
   },
   "files": [
+    "util",
     "proto",
     "LICENSE",
     "README.md",
