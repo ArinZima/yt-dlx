@@ -9,9 +9,28 @@ const spinnies = new spinClient();
 export interface YouTubePlaylist {
   playlistLink: string;
 }
+
+export interface reYouTubePlaylistVideo {
+  ago: string;
+  url: string;
+  title: string;
+  views: string;
+  author: string;
+  videoId: string;
+  authorUrl: string;
+  thumbnailUrls: string[];
+}
+export interface reYouTubePlaylist {
+  views: string;
+  count: number;
+  title: string;
+  description: string;
+  videos: reYouTubePlaylistVideo[];
+}
+
 export default async function YouTubePlaylist({
   playlistLink,
-}: YouTubePlaylist) {
+}: YouTubePlaylist): Promise<reYouTubePlaylist | undefined> {
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
