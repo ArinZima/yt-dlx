@@ -1,13 +1,16 @@
 #!/usr/bin/env node
-import colors17 from 'colors';
+import colors19 from 'colors';
+import retry from 'async-retry';
+import spinClient from 'spinnies';
+import { randomUUID } from 'crypto';
 import { chromium } from 'playwright';
+import * as path2 from 'path';
+import path2__default from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import * as z3 from 'zod';
 import { z, ZodError } from 'zod';
-import search2 from 'yt-search';
 import * as fs from 'fs';
-import * as path from 'path';
 import fluentffmpeg from 'fluent-ffmpeg';
 import axios from 'axios';
 import { Readable, Writable } from 'stream';
@@ -16,7 +19,7 @@ import minimist from 'minimist';
 
 function help() {
   return Promise.resolve(
-    colors17.bold.white(`
+    colors19.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -144,73 +147,348 @@ function help() {
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715`)
   );
 }
-async function grabber({
-  query,
-  route,
-  domain
-}) {
-  const browser = await chromium.launch({ headless: true });
-  try {
-    const host = `${decodeURIComponent(domain)}/${decodeURIComponent(
-      route
-    )}?query=${decodeURIComponent(query)}`;
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto(host);
-    await page.waitForSelector("button[class*=ring-blue-600]", {
-      timeout: 1e4
-    });
-    await page.click("button[class*=ring-blue-600]");
-    const requestFinished = new Promise((resolve) => {
-      page.on("requestfinished", async (request) => {
-        try {
-          if (request.url().includes("/" + route)) {
-            const response = await request.response();
-            if (response) {
-              const json = await response.json();
-              resolve(json);
-            } else
-              resolve(null);
-          }
-        } catch (error) {
-          console.log(colors17.red("@error:"), error);
-          resolve(null);
+
+// backend/util/YouTubeId/index.ts
+function YouTubeID(url) {
+  return new Promise((resolve, _) => {
+    if (/youtu\.?be/.test(url)) {
+      var i;
+      var patterns = [
+        /youtu\.be\/([^#\&\?]{11})/,
+        /\?v=([^#\&\?]{11})/,
+        /\&v=([^#\&\?]{11})/,
+        /embed\/([^#\&\?]{11})/,
+        /\/v\/([^#\&\?]{11})/,
+        /list=([^#\&\?]+)/,
+        /playlist\?list=([^#\&\?]+)/
+      ];
+      for (i = 0; i < patterns.length; ++i) {
+        if (patterns[i].test(url)) {
+          if (i === patterns.length - 1) {
+            const match = patterns[i].exec(url);
+            const playlistParams = new URLSearchParams(match[0]);
+            const videoId = playlistParams.get("v");
+            return resolve(videoId);
+          } else
+            return resolve(patterns[i].exec(url)[1]);
         }
-      });
-    });
-    const payLoad = await requestFinished;
-    if (payLoad) {
-      await browser.close();
-      return JSON.stringify(payLoad);
-    } else {
-      await browser.close();
-      return null;
+      }
     }
+    resolve(null);
+  });
+}
+
+// delta/web/webVideo.ts
+var spinnies = new spinClient();
+async function webVideo({
+  videoLink
+}) {
+  if (!videoLink)
+    return void 0;
+  const retryOptions = {
+    maxTimeout: 4e3,
+    minTimeout: 2e3,
+    retries: 4
+  };
+  const spin = randomUUID();
+  try {
+    const metaTube = await retry(async () => {
+      const browser = await chromium.launch({
+        headless: true
+      });
+      spinnies.add(spin, {
+        text: colors19.green("@scrape: ") + "started chromium..."
+      });
+      const context = await browser.newContext({
+        ignoreHTTPSErrors: true,
+        serviceWorkers: "allow",
+        bypassCSP: true,
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"
+      });
+      const page = await context.newPage();
+      await page.goto(videoLink);
+      spinnies.update(spin, {
+        text: colors19.yellow("@scrape: ") + "waiting for hydration..."
+      });
+      await page.waitForSelector(".style-scope.ytd-watch-metadata");
+      const title = await page.$eval(
+        ".style-scope.ytd-watch-metadata",
+        (el) => el.textContent.trim()
+      );
+      const author = await page.$eval(
+        ".yt-simple-endpoint.style-scope.yt-formatted-string",
+        (el) => el.textContent.trim()
+      );
+      const views = await page.$eval(
+        ".bold.style-scope.yt-formatted-string",
+        (el) => el.textContent.trim()
+      );
+      const videoId = await YouTubeID(videoLink);
+      const thumbnailUrls = [
+        `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/default.jpg`
+      ];
+      const uploadDateElements = await page.$$eval(
+        ".bold.style-scope.yt-formatted-string",
+        (spans) => {
+          const uploadDateIndex = spans.findIndex(
+            (span) => span.textContent.includes("ago")
+          );
+          return uploadDateIndex >= 0 ? spans[uploadDateIndex].textContent.trim() : void 0;
+        }
+      );
+      const data = {
+        author,
+        videoId,
+        videoLink,
+        thumbnailUrls,
+        uploadOn: uploadDateElements,
+        title: title.split("\n")[0].trim(),
+        views: views.replace(/ views/g, "")
+      };
+      await browser.close();
+      return data;
+    }, retryOptions);
+    spinnies.succeed(spin, {
+      text: colors19.yellow("@info: ") + "scrapping done..."
+    });
+    return metaTube;
   } catch (error) {
-    console.log(colors17.red("@error:"), error);
-    return null;
+    spinnies.fail(spin, {
+      text: colors19.red("@error: ") + error.message
+    });
+    return void 0;
+  }
+}
+var spinnies2 = new spinClient();
+async function webSearch({
+  query,
+  number
+}) {
+  const retryOptions = {
+    maxTimeout: 4e3,
+    minTimeout: 2e3,
+    retries: 4
+  };
+  const spin = randomUUID();
+  try {
+    const metaTube = await retry(async () => {
+      let videos = [];
+      const data = [];
+      const browser = await chromium.launch({
+        headless: true
+      });
+      spinnies2.add(spin, {
+        text: colors19.green("@scrape: ") + "started chromium..."
+      });
+      const context = await browser.newContext({
+        ignoreHTTPSErrors: true,
+        serviceWorkers: "allow",
+        bypassCSP: true,
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"
+      });
+      const page = await context.newPage();
+      const searchUrl = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
+      await page.goto(searchUrl);
+      spinnies2.update(spin, {
+        text: colors19.yellow("@scrape: ") + "waiting for hydration..."
+      });
+      while (videos.length < number) {
+        await page.waitForSelector(".ytd-video-renderer");
+        const newVideos = await page.$$(
+          'ytd-video-renderer:not([class*="ytd-rich-grid-video-renderer"])'
+        );
+        videos = [...videos, ...newVideos];
+        await page.evaluate(
+          () => window.scrollTo(0, document.body.scrollHeight)
+        );
+      }
+      for (const vid of videos) {
+        const title = await vid.$eval(
+          "#video-title",
+          (el) => el.textContent.trim()
+        );
+        const videoLink = "https://www.youtube.com" + await vid.$eval(
+          "a",
+          (el) => el.getAttribute("href")
+        );
+        const videoId = videoLink.match(
+          /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([^&]+)/
+        )[1];
+        const authorContainer = await vid.$(".ytd-channel-name a");
+        const author = await authorContainer.getProperty("textContent").then((property) => property.jsonValue());
+        const authorUrl = await authorContainer.getProperty("href").then((property) => property.jsonValue());
+        let description = "";
+        const descriptionElement = await vid.$(".metadata-snippet-text");
+        if (descriptionElement) {
+          description = await descriptionElement.getProperty("innerText").then((property) => property.jsonValue());
+        }
+        const viewsContainer = await vid.$(
+          ".inline-metadata-item.style-scope.ytd-video-meta-block"
+        );
+        const views = await viewsContainer.getProperty("innerText").then((property) => property.jsonValue());
+        const uploadedOnElement = await vid.$$(
+          ".inline-metadata-item.style-scope.ytd-video-meta-block"
+        );
+        const uploadOn = uploadedOnElement && uploadedOnElement.length >= 2 ? await uploadedOnElement[1].getProperty("innerText").then(
+          (property) => property.jsonValue()
+        ) : void 0;
+        const thumbnailUrls = [
+          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/default.jpg`
+        ];
+        const authorImageElement = await vid.$(".style-scope.yt-img-shadow");
+        const authorImage = authorImageElement ? await authorImageElement.getProperty("src").then(
+          (property) => property.jsonValue()
+        ) : void 0;
+        data.push({
+          title,
+          author,
+          videoId,
+          uploadOn,
+          authorUrl,
+          videoLink,
+          description,
+          authorImage,
+          thumbnailUrls,
+          views: views.replace(/ views/g, "")
+        });
+      }
+      await browser.close();
+      return data;
+    }, retryOptions);
+    spinnies2.succeed(spin, {
+      text: colors19.yellow("@info: ") + "scrapping done..."
+    });
+    return metaTube;
+  } catch (error) {
+    spinnies2.fail(spin, {
+      text: colors19.red("@error: ") + error.message
+    });
+    return void 0;
+  }
+}
+var spinnies3 = new spinClient();
+async function webPlaylist({
+  playlistLink
+}) {
+  const retryOptions = {
+    maxTimeout: 4e3,
+    minTimeout: 2e3,
+    retries: 4
+  };
+  const spin = randomUUID();
+  try {
+    const metaTube = await retry(async () => {
+      const playlistData = [];
+      const browser = await chromium.launch({
+        headless: true
+      });
+      spinnies3.add(spin, {
+        text: colors19.green("@scrape: ") + "started chromium..."
+      });
+      const context = await browser.newContext({
+        ignoreHTTPSErrors: true,
+        serviceWorkers: "allow",
+        bypassCSP: true,
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"
+      });
+      const page = await context.newPage();
+      await page.goto(playlistLink);
+      spinnies3.update(spin, {
+        text: colors19.yellow("@scrape: ") + "waiting for hydration..."
+      });
+      const titleElement = await page.$(
+        "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
+      );
+      const playlistTitle = await titleElement.textContent();
+      const videoCountElement = await page.$(
+        "yt-formatted-string.byline-item"
+      );
+      const videoCountText = await videoCountElement.textContent();
+      const videoCount = parseInt(videoCountText.match(/\d+/)[0]);
+      const viewsElement = await page.$$(
+        "yt-formatted-string.byline-item"
+      );
+      const viewsText = await viewsElement[1].textContent();
+      const views = viewsText.replace(/,/g, "").match(/\d+/)[0];
+      const descriptionElement = await page.$("span#plain-snippet-text");
+      let playlistDescription = await descriptionElement.textContent();
+      const VideoElements = await page.$$("ytd-playlist-video-renderer");
+      for (const vide of VideoElements) {
+        const TitleElement = await vide.$("h3");
+        let title = await TitleElement.textContent();
+        title = title.trim();
+        const urlElement = await vide.$("a");
+        const url = "https://www.youtube.com" + await urlElement.getAttribute("href");
+        const videoId = url.match(/(?<=v=)[^&\s]+/)[0];
+        const AuthorElement = await vide.$(
+          ".yt-simple-endpoint.style-scope.yt-formatted-string"
+        );
+        const author = await AuthorElement.textContent();
+        const authorUrl = await AuthorElement.getAttribute("href");
+        const ViewsElement = await vide.$(
+          ".style-scope.ytd-video-meta-block span:first-child"
+        );
+        const views2 = await ViewsElement.textContent();
+        const AgoElement = await vide.$(
+          ".style-scope.ytd-video-meta-block span:last-child"
+        );
+        const ago = await AgoElement.textContent();
+        const thumbnailUrls = [
+          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/default.jpg`
+        ];
+        playlistData.push({
+          ago,
+          url,
+          title,
+          author,
+          videoId,
+          thumbnailUrls,
+          views: views2.replace(/ views/g, ""),
+          authorUrl: "https://www.youtube.com" + authorUrl
+        });
+      }
+      await browser.close();
+      return {
+        views,
+        count: videoCount,
+        title: playlistTitle,
+        description: playlistDescription.trim(),
+        videos: playlistData
+      };
+    }, retryOptions);
+    spinnies3.succeed(spin, {
+      text: colors19.yellow("@info: ") + "scrapping done..."
+    });
+    return metaTube;
+  } catch (error) {
+    spinnies3.fail(spin, {
+      text: colors19.red("@error: ") + error.message
+    });
+    return void 0;
   }
 }
 
-// delta/base/scrape.ts
-async function scrape(query) {
-  try {
-    const response = await grabber({
-      query,
-      route: "scrape",
-      domain: "https://possible-willingly-yeti.ngrok-free.app"
-    });
-    if (response !== null)
-      return decodeURIComponent(response);
-    else
-      return null;
-  } catch (error) {
-    return null;
-  }
-}
+// delta/web/ytdlx_web.ts
+var ytdlx_web = { webPlaylist, webSearch, webVideo };
+var ytdlx_web_default = ytdlx_web;
 
 // delta/pipes/command/search.ts
-async function search({ query }) {
+async function search({
+  query,
+  number
+}) {
   try {
     switch (true) {
       case (!query || typeof query !== "string"):
@@ -218,8 +496,13 @@ async function search({ query }) {
           message: "Invalid query parameter",
           status: 500
         };
+      case (!number || typeof number !== "number"):
+        return {
+          message: "Invalid number parameter",
+          status: 500
+        };
       default:
-        return await scrape(query);
+        return await ytdlx_web_default.webSearch({ query, number });
     }
   } catch (error) {
     switch (true) {
@@ -255,9 +538,9 @@ function sizeFormat(filesize) {
 }
 
 // delta/base/ytxc.ts
-async function ytxc(query, proxy, port, username, password) {
+async function ytxc(query, port, proxy, username, password) {
   let pushTube = [];
-  let proLoc = "python -m yt_dlp";
+  let proLoc = path2__default.join("backend", "util", "Engine");
   if (proxy && port && username && password) {
     proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
   }
@@ -352,100 +635,68 @@ async function ytxc(query, proxy, port, username, password) {
 // package.json
 var version = "1.0.2";
 
-// backend/util/YouTubeId/index.ts
-function YouTubeID(url) {
-  return new Promise((resolve, _) => {
-    if (/youtu\.?be/.test(url)) {
-      var i;
-      var patterns = [
-        /youtu\.be\/([^#\&\?]{11})/,
-        /\?v=([^#\&\?]{11})/,
-        /\&v=([^#\&\?]{11})/,
-        /embed\/([^#\&\?]{11})/,
-        /\/v\/([^#\&\?]{11})/,
-        /list=([^#\&\?]+)/,
-        /playlist\?list=([^#\&\?]+)/
-      ];
-      for (i = 0; i < patterns.length; ++i) {
-        if (patterns[i].test(url)) {
-          if (i === patterns.length - 1) {
-            const match = patterns[i].exec(url);
-            const playlistParams = new URLSearchParams(match[0]);
-            const videoId = playlistParams.get("v");
-            return resolve(videoId);
-          } else
-            return resolve(patterns[i].exec(url)[1]);
-        }
-      }
-    }
-    resolve(null);
-  });
-}
-
 // delta/base/agent.ts
 async function Engine({
   query
 }) {
   let videoId, TubeDlp, TubeBody;
   console.log(
-    colors17.bold.green("@info: ") + `using yt-dlx version <(${version})>` + colors17.reset("")
+    colors19.bold.green("@info: ") + `using yt-dlx version <(${version})>` + colors19.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors17.bold.red("@error: ") + "'query' is required..." + colors17.reset("")
+      colors19.bold.red("@error: ") + "'query' is required..." + colors19.reset("")
     );
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors17.bold.red("@error: ") + "use extract_playlist_videos() for playlists..." + colors17.reset("")
+      colors19.bold.red("@error: ") + "use extract_playlist_videos() for playlists..." + colors19.reset("")
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors17.bold.green("@info: ") + `fetching metadata for: <(${query})>` + colors17.reset("")
+      colors19.bold.green("@info: ") + `fetching metadata for: <(${query})>` + colors19.reset("")
     );
     videoId = await YouTubeID(query);
   } else
     videoId = await YouTubeID(query);
   switch (videoId) {
     case null:
-      TubeBody = await scrape(query);
+      TubeBody = await ytdlx_web_default.webSearch({ query, number: 4 });
       if (TubeBody === null) {
         console.log(
-          colors17.bold.red("@error: ") + "no data returned from server..." + colors17.reset("")
+          colors19.bold.red("@error: ") + "no data returned from server..." + colors19.reset("")
         );
         return null;
-      } else
-        TubeBody = JSON.parse(TubeBody);
+      }
       console.log(
-        colors17.bold.green("@info: ") + `preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` + colors17.reset("")
+        colors19.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` + colors19.reset("")
       );
-      TubeDlp = await ytxc(TubeBody.Link);
+      TubeDlp = await ytxc(TubeBody[0].videoLink);
       break;
     default:
-      TubeBody = await scrape(videoId);
+      TubeBody = await ytdlx_web_default.webVideo({ videoLink: query });
       if (TubeBody === null) {
         console.log(
-          colors17.bold.red("@error: ") + "no data returned from server..." + colors17.reset("")
+          colors19.bold.red("@error: ") + "no data returned from server..." + colors19.reset("")
         );
         return null;
-      } else
-        TubeBody = JSON.parse(TubeBody);
+      }
       console.log(
-        colors17.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` + colors17.reset("")
+        colors19.bold.green("@info: ") + `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` + colors19.reset("")
       );
-      TubeDlp = await ytxc(TubeBody[0].Link);
+      TubeDlp = await ytxc(TubeBody.videoLink);
       break;
   }
   switch (TubeDlp) {
     case null:
       console.log(
-        colors17.bold.red("@error: ") + "no data returned from server..." + colors17.reset("")
+        colors19.bold.red("@error: ") + "no data returned from server..." + colors19.reset("")
       );
       return null;
     default:
       console.log(
-        colors17.bold.green("@info:"),
+        colors19.bold.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlx"
       );
       return JSON.parse(TubeDlp);
@@ -565,16 +816,18 @@ async function get_playlist({
       const ispUrl = url.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors17.bold.red("@error: "),
+          colors19.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           url
         );
         continue;
       }
-      const resp = await search2({ listId: ispUrl[1] });
-      if (!resp) {
+      const resp = await ytdlx_web_default.webPlaylist({
+        playlistLink: ispUrl[1]
+      });
+      if (resp === void 0) {
         console.error(
-          colors17.bold.red("@error: "),
+          colors19.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -582,30 +835,25 @@ async function get_playlist({
       }
       for (let i = 0; i < resp.videos.length; i++) {
         try {
-          const videoId = resp.videos[i].videoId;
-          const metaTube = await search2({ videoId });
+          const videoLink = resp.videos[i]?.url;
+          if (videoLink === void 0)
+            continue;
+          const metaTube = await ytdlx_web_default.webVideo({ videoLink });
+          if (metaTube === void 0)
+            continue;
           console.log(
-            colors17.bold.green("INFO:"),
-            colors17.bold.green("<("),
+            colors19.bold.green("INFO:"),
+            colors19.bold.green("<("),
             metaTube.title,
-            colors17.bold.green("by"),
-            metaTube.author.name,
-            colors17.bold.green(")>")
+            colors19.bold.green("by"),
+            metaTube.author,
+            colors19.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId))
             continue;
-          else {
-            const {
-              author: { name: authorName, url: authorUrl },
-              duration,
-              seconds,
-              genre,
-              ...newTube
-            } = metaTube;
-            proTubeArr.push({ ...newTube, authorName, authorUrl });
-          }
+          proTubeArr.push({ ...metaTube });
         } catch (error) {
-          console.error(colors17.bold.red("@error: "), error);
+          console.error(colors19.bold.red("@error: "), error);
         }
       }
     }
@@ -765,16 +1013,18 @@ async function extract_playlist_videos({
       const ispUrl = url.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors17.bold.red("@error: "),
+          colors19.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           url
         );
         continue;
       }
-      const resp = await scrape(ispUrl[1]);
-      if (!resp) {
+      const resp = await ytdlx_web_default.webPlaylist({
+        playlistLink: ispUrl[1]
+      });
+      if (resp === void 0) {
         console.error(
-          colors17.bold.red("@error: "),
+          colors19.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -782,7 +1032,9 @@ async function extract_playlist_videos({
       }
       for (let i = 0; i < resp.videos.length; i++) {
         try {
-          const videoId = resp.videos[i].videoId;
+          const videoId = resp.videos[i]?.videoId;
+          if (videoId === void 0)
+            continue;
           if (processedVideoIds.has(videoId))
             continue;
           const data = await Engine({ query: videoId });
@@ -792,7 +1044,7 @@ async function extract_playlist_videos({
             proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors17.bold.red("@error: "), error);
+          console.error(colors19.bold.red("@error: "), error);
         }
       }
     }
@@ -813,7 +1065,7 @@ async function bigEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors17.bold.red("@error:"),
+        colors19.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -827,7 +1079,7 @@ async function bigEntry(metaBody) {
           return item;
       }
       console.log(
-        colors17.bold.red("@error:"),
+        colors19.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -838,14 +1090,14 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  let color = colors17.green;
+  let color = colors19.green;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
   if (prog.percent < 20)
-    color = colors17.red;
+    color = colors19.red;
   else if (prog.percent < 80)
-    color = colors17.yellow;
+    color = colors19.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
@@ -886,7 +1138,7 @@ async function AudioLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioTube);
@@ -1016,11 +1268,11 @@ async function AudioLowest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
+        filename: folderName ? path2.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1064,7 +1316,7 @@ async function bigEntry2(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors17.bold.red("@error:"),
+        colors19.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1078,7 +1330,7 @@ async function bigEntry2(metaBody) {
           return item;
       }
       console.log(
-        colors17.bold.red("@error:"),
+        colors19.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1114,7 +1366,7 @@ async function AudioHighest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.AudioTube);
@@ -1244,11 +1496,11 @@ async function AudioHighest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
+        filename: folderName ? path2.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1310,7 +1562,7 @@ async function VideoLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoTube);
@@ -1403,11 +1655,11 @@ async function VideoLowest(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path.join(metaFold, metaName) : metaName
+          filename: folderName ? path2.join(metaFold, metaName) : metaName
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -1465,7 +1717,7 @@ async function VideoHighest(input) {
       "-"
     );
     let metaName = "";
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.VideoTube);
@@ -1558,11 +1810,11 @@ async function VideoHighest(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path.join(metaFold, metaName) : metaName
+          filename: folderName ? path2.join(metaFold, metaName) : metaName
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -1618,7 +1870,7 @@ async function AudioVideoLowest(input) {
       "-"
     );
     const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
@@ -1680,11 +1932,11 @@ async function AudioVideoLowest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
+        filename: folderName ? path2.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1744,7 +1996,7 @@ async function AudioVideoHighest(input) {
       "-"
     );
     const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
@@ -1806,11 +2058,11 @@ async function AudioVideoHighest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path.join(metaFold, metaName) : metaName
+        filename: folderName ? path2.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1882,7 +2134,7 @@ async function AudioQualityCustom(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
@@ -1998,12 +2250,12 @@ async function AudioQualityCustom(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`) : `yt-dlp-(${quality})-${title}.${outputFormat}`
+        filename: folderName ? path2.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`) : `yt-dlp-(${quality})-${title}.${outputFormat}`
       };
     } else {
       await new Promise((resolve, reject2) => {
         ytc.output(
-          path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
+          path2.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
         ).on("error", reject2).on("end", () => {
           resolve();
         }).run();
@@ -2062,7 +2314,7 @@ async function VideoLowest2(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.VideoTube);
@@ -2155,11 +2407,11 @@ async function VideoLowest2(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path.join(metaFold, metaName) : metaName
+          filename: folderName ? path2.join(metaFold, metaName) : metaName
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path2.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -2210,34 +2462,32 @@ async function ListVideoLowest(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      const metaList = await scrape(url);
+      const metaList = await ytdlx_web_default.webPlaylist({ playlistLink: url });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500
         };
       }
-      const parsedMetaList = await JSON.parse(metaList);
-      const uniqueVideos = parsedMetaList.Videos.filter(
-        (video) => !uniqueVideoIds.has(video.id)
+      const uniqueVideos = metaList.videos.filter(
+        (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
-      uniqueVideos.forEach(
-        (video) => uniqueVideoIds.add(video.id)
-      );
+      uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors17.bold.green("INFO:"),
+      colors19.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await scrape(i.videoId);
-      if (TubeBody === null)
+      const TubeBody = await ytdlx_web_default.webVideo({
+        videoLink: i.url
+      });
+      if (TubeBody === void 0)
         continue;
-      const parseTube = await JSON.parse(TubeBody);
       const metaBody = await Engine({
-        query: parseTube.Link
+        query: TubeBody.videoLink
       });
       if (metaBody === null)
         continue;
@@ -2245,7 +2495,7 @@ async function ListVideoLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry(metaBody.VideoTube);
@@ -2333,12 +2583,12 @@ async function ListVideoLowest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path.join(metaFold, metaName) : metaName
+            filename: folderName ? path2.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -2391,34 +2641,32 @@ async function ListVideoHighest(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      const metaList = await scrape(url);
+      const metaList = await ytdlx_web_default.webPlaylist({ playlistLink: url });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500
         };
       }
-      const parsedMetaList = await JSON.parse(metaList);
-      const uniqueVideos = parsedMetaList.Videos.filter(
-        (video) => !uniqueVideoIds.has(video.id)
+      const uniqueVideos = metaList.videos.filter(
+        (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
-      uniqueVideos.forEach(
-        (video) => uniqueVideoIds.add(video.id)
-      );
+      uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors17.bold.green("INFO:"),
+      colors19.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await scrape(i.videoId);
-      if (TubeBody === null)
+      const TubeBody = await ytdlx_web_default.webVideo({
+        videoLink: i.url
+      });
+      if (TubeBody === void 0)
         continue;
-      const parseTube = await JSON.parse(TubeBody);
       const metaBody = await Engine({
-        query: parseTube.Link
+        query: TubeBody.videoLink
       });
       if (metaBody === null)
         continue;
@@ -2426,7 +2674,7 @@ async function ListVideoHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(metaBody.VideoTube);
@@ -2514,12 +2762,12 @@ async function ListVideoHighest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path.join(metaFold, metaName) : metaName
+            filename: folderName ? path2.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -2588,34 +2836,32 @@ async function ListVideoQualityCustom(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      const metaList = await scrape(url);
+      const metaList = await ytdlx_web_default.webPlaylist({ playlistLink: url });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500
         };
       }
-      const parsedMetaList = await JSON.parse(metaList);
-      const uniqueVideos = parsedMetaList.Videos.filter(
-        (video) => !uniqueVideoIds.has(video.id)
+      const uniqueVideos = metaList.videos.filter(
+        (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
-      uniqueVideos.forEach(
-        (video) => uniqueVideoIds.add(video.id)
-      );
+      uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors17.bold.green("INFO:"),
+      colors19.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await scrape(i.videoId);
-      if (TubeBody === null)
+      const TubeBody = await ytdlx_web_default.webVideo({
+        videoLink: i.url
+      });
+      if (TubeBody === void 0)
         continue;
-      const parseTube = await JSON.parse(TubeBody);
       const metaBody = await Engine({
-        query: parseTube.Link
+        query: TubeBody.videoLink
       });
       if (metaBody === null)
         continue;
@@ -2628,7 +2874,7 @@ async function ListVideoQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(newBody);
@@ -2717,12 +2963,12 @@ async function ListVideoQualityCustom(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path.join(metaFold, metaName) : metaName
+            filename: folderName ? path2.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -2775,34 +3021,32 @@ async function ListAudioLowest(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      const metaList = await scrape(url);
+      const metaList = await ytdlx_web_default.webPlaylist({ playlistLink: url });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500
         };
       }
-      const parsedMetaList = await JSON.parse(metaList);
-      const uniqueVideos = parsedMetaList.Videos.filter(
-        (video) => !uniqueVideoIds.has(video.id)
+      const uniqueVideos = metaList.videos.filter(
+        (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
-      uniqueVideos.forEach(
-        (video) => uniqueVideoIds.add(video.id)
-      );
+      uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors17.bold.green("INFO:"),
+      colors19.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await scrape(i.videoId);
-      if (TubeBody === null)
+      const TubeBody = await ytdlx_web_default.webVideo({
+        videoLink: i.url
+      });
+      if (TubeBody === void 0)
         continue;
-      const parseTube = await JSON.parse(TubeBody);
       const metaBody = await Engine({
-        query: parseTube.Link
+        query: TubeBody.videoLink
       });
       if (metaBody === null)
         continue;
@@ -2810,7 +3054,7 @@ async function ListAudioLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry(metaBody.AudioTube);
@@ -2934,12 +3178,12 @@ async function ListAudioLowest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path.join(metaFold, metaName) : metaName
+            filename: folderName ? path2.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -2992,34 +3236,32 @@ async function ListAudioHighest(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      const metaList = await scrape(url);
+      const metaList = await ytdlx_web_default.webPlaylist({ playlistLink: url });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500
         };
       }
-      const parsedMetaList = await JSON.parse(metaList);
-      const uniqueVideos = parsedMetaList.Videos.filter(
-        (video) => !uniqueVideoIds.has(video.id)
+      const uniqueVideos = metaList.videos.filter(
+        (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
-      uniqueVideos.forEach(
-        (video) => uniqueVideoIds.add(video.id)
-      );
+      uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors17.bold.green("INFO:"),
+      colors19.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await scrape(i.videoId);
-      if (TubeBody === null)
+      const TubeBody = await ytdlx_web_default.webVideo({
+        videoLink: i.url
+      });
+      if (TubeBody === void 0)
         continue;
-      const parseTube = await JSON.parse(TubeBody);
       const metaBody = await Engine({
-        query: parseTube.Link
+        query: TubeBody.videoLink
       });
       if (metaBody === null)
         continue;
@@ -3027,7 +3269,7 @@ async function ListAudioHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(metaBody.AudioTube);
@@ -3151,12 +3393,12 @@ async function ListAudioHighest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path.join(metaFold, metaName) : metaName
+            filename: folderName ? path2.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -3211,34 +3453,32 @@ async function ListAudioQualityCustom(input) {
     let results = [];
     const uniqueVideoIds = /* @__PURE__ */ new Set();
     for (const url of playlistUrls) {
-      const metaList = await scrape(url);
+      const metaList = await ytdlx_web_default.webPlaylist({ playlistLink: url });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500
         };
       }
-      const parsedMetaList = await JSON.parse(metaList);
-      const uniqueVideos = parsedMetaList.Videos.filter(
-        (video) => !uniqueVideoIds.has(video.id)
+      const uniqueVideos = metaList.videos.filter(
+        (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
-      uniqueVideos.forEach(
-        (video) => uniqueVideoIds.add(video.id)
-      );
+      uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors17.bold.green("INFO:"),
+      colors19.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await scrape(i.videoId);
-      if (TubeBody === null)
+      const TubeBody = await ytdlx_web_default.webVideo({
+        videoLink: i.url
+      });
+      if (TubeBody === void 0)
         continue;
-      const parseTube = await JSON.parse(TubeBody);
       const metaBody = await Engine({
-        query: parseTube.Link
+        query: TubeBody.videoLink
       });
       if (metaBody === null)
         continue;
@@ -3251,7 +3491,7 @@ async function ListAudioQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
       if (!fs.existsSync(metaFold))
         fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(newBody);
@@ -3375,12 +3615,12 @@ async function ListAudioQualityCustom(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path.join(metaFold, metaName) : metaName
+            filename: folderName ? path2.join(metaFold, metaName) : metaName
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
@@ -4896,7 +5136,7 @@ function constant(value) {
 }
 var DEFAULT_TIMES = 5;
 var DEFAULT_INTERVAL = 0;
-function retry(opts, task, callback) {
+function retry4(opts, task, callback) {
   var options = {
     times: DEFAULT_TIMES,
     intervalFunc: constant(DEFAULT_INTERVAL)
@@ -4957,9 +5197,9 @@ function retryable(opts, task) {
       _task(...args, cb);
     }
     if (opts)
-      retry(opts, taskFn, callback);
+      retry4(opts, taskFn, callback);
     else
-      retry(taskFn, callback);
+      retry4(taskFn, callback);
     return callback[PROMISE_SYMBOL];
   });
 }
@@ -5184,7 +5424,7 @@ var index = {
   reject: reject$1,
   rejectLimit: rejectLimit$1,
   rejectSeries: rejectSeries$1,
-  retry,
+  retry: retry4,
   retryable,
   seq,
   series,
@@ -5298,7 +5538,7 @@ async function ListAudioVideoLowest(input) {
                   "-"
                 );
                 let metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg();
@@ -5353,17 +5593,17 @@ async function ListAudioVideoLowest(input) {
                   ytc.pipe(writeStream, { end: true });
                   results.push({
                     stream: readStream,
-                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                    filename: folderName ? path2.join(metaFold, metaName) : metaName
                   });
                 } else {
                   await new Promise((resolve, reject2) => {
-                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                    ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
                   });
                 }
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors17.bold.red("ERROR: ") + video.title
+                  message: colors19.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5462,7 +5702,7 @@ async function ListAudioVideoHighest(input) {
                   "-"
                 );
                 let metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                const metaFold = folderName ? path2.join(process.cwd(), folderName) : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg();
@@ -5517,17 +5757,17 @@ async function ListAudioVideoHighest(input) {
                   ytc.pipe(writeStream, { end: true });
                   results.push({
                     stream: readStream,
-                    filename: folderName ? path.join(metaFold, metaName) : metaName
+                    filename: folderName ? path2.join(metaFold, metaName) : metaName
                   });
                 } else {
                   await new Promise((resolve, reject2) => {
-                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                    ytc.output(path2.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
                   });
                 }
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors17.bold.red("ERROR: ") + video.title
+                  message: colors19.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5629,7 +5869,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors17.green("Installed Version: yt-dlx@" + version));
+      console.error(colors19.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -5637,14 +5877,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors17.red(error));
+        console.error(colors19.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.info.extract({
           query: proTube.query
@@ -5652,14 +5892,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "search-yt":
     case "s":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.info.search({
           query: proTube.query
@@ -5667,14 +5907,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.info.list_formats({
           query: proTube.query
@@ -5682,14 +5922,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "get-video-data":
     case "vi":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.info.get_video_data({
           query: proTube.query
@@ -5697,14 +5937,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.audio.single.highest({
           query: proTube.query
@@ -5712,14 +5952,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.audio.single.lowest({
           query: proTube.query
@@ -5727,14 +5967,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.video.single.highest({
           query: proTube.query
@@ -5742,14 +5982,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.video.single.lowest({
           query: proTube.query
@@ -5757,14 +5997,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.audio_video.single.highest({
           query: proTube.query
@@ -5772,14 +6012,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       } else
         delta_default.audio_video.single.lowest({
           query: proTube.query
@@ -5787,17 +6027,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors17.red(error));
+          console.error(colors19.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors17.red("error: no format"));
+        console.error(colors19.red("error: no format"));
       }
       delta_default.audio.single.custom({
         query: proTube.query,
@@ -5806,17 +6046,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors17.red(error));
+        console.error(colors19.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors17.red("error: no query"));
+        console.error(colors19.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors17.red("error: no format"));
+        console.error(colors19.red("error: no format"));
       }
       delta_default.video.single.custom({
         query: proTube.query,
@@ -5825,7 +6065,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors17.red(error));
+        console.error(colors19.red(error));
         process.exit();
       });
       break;
@@ -5834,7 +6074,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors17.red(error));
+        console.error(colors19.red(error));
         process.exit();
       });
       break;
@@ -5845,7 +6085,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors17.red(error));
+    console.error(colors19.red(error));
     process.exit();
   });
 } else
