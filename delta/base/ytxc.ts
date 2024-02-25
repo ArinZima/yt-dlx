@@ -2,9 +2,18 @@ import { promisify } from "util";
 import { exec } from "child_process";
 import sizeFormat from "./sizeFormat";
 
-export default async function ytxc(query: string): Promise<any> {
+export default async function ytxc(
+  query: string,
+  proxy?: string,
+  port?: number,
+  username?: string,
+  password?: string
+): Promise<any> {
   let pushTube: any[] = [];
   let proLoc: string = "python -m yt_dlp";
+  if (proxy && port && username && password) {
+    proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
+  }
   proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
   proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
   proLoc += ` '${query}'`;
