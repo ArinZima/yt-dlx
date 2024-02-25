@@ -5933,6 +5933,7 @@ var program = async () => {
         console.error(colors19__default.default.red("error: no query"));
       } else
         delta_default.info.search({
+          number: 20,
           query: proTube.query
         }).then((data) => {
           console.log(data);
