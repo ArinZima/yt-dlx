@@ -24,4 +24,4 @@ RUN npm install --global --force \
 RUN npx playwright install \
     && npx playwright install-deps
 RUN yarn remake
-CMD ["sh", "-c", "yarn spec"]
+CMD ["sh", "-c", "yarn ingress && yarn test"]
