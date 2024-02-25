@@ -1,3 +1,4 @@
+import fs from "fs";
 import async from "async";
 import colors from "colors";
 import retry from "async-retry";
@@ -7,108 +8,6 @@ import { chromium } from "playwright";
 import YouTubeID from "../backend/util/YouTubeId";
 
 const spinnies = new spinClient();
-const proxyList = [
-  "http://38.62.222.219:3128",
-  "http://154.6.97.227:3128",
-  "http://154.6.97.129:3128",
-  "http://154.6.99.45:3128",
-  "http://38.62.220.3:3128",
-  "http://154.6.96.253:3128",
-  "http://38.62.222.236:3128",
-  "http://38.62.221.46:3128",
-  "http://154.6.97.24:3128",
-  "http://38.62.222.102:3128",
-  "http://154.6.97.130:3128",
-  "http://154.6.96.148:3128",
-  "http://38.62.221.70:3128",
-  "http://38.62.220.225:3128",
-  "http://154.6.99.166:3128",
-  "http://38.62.221.105:3128",
-  "http://154.6.96.102:3128",
-  "http://154.6.99.255:3128",
-  "http://154.6.97.235:3128",
-  "http://38.62.222.180:3128",
-  "http://38.62.221.173:3128",
-  "http://38.62.221.240:3128",
-  "http://38.62.220.123:3128",
-  "http://38.62.223.208:3128",
-  "http://38.62.222.52:3128",
-  "http://38.62.221.58:3128",
-  "http://38.62.223.233:3128",
-  "http://38.62.220.67:3128",
-  "http://154.6.98.95:3128",
-  "http://38.62.223.113:3128",
-  "http://154.6.98.172:3128",
-  "http://154.6.97.170:3128",
-  "http://38.62.220.21:3128",
-  "http://154.6.97.177:3128",
-  "http://154.6.96.214:3128",
-  "http://38.62.220.81:3128",
-  "http://38.62.220.218:3128",
-  "http://38.62.221.237:3128",
-  "http://38.62.222.172:3128",
-  "http://154.6.98.60:3128",
-  "http://154.6.97.43:3128",
-  "http://38.62.220.51:3128",
-  "http://38.62.223.72:3128",
-  "http://154.6.98.151:3128",
-  "http://38.62.223.133:3128",
-  "http://154.6.99.141:3128",
-  "http://38.62.220.244:3128",
-  "http://38.62.220.222:3128",
-  "http://154.6.99.24:3128",
-  "http://154.6.98.45:3128",
-  "http://38.62.221.226:3128",
-  "http://154.6.99.42:3128",
-  "http://154.6.97.184:3128",
-  "http://154.6.96.228:3128",
-  "http://154.6.97.107:3128",
-  "http://38.62.223.74:3128",
-  "http://38.62.222.63:3128",
-  "http://38.62.222.33:3128",
-  "http://154.6.96.75:3128",
-  "http://38.62.221.28:3128",
-  "http://154.6.99.95:3128",
-  "http://154.6.97.152:3128",
-  "http://38.62.223.185:3128",
-  "http://38.62.223.102:3128",
-  "http://154.6.99.214:3128",
-  "http://38.62.223.119:3128",
-  "http://38.62.220.240:3128",
-  "http://38.62.222.238:3128",
-  "http://38.62.222.36:3128",
-  "http://38.62.223.215:3128",
-  "http://154.6.97.39:3128",
-  "http://154.6.98.66:3128",
-  "http://154.6.96.183:3128",
-  "http://154.6.99.169:3128",
-  "http://38.62.220.22:3128",
-  "http://154.6.97.178:3128",
-  "http://154.6.97.48:3128",
-  "http://154.6.98.185:3128",
-  "http://38.62.220.87:3128",
-  "http://154.6.98.253:3128",
-  "http://38.62.222.43:3128",
-  "http://38.62.221.76:3128",
-  "http://38.62.223.57:3128",
-  "http://154.6.99.53:3128",
-  "http://38.62.222.154:3128",
-  "http://38.62.223.159:3128",
-  "http://38.62.223.43:3128",
-  "http://38.62.221.248:3128",
-  "http://154.6.98.67:3128",
-  "http://154.6.96.83:3128",
-  "http://154.6.96.22:3128",
-  "http://154.6.99.75:3128",
-  "http://38.62.223.187:3128",
-  "http://38.62.221.113:3128",
-  "http://154.6.98.191:3128",
-  "http://154.6.97.100:3128",
-  "http://154.6.98.146:3128",
-  "http://38.62.220.5:3128",
-  "http://38.62.220.226:3128",
-  "http://154.6.96.26:3128",
-];
 
 interface reYouTubeSearch {
   title: string;
@@ -129,7 +28,7 @@ interface YouTubeSearch {
 async function YouTubeSearch({
   query,
   number,
-}: YouTubeSearch): Promise<reYouTubeSearch[] | null> {
+}: YouTubeSearch): Promise<reYouTubeSearch[] | undefined> {
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
@@ -140,10 +39,7 @@ async function YouTubeSearch({
     const metaTube = await retry(async () => {
       let videos: string | any[] = [];
       const data = [];
-      const rproxy: any =
-        proxyList[Math.floor(Math.random() * proxyList.length)];
       const browser = await chromium.launch({
-        proxy: { server: rproxy },
         headless: true,
       });
       spinnies.add(spin, {
@@ -257,11 +153,11 @@ async function YouTubeSearch({
     spinnies.fail(spin, {
       text: colors.red("@error: ") + error.message,
     });
-    return null;
+    return undefined;
   }
 }
 async function YouTubeVideo({ videoLink }: { videoLink: string }) {
-  if (!videoLink) return null;
+  if (!videoLink) return undefined;
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
@@ -270,10 +166,7 @@ async function YouTubeVideo({ videoLink }: { videoLink: string }) {
   const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
-      const rproxy: any =
-        proxyList[Math.floor(Math.random() * proxyList.length)];
       const browser = await chromium.launch({
-        proxy: { server: rproxy },
         headless: true,
       });
       spinnies.add(spin, {
@@ -320,7 +213,7 @@ async function YouTubeVideo({ videoLink }: { videoLink: string }) {
           );
           return uploadDateIndex >= 0
             ? spans[uploadDateIndex].textContent.trim()
-            : null;
+            : undefined;
         }
       );
       const data = {
@@ -343,33 +236,104 @@ async function YouTubeVideo({ videoLink }: { videoLink: string }) {
     spinnies.fail(spin, {
       text: colors.red("@error: ") + error.message,
     });
-    return null;
+    return undefined;
+  }
+}
+async function YouTubePlaylist({ playlistLink }: { playlistLink: string }) {
+  const playlistData = [];
+  let playlistTitle: string | undefined;
+  try {
+    const browser = await chromium.launch({
+      headless: true,
+    });
+    const page = await browser.newPage();
+    await page.goto(playlistLink);
+    const htmlContent = await page.content();
+    fs.writeFileSync("page.html", htmlContent);
+    const mainElement: any = await page.$(
+      ".style-scope.yt-dynamic-sizing-formatted-string.yt-sans-22"
+    );
+    if (mainElement) playlistTitle = await mainElement.textContent();
+    const videoElements = await page.$$("ytd-playlist-video-renderer");
+    for (const videoElement of videoElements) {
+      const titleElement: any = await videoElement.$("h3");
+      let title = await titleElement.textContent();
+      title = title.trim();
+      const urlElement: any = await videoElement.$("a");
+      const url =
+        "https://www.youtube.com" + (await urlElement.getAttribute("href"));
+      const videoId = (await YouTubeID(url)) || undefined;
+      const authorElement: any = await videoElement.$(
+        ".yt-simple-endpoint.style-scope.yt-formatted-string"
+      );
+      const author = await authorElement.textContent();
+      const viewsElement: any = await videoElement.$(
+        ".style-scope.ytd-video-meta-block span:first-child"
+      );
+      const views = await viewsElement.textContent();
+      const agoElement: any = await videoElement.$(
+        ".style-scope.ytd-video-meta-block span:last-child"
+      );
+      const ago = await agoElement.textContent();
+      playlistData.push({
+        url,
+        title,
+        videoId,
+        author,
+        views: views.replace(/ views/g, ""),
+        ago,
+      });
+    }
+    await browser.close();
+    return { title: playlistTitle, videos: playlistData };
+  } catch (error) {
+    console.error("Error scraping playlist:", error);
+    return undefined;
   }
 }
 
-async.waterfall(
-  [
-    async function searchYouTube() {
-      const searchData = await YouTubeSearch({
-        query: "Ek chaturnar",
-        number: 10,
-      });
-      if (!searchData) return null;
-      console.log(colors.green("@videos:"), searchData);
-      console.log(colors.green("@videos:"), searchData.length);
-      return searchData;
-    },
-    async function getVideoInfo(searchData: any) {
-      if (!searchData) return null;
-      const videoData = await YouTubeVideo({
-        videoLink: searchData[0].videoLink,
-      });
-      return videoData;
-    },
-  ],
-  function (error, result) {
-    if (error) console.error(colors.red("@error:"), error);
-    console.log(colors.blue("@stdout:"), result);
-    process.exit(0);
-  }
-);
+async.waterfall([
+  async function searchPlaylist() {
+    const metaTube = await YouTubePlaylist({
+      playlistLink:
+        "https://youtube.com/playlist?list=PL3oW2tjiIxvQ60uIjLdo7vrUe4ukSpbKl&si=Z6SMzOT_2xNMfGlg",
+    });
+    if (!metaTube) {
+      console.log(
+        colors.red("@error:"),
+        "no data found from YouTubePlaylist()"
+      );
+      process.exit(500);
+    }
+    console.log(colors.magenta("@playlistTitle:"), metaTube.title);
+    console.log(colors.magenta("@count:"), metaTube.videos.length);
+    return metaTube;
+  },
+  async function searchYouTube() {
+    const metaTube = await YouTubeSearch({
+      query: "Ek chaturnar",
+      number: 10,
+    });
+    if (!metaTube) {
+      console.log(colors.red("@error:"), "no data found from YouTubeSearch()");
+      process.exit(500);
+    }
+    console.log(colors.blue("@count:"), metaTube.length);
+    return metaTube;
+  },
+  async function getVideoInfo(metaTube: any) {
+    if (!metaTube) {
+      console.log(colors.red("@error:"), "no data found from YouTubeSearch()");
+      process.exit(500);
+    }
+    const videoData = await YouTubeVideo({
+      videoLink: metaTube[0].videoLink,
+    });
+    if (!videoData) {
+      console.log(colors.red("@error:"), "no data found from YouTubeVideo()");
+      process.exit(500);
+    }
+    console.log(colors.green("@video:"), videoData);
+    return videoData;
+  },
+]);
