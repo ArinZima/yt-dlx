@@ -19,6 +19,8 @@ RUN apt-get update \
 RUN npm install --global --force yarn yt-dlx
 WORKDIR /app
 COPY . .
+RUN npx playwright install
+RUN npx playwright install-deps
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
 RUN yarn run remake
 CMD ["yarn", "run", "ingress"]
