@@ -1,16 +1,17 @@
+import path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
 import sizeFormat from "./sizeFormat";
 
 export default async function ytxc(
   query: string,
-  proxy?: string,
   port?: number,
+  proxy?: string,
   username?: string,
   password?: string
 ): Promise<any> {
   let pushTube: any[] = [];
-  let proLoc: string = "python -m yt_dlp";
+  let proLoc = path.join("backend", "util", "Engine");
   if (proxy && port && username && password) {
     proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
   }

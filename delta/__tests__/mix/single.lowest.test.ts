@@ -13,7 +13,7 @@ async function AutoDownloadTest() {
     );
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.audio_video.single.lowest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mp4",
       folderName: "video",
       stream: false,
@@ -38,7 +38,7 @@ async function AutoDownloadTest() {
     );
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.audio_video.single.lowest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mov",
       folderName: "video",
       stream: false,
@@ -71,7 +71,7 @@ async function StreamingTest() {
     );
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.audio_video.single.lowest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "avi",
       folderName: "video",
       stream: true,
@@ -98,7 +98,7 @@ async function StreamingTest() {
     );
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.audio_video.single.lowest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mp4",
       folderName: "video",
       stream: true,

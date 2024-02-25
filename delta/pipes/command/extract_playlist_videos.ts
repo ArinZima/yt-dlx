@@ -1,7 +1,7 @@
 import * as z from "zod";
 import colors from "colors";
 import Engine from "../../base/agent";
-import scrape from "../../base/scrape";
+import ytdlx_web from "../../web/ytdlx_web";
 
 interface extract_playlist_videosOC {
   playlistUrls: string[];
@@ -23,8 +23,10 @@ export default async function extract_playlist_videos({
         );
         continue;
       }
-      const resp: any = await scrape(ispUrl[1]);
-      if (!resp) {
+      const resp = await ytdlx_web.webPlaylist({
+        playlistLink: ispUrl[1],
+      });
+      if (resp === undefined) {
         console.error(
           colors.bold.red("@error: "),
           "Invalid Data Found For:",
@@ -34,7 +36,8 @@ export default async function extract_playlist_videos({
       }
       for (let i = 0; i < resp.videos.length; i++) {
         try {
-          const videoId = resp.videos[i].videoId;
+          const videoId = resp.videos[i]?.videoId;
+          if (videoId === undefined) continue;
           if (processedVideoIds.has(videoId)) continue;
           const data = await Engine({ query: videoId });
           if (data instanceof Array) proTubeArr.push(...data);

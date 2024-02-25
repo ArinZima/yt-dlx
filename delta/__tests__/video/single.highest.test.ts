@@ -10,7 +10,7 @@ async function AutoDownloadTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.video.single.highest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mp4",
       folderName: "video",
       stream: false,
@@ -32,7 +32,7 @@ async function AutoDownloadTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.video.single.highest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mov",
       filter: "grayscale",
       folderName: "video",
@@ -63,7 +63,7 @@ async function StreamingTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.video.single.highest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "avi",
       folderName: "video",
       stream: true,
@@ -87,7 +87,7 @@ async function StreamingTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.video.single.highest()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.video.single.highest({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mp4",
       filter: "invert",
       folderName: "video",

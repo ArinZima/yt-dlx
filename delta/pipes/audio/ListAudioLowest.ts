@@ -3,10 +3,10 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/agent";
-import scrape from "../../base/scrape";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
+import ytdlx_web from "../../web/ytdlx_web";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
 import type ErrorResult from "../../interface/ErrorResult";
@@ -51,21 +51,18 @@ export default async function ListAudioLowest(
     let results: ListAudioLowestType[] = [];
     const uniqueVideoIds = new Set();
     for (const url of playlistUrls) {
-      const metaList = await scrape(url);
+      const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500,
         };
       }
-      const parsedMetaList = await JSON.parse(metaList);
-      const uniqueVideos = parsedMetaList.Videos.filter(
-        (video: { id: unknown }) => !uniqueVideoIds.has(video.id)
+      const uniqueVideos = metaList.videos.filter(
+        (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
-      uniqueVideos.forEach((video: { id: unknown }) =>
-        uniqueVideoIds.add(video.id)
-      );
+      uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
       colors.bold.green("INFO:"),
@@ -73,11 +70,12 @@ export default async function ListAudioLowest(
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody: string | null = await scrape(i.videoId);
-      if (TubeBody === null) continue;
-      const parseTube = await JSON.parse(TubeBody);
+      const TubeBody = await ytdlx_web.webVideo({
+        videoLink: i.url,
+      });
+      if (TubeBody === undefined) continue;
       const metaBody = await ytdlx({
-        query: parseTube.Link,
+        query: TubeBody.videoLink,
       });
       if (metaBody === null) continue;
       const title: string = metaBody.metaTube.title.replace(

@@ -1,6 +1,6 @@
 import ytxc from "./ytxc";
 import colors from "colors";
-import scrape from "./scrape";
+import ytdlx_web from "../web/ytdlx_web";
 import { version } from "../../package.json";
 import YouTubeID from "../../backend/util/YouTubeId";
 
@@ -37,7 +37,7 @@ export default async function Engine({
   } else videoId = await YouTubeID(query);
   switch (videoId) {
     case null:
-      TubeBody = await scrape(query);
+      TubeBody = await ytdlx_web.webSearch({ query: query, number: 4 });
       if (TubeBody === null) {
         console.log(
           colors.bold.red("@error: ") +
@@ -45,16 +45,16 @@ export default async function Engine({
             colors.reset("")
         );
         return null;
-      } else TubeBody = JSON.parse(TubeBody);
+      }
       console.log(
         colors.bold.green("@info: ") +
-          `preparing payload for <(${TubeBody.Title} Author: ${TubeBody.Uploader})>` +
+          `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` +
           colors.reset("")
       );
-      TubeDlp = await ytxc(TubeBody.Link);
+      TubeDlp = await ytxc(TubeBody[0].videoLink);
       break;
     default:
-      TubeBody = await scrape(videoId);
+      TubeBody = await ytdlx_web.webVideo({ videoLink: query });
       if (TubeBody === null) {
         console.log(
           colors.bold.red("@error: ") +
@@ -62,13 +62,13 @@ export default async function Engine({
             colors.reset("")
         );
         return null;
-      } else TubeBody = JSON.parse(TubeBody);
+      }
       console.log(
         colors.bold.green("@info: ") +
-          `preparing payload for <(${TubeBody[0].Title} Author: ${TubeBody[0].Uploader})>` +
+          `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` +
           colors.reset("")
       );
-      TubeDlp = await ytxc(TubeBody[0].Link);
+      TubeDlp = await ytxc(TubeBody.videoLink);
       break;
   }
   switch (TubeDlp) {

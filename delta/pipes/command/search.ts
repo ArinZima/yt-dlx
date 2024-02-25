@@ -1,6 +1,12 @@
-import scrape from "../../base/scrape";
+import ytdlx_web from "../../web/ytdlx_web";
 
-export default async function search({ query }: { query: string }) {
+export default async function search({
+  query,
+  number,
+}: {
+  query: string;
+  number: number;
+}) {
   try {
     switch (true) {
       case !query || typeof query !== "string":
@@ -8,8 +14,13 @@ export default async function search({ query }: { query: string }) {
           message: "Invalid query parameter",
           status: 500,
         };
+      case !number || typeof number !== "number":
+        return {
+          message: "Invalid number parameter",
+          status: 500,
+        };
       default:
-        return await scrape(query);
+        return await ytdlx_web.webSearch({ query, number });
     }
   } catch (error) {
     switch (true) {

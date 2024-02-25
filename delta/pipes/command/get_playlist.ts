@@ -1,22 +1,18 @@
 import * as z from "zod";
 import colors from "colors";
-import search from "yt-search";
+import ytdlx_web from "../../web/ytdlx_web";
 
 interface get_playlistOC {
   playlistUrls: string[];
 }
 interface metaVideo {
+  thumbnailUrls: string[];
+  videoLink: string;
+  uploadOn: string;
+  videoId: string;
+  author: string;
   title: string;
-  description: string;
-  url: string;
-  timestamp: string;
-  views: number;
-  uploadDate: string;
-  ago: string;
-  image: string;
-  thumbnail: string;
-  authorName: string;
-  authorUrl: string;
+  views: string;
 }
 export default async function get_playlist({
   playlistUrls,
@@ -34,8 +30,10 @@ export default async function get_playlist({
         );
         continue;
       }
-      const resp: any = await search({ listId: ispUrl[1] });
-      if (!resp) {
+      const resp = await ytdlx_web.webPlaylist({
+        playlistLink: ispUrl[1],
+      });
+      if (resp === undefined) {
         console.error(
           colors.bold.red("@error: "),
           "Invalid Data Found For:",
@@ -45,27 +43,20 @@ export default async function get_playlist({
       }
       for (let i = 0; i < resp.videos.length; i++) {
         try {
-          const videoId = resp.videos[i].videoId;
-          const metaTube = await search({ videoId: videoId });
+          const videoLink = resp.videos[i]?.url;
+          if (videoLink === undefined) continue;
+          const metaTube = await ytdlx_web.webVideo({ videoLink });
+          if (metaTube === undefined) continue;
           console.log(
             colors.bold.green("INFO:"),
             colors.bold.green("<("),
             metaTube.title,
             colors.bold.green("by"),
-            metaTube.author.name,
+            metaTube.author,
             colors.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId)) continue;
-          else {
-            const {
-              author: { name: authorName, url: authorUrl },
-              duration,
-              seconds,
-              genre,
-              ...newTube
-            } = metaTube;
-            proTubeArr.push({ ...newTube, authorName, authorUrl });
-          }
+          proTubeArr.push({ ...metaTube });
         } catch (error) {
           console.error(colors.bold.red("@error: "), error);
         }

@@ -10,7 +10,7 @@ async function AutoDownloadTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.audio.single.custom({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "ogg",
       quality: "medium",
       folderName: "audio",
@@ -33,7 +33,7 @@ async function AutoDownloadTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytDlp.audio.single.custom({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mp3",
       filter: "nightcore",
       quality: "medium",
@@ -65,7 +65,7 @@ async function StreamingTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.audio.single.custom({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "flac",
       quality: "medium",
       folderName: "audio",
@@ -90,7 +90,7 @@ async function StreamingTest() {
     console.log(colors.bold.yellow("@test:"), "ytDlp.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytDlp.audio.single.custom({
-      query: "SuaeRys5tTc",
+      query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "aiff",
       filter: "bassboost",
       quality: "medium",
