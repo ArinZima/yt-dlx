@@ -71,7 +71,7 @@
     "dotenv": "^16.4.4",
     "fluent-ffmpeg": "^2.1.2",
     "minimist": "^1.2.8",
-    "package-json": "^9.0.0",
+    "package-json": "^10.0.0",
     "playwright": "^1.41.2",
     "playwright-chromium": "^1.41.2",
     "readline-sync": "^1.4.10",
