@@ -1,68 +1,118 @@
 import async from "async";
 import colors from "colors";
+import retry from "async-retry";
+import spinClient from "spinnies";
+import { randomUUID } from "crypto";
 import { chromium } from "playwright";
-import YouTubeID from "../backend/util/YouTubeId";
 
+const spinnies = new spinClient();
 async function YouTubePlaylist({ playlistLink }) {
-  const playlistData = [];
+  const retryOptions = {
+    maxTimeout: 4000,
+    minTimeout: 2000,
+    retries: 2,
+  };
+  const spin = randomUUID();
   try {
-    const browser = await chromium.launch({
-      headless: true,
-    });
-    const page = await browser.newPage();
-    await page.goto(playlistLink);
-    const videoElements = await page.$$("ytd-playlist-video-renderer");
-    for (const videoElement of videoElements) {
-      const titleElement = await videoElement.$("h3");
-      let title = await titleElement.textContent();
-      title = title.trim();
-      const urlElement = await videoElement.$("a");
-      const url =
-        "https://www.youtube.com" + (await urlElement.getAttribute("href"));
-      const videoId = (await YouTubeID(url)) || undefined;
-      const authorElement = await videoElement.$(
-        ".yt-simple-endpoint.style-scope.yt-formatted-string"
-      );
-      const author = await authorElement.textContent();
-      const viewsElement = await videoElement.$(
-        ".style-scope.ytd-video-meta-block span:first-child"
-      );
-      const views = await viewsElement.textContent();
-      const agoElement = await videoElement.$(
-        ".style-scope.ytd-video-meta-block span:last-child"
-      );
-      const ago = await agoElement.textContent();
-      playlistData.push({
-        ago,
-        url,
-        title,
-        author,
-        videoId,
-        views: views.replace(/ views/g, ""),
+    const metaTube = await retry(async () => {
+      const playlistData = [];
+      const browser = await chromium.launch({
+        headless: true,
       });
-    }
-    await browser.close();
-    return { playlistData };
+      spinnies.add(spin, {
+        text: colors.green("@scrape: ") + "started chromium...",
+      });
+      const context = await browser.newContext({
+        ignoreHTTPSErrors: true,
+        serviceWorkers: "allow",
+        bypassCSP: true,
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36",
+      });
+      const page = await context.newPage();
+      await page.goto(playlistLink);
+      spinnies.update(spin, {
+        text: colors.yellow("@scrape: ") + "waiting for hydration...",
+      });
+      const titleElement = await page.$(
+        "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
+      );
+      const playlistTitle = await titleElement.textContent();
+      const videoCountElement = await page.$("yt-formatted-string.byline-item");
+      const videoCountText = await videoCountElement.textContent();
+      const videoCount = parseInt(videoCountText.match(/\d+/)[0]);
+      const viewsElement = await page.$$("yt-formatted-string.byline-item");
+      const viewsText = await viewsElement[1].textContent();
+      const views = viewsText.replace(/,/g, "").match(/\d+/)[0];
+      const descriptionElement = await page.$("span#plain-snippet-text");
+      let playlistDescription = await descriptionElement.textContent();
+      const VideoElements = await page.$$("ytd-playlist-video-renderer");
+      for (const vide of VideoElements) {
+        const TitleElement = await vide.$("h3");
+        let title = await TitleElement.textContent();
+        title = title.trim();
+        const urlElement = await vide.$("a");
+        const url =
+          "https://www.youtube.com" + (await urlElement.getAttribute("href"));
+        const videoId = url.match(/(?<=v=)[^&\s]+/)[0];
+        const AuthorElement = await vide.$(
+          ".yt-simple-endpoint.style-scope.yt-formatted-string"
+        );
+        const author = await AuthorElement.textContent();
+        const authorUrl = await AuthorElement.getAttribute("href");
+        const ViewsElement = await vide.$(
+          ".style-scope.ytd-video-meta-block span:first-child"
+        );
+        const views = await ViewsElement.textContent();
+        const AgoElement = await vide.$(
+          ".style-scope.ytd-video-meta-block span:last-child"
+        );
+        const ago = await AgoElement.textContent();
+        const thumbnailUrls = [
+          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/default.jpg`,
+        ];
+        playlistData.push({
+          ago,
+          url,
+          title,
+          author,
+          videoId,
+          thumbnailUrls,
+          views: views.replace(/ views/g, ""),
+          authorUrl: "https://www.youtube.com" + authorUrl,
+        });
+      }
+      await browser.close();
+      return {
+        views,
+        count: videoCount,
+        title: playlistTitle,
+        description: playlistDescription.trim(),
+        videos: playlistData,
+      };
+    }, retryOptions);
+    spinnies.succeed(spin, {
+      text: colors.yellow("@info: ") + "scrapping done...",
+    });
+    return metaTube;
   } catch (error) {
-    console.error("Error scraping playlist:", error);
+    spinnies.fail(spin, {
+      text: colors.red("@error: ") + error.message,
+    });
     return undefined;
   }
 }
 
-await async.waterfall([
-  async function searchPlaylist() {
+async.waterfall([
+  async function runTest() {
     const metaTube = await YouTubePlaylist({
       playlistLink:
         "https://youtube.com/playlist?list=PL3oW2tjiIxvQ60uIjLdo7vrUe4ukSpbKl&si=Z6SMzOT_2xNMfGlg",
     });
-    if (!metaTube) {
-      console.log(
-        colors.red("@error:"),
-        "no data found from YouTubePlaylist()"
-      );
-      process.exit(500);
-    }
     console.log(colors.magenta("@playlist:"), metaTube);
-    return metaTube;
   },
 ]);
