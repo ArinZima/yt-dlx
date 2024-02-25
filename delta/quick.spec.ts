@@ -240,17 +240,12 @@ async function YouTubeVideo({ videoLink }: { videoLink: string }) {
 }
 async function YouTubePlaylist({ playlistLink }: { playlistLink: string }) {
   const playlistData = [];
-  let playlistTitle: string | undefined;
   try {
     const browser = await chromium.launch({
       headless: true,
     });
     const page = await browser.newPage();
     await page.goto(playlistLink);
-    const mainElement: any = await page.waitForSelector(
-      ".style-scope.yt-dynamic-sizing-formatted-string.yt-sans-22"
-    );
-    if (mainElement) playlistTitle = await mainElement.textContent();
     const videoElements = await page.$$("ytd-playlist-video-renderer");
     for (const videoElement of videoElements) {
       const titleElement: any = await videoElement.$("h3");
@@ -273,23 +268,23 @@ async function YouTubePlaylist({ playlistLink }: { playlistLink: string }) {
       );
       const ago = await agoElement.textContent();
       playlistData.push({
+        ago,
         url,
         title,
-        videoId,
         author,
+        videoId,
         views: views.replace(/ views/g, ""),
-        ago,
       });
     }
     await browser.close();
-    return { title: playlistTitle, videos: playlistData };
+    return { playlistData };
   } catch (error) {
     console.error("Error scraping playlist:", error);
     return undefined;
   }
 }
 
-async.waterfall([
+await async.waterfall([
   async function searchPlaylist() {
     const metaTube = await YouTubePlaylist({
       playlistLink:
@@ -302,8 +297,7 @@ async.waterfall([
       );
       process.exit(500);
     }
-    console.log(colors.magenta("@playlistTitle:"), metaTube.title);
-    console.log(colors.magenta("@count:"), metaTube.videos.length);
+    console.log(colors.magenta("@playlist:"), metaTube);
     return metaTube;
   },
   async function searchYouTube() {
