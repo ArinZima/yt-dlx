@@ -179,7 +179,7 @@ function help() {
   );
 }
 
-// scripts/util/YouTubeId.ts
+// scripts/web/YouTubeId.ts
 function YouTubeID(url) {
   return new Promise((resolve, _) => {
     if (/youtu\.?be/.test(url)) {
@@ -571,7 +571,7 @@ function sizeFormat(filesize) {
 // scripts/base/ytxc.ts
 async function ytxc(query, port, proxy, username, password) {
   let pushTube = [];
-  let proLoc = path2__namespace.default.join("util", "Engine");
+  let proLoc = path2__namespace.default.join(__dirname, "..", "..", "util", "Engine");
   if (proxy && port && username && password) {
     proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
   }
@@ -664,7 +664,7 @@ async function ytxc(query, port, proxy, username, password) {
 }
 
 // package.json
-var version = "1.0.6";
+var version = "1.0.8";
 
 // scripts/base/agent.ts
 async function Engine({

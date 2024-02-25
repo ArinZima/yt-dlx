@@ -528,7 +528,7 @@ function sizeFormat(filesize) {
 
 async function ytxc(query, port, proxy, username, password) {
     let pushTube = [];
-    let proLoc = path.join("util", "Engine");
+    let proLoc = path.join(__dirname, "..", "..", "util", "Engine");
     if (proxy && port && username && password) {
         proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
     }
@@ -633,7 +633,7 @@ async function ytxc(query, port, proxy, username, password) {
     });
 }
 
-var version = "1.0.6";
+var version = "1.0.8";
 
 async function Engine({ query, }) {
     let videoId, TubeDlp, TubeBody;
