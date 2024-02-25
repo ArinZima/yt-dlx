@@ -16,18 +16,18 @@ export interface YouTubePLVideos {
   authorUrl: string;
   thumbnailUrls: string[];
 }
-export interface YouTubePlaylist {
+export interface webPlaylist {
   views: string;
   count: number;
   title: string;
   description: string;
   videos: YouTubePLVideos[];
 }
-export default async function YouTubePlaylist({
+export default async function webPlaylist({
   playlistLink,
 }: {
   playlistLink: string;
-}): Promise<YouTubePlaylist | undefined> {
+}): Promise<webPlaylist | undefined> {
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
