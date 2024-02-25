@@ -9,7 +9,6 @@ const colors = {
 };
 
 const scripts = {
-  start: "node .devcontainer/startup.mjs",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
   remake: "yarn clean && yarn make && yarn build",
   "remake:update": "yarn clean && yarn make && yarn update && yarn build",
