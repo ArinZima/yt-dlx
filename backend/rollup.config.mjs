@@ -9,7 +9,7 @@ const banner = `/**
 
 export default [
   {
-    input: "delta/index.ts",
+    input: "src/index.ts",
     output: [
       {
         file: "proto/index.esm.js",
@@ -70,7 +70,7 @@ export default [
   },
   {
     plugins: [dts(), progress()],
-    input: "delta/index.ts",
+    input: "src/index.ts",
     output: [
       {
         file: "proto/index.d.ts",
