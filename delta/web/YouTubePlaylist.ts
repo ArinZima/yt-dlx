@@ -6,11 +6,7 @@ import { chromium } from "playwright";
 
 const spinnies = new spinClient();
 
-export interface YouTubePlaylist {
-  playlistLink: string;
-}
-
-export interface reYouTubePlaylistVideo {
+export interface YouTubePLVideos {
   ago: string;
   url: string;
   title: string;
@@ -20,17 +16,18 @@ export interface reYouTubePlaylistVideo {
   authorUrl: string;
   thumbnailUrls: string[];
 }
-export interface reYouTubePlaylist {
+export interface YouTubePlaylist {
   views: string;
   count: number;
   title: string;
   description: string;
-  videos: reYouTubePlaylistVideo[];
+  videos: YouTubePLVideos[];
 }
-
 export default async function YouTubePlaylist({
   playlistLink,
-}: YouTubePlaylist): Promise<reYouTubePlaylist | undefined> {
+}: {
+  playlistLink: string;
+}): Promise<YouTubePlaylist | undefined> {
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,

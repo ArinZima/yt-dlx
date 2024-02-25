@@ -8,9 +8,6 @@ import YouTubeID from "../../backend/util/YouTubeId";
 const spinnies = new spinClient();
 
 export interface YouTubeVideo {
-  videoLink: string;
-}
-export interface reYouTubeVideo {
   thumbnailUrls: string[];
   videoLink: string;
   uploadOn: string;
@@ -21,7 +18,9 @@ export interface reYouTubeVideo {
 }
 export default async function YouTubeVideo({
   videoLink,
-}: YouTubeVideo): Promise<reYouTubeVideo | undefined> {
+}: {
+  videoLink: string;
+}): Promise<YouTubeVideo | undefined> {
   if (!videoLink) return undefined;
   const retryOptions = {
     maxTimeout: 4000,

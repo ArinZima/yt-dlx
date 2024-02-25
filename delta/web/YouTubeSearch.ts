@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 import { chromium } from "playwright";
 
 const spinnies = new spinClient();
-export interface reYouTubeSearch {
+export interface YouTubeSearch {
   title: string;
   views?: string;
   author?: string;
@@ -17,14 +17,13 @@ export interface reYouTubeSearch {
   authorImage?: string;
   thumbnailUrls: string[];
 }
-export interface YouTubeSearch {
-  query: string;
-  number: number;
-}
 export default async function YouTubeSearch({
   query,
   number,
-}: YouTubeSearch): Promise<reYouTubeSearch[] | undefined> {
+}: {
+  query: string;
+  number: number;
+}): Promise<YouTubeSearch[] | undefined> {
   const retryOptions = {
     maxTimeout: 4000,
     minTimeout: 2000,
