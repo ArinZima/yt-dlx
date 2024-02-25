@@ -17,14 +17,14 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/yt-dlx/yt-dlx /yt-dlx
 RUN npm install --global --force \
-    yarn \
     bun \
-    yt-dlx \
-    playwright \
     tsup \
+    yarn \
     rollup \
+    yt-dlx \
     ts-node \
-    typescript
+    typescript\
+    playwright \
 RUN playwright install \
     && playwright install-deps
 WORKDIR /yt-dlx
