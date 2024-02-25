@@ -28,9 +28,4 @@ RUN playwright install \
     && playwright install-deps
 RUN git clone https://github.com/shovitdutta/yt-dlx /yt-dlx
 WORKDIR /yt-dlx
-# RUN yarn install && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'
-# WORKDIR /yt-dlx/frontend
-# RUN yarn install && yarn build
-# WORKDIR /yt-dlx/backend
-# RUN yarn install && rollup -c 'rollup.config.mjs'
-CMD ["sh", "-c", "yarn remake && yarn start"]
+CMD ["sh", "-c", "yarn remake && yarn spec"]
