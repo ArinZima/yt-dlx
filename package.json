@@ -28,7 +28,7 @@
     "update:base": "yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
     "spec": "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
-    "test": "yarn ingress & yarn test:base && yarn test:scrape && yarn cli",
+    "test": "yarn test:base && yarn test:scrape && yarn cli",
     "test:base": "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "test:scrape": "tsup 'scripts/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
     "cli": "yarn link && yarn cli:test && yarn unlink",
