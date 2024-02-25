@@ -21,4 +21,4 @@ RUN npm install --global --force \
     yarn \
     yt-dlx
 RUN yarn remake
-CMD ["sh", "-c", "yarn ingress && yarn test"]
+CMD yarn ingress
