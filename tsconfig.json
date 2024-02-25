@@ -30,6 +30,6 @@
     "strictPropertyInitialization": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["delta/**/*.ts"],
-  "exclude": ["node_modules", "backend", "frontend", "scrape"]
+  "include": ["scripts/**/*.ts"],
+  "exclude": ["node_modules", "frontend", "scrape"]
 }

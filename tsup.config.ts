@@ -1,7 +1,7 @@
 import * as tsup from "tsup";
 
 export default tsup.defineConfig({
-  entry: ["delta/cli/**/*.ts"],
+  entry: ["scripts/cli/**/*.ts"],
   format: ["cjs", "esm"],
   outDir: "proto/cli",
   platform: "node",
