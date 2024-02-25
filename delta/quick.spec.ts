@@ -1,4 +1,3 @@
-import fs from "fs";
 import async from "async";
 import colors from "colors";
 import retry from "async-retry";
@@ -248,9 +247,7 @@ async function YouTubePlaylist({ playlistLink }: { playlistLink: string }) {
     });
     const page = await browser.newPage();
     await page.goto(playlistLink);
-    const htmlContent = await page.content();
-    fs.writeFileSync("page.html", htmlContent);
-    const mainElement: any = await page.$(
+    const mainElement: any = await page.waitForSelector(
       ".style-scope.yt-dynamic-sizing-formatted-string.yt-sans-22"
     );
     if (mainElement) playlistTitle = await mainElement.textContent();
