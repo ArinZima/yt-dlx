@@ -40,6 +40,13 @@
     "cli": "yarn link && yarn cli:test && yarn unlink",
     "cli:test": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
   },
+  "files": [
+    "proto",
+    "LICENSE",
+    "README.md",
+    "yt-dlx.png",
+    "package.json"
+  ],
   "engines": {
     "node": ">=18"
   },
