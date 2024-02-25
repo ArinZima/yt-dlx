@@ -11,7 +11,7 @@ export default async function ytxc(
   password?: string
 ): Promise<any> {
   let pushTube: any[] = [];
-  let proLoc = path.join("backend", "util", "Engine");
+  let proLoc = path.join("util", "Engine");
   if (proxy && port && username && password) {
     proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
   }

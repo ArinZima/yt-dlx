@@ -3,7 +3,7 @@ import retry from "async-retry";
 import spinClient from "spinnies";
 import { randomUUID } from "crypto";
 import { chromium } from "playwright";
-import YouTubeID from "../../backend/util/YouTubeId";
+import YouTubeID from "../util/YouTubeId";
 
 const spinnies = new spinClient();
 
