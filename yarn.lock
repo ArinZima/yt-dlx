@@ -2658,10 +2658,10 @@ yn@3.1.1:
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
-yt-dlx@^1.0.4:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-1.0.6.tgz#3d657cf77efdee1112807c9b2b060ece499ee03c"
-  integrity sha512-fUytdB2YQXB9+SbPSwGCP+kl/WMJC3tzydIQVcuqI6//EU5GvhUTC3Dc3lvtFR220BPlxaeYK9iSNg3KoUx1vg==
+yt-dlx@^1.0.4, yt-dlx@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-1.0.8.tgz#5b89ac6d23a7f969ef59cc9b360540e512b25fc9"
+  integrity sha512-7LcbWkN9/sxy/34jwOVUpnsNkCgTmjTnAcIAy/ykvO+9oPLjflXvpK+qrwti6wGZSxANXh+QtN7hkfjC2BRYgA==
   dependencies:
     async-retry "^1.3.3"
     axios "^1.6.7"
