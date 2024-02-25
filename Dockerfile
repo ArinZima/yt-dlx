@@ -26,6 +26,6 @@ RUN npm install --global --force \
     typescript
 RUN playwright install \
     && playwright install-deps
-RUN git clone https://github.com/shovitdutta/yt-dlx /yt-dlx
+RUN git clone https://github.com/yt-dlx/yt-dlx /yt-dlx
 WORKDIR /yt-dlx
 CMD ["sh", "-c", "yarn remake && yarn spec"]
