@@ -19,6 +19,6 @@ COPY . .
 WORKDIR .
 RUN npm install --global --force \
     yarn \
-    yt-dlx \
+    yt-dlx
 RUN yarn remake
 CMD ["sh", "-c", "yarn ingress && yarn test"]
