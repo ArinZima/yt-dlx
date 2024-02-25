@@ -16,11 +16,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/yt-dlx/yt-dlx /yt-dlx
+WORKDIR /yt-dlx
 RUN npm install --global --force \
     yarn \
     yt-dlx \
-    playwright \
-RUN playwright install \
-    && playwright install-deps
-WORKDIR /yt-dlx
+    playwright
+RUN npx playwright install \
+    && npx playwright install-deps
 CMD ["sh", "-c", "yarn remake && yarn spec"]
