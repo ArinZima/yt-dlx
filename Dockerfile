@@ -17,13 +17,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/yt-dlx/yt-dlx /yt-dlx
 RUN npm install --global --force \
-    bun \
-    tsup \
     yarn \
-    rollup \
     yt-dlx \
-    ts-node \
-    typescript\
     playwright \
 RUN playwright install \
     && playwright install-deps
