@@ -1,22 +1,22 @@
 FROM mcr.microsoft.com/playwright
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    apt-utils \
-    dos2unix \
     git \
-    curl \
     wget \
-    ffmpeg \
-    opus-tools \
+    curl \
     unzip \
     nginx \
+    ffmpeg \
     python3 \
+    dos2unix \
+    apt-utils \
+    opus-tools \
     python3-pip \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/yt-dlx/yt-dlx /yt-dlx
-WORKDIR /yt-dlx
+COPY . .
+WORKDIR .
 RUN npm install --global --force \
     yarn \
     yt-dlx \
