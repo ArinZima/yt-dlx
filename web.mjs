@@ -229,7 +229,7 @@ async function TypeTube({ query, screenshot, type }) {
                 ".yt-simple-endpoint.style-scope.yt-formatted-string",
                 (element) => element.innerText
               )) || undefined,
-            playlistId: getId(playlistLink) || undefined,
+            playlistId: playlistLink.split("list=")[1] || undefined,
             playlistLink: "https://www.youtube.com" + playlistLink,
             authorUrl:
               "https://www.youtube.com" +
