@@ -114,7 +114,10 @@ export default async function webPlaylist({
       };
     }, retryOptions);
     spinnies.succeed(spin, {
-      text: colors.yellow("@info: ") + "scrapping done...",
+      text:
+        colors.yellow("@info: ") +
+        "scrapping done, total videos found " +
+        metaTube.videos.length,
     });
     return metaTube;
   } catch (error: any) {

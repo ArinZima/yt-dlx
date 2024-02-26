@@ -106,7 +106,10 @@ export default async function webSearch({
       return data;
     }, retryOptions);
     spinnies.succeed(spin, {
-      text: colors.yellow("@info: ") + "scrapping done...",
+      text:
+        colors.yellow("@info: ") +
+        "scrapping done, total videos found " +
+        metaTube.length,
     });
     return metaTube;
   } catch (error: any) {

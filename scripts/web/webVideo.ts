@@ -82,7 +82,10 @@ export default async function webVideo({
       return data;
     }, retryOptions);
     spinnies.succeed(spin, {
-      text: colors.yellow("@info: ") + "scrapping done...",
+      text:
+        colors.yellow("@info: ") +
+        "scrapping done, video found " +
+        metaTube.title,
     });
     return metaTube;
   } catch (error: any) {
