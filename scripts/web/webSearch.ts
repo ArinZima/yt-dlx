@@ -52,6 +52,11 @@ export default async function webSearch({
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
       await page.goto(searchUrl);
+      for (let i = 0; i < 5; i++) {
+        await page.evaluate(() => {
+          window.scrollBy(0, window.innerHeight);
+        });
+      }
       const content = await page.content();
       const $ = load(content);
       const videoElements: any = $(

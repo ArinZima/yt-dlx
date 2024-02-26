@@ -51,6 +51,11 @@ export default async function webPlaylist({
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       );
       await page.goto(playlistLink);
+      for (let i = 0; i < 5; i++) {
+        await page.evaluate(() => {
+          window.scrollBy(0, window.innerHeight);
+        });
+      }
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });

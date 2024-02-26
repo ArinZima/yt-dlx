@@ -45,6 +45,11 @@ export default async function webVideo({
       const videoId = await YouTubeID(videoLink);
       const newLink = "https://www.youtube.com/watch?v=" + videoId;
       await page.goto(newLink);
+      for (let i = 0; i < 5; i++) {
+        await page.evaluate(() => {
+          window.scrollBy(0, window.innerHeight);
+        });
+      }
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
