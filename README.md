@@ -1,3 +1,7 @@
+<div style="text-align: center;">
+    <img src="https://i.postimg.cc/sXx2CgB7/yt-dlx-removebg.png" alt="YT-DLX Logo">
+</div>
+
 # YT-DLX: Elevate Your Video Downloading & Streaming Experience
 
 [![npm version](https://img.shields.io/npm/v/yt-dlx.svg)](https://www.npmjs.com/package/yt-dlx)

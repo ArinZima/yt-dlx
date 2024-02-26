@@ -110,7 +110,7 @@ async function TypeTube(
       retries: 4,
     };
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       userDataDir: "other",
       args: [
         "--incognito",
@@ -563,6 +563,16 @@ async function TypeTube(
       screenshot: false,
       query: "Emptiness",
       filter: "Search",
+    });
+    if (FnTube) console.log(colors.green("@pass"), FnTube);
+    else console.error(colors.red("@fail"), FnTube);
+
+    console.log(colors.blue("@test:"), "InfoPlaylist");
+    console.log(colors.blue("@screenshot:"), false);
+    FnTube = await TypeTube({
+      screenshot: false,
+      filter: "InfoPlaylist",
+      query: "https://www.youtube.com/playlist?list=PLC4C864B7AFA8F67C",
     });
     if (FnTube) console.log(colors.green("@pass"), FnTube);
     else console.error(colors.red("@fail"), FnTube);
