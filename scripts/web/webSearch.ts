@@ -36,7 +36,7 @@ export default async function webSearch({
       const data: any[] = [];
       const browser = await puppeteer.launch({
         userDataDir: "other",
-        headless: false,
+        headless: true,
       });
       spinnies.add(spin, {
         text: colors.green("@scrape: ") + "booting chromium...",

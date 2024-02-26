@@ -8,7 +8,7 @@ import YouTubeID from "./YouTubeId";
 
 const spinnies = new spinClient();
 
-export interface webVideo {
+export interface WebVideo {
   thumbnailUrls: string[];
   videoLink: string;
   uploadOn: string;
@@ -22,7 +22,7 @@ export default async function webVideo({
   videoLink,
 }: {
   videoLink: string;
-}): Promise<any | undefined> {
+}): Promise<WebVideo | undefined> {
   if (!videoLink) return undefined;
   const retryOptions = {
     maxTimeout: 6000,
@@ -34,7 +34,7 @@ export default async function webVideo({
     const metaTube = await retry(async () => {
       const browser = await puppeteer.launch({
         userDataDir: "other",
-        headless: false,
+        headless: true,
       });
       spinnies.add(spin, {
         text: colors.green("@scrape: ") + "booting chromium...",
@@ -44,16 +44,24 @@ export default async function webVideo({
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       );
       const videoId = await YouTubeID(videoLink);
+      if (!videoId) {
+        throw new Error("Failed to extract video ID");
+      }
       const newLink = "https://www.youtube.com/watch?v=" + videoId;
       await page.goto(newLink);
-      for (let i = 0; i < 5; i++) {
-        await page.evaluate(() => {
-          window.scrollBy(0, window.innerHeight);
-        });
-      }
-      spinnies.update(spin, {
-        text: colors.yellow("@scrape: ") + "waiting for hydration...",
-      });
+      await page.waitForSelector(
+        "yt-formatted-string.style-scope.ytd-watch-metadata",
+        { timeout: 10000 }
+      );
+      await page.waitForSelector(
+        "a.yt-simple-endpoint.style-scope.yt-formatted-string",
+        { timeout: 10000 }
+      );
+      await page.waitForSelector(
+        "yt-formatted-string.style-scope.ytd-watch-info-text",
+        { timeout: 10000 }
+      );
+      setTimeout(() => {}, 1000);
       const htmlContent = await page.content();
       const $ = load(htmlContent);
       const title = $("yt-formatted-string.style-scope.ytd-watch-metadata")
@@ -77,25 +85,23 @@ export default async function webVideo({
         `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/default.jpg`,
       ];
-      const data = {
+      const data: WebVideo = {
         views,
-        title,
         author,
         videoId,
-        uploadOn,
         thumbnailUrls,
         videoLink: newLink,
+        title,
+        uploadOn,
       };
       await browser.close();
       return data;
     }, retryOptions);
-
     spinnies.succeed(spin, {
       text:
         colors.yellow("@info: ") +
         colors.white("scrapping done, video found " + metaTube.title),
     });
-
     return metaTube;
   } catch (error: any) {
     spinnies.fail(spin, {
