@@ -7,12 +7,42 @@ import spinClient from "spinnies";
 import puppeteer from "puppeteer";
 import { randomUUID } from "crypto";
 
-const spinnies = new spinClient();
+interface TypeVideo {
+  videoId: string;
+  videoLink: string;
+  thumbnailUrls: string[];
+  title: string | undefined;
+  views: string | undefined;
+  author: string | undefined;
+  uploadOn: string | undefined;
+  authorUrl: string | undefined;
+  description: string | undefined;
+}
+interface TypeSearch {
+  videoId: string;
+  videoLink: string;
+  thumbnailUrls: string[];
+  title: string | undefined;
+  views: string | undefined;
+  author: string | undefined;
+  uploadOn: string | undefined;
+  authorUrl: string | undefined;
+  description: string | undefined;
+}
+interface TypePlaylist {
+  playlistId: string;
+  playlistLink: string;
+  title: string | undefined;
+  author: string | undefined;
+  authorUrl: string | undefined;
+  videoCount: number | undefined;
+}
 interface InputTypeTube {
   query: string;
   screenshot: boolean;
   filter: "TypeSearch" | "TypeVideo" | "TypePlaylist";
 }
+const spinnies = new spinClient();
 async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
   const retryOptions = {
     maxTimeout: 6000,
@@ -35,85 +65,11 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
   );
   const spin = randomUUID();
   let metaTube: any[] | PromiseLike<any[]> = [];
-  let url, snapshot, FinalTube, content, $: any, videoElements;
+  let url, snapshot, content, $: any, videoElements;
+  let TubeResp: TypeVideo[] | TypeSearch[] | TypePlaylist[];
   switch (filter) {
-    case "TypeSearch":
-      FinalTube = await retry(async () => {
-        spinnies.add(spin, {
-          text: colors.green("@scrape: ") + "booting chromium...",
-        });
-        url =
-          "https://www.youtube.com/results?search_query=" +
-          decodeURIComponent(query);
-        await page.goto(url);
-        spinnies.update(spin, {
-          text: colors.yellow("@scrape: ") + "waiting for hydration...",
-        });
-        if (screenshot) {
-          snapshot = await page.screenshot({
-            path: "TypeVideo.png",
-          });
-          fs.writeFileSync("TypeVideo.png", snapshot);
-          spinnies.update(spin, {
-            text: colors.yellow("@scrape: ") + "took snapshot...",
-          });
-        }
-        for (let i = 0; i < 40; i++) {
-          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-        }
-        content = await page.content();
-        $ = load(content);
-        videoElements = $(
-          "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
-        );
-        videoElements.each(async (_: any, vide: any) => {
-          const videoId = getId(
-            "https://www.youtube.com" + $(vide).find("a").attr("href")
-          ).id;
-          const authorContainer = $(vide).find(".ytd-channel-name a");
-          const uploadedOnElement = $(vide).find(
-            ".inline-metadata-item.style-scope.ytd-video-meta-block"
-          );
-          metaTube.push({
-            title: $(vide).find("#video-title").text().trim() || undefined,
-            views:
-              $(vide)
-                .find(".inline-metadata-item.style-scope.ytd-video-meta-block")
-                .filter((_: any, vide: any) => $(vide).text().includes("views"))
-                .text()
-                .trim()
-                .replace(/ views/g, "") || undefined,
-            author: authorContainer.text().trim() || undefined,
-            videoId,
-            uploadOn:
-              uploadedOnElement.length >= 2
-                ? $(uploadedOnElement[1]).text().trim()
-                : undefined,
-            authorUrl:
-              "https://www.youtube.com" + authorContainer.attr("href") ||
-              undefined,
-            videoLink: "https://www.youtube.com/watch?v=" + videoId,
-            thumbnailUrls: [
-              `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-              `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-              `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-              `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-              `https://img.youtube.com/vi/${videoId}/default.jpg`,
-            ],
-            description:
-              $(vide).find(".metadata-snippet-text").text().trim() || undefined,
-          });
-        });
-        spinnies.succeed(spin, {
-          text: colors.green("@info: ") + colors.white("scrapping done"),
-        });
-        await page.close();
-        await browser.close();
-        return metaTube;
-      }, retryOptions);
-      return FinalTube;
     case "TypeVideo":
-      FinalTube = await retry(async () => {
+      TubeResp = await retry(async () => {
         spinnies.add(spin, {
           text: colors.green("@scrape: ") + "booting chromium...",
         });
@@ -187,9 +143,84 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
         await browser.close();
         return metaTube;
       }, retryOptions);
-      return FinalTube;
+      return TubeResp;
+    case "TypeSearch":
+      TubeResp = await retry(async () => {
+        spinnies.add(spin, {
+          text: colors.green("@scrape: ") + "booting chromium...",
+        });
+        url =
+          "https://www.youtube.com/results?search_query=" +
+          decodeURIComponent(query);
+        await page.goto(url);
+        spinnies.update(spin, {
+          text: colors.yellow("@scrape: ") + "waiting for hydration...",
+        });
+        if (screenshot) {
+          snapshot = await page.screenshot({
+            path: "TypeVideo.png",
+          });
+          fs.writeFileSync("TypeVideo.png", snapshot);
+          spinnies.update(spin, {
+            text: colors.yellow("@scrape: ") + "took snapshot...",
+          });
+        }
+        for (let i = 0; i < 40; i++) {
+          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        }
+        content = await page.content();
+        $ = load(content);
+        videoElements = $(
+          "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
+        );
+        videoElements.each(async (_: any, vide: any) => {
+          const videoId = getId(
+            "https://www.youtube.com" + $(vide).find("a").attr("href")
+          ).id;
+          const authorContainer = $(vide).find(".ytd-channel-name a");
+          const uploadedOnElement = $(vide).find(
+            ".inline-metadata-item.style-scope.ytd-video-meta-block"
+          );
+          metaTube.push({
+            title: $(vide).find("#video-title").text().trim() || undefined,
+            views:
+              $(vide)
+                .find(".inline-metadata-item.style-scope.ytd-video-meta-block")
+                .filter((_: any, vide: any) => $(vide).text().includes("views"))
+                .text()
+                .trim()
+                .replace(/ views/g, "") || undefined,
+            author: authorContainer.text().trim() || undefined,
+            videoId,
+            uploadOn:
+              uploadedOnElement.length >= 2
+                ? $(uploadedOnElement[1]).text().trim()
+                : undefined,
+            authorUrl:
+              "https://www.youtube.com" + authorContainer.attr("href") ||
+              undefined,
+            videoLink: "https://www.youtube.com/watch?v=" + videoId,
+            thumbnailUrls: [
+              `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/default.jpg`,
+            ],
+            description:
+              $(vide).find(".metadata-snippet-text").text().trim() || undefined,
+          });
+        });
+        spinnies.succeed(spin, {
+          text: colors.green("@info: ") + colors.white("scrapping done"),
+        });
+        await page.close();
+        await browser.close();
+        return metaTube;
+      }, retryOptions);
+      return TubeResp;
     case "TypePlaylist":
-      FinalTube = await retry(async () => {
+      TubeResp = await retry(async () => {
         spinnies.add(spin, {
           text: colors.green("@scrape: ") + "booting chromium...",
         });
@@ -255,7 +286,7 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
         await browser.close();
         return metaTube;
       }, retryOptions);
-      return FinalTube;
+      return TubeResp;
     default:
       spinnies.add(spin, {
         text: colors.green("@scrape: ") + "booting chromium...",
@@ -265,12 +296,12 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
       });
       await page.close();
       await browser.close();
-      return FinalTube;
+      return undefined;
   }
 }
 
 (async () => {
-  let FnTube;
+  let FnTube: TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined;
   try {
     console.log(colors.blue("@test:"), "TypeSearch");
     console.log(colors.blue("@screenshot:"), false);
