@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import ytDlp from "../..";
+import ytdlx from "../..";
 import fsx from "fs-extra";
 import colors from "colors";
 import * as chai from "chai";
@@ -8,11 +8,11 @@ async function AutoDownloadTest() {
   try {
     let holder: any;
     console.log(
-      colors.bold.yellow("@test:"),
-      "ytDlp.audio_video.single.lowest()"
+      colors.bold.yellow("\n@test:"),
+      "ytdlx.audio_video.single.lowest()"
     );
     console.log(colors.bold.yellow("@info:"), "stream: false");
-    holder = await ytDlp.audio_video.single.lowest({
+    holder = await ytdlx.audio_video.single.lowest({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mp4",
       folderName: "video",
@@ -22,22 +22,22 @@ async function AutoDownloadTest() {
       case "status" in holder:
         chai.expect(holder.status).to.equal(200);
         console.log(
-          colors.bold.green("\n@pass:"),
+          colors.bold.green("@pass:"),
           `with status ${holder.status}`
         );
         await fsx.remove("video");
         break;
       default:
-        console.error("\n", colors.bold.red("\n@error:"), holder);
+        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("video");
         process.exit(0);
     }
     console.log(
-      colors.bold.yellow("@test:"),
-      "ytDlp.audio_video.single.lowest()"
+      colors.bold.yellow("\n@test:"),
+      "ytdlx.audio_video.single.lowest()"
     );
     console.log(colors.bold.yellow("@info:"), "stream: false");
-    holder = await ytDlp.audio_video.single.lowest({
+    holder = await ytdlx.audio_video.single.lowest({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mov",
       folderName: "video",
@@ -47,18 +47,18 @@ async function AutoDownloadTest() {
       case "status" in holder:
         chai.expect(holder.status).to.equal(200);
         console.log(
-          colors.bold.green("\n@pass:"),
+          colors.bold.green("@pass:"),
           `with status ${holder.status}`
         );
         await fsx.remove("video");
         break;
       default:
-        console.error("\n", colors.bold.red("\n@error:"), holder);
+        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("video");
         process.exit(0);
     }
   } catch (error) {
-    console.error("\n", colors.bold.red("\n@error:"), error);
+    console.error("\n", colors.bold.red("@error:"), error);
     await fsx.remove("video");
   }
 }
@@ -66,11 +66,11 @@ async function StreamingTest() {
   try {
     let holder: any;
     console.log(
-      colors.bold.yellow("@test:"),
-      "ytDlp.audio_video.single.lowest()"
+      colors.bold.yellow("\n@test:"),
+      "ytdlx.audio_video.single.lowest()"
     );
     console.log(colors.bold.yellow("@info:"), "stream: true");
-    holder = await ytDlp.audio_video.single.lowest({
+    holder = await ytdlx.audio_video.single.lowest({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "avi",
       folderName: "video",
@@ -81,23 +81,23 @@ async function StreamingTest() {
         chai.expect(holder.stream && holder.filename).to.exist;
         holder.stream.pipe(fs.createWriteStream(holder.filename));
         console.log(
-          colors.bold.green("\n@pass:"),
+          colors.bold.green("@pass:"),
           `with filename ${holder.filename}`
         );
         await fsx.remove("video");
         break;
       default:
-        console.error("\n", colors.bold.red("\n@error:"), holder);
+        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("video");
         process.exit(0);
     }
 
     console.log(
-      colors.bold.yellow("@test:"),
-      "ytDlp.audio_video.single.lowest()"
+      colors.bold.yellow("\n@test:"),
+      "ytdlx.audio_video.single.lowest()"
     );
     console.log(colors.bold.yellow("@info:"), "stream: true");
-    holder = await ytDlp.audio_video.single.lowest({
+    holder = await ytdlx.audio_video.single.lowest({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
       outputFormat: "mp4",
       folderName: "video",
@@ -108,25 +108,25 @@ async function StreamingTest() {
         chai.expect(holder.stream && holder.filename).to.exist;
         holder.stream.pipe(fs.createWriteStream(holder.filename));
         console.log(
-          colors.bold.green("\n@pass:"),
+          colors.bold.green("@pass:"),
           `with filename ${holder.filename}`
         );
         await fsx.remove("video");
         break;
       default:
-        console.error("\n", colors.bold.red("\n@error:"), holder);
+        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("video");
         process.exit(0);
     }
   } catch (error) {
-    console.error("\n", colors.bold.red("\n@error:"), error);
+    console.error("\n", colors.bold.red("@error:"), error);
     await fsx.remove("video");
   }
 }
 
 (async () => {
-  console.log(colors.bold.blue("\n@test type:"), "AutoDownloadTest()");
+  console.log(colors.bold.blue("@test type:"), "AutoDownloadTest()");
   await AutoDownloadTest();
-  console.log(colors.bold.blue("\n@test type:"), "StreamingTest()");
+  console.log(colors.bold.blue("@test type:"), "StreamingTest()");
   await StreamingTest();
 })();
