@@ -8,18 +8,24 @@ import puppeteer from "puppeteer";
 import { randomUUID } from "crypto";
 
 const spinnies = new spinClient();
-async function TypeTube(query, type = "TypeSearch") {
+async function TypeTube(query, screenshot = false, type = "TypeSearch") {
   const browser = await puppeteer.launch({
+    args: [
+      "--incognito",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-setuid-sandbox",
+    ],
     userDataDir: "other",
     headless: true,
   });
   const page = await browser.newPage();
   await page.setUserAgent(
-    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
   );
   let TypeVideoData = [];
   let TypeSearchData = [];
-  let url, screenshot, content, $, videoElements;
+  let url, snapshot, content, $, videoElements;
   const spin = randomUUID();
   switch (type) {
     case "TypeMovie":
@@ -28,10 +34,12 @@ async function TypeTube(query, type = "TypeSearch") {
         decodeURIComponent(query) +
         "&sp=EgIQBA%253D%253D";
       await page.goto(url);
-      screenshot = await page.screenshot({
-        path: "TypeMovie.png",
-      });
-      fs.writeFileSync("TypeMovie.png", screenshot);
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "TypeMovie.png",
+        });
+        fs.writeFileSync("TypeMovie.png", snapshot);
+      }
       await page.close();
       await browser.close();
       break;
@@ -41,10 +49,12 @@ async function TypeTube(query, type = "TypeSearch") {
         decodeURIComponent(query) +
         "&sp=EgIQAg%253D%253D";
       await page.goto(url);
-      screenshot = await page.screenshot({
-        path: "TypeChannel.png",
-      });
-      fs.writeFileSync("TypeChannel.png", screenshot);
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "TypeChannel.png",
+        });
+        fs.writeFileSync("TypeChannel.png", snapshot);
+      }
       await page.close();
       await browser.close();
       break;
@@ -60,12 +70,14 @@ async function TypeTube(query, type = "TypeSearch") {
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
-      screenshot = await page.screenshot({
-        path: "TypeVideo.png",
-      });
-      fs.writeFileSync("TypeVideo.png", screenshot);
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "TypeVideo.png",
+        });
+        fs.writeFileSync("TypeVideo.png", snapshot);
+      }
       spinnies.update(spin, {
-        text: colors.yellow("@scrape: ") + "took screenshot...",
+        text: colors.yellow("@scrape: ") + "took snapshot...",
       });
       for (let i = 0; i < 5; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
@@ -128,10 +140,12 @@ async function TypeTube(query, type = "TypeSearch") {
         decodeURIComponent(query) +
         "&sp=EgIQAw%253D%253D";
       await page.goto(url);
-      screenshot = await page.screenshot({
-        path: "TypePlaylist.png",
-      });
-      fs.writeFileSync("TypePlaylist.png", screenshot);
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "TypePlaylist.png",
+        });
+        fs.writeFileSync("TypePlaylist.png", snapshot);
+      }
       let playlistData = [];
       const playlistElements = await page.$$("ytd-playlist-renderer");
       for (const playlist of playlistElements) {
@@ -182,12 +196,14 @@ async function TypeTube(query, type = "TypeSearch") {
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
-      screenshot = await page.screenshot({
-        path: "TypeSearch.png",
-      });
-      fs.writeFileSync("TypeSearch.png", screenshot);
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "TypeSearch.png",
+        });
+        fs.writeFileSync("TypeSearch.png", snapshot);
+      }
       spinnies.update(spin, {
-        text: colors.yellow("@scrape: ") + "took screenshot...",
+        text: colors.yellow("@scrape: ") + "took snapshot...",
       });
       for (let i = 0; i < 5; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
