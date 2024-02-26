@@ -47,8 +47,8 @@ export default async function webSearch({
       const searchUrl =
         "https://www.youtube.com/results?search_query=" +
         encodeURIComponent(query);
-      spinnies.add(spin, {
-        text: colors.green("@scrape: ") + "loading page...",
+      spinnies.update(spin, {
+        text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
       await page.goto(searchUrl);
       const content = await page.content();
