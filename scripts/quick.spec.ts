@@ -40,7 +40,7 @@ interface TypePlaylist {
 interface InputTypeTube {
   query: string;
   screenshot: boolean;
-  filter: "TypeSearch" | "TypeVideo" | "TypePlaylist";
+  filter: "Search" | "Video" | "Playlist";
 }
 const spinnies = new spinClient();
 async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
@@ -68,7 +68,7 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
   let url, snapshot, content, $: any, videoElements;
   let TubeResp: TypeVideo[] | TypeSearch[] | TypePlaylist[];
   switch (filter) {
-    case "TypeVideo":
+    case "Video":
       TubeResp = await retry(async () => {
         spinnies.add(spin, {
           text: colors.green("@scrape: ") + "booting chromium...",
@@ -144,7 +144,7 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
         return metaTube;
       }, retryOptions);
       return TubeResp;
-    case "TypeSearch":
+    case "Search":
       TubeResp = await retry(async () => {
         spinnies.add(spin, {
           text: colors.green("@scrape: ") + "booting chromium...",
@@ -219,7 +219,7 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
         return metaTube;
       }, retryOptions);
       return TubeResp;
-    case "TypePlaylist":
+    case "Playlist":
       TubeResp = await retry(async () => {
         spinnies.add(spin, {
           text: colors.green("@scrape: ") + "booting chromium...",
@@ -303,32 +303,32 @@ async function TypeTube({ query, screenshot, filter }: InputTypeTube) {
 (async () => {
   let FnTube: TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined;
   try {
-    console.log(colors.blue("@test:"), "TypeSearch");
+    console.log(colors.blue("@test:"), "Search");
     console.log(colors.blue("@screenshot:"), false);
     FnTube = await TypeTube({
       screenshot: false,
       query: "Emptiness",
-      filter: "TypeSearch",
+      filter: "Search",
     });
     if (FnTube) console.log(colors.green("@pass"), FnTube);
     else console.error(colors.red("@fail"), FnTube);
 
-    console.log(colors.blue("@test:"), "TypeVideo");
+    console.log(colors.blue("@test:"), "Video");
     console.log(colors.blue("@screenshot:"), false);
     FnTube = await TypeTube({
       screenshot: false,
       query: "Emptiness",
-      filter: "TypeVideo",
+      filter: "Video",
     });
     if (FnTube) console.log(colors.green("@pass"), FnTube);
     else console.error(colors.red("@fail"), FnTube);
 
-    console.log(colors.blue("@test:"), "TypePlaylist");
+    console.log(colors.blue("@test:"), "Playlist");
     console.log(colors.blue("@screenshot:"), false);
     FnTube = await TypeTube({
       screenshot: false,
       query: "Emptiness",
-      filter: "TypePlaylist",
+      filter: "Playlist",
     });
     if (FnTube) console.log(colors.green("@pass"), FnTube);
     else console.error(colors.red("@fail"), FnTube);
