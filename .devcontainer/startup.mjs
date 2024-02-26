@@ -27,7 +27,7 @@ const scripts = {
   update: "yarn make && yarn update:base && yarn update:frontend",
   "update:base": "yarn upgrade --latest",
   "update:frontend": "cd frontend && yarn upgrade --latest",
-  spec: "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
+  spec: "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
   test: "yarn test:base && yarn test:scrape && yarn cli",
   "test:base":
     "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",

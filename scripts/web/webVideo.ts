@@ -1,8 +1,9 @@
 import colors from "colors";
+import { load } from "cheerio";
 import retry from "async-retry";
 import spinClient from "spinnies";
+import puppeteer from "puppeteer";
 import { randomUUID } from "crypto";
-import { chromium } from "playwright";
 import YouTubeID from "./YouTubeId";
 
 const spinnies = new spinClient();
@@ -20,48 +21,39 @@ export default async function webVideo({
   videoLink,
 }: {
   videoLink: string;
-}): Promise<webVideo | undefined> {
+}): Promise<any | undefined> {
   if (!videoLink) return undefined;
   const retryOptions = {
-    maxTimeout: 4000,
-    minTimeout: 2000,
-    retries: 4,
+    maxTimeout: 2000,
+    minTimeout: 1000,
+    retries: 2,
   };
   const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
-      const browser = await chromium.launch({
+      const browser = await puppeteer.launch({
         headless: true,
       });
       spinnies.add(spin, {
-        text: colors.green("@scrape: ") + "started chromium...",
+        text: colors.green("@scrape: ") + "booting chromium...",
       });
-      const context = await browser.newContext({
-        ignoreHTTPSErrors: true,
-        serviceWorkers: "allow",
-        bypassCSP: true,
-        userAgent:
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36",
-      });
-      const page = await context.newPage();
+      const page = await browser.newPage();
+      await page.setUserAgent(
+        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+      );
       await page.goto(videoLink);
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
-      await page.waitForSelector(".style-scope.ytd-watch-metadata");
-      const title = await page.$eval(
-        ".style-scope.ytd-watch-metadata",
-        (el: any) => el.textContent.trim()
-      );
-      const author = await page.$eval(
-        ".yt-simple-endpoint.style-scope.yt-formatted-string",
-        (el: any) => el.textContent.trim()
-      );
-      const views = await page.$eval(
-        ".bold.style-scope.yt-formatted-string",
-        (el: any) => el.textContent.trim()
-      );
-      const videoId: any = await YouTubeID(videoLink);
+      const htmlContent = await page.content();
+      const $ = load(htmlContent);
+      const title: any = $(".style-scope.ytd-watch-metadata").text().trim();
+      const views = $(".bold.style-scope.yt-formatted-string")
+        .filter((_, vide) => $(vide).text().includes("views"))
+        .text()
+        .trim()
+        .replace(/ views/g, "");
+      const videoId = await YouTubeID(videoLink);
       const thumbnailUrls = [
         `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
@@ -69,25 +61,21 @@ export default async function webVideo({
         `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/default.jpg`,
       ];
-      const uploadDateElements = await page.$$eval(
-        ".bold.style-scope.yt-formatted-string",
-        (spans: any) => {
-          const uploadDateIndex = spans.findIndex((span: any) =>
-            span.textContent.includes("ago")
-          );
-          return uploadDateIndex >= 0
-            ? spans[uploadDateIndex].textContent.trim()
-            : undefined;
-        }
-      );
+      const uploadElements = $(".bold.style-scope.yt-formatted-string")
+        .map((_, vide) => {
+          const text = $(vide).text().trim();
+          return text.includes("ago") ? text : undefined;
+        })
+        .get();
+      const author = $(".ytd-channel-name a").text().trim();
       const data = {
+        views,
         author,
         videoId,
         videoLink,
         thumbnailUrls,
-        uploadOn: uploadDateElements,
         title: title.split("\n")[0].trim(),
-        views: views.replace(/ views/g, ""),
+        uploadOn: uploadElements.length > 0 ? uploadElements[0] : undefined,
       };
       await browser.close();
       return data;

@@ -1,8 +1,10 @@
 import colors from "colors";
+import { load } from "cheerio";
 import retry from "async-retry";
 import spinClient from "spinnies";
+import puppeteer from "puppeteer";
 import { randomUUID } from "crypto";
-import { chromium } from "playwright";
+import YouTubeID from "./YouTubeId";
 
 const spinnies = new spinClient();
 
@@ -29,70 +31,59 @@ export default async function webPlaylist({
   playlistLink: string;
 }): Promise<webPlaylist | undefined> {
   const retryOptions = {
-    maxTimeout: 4000,
-    minTimeout: 2000,
-    retries: 4,
+    maxTimeout: 2000,
+    minTimeout: 1000,
+    retries: 2,
   };
   const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
-      const playlistData = [];
-      const browser = await chromium.launch({
+      const playlistData: any[] = [];
+      const browser = await puppeteer.launch({
         headless: true,
       });
       spinnies.add(spin, {
-        text: colors.green("@scrape: ") + "started chromium...",
+        text: colors.green("@scrape: ") + "booting chromium...",
       });
-      const context = await browser.newContext({
-        ignoreHTTPSErrors: true,
-        serviceWorkers: "allow",
-        bypassCSP: true,
-        userAgent:
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36",
-      });
-      const page = await context.newPage();
+      const page = await browser.newPage();
+      await page.setUserAgent(
+        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+      );
       await page.goto(playlistLink);
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
-      const titleElement: any = await page.$(
+      const content = await page.content();
+      const $ = load(content);
+      const playlistTitle = $(
         "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
-      );
-      const playlistTitle = await titleElement.textContent();
-      const videoCountElement: any = await page.$(
-        "yt-formatted-string.byline-item"
-      );
-      const videoCountText = await videoCountElement.textContent();
+      )
+        .text()
+        .trim();
+      const videoCountText: any = $("yt-formatted-string.byline-item").text();
       const videoCount = parseInt(videoCountText.match(/\d+/)[0]);
-      const viewsElement: any = await page.$$(
-        "yt-formatted-string.byline-item"
-      );
-      const viewsText = await viewsElement[1].textContent();
+      const viewsText: any = $("yt-formatted-string.byline-item").eq(1).text();
       const views = viewsText.replace(/,/g, "").match(/\d+/)[0];
-      const descriptionElement: any = await page.$("span#plain-snippet-text");
-      let playlistDescription = await descriptionElement.textContent();
-      const VideoElements = await page.$$("ytd-playlist-video-renderer");
-      for (const vide of VideoElements) {
-        const TitleElement: any = await vide.$("h3");
-        let title = await TitleElement.textContent();
-        title = title.trim();
-        const urlElement: any = await vide.$("a");
-        const url: any =
-          "https://www.youtube.com" + (await urlElement.getAttribute("href"));
-        const videoId = url.match(/(?<=v=)[^&\s]+/)[0];
-        const AuthorElement: any = await vide.$(
-          ".yt-simple-endpoint.style-scope.yt-formatted-string"
-        );
-        const author = await AuthorElement.textContent();
-        const authorUrl = await AuthorElement.getAttribute("href");
-        const ViewsElement: any = await vide.$(
-          ".style-scope.ytd-video-meta-block span:first-child"
-        );
-        const views = await ViewsElement.textContent();
-        const AgoElement: any = await vide.$(
-          ".style-scope.ytd-video-meta-block span:last-child"
-        );
-        const ago = await AgoElement.textContent();
+      let playlistDescription = $("span#plain-snippet-text").text();
+      const VideoElements: any = $("ytd-playlist-video-renderer");
+      VideoElements.each(async (_: any, vide: any) => {
+        const title = $(vide).find("h3").text().trim();
+        const url = "https://www.youtube.com" + $(vide).find("a").attr("href");
+        const videoId = await YouTubeID(url);
+        const author = $(vide)
+          .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
+          .text();
+        const authorUrl =
+          "https://www.youtube.com" +
+          $(vide)
+            .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
+            .attr("href");
+        const views = $(vide)
+          .find(".style-scope.ytd-video-meta-block span:first-child")
+          .text();
+        const ago = $(vide)
+          .find(".style-scope.ytd-video-meta-block span:last-child")
+          .text();
         const thumbnailUrls = [
           `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
           `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
@@ -108,16 +99,16 @@ export default async function webPlaylist({
           videoId,
           thumbnailUrls,
           views: views.replace(/ views/g, ""),
-          authorUrl: "https://www.youtube.com" + authorUrl,
+          authorUrl,
         });
-      }
+      });
       await browser.close();
       return {
         views,
         count: videoCount,
+        videos: playlistData,
         title: playlistTitle,
         description: playlistDescription.trim(),
-        videos: playlistData,
       };
     }, retryOptions);
     spinnies.succeed(spin, {
