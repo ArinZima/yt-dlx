@@ -20,13 +20,13 @@ export default async function get_playlist({
   try {
     const proTubeArr: metaVideo[] = [];
     const preTube = new Set<string>();
-    for (const url of playlistUrls) {
-      const ispUrl: any = url.match(/list=([a-zA-Z0-9_-]+)/);
+    for (const videoLink of playlistUrls) {
+      const ispUrl: any = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
           colors.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
-          url
+          videoLink
         );
         continue;
       }
@@ -43,7 +43,7 @@ export default async function get_playlist({
       }
       for (let i = 0; i < resp.videos.length; i++) {
         try {
-          const videoLink = resp.videos[i]?.url;
+          const videoLink = resp.videos[i]?.videoLink;
           if (videoLink === undefined) continue;
           const metaTube = await ytdlx_web.webVideo({ videoLink });
           if (metaTube === undefined) continue;

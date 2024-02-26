@@ -37,7 +37,7 @@ export default async function Engine({
   } else videoId = await YouTubeID(query);
   switch (videoId) {
     case null:
-      TubeBody = await ytdlx_web.webSearch({ query: query, number: 4 });
+      TubeBody = await ytdlx_web.webSearch({ query: query });
       if (TubeBody === null) {
         console.log(
           colors.bold.red("@error: ") +

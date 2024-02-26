@@ -1,12 +1,6 @@
 import ytdlx_web from "../../web/ytdlx_web";
 
-export default async function search({
-  query,
-  number,
-}: {
-  query: string;
-  number: number;
-}) {
+export default async function search({ query }: { query: string }) {
   try {
     switch (true) {
       case !query || typeof query !== "string":
@@ -14,13 +8,8 @@ export default async function search({
           message: "Invalid query parameter",
           status: 500,
         };
-      case !number || typeof number !== "number":
-        return {
-          message: "Invalid number parameter",
-          status: 500,
-        };
       default:
-        return await ytdlx_web.webSearch({ query, number });
+        return await ytdlx_web.webSearch({ query });
     }
   } catch (error) {
     switch (true) {

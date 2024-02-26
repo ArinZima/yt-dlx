@@ -13,13 +13,13 @@ export default async function extract_playlist_videos({
   try {
     const proTubeArr: any = [];
     const processedVideoIds = new Set();
-    for (const url of playlistUrls) {
-      const ispUrl: any = url.match(/list=([a-zA-Z0-9_-]+)/);
+    for (const videoLink of playlistUrls) {
+      const ispUrl: any = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
           colors.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
-          url
+          videoLink
         );
         continue;
       }

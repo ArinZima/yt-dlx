@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "types": "proto/index.d.ts",
   "main": "proto/index.cjs.js",
   "module": "proto/index.esm.js",
@@ -10,6 +10,7 @@
     "yt-dlx": "proto/cli/main.js"
   },
   "scripts": {
+    "prepublishOnly": "yarn build && yarn test && npm pkg fix && yarn publish",
     "start": "node .devcontainer/startup.mjs",
     "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "yarn clean && yarn make && yarn build",

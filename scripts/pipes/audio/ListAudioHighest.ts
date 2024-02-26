@@ -50,8 +50,8 @@ export default async function ListAudioHighest(
     let metaName: string = "";
     let results: ListAudioHighestType[] = [];
     const uniqueVideoIds = new Set();
-    for (const url of playlistUrls) {
-      const metaList = await ytdlx_web.webPlaylist({ playlistLink: url });
+    for (const videoLink of playlistUrls) {
+      const metaList = await ytdlx_web.webPlaylist({ playlistLink: videoLink });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
@@ -71,7 +71,7 @@ export default async function ListAudioHighest(
     );
     for (const i of parseList) {
       const TubeBody = await ytdlx_web.webVideo({
-        videoLink: i.url,
+        videoLink: i.videoLink,
       });
       if (TubeBody === undefined) continue;
       const metaBody = await ytdlx({

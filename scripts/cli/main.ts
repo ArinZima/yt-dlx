@@ -68,7 +68,6 @@ const program = async () => {
       } else
         ytdlx.info
           .search({
-            number: 20,
             query: proTube.query,
           })
           .then((data: any) => {
