@@ -76,7 +76,7 @@ async function TypeTube(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
     );
     const spin = randomUUID();
-    let metaTube: any[] | PromiseLike<any[]> = [];
+    let metaTube: any[] = [];
     let url, snapshot, content, $: any, videoElements;
     let TubeResp: TypeVideo[] | TypeSearch[] | TypePlaylist[];
     switch (filter) {
