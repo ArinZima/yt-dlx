@@ -61,7 +61,7 @@
     "tailwind-scrollbar-hide": "^1.1.7",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
-    "yt-dlx": "^1.0.8",
+    "yt-dlx": "^2.0.2",
     "yt-search": "^2.10.4",
     "ytdl-core": "^4.11.5",
     "ytsearch": "^1.0.4",
