@@ -10,7 +10,7 @@
     "yt-dlx": "proto/cli/main.js"
   },
   "scripts": {
-    "prepublishOnly": "yarn build && yarn test && npm pkg fix && yarn publish",
+    "prepublishOnly": "yarn build && yarn test:base && npm pkg fix && yarn publish",
     "start": "node .devcontainer/startup.mjs",
     "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "yarn clean && yarn make && yarn build",
