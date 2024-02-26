@@ -206,16 +206,16 @@ async function webVideo({ videoLink, }) {
     if (!videoLink)
         return undefined;
     const retryOptions = {
-        maxTimeout: 2000,
+        maxTimeout: 6000,
         minTimeout: 1000,
-        retries: 2,
+        retries: 4,
     };
     const spin = crypto.randomUUID();
     try {
         const metaTube = await retry(async () => {
             const browser = await puppeteer.launch({
                 userDataDir: "other",
-                headless: true,
+                headless: false,
             });
             spinnies$2.add(spin, {
                 text: colors.green("@scrape: ") + "booting chromium...",
@@ -281,9 +281,9 @@ async function webSearch({ query, }) {
     if (!query)
         return undefined;
     const retryOptions = {
-        maxTimeout: 2000,
+        maxTimeout: 6000,
         minTimeout: 1000,
-        retries: 2,
+        retries: 4,
     };
     const spin = crypto.randomUUID();
     try {
@@ -291,7 +291,7 @@ async function webSearch({ query, }) {
             const data = [];
             const browser = await puppeteer.launch({
                 userDataDir: "other",
-                headless: true,
+                headless: false,
             });
             spinnies$1.add(spin, {
                 text: colors.green("@scrape: ") + "booting chromium...",
@@ -369,9 +369,9 @@ async function webSearch({ query, }) {
 const spinnies = new spinClient();
 async function webPlaylist({ playlistLink, }) {
     const retryOptions = {
-        maxTimeout: 2000,
+        maxTimeout: 6000,
         minTimeout: 1000,
-        retries: 2,
+        retries: 4,
     };
     const spin = crypto.randomUUID();
     try {
@@ -379,7 +379,7 @@ async function webPlaylist({ playlistLink, }) {
             const playlistData = [];
             const browser = await puppeteer.launch({
                 userDataDir: "other",
-                headless: true,
+                headless: false,
             });
             spinnies.add(spin, {
                 text: colors.green("@scrape: ") + "booting chromium...",

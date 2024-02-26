@@ -191,16 +191,16 @@ async function webVideo({
   if (!videoLink)
     return void 0;
   const retryOptions = {
-    maxTimeout: 2e3,
+    maxTimeout: 6e3,
     minTimeout: 1e3,
-    retries: 2
+    retries: 4
   };
   const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
       const browser = await puppeteer.launch({
         userDataDir: "other",
-        headless: true
+        headless: false
       });
       spinnies.add(spin, {
         text: colors19.green("@scrape: ") + "booting chromium..."
@@ -261,9 +261,9 @@ async function webSearch({
   if (!query)
     return void 0;
   const retryOptions = {
-    maxTimeout: 2e3,
+    maxTimeout: 6e3,
     minTimeout: 1e3,
-    retries: 2
+    retries: 4
   };
   const spin = randomUUID();
   try {
@@ -271,7 +271,7 @@ async function webSearch({
       const data = [];
       const browser = await puppeteer.launch({
         userDataDir: "other",
-        headless: true
+        headless: false
       });
       spinnies2.add(spin, {
         text: colors19.green("@scrape: ") + "booting chromium..."
@@ -346,9 +346,9 @@ async function webPlaylist({
   playlistLink
 }) {
   const retryOptions = {
-    maxTimeout: 2e3,
+    maxTimeout: 6e3,
     minTimeout: 1e3,
-    retries: 2
+    retries: 4
   };
   const spin = randomUUID();
   try {
@@ -356,7 +356,7 @@ async function webPlaylist({
       const playlistData = [];
       const browser = await puppeteer.launch({
         userDataDir: "other",
-        headless: true
+        headless: false
       });
       spinnies3.add(spin, {
         text: colors19.green("@scrape: ") + "booting chromium..."
