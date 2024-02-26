@@ -116,8 +116,10 @@ export default async function webPlaylist({
     spinnies.succeed(spin, {
       text:
         colors.yellow("@info: ") +
-        "scrapping done, total videos found " +
-        metaTube.videos.length,
+        colors.white(
+          "scrapping done, total playlist videos found " +
+            metaTube.videos.length
+        ),
     });
     return metaTube;
   } catch (error: any) {

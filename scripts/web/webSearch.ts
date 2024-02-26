@@ -108,8 +108,7 @@ export default async function webSearch({
     spinnies.succeed(spin, {
       text:
         colors.yellow("@info: ") +
-        "scrapping done, total videos found " +
-        metaTube.length,
+        colors.white("scrapping done, total videos found " + metaTube.length),
     });
     return metaTube;
   } catch (error: any) {
