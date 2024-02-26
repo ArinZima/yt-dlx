@@ -17,6 +17,7 @@ export interface webVideo {
   title: string;
   views: string;
 }
+
 export default async function webVideo({
   videoLink,
 }: {
@@ -55,12 +56,20 @@ export default async function webVideo({
       });
       const htmlContent = await page.content();
       const $ = load(htmlContent);
-      const title: any = $(".style-scope.ytd-watch-metadata").text().trim();
-      const views = $(".bold.style-scope.yt-formatted-string")
-        .filter((_, vide) => $(vide).text().includes("views"))
+      const title = $("yt-formatted-string.style-scope.ytd-watch-metadata")
         .text()
-        .trim()
-        .replace(/ views/g, "");
+        .trim();
+      const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string")
+        .text()
+        .trim();
+      const viewsElement = $(
+        "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('views')"
+      ).first();
+      const views = viewsElement.text().trim().replace(" views", "");
+      const uploadOnElement = $(
+        "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('ago')"
+      ).first();
+      const uploadOn = uploadOnElement.text().trim();
       const thumbnailUrls = [
         `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
@@ -68,35 +77,31 @@ export default async function webVideo({
         `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/default.jpg`,
       ];
-      const uploadElements = $(".bold.style-scope.yt-formatted-string")
-        .map((_, vide) => {
-          const text = $(vide).text().trim();
-          return text.includes("ago") ? text : undefined;
-        })
-        .get();
-      const author = $(".ytd-channel-name a").text().trim();
       const data = {
         views,
+        title,
         author,
         videoId,
+        uploadOn,
         thumbnailUrls,
         videoLink: newLink,
-        title: title.split("\n")[0].trim(),
-        uploadOn: uploadElements.length > 0 ? uploadElements[0] : undefined,
       };
       await browser.close();
       return data;
     }, retryOptions);
+
     spinnies.succeed(spin, {
       text:
         colors.yellow("@info: ") +
         colors.white("scrapping done, video found " + metaTube.title),
     });
+
     return metaTube;
   } catch (error: any) {
     spinnies.fail(spin, {
       text: colors.red("@error: ") + error.message,
     });
+
     return undefined;
   }
 }
