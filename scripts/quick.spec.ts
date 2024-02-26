@@ -41,7 +41,13 @@ interface TypePlaylist {
 interface InputTypeTube {
   query: string;
   screenshot?: boolean;
-  filter: "Search" | "Video" | "Playlist" | "InfoVideo" | "InfoSearch";
+  filter:
+    | "Search"
+    | "Video"
+    | "Playlist"
+    | "InfoVideo"
+    | "InfoSearch"
+    | "InfoPlaylist";
 }
 interface InfoVideo {
   views: string;
@@ -53,17 +59,48 @@ interface InfoVideo {
   thumbnailUrls: string[];
 }
 
+interface InfoPlaylist {
+  views: string;
+  count: number;
+  title: string;
+  description: string;
+  videos: [
+    {
+      ago: string;
+      videoLink: string;
+      title: string;
+      views: string;
+      author: string;
+      videoId: string;
+      authorUrl: string;
+      thumbnailUrls: string[];
+    }
+  ];
+}
+
 const TypeTubeSchema = z.object({
   query: z.string().min(1),
   screenshot: z.boolean().optional(),
-  filter: z.enum(["Search", "Video", "Playlist", "InfoVideo", "InfoSearch"]),
+  filter: z.enum([
+    "Search",
+    "Video",
+    "Playlist",
+    "InfoVideo",
+    "InfoSearch",
+    "InfoPlaylist",
+  ]),
 });
 
 const spinnies = new spinClient();
 async function TypeTube(
   input: InputTypeTube
 ): Promise<
-  TypeVideo[] | TypeSearch[] | TypePlaylist[] | InfoVideo | undefined
+  | TypeVideo[]
+  | TypeSearch[]
+  | TypePlaylist[]
+  | InfoVideo
+  | InfoPlaylist
+  | undefined
 > {
   try {
     const { query, screenshot, filter } = TypeTubeSchema.parse(input);
@@ -401,6 +438,96 @@ async function TypeTube(
           return metaTube;
         }, retryOptions);
         return TubeResp;
+      case "InfoPlaylist":
+        TubeResp = await retry(async () => {
+          spinnies.add(spin, {
+            text: colors.green("@scrape: ") + "booting chromium...",
+          });
+          await page.goto(query);
+          for (let i = 0; i < 40; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
+          spinnies.update(spin, {
+            text: colors.yellow("@scrape: ") + "waiting for hydration...",
+          });
+          if (screenshot) {
+            snapshot = await page.screenshot({
+              path: "TypeVideo.png",
+            });
+            fs.writeFileSync("TypeVideo.png", snapshot);
+            spinnies.update(spin, {
+              text: colors.yellow("@scrape: ") + "took snapshot...",
+            });
+          }
+          const content = await page.content();
+          const $ = load(content);
+          const playlistTitle = $(
+            "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
+          )
+            .text()
+            .trim();
+          const videoCountText: any = $(
+            "yt-formatted-string.byline-item"
+          ).text();
+          const playlistVideoCount = parseInt(videoCountText.match(/\d+/)[0]);
+          const viewsText: any = $("yt-formatted-string.byline-item")
+            .eq(1)
+            .text();
+          const playlistViews = viewsText.replace(/,/g, "").match(/\d+/)[0];
+          let playlistDescription = $("span#plain-snippet-text").text();
+          const VideoElements: any = $("ytd-playlist-video-renderer");
+          VideoElements.each(async (_: any, vide: any) => {
+            const title = $(vide).find("h3").text().trim();
+            const videoLink =
+              "https://www.youtube.com" + $(vide).find("a").attr("href");
+            const videoId = getId(videoLink).id;
+            const newLink = "https://www.youtube.com/watch?v=" + videoId;
+            const author = $(vide)
+              .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
+              .text();
+            const authorUrl =
+              "https://www.youtube.com" +
+              $(vide)
+                .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
+                .attr("href");
+            const views = $(vide)
+              .find(".style-scope.ytd-video-meta-block span:first-child")
+              .text();
+            const ago = $(vide)
+              .find(".style-scope.ytd-video-meta-block span:last-child")
+              .text();
+            const thumbnailUrls = [
+              `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/default.jpg`,
+            ];
+            metaTube.push({
+              ago,
+              title,
+              author,
+              videoId,
+              authorUrl,
+              thumbnailUrls,
+              videoLink: newLink,
+              views: views.replace(/ views/g, ""),
+            });
+          });
+          spinnies.succeed(spin, {
+            text: colors.green("@info: ") + colors.white("scrapping done"),
+          });
+          await page.close();
+          await browser.close();
+          return {
+            ...metaTube,
+            playlistDescription: playlistDescription.trim(),
+            playlistVideoCount,
+            playlistTitle,
+            playlistViews,
+          };
+        }, retryOptions);
+        return TubeResp;
       default:
         spinnies.add(spin, {
           text: colors.green("@scrape: ") + "booting chromium...",
@@ -427,6 +554,7 @@ async function TypeTube(
     | TypeSearch[]
     | TypePlaylist[]
     | InfoVideo
+    | InfoPlaylist
     | undefined;
   try {
     console.log(colors.blue("@test:"), "Search");
