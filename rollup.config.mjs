@@ -39,6 +39,8 @@ export default [
       "readline",
       "fs",
       "async",
+      "cheerio",
+      "puppeteer",
       "async-retry",
       "axios",
       "body-parser",

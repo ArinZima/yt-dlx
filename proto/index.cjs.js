@@ -613,7 +613,7 @@ async function ytxc(query, port, proxy, username, password) {
     });
 }
 
-var version = "1.1.0";
+var version = "2.0.0";
 
 async function Engine({ query, }) {
     let videoId, TubeDlp, TubeBody;
