@@ -199,6 +199,7 @@ async function webVideo({
   try {
     const metaTube = await retry(async () => {
       const browser = await puppeteer.launch({
+        userDataDir: "other",
         headless: true
       });
       spinnies.add(spin, {
@@ -269,6 +270,7 @@ async function webSearch({
     const metaTube = await retry(async () => {
       const data = [];
       const browser = await puppeteer.launch({
+        userDataDir: "other",
         headless: true
       });
       spinnies2.add(spin, {
@@ -353,6 +355,7 @@ async function webPlaylist({
     const metaTube = await retry(async () => {
       const playlistData = [];
       const browser = await puppeteer.launch({
+        userDataDir: "other",
         headless: true
       });
       spinnies3.add(spin, {

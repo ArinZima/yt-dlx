@@ -35,6 +35,7 @@ export default async function webSearch({
     const metaTube = await retry(async () => {
       const data: any[] = [];
       const browser = await puppeteer.launch({
+        userDataDir: "other",
         headless: true,
       });
       spinnies.add(spin, {

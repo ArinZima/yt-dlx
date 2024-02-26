@@ -32,6 +32,7 @@ export default async function webVideo({
   try {
     const metaTube = await retry(async () => {
       const browser = await puppeteer.launch({
+        userDataDir: "other",
         headless: true,
       });
       spinnies.add(spin, {

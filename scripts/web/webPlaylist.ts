@@ -40,6 +40,7 @@ export default async function webPlaylist({
     const metaTube = await retry(async () => {
       const playlistData: any[] = [];
       const browser = await puppeteer.launch({
+        userDataDir: "other",
         headless: true,
       });
       spinnies.add(spin, {
