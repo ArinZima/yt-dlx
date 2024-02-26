@@ -10,7 +10,7 @@ export default function list_formats({
     try {
       const zval = z
         .object({
-          query: z.string(),
+          query: z.string().min(1),
         })
         .parse({ query });
       const EnResp = await Engine(zval);

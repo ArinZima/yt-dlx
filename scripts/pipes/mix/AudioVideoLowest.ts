@@ -21,7 +21,7 @@ interface AudioVideoLowestOC {
 type AudioVideoLowestType = Promise<SuccessResult | ErrorResult | StreamResult>;
 
 const AudioVideoLowestInputSchema = z.object({
-  query: z.string(),
+  query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),

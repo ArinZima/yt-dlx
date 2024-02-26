@@ -53,7 +53,7 @@ export default function get_video_data({
     try {
       const zval = z
         .object({
-          query: z.string(),
+          query: z.string().min(1),
         })
         .parse({ query });
       const EnResp = await Engine(zval);

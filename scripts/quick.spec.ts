@@ -45,7 +45,7 @@ interface InputTypeTube {
 }
 
 const TypeTubeSchema = z.object({
-  query: z.string(),
+  query: z.string().min(1),
   screenshot: z.boolean().optional(),
   filter: z.enum(["Search", "Video", "Playlist"]),
 });
@@ -53,7 +53,7 @@ const TypeTubeSchema = z.object({
 const spinnies = new spinClient();
 async function TypeTube(
   input: InputTypeTube
-): Promise<TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined | string> {
+): Promise<TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined> {
   try {
     const { query, screenshot, filter } = TypeTubeSchema.parse(input);
     const retryOptions = {
@@ -322,14 +322,15 @@ async function TypeTube(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return error.errors.map((err) => err.message).join(", ");
-    } else if (error instanceof Error) return error.message;
-    else return "Internal server error";
+      throw error.errors.map((err) => err.message).join(", ");
+    } else if (error instanceof Error) throw error.message;
+    else throw "Internal server error";
   }
 }
 
 (async () => {
-  let FnTube: TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined | string;
+  console.clear();
+  let FnTube: TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined;
   try {
     console.log(colors.blue("@test:"), "Search");
     console.log(colors.blue("@screenshot:"), false);
@@ -360,7 +361,17 @@ async function TypeTube(
     });
     if (FnTube) console.log(colors.green("@pass"), FnTube);
     else console.error(colors.red("@fail"), FnTube);
+
+    console.log(colors.blue("@test:"), "error-check-query-empty");
+    console.log(colors.blue("@screenshot:"), false);
+    FnTube = await TypeTube({
+      screenshot: false,
+      filter: "Search",
+      query: "",
+    });
+    if (FnTube) console.log(colors.green("@pass"), FnTube);
+    else console.error(colors.red("@fail"), FnTube);
   } catch (error) {
-    console.error(colors.red("\n@error:"), error);
+    console.error(colors.red("@error:"), error);
   }
 })();

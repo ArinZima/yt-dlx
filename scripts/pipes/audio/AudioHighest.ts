@@ -22,7 +22,7 @@ type AudioHighestOC = {
 };
 
 const AudioHighestInputSchema = z.object({
-  query: z.string(),
+  query: z.string().min(1),
   filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),

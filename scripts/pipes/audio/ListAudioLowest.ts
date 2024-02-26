@@ -29,7 +29,7 @@ const ListAudioLowestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
-  playlistUrls: z.array(z.string()),
+  playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
   filter: z.string().optional(),
 });
