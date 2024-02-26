@@ -24,16 +24,16 @@ export default async function webVideo({
 }): Promise<any | undefined> {
   if (!videoLink) return undefined;
   const retryOptions = {
-    maxTimeout: 2000,
+    maxTimeout: 6000,
     minTimeout: 1000,
-    retries: 2,
+    retries: 4,
   };
   const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
       const browser = await puppeteer.launch({
         userDataDir: "other",
-        headless: true,
+        headless: false,
       });
       spinnies.add(spin, {
         text: colors.green("@scrape: ") + "booting chromium...",
