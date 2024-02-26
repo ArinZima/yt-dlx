@@ -8,7 +8,7 @@ import YouTubeID from "./YouTubeId";
 
 const spinnies = new spinClient();
 export interface webSearch {
-  title: string;
+  title?: string;
   views?: string;
   author?: string;
   videoId: string;
@@ -17,7 +17,7 @@ export interface webSearch {
   authorUrl?: string;
   description?: string;
   authorImage?: string;
-  thumbnailUrls: string[];
+  thumbnailUrls?: string[];
 }
 export default async function webSearch({
   query,
@@ -33,7 +33,7 @@ export default async function webSearch({
   const spin = randomUUID();
   try {
     const metaTube = await retry(async () => {
-      const data: any[] = [];
+      const data: webSearch[] = [];
       const browser = await puppeteer.launch({
         userDataDir: "other",
         headless: true,
@@ -53,9 +53,7 @@ export default async function webSearch({
       });
       await page.goto(searchUrl);
       for (let i = 0; i < 5; i++) {
-        await page.evaluate(() => {
-          window.scrollBy(0, window.innerHeight);
-        });
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       const content = await page.content();
       const $ = load(content);
@@ -63,49 +61,41 @@ export default async function webSearch({
         "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
       );
       videoElements.each(async (_: any, vide: any) => {
-        const title = $(vide).find("#video-title").text().trim();
-        const videoLink =
-          "https://www.youtube.com" + $(vide).find("a").attr("href");
-        const videoId = await YouTubeID(videoLink);
-        const newLink = "https://www.youtube.com/watch?v=" + videoId;
+        const videoId = (await YouTubeID(
+          "https://www.youtube.com" + $(vide).find("a").attr("href")
+        )) as string;
         const authorContainer = $(vide).find(".ytd-channel-name a");
-        const author = authorContainer.text().trim();
-        const authorUrl = authorContainer.attr("href");
-        let description = "";
-        const descriptionElement = $(vide).find(".metadata-snippet-text");
-        if (descriptionElement) {
-          description = descriptionElement.text().trim();
-        }
-        const views = $(vide)
-          .find(".inline-metadata-item.style-scope.ytd-video-meta-block")
-          .filter((_, vide) => $(vide).text().includes("views"))
-          .text()
-          .trim()
-          .replace(/ views/g, "");
         const uploadedOnElement = $(vide).find(
           ".inline-metadata-item.style-scope.ytd-video-meta-block"
         );
-        const uploadOn =
-          uploadedOnElement.length >= 2
-            ? $(uploadedOnElement[1]).text().trim()
-            : undefined;
-        const thumbnailUrls = [
-          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/default.jpg`,
-        ];
         data.push({
-          title,
-          views,
-          author,
+          title: $(vide).find("#video-title").text().trim() || undefined,
+          views:
+            $(vide)
+              .find(".inline-metadata-item.style-scope.ytd-video-meta-block")
+              .filter((_, vide) => $(vide).text().includes("views"))
+              .text()
+              .trim()
+              .replace(/ views/g, "") || undefined,
+          author: authorContainer.text().trim() || undefined,
           videoId,
-          uploadOn,
-          authorUrl,
-          description,
-          thumbnailUrls,
-          videoLink: newLink,
+          uploadOn:
+            uploadedOnElement.length >= 2
+              ? $(uploadedOnElement[1]).text().trim()
+              : undefined,
+          authorUrl:
+            "https://www.youtube.com" + authorContainer.attr("href") ||
+            undefined,
+          videoLink: "https://www.youtube.com/watch?v=" + videoId,
+          thumbnailUrls: [
+            `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/default.jpg`,
+          ],
+          description:
+            $(vide).find(".metadata-snippet-text").text().trim() || undefined,
         });
       });
       await browser.close();
