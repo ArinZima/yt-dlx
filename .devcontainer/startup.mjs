@@ -9,6 +9,8 @@ const colors = {
 };
 
 const scripts = {
+  prepublishOnly: "yarn build && yarn test && npm pkg fix && yarn publish",
+  start: "node .devcontainer/startup.mjs",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
   remake: "yarn clean && yarn make && yarn build",
   "remake:update": "yarn clean && yarn make && yarn update && yarn build",
@@ -27,14 +29,12 @@ const scripts = {
   update: "yarn make && yarn update:base && yarn update:frontend",
   "update:base": "yarn upgrade --latest",
   "update:frontend": "cd frontend && yarn upgrade --latest",
+  cli: "yarn link && yarn test:cli && yarn unlink",
   spec: "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-  test: "yarn test:base && yarn test:scrape && yarn cli",
+  test: "yarn test:base && yarn spec && yarn cli",
   "test:base":
     "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
-  "test:scrape":
-    "tsup 'scripts/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.mjs'",
-  cli: "yarn link && yarn cli:test && yarn unlink",
-  "cli:test":
+  "test:cli":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
 };
 
