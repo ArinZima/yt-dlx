@@ -306,53 +306,39 @@ async function webSearch({ query, }) {
             });
             await page.goto(searchUrl);
             for (let i = 0; i < 5; i++) {
-                await page.evaluate(() => {
-                    window.scrollBy(0, window.innerHeight);
-                });
+                await page.evaluate(() => window.scrollBy(0, window.innerHeight));
             }
             const content = await page.content();
             const $ = cheerio.load(content);
             const videoElements = $("ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])");
             videoElements.each(async (_, vide) => {
-                const title = $(vide).find("#video-title").text().trim();
-                const videoLink = "https://www.youtube.com" + $(vide).find("a").attr("href");
-                const videoId = await YouTubeID(videoLink);
-                const newLink = "https://www.youtube.com/watch?v=" + videoId;
+                const videoId = (await YouTubeID("https://www.youtube.com" + $(vide).find("a").attr("href")));
                 const authorContainer = $(vide).find(".ytd-channel-name a");
-                const author = authorContainer.text().trim();
-                const authorUrl = authorContainer.attr("href");
-                let description = "";
-                const descriptionElement = $(vide).find(".metadata-snippet-text");
-                if (descriptionElement) {
-                    description = descriptionElement.text().trim();
-                }
-                const views = $(vide)
-                    .find(".inline-metadata-item.style-scope.ytd-video-meta-block")
-                    .filter((_, vide) => $(vide).text().includes("views"))
-                    .text()
-                    .trim()
-                    .replace(/ views/g, "");
                 const uploadedOnElement = $(vide).find(".inline-metadata-item.style-scope.ytd-video-meta-block");
-                const uploadOn = uploadedOnElement.length >= 2
-                    ? $(uploadedOnElement[1]).text().trim()
-                    : undefined;
-                const thumbnailUrls = [
-                    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-                    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-                    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-                    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-                    `https://img.youtube.com/vi/${videoId}/default.jpg`,
-                ];
                 data.push({
-                    title,
-                    views,
-                    author,
+                    title: $(vide).find("#video-title").text().trim() || undefined,
+                    views: $(vide)
+                        .find(".inline-metadata-item.style-scope.ytd-video-meta-block")
+                        .filter((_, vide) => $(vide).text().includes("views"))
+                        .text()
+                        .trim()
+                        .replace(/ views/g, "") || undefined,
+                    author: authorContainer.text().trim() || undefined,
                     videoId,
-                    uploadOn,
-                    authorUrl,
-                    description,
-                    thumbnailUrls,
-                    videoLink: newLink,
+                    uploadOn: uploadedOnElement.length >= 2
+                        ? $(uploadedOnElement[1]).text().trim()
+                        : undefined,
+                    authorUrl: "https://www.youtube.com" + authorContainer.attr("href") ||
+                        undefined,
+                    videoLink: "https://www.youtube.com/watch?v=" + videoId,
+                    thumbnailUrls: [
+                        `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                        `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                        `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                        `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                        `https://img.youtube.com/vi/${videoId}/default.jpg`,
+                    ],
+                    description: $(vide).find(".metadata-snippet-text").text().trim() || undefined,
                 });
             });
             await browser.close();
@@ -838,7 +824,7 @@ function list_formats({ query, }) {
         try {
             const zval = z__namespace
                 .object({
-                query: z__namespace.string(),
+                query: z__namespace.string().min(1),
             })
                 .parse({ query });
             const EnResp = await Engine(zval);
@@ -875,7 +861,7 @@ function get_video_data({ query, }) {
         try {
             const zval = z__namespace
                 .object({
-                query: z__namespace.string(),
+                query: z__namespace.string().min(1),
             })
                 .parse({ query });
             const EnResp = await Engine(zval);
@@ -1065,7 +1051,7 @@ const progressBar = (prog) => {
 };
 
 const AudioLowestInputSchema = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     filter: z.z.string().optional(),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
@@ -1287,7 +1273,7 @@ async function bigEntry(metaBody) {
 }
 
 const AudioHighestInputSchema = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     filter: z.z.string().optional(),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
@@ -1483,7 +1469,7 @@ async function AudioHighest(input) {
 }
 
 const VideoLowestInputSchema$1 = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
@@ -1637,7 +1623,7 @@ async function VideoLowest$1(input) {
 }
 
 const VideoHighestInputSchema = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
@@ -1791,7 +1777,7 @@ async function VideoHighest(input) {
 }
 
 const AudioVideoLowestInputSchema = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
@@ -1918,7 +1904,7 @@ async function AudioVideoLowest(input) {
 }
 
 const AudioVideoHighestInputSchema = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
@@ -2045,7 +2031,7 @@ async function AudioVideoHighest(input) {
 }
 
 const AudioQualityCustomInputSchema = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     filter: z.z.string().optional(),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
@@ -2232,7 +2218,7 @@ async function AudioQualityCustom(input) {
 }
 
 const VideoLowestInputSchema = z.z.object({
-    query: z.z.string(),
+    query: z.z.string().min(1),
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
@@ -2390,7 +2376,7 @@ const ListVideoLowestInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     outputFormat: z.z.enum(["mp4", "avi", "mov"]).optional(),
 });
 async function ListVideoLowest(input) {
@@ -2561,7 +2547,7 @@ const ListVideoHighestInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     outputFormat: z.z.enum(["mp4", "avi", "mov"]).optional(),
 });
 async function ListVideoHighest(input) {
@@ -2731,7 +2717,7 @@ const ListVideoQualityCustomInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     quality: z.z.enum([
         "144p",
         "240p",
@@ -2923,7 +2909,7 @@ const ListAudioLowestInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     outputFormat: z.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
     filter: z.z.string().optional(),
 });
@@ -3132,7 +3118,7 @@ const ListAudioHighestInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     outputFormat: z.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
     filter: z.z.string().optional(),
 });
@@ -3342,7 +3328,7 @@ const ListAudioQualityCustomInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     quality: z.z.enum(["high", "medium", "low", "ultralow"]),
     outputFormat: z.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
@@ -3554,7 +3540,7 @@ const ListAudioVideoLowestInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     outputFormat: z.z.enum(["mp4", "avi", "mov"]).optional(),
 });
 async function ListAudioVideoLowest(input) {
@@ -3719,7 +3705,7 @@ const ListAudioVideoHighestInputSchema = z.z.object({
     stream: z.z.boolean().optional(),
     verbose: z.z.boolean().optional(),
     folderName: z.z.string().optional(),
-    playlistUrls: z.z.array(z.z.string()),
+    playlistUrls: z.z.array(z.z.string().min(1)),
     outputFormat: z.z.enum(["mp4", "avi", "mov"]).optional(),
 });
 async function ListAudioVideoHighest(input) {

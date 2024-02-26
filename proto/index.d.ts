@@ -7,7 +7,7 @@ import { Readable } from 'stream';
 declare function help(): Promise<string>;
 
 interface webSearch {
-    title: string;
+    title?: string;
     views?: string;
     author?: string;
     videoId: string;
@@ -16,7 +16,7 @@ interface webSearch {
     authorUrl?: string;
     description?: string;
     authorImage?: string;
-    thumbnailUrls: string[];
+    thumbnailUrls?: string[];
 }
 declare function webSearch({ query, }: {
     query: string;

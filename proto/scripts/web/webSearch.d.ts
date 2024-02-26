@@ -1,5 +1,5 @@
 export interface webSearch {
-    title: string;
+    title?: string;
     views?: string;
     author?: string;
     videoId: string;
@@ -8,7 +8,7 @@ export interface webSearch {
     authorUrl?: string;
     description?: string;
     authorImage?: string;
-    thumbnailUrls: string[];
+    thumbnailUrls?: string[];
 }
 export default function webSearch({ query, }: {
     query: string;
