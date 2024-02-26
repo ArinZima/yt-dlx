@@ -228,7 +228,7 @@ async function webVideo({
     const metaTube = await retry__default.default(async () => {
       const browser = await puppeteer__default.default.launch({
         userDataDir: "other",
-        headless: false
+        headless: true
       });
       spinnies.add(spin, {
         text: colors19__default.default.green("@scrape: ") + "booting chromium..."
@@ -238,15 +238,37 @@ async function webVideo({
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       );
       const videoId = await YouTubeID(videoLink);
+      if (!videoId) {
+        throw new Error("Failed to extract video ID");
+      }
       const newLink = "https://www.youtube.com/watch?v=" + videoId;
       await page.goto(newLink);
-      spinnies.update(spin, {
-        text: colors19__default.default.yellow("@scrape: ") + "waiting for hydration..."
-      });
+      await page.waitForSelector(
+        "yt-formatted-string.style-scope.ytd-watch-metadata",
+        { timeout: 1e4 }
+      );
+      await page.waitForSelector(
+        "a.yt-simple-endpoint.style-scope.yt-formatted-string",
+        { timeout: 1e4 }
+      );
+      await page.waitForSelector(
+        "yt-formatted-string.style-scope.ytd-watch-info-text",
+        { timeout: 1e4 }
+      );
+      setTimeout(() => {
+      }, 1e3);
       const htmlContent = await page.content();
       const $ = cheerio.load(htmlContent);
-      const title = $(".style-scope.ytd-watch-metadata").text().trim();
-      const views = $(".bold.style-scope.yt-formatted-string").filter((_, vide) => $(vide).text().includes("views")).text().trim().replace(/ views/g, "");
+      const title = $("yt-formatted-string.style-scope.ytd-watch-metadata").text().trim();
+      const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string").text().trim();
+      const viewsElement = $(
+        "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('views')"
+      ).first();
+      const views = viewsElement.text().trim().replace(" views", "");
+      const uploadOnElement = $(
+        "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('ago')"
+      ).first();
+      const uploadOn = uploadOnElement.text().trim();
       const thumbnailUrls = [
         `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
@@ -254,19 +276,14 @@ async function webVideo({
         `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/default.jpg`
       ];
-      const uploadElements = $(".bold.style-scope.yt-formatted-string").map((_, vide) => {
-        const text = $(vide).text().trim();
-        return text.includes("ago") ? text : void 0;
-      }).get();
-      const author = $(".ytd-channel-name a").text().trim();
       const data = {
         views,
         author,
         videoId,
         thumbnailUrls,
         videoLink: newLink,
-        title: title.split("\n")[0].trim(),
-        uploadOn: uploadElements.length > 0 ? uploadElements[0] : void 0
+        title,
+        uploadOn
       };
       await browser.close();
       return data;
@@ -299,7 +316,7 @@ async function webSearch({
       const data = [];
       const browser = await puppeteer__default.default.launch({
         userDataDir: "other",
-        headless: false
+        headless: true
       });
       spinnies2.add(spin, {
         text: colors19__default.default.green("@scrape: ") + "booting chromium..."
@@ -313,6 +330,11 @@ async function webSearch({
         text: colors19__default.default.yellow("@scrape: ") + "waiting for hydration..."
       });
       await page.goto(searchUrl);
+      for (let i = 0; i < 5; i++) {
+        await page.evaluate(() => {
+          window.scrollBy(0, window.innerHeight);
+        });
+      }
       const content = await page.content();
       const $ = cheerio.load(content);
       const videoElements = $(
@@ -384,7 +406,7 @@ async function webPlaylist({
       const playlistData = [];
       const browser = await puppeteer__default.default.launch({
         userDataDir: "other",
-        headless: false
+        headless: true
       });
       spinnies3.add(spin, {
         text: colors19__default.default.green("@scrape: ") + "booting chromium..."
@@ -394,6 +416,11 @@ async function webPlaylist({
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       );
       await page.goto(playlistLink);
+      for (let i = 0; i < 5; i++) {
+        await page.evaluate(() => {
+          window.scrollBy(0, window.innerHeight);
+        });
+      }
       spinnies3.update(spin, {
         text: colors19__default.default.yellow("@scrape: ") + "waiting for hydration..."
       });

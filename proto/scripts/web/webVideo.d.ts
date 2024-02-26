@@ -1,4 +1,4 @@
-export interface webVideo {
+export interface WebVideo {
     thumbnailUrls: string[];
     videoLink: string;
     uploadOn: string;
@@ -9,5 +9,5 @@ export interface webVideo {
 }
 export default function webVideo({ videoLink, }: {
     videoLink: string;
-}): Promise<any | undefined>;
+}): Promise<WebVideo | undefined>;
 //# sourceMappingURL=webVideo.d.ts.map
