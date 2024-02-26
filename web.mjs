@@ -70,6 +70,39 @@ async function TypeTube(query, type = "TypeSearch") {
         path: "TypePlaylist.png",
       });
       fs.writeFileSync("TypePlaylist.png", screenshot);
+      let playlistData = [];
+      const playlistElements = await page.$$("ytd-playlist-renderer");
+      for (const playlist of playlistElements) {
+        const title = await playlist.$eval(
+          ".style-scope.ytd-playlist-renderer #video-title",
+          (element) => element.innerText.trim()
+        );
+        const videoCount = await playlist.$eval(
+          ".style-scope.ytd-playlist-renderer",
+          (element) => element.innerText.trim()
+        );
+        const author = await playlist.$eval(
+          ".yt-simple-endpoint.style-scope.yt-formatted-string",
+          (element) => element.innerText
+        );
+        const authorUrl = await playlist.$eval(
+          ".yt-simple-endpoint.style-scope.yt-formatted-string",
+          (element) => element.getAttribute("href")
+        );
+        const playlistLink = await playlist.$eval(
+          ".style-scope.ytd-playlist-renderer #view-more a",
+          (element) => element.getAttribute("href")
+        );
+        playlistData.push({
+          title,
+          author,
+          playlistId: playlistLink.split("list=")[1],
+          authorUrl: "https://www.youtube.com" + authorUrl,
+          playlistLink: "https://www.youtube.com" + playlistLink,
+          videoCount: parseInt(videoCount.replace(/ videos\nNOW PLAYING/g, "")),
+        });
+      }
+      console.log(playlistData);
       await page.close();
       await browser.close();
       break;
@@ -152,6 +185,7 @@ async function TypeTube(query, type = "TypeSearch") {
 }
 
 async.eachSeries(
-  ["", "TypeSearch", "TypeMovie", "TypeVideo", "TypeChannel", "TypePlaylist"],
+  ["TypePlaylist"],
   async (type) => await TypeTube("Angel Numbers", type)
 );
+// "", "TypeSearch", "TypeMovie", "TypeVideo", "TypeChannel",
