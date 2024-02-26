@@ -220,15 +220,19 @@ async function TypeTube({ query, screenshot, type }) {
           );
           metaTube.push({
             title:
-              (await playlist.$eval(
-                ".style-scope.ytd-playlist-renderer #video-title",
-                (element) => element.innerText.trim()
-              )) || undefined,
+              (
+                await playlist.$eval(
+                  ".style-scope.ytd-playlist-renderer #video-title",
+                  (element) => element.innerText.trim()
+                )
+              ).trim() || undefined,
             author:
-              (await playlist.$eval(
-                ".yt-simple-endpoint.style-scope.yt-formatted-string",
-                (element) => element.innerText
-              )) || undefined,
+              (
+                await playlist.$eval(
+                  ".yt-simple-endpoint.style-scope.yt-formatted-string",
+                  (element) => element.innerText
+                )
+              ).trim() || undefined,
             playlistId: playlistLink.split("list=")[1] || undefined,
             playlistLink: "https://www.youtube.com" + playlistLink,
             authorUrl:
