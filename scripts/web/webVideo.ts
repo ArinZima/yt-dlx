@@ -41,7 +41,9 @@ export default async function webVideo({
       await page.setUserAgent(
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       );
-      await page.goto(videoLink);
+      const videoId = await YouTubeID(videoLink);
+      const newLink = "https://www.youtube.com/watch?v=" + videoId;
+      await page.goto(newLink);
       spinnies.update(spin, {
         text: colors.yellow("@scrape: ") + "waiting for hydration...",
       });
@@ -53,7 +55,6 @@ export default async function webVideo({
         .text()
         .trim()
         .replace(/ views/g, "");
-      const videoId = await YouTubeID(videoLink);
       const thumbnailUrls = [
         `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
@@ -72,8 +73,8 @@ export default async function webVideo({
         views,
         author,
         videoId,
-        videoLink,
         thumbnailUrls,
+        videoLink: newLink,
         title: title.split("\n")[0].trim(),
         uploadOn: uploadElements.length > 0 ? uploadElements[0] : undefined,
       };

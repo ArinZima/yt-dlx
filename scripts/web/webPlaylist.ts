@@ -10,7 +10,7 @@ const spinnies = new spinClient();
 
 export interface YouTubePLVideos {
   ago: string;
-  url: string;
+  videoLink: string;
   title: string;
   views: string;
   author: string;
@@ -68,8 +68,10 @@ export default async function webPlaylist({
       const VideoElements: any = $("ytd-playlist-video-renderer");
       VideoElements.each(async (_: any, vide: any) => {
         const title = $(vide).find("h3").text().trim();
-        const url = "https://www.youtube.com" + $(vide).find("a").attr("href");
-        const videoId = await YouTubeID(url);
+        const videoLink =
+          "https://www.youtube.com" + $(vide).find("a").attr("href");
+        const videoId = await YouTubeID(videoLink);
+        const newLink = "https://www.youtube.com/watch?v=" + videoId;
         const author = $(vide)
           .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
           .text();
@@ -93,13 +95,13 @@ export default async function webPlaylist({
         ];
         playlistData.push({
           ago,
-          url,
           title,
           author,
           videoId,
-          thumbnailUrls,
-          views: views.replace(/ views/g, ""),
           authorUrl,
+          thumbnailUrls,
+          videoLink: newLink,
+          views: views.replace(/ views/g, ""),
         });
       });
       await browser.close();

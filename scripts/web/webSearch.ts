@@ -61,6 +61,7 @@ export default async function webSearch({
         const videoLink =
           "https://www.youtube.com" + $(vide).find("a").attr("href");
         const videoId = await YouTubeID(videoLink);
+        const newLink = "https://www.youtube.com/watch?v=" + videoId;
         const authorContainer = $(vide).find(".ytd-channel-name a");
         const author = authorContainer.text().trim();
         const authorUrl = authorContainer.attr("href");
@@ -96,9 +97,9 @@ export default async function webSearch({
           videoId,
           uploadOn,
           authorUrl,
-          videoLink,
           description,
           thumbnailUrls,
+          videoLink: newLink,
         });
       });
       await browser.close();
