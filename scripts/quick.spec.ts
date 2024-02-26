@@ -41,19 +41,30 @@ interface TypePlaylist {
 interface InputTypeTube {
   query: string;
   screenshot?: boolean;
-  filter: "Search" | "Video" | "Playlist";
+  filter: "Search" | "Video" | "Playlist" | "InfoVideo" | "InfoSearch";
+}
+interface InfoVideo {
+  views: string;
+  title: string;
+  author: string;
+  videoId: string;
+  uploadOn: string;
+  videoLink: string;
+  thumbnailUrls: string[];
 }
 
 const TypeTubeSchema = z.object({
   query: z.string().min(1),
   screenshot: z.boolean().optional(),
-  filter: z.enum(["Search", "Video", "Playlist"]),
+  filter: z.enum(["Search", "Video", "Playlist", "InfoVideo", "InfoSearch"]),
 });
 
 const spinnies = new spinClient();
 async function TypeTube(
   input: InputTypeTube
-): Promise<TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined> {
+): Promise<
+  TypeVideo[] | TypeSearch[] | TypePlaylist[] | InfoVideo | undefined
+> {
   try {
     const { query, screenshot, filter } = TypeTubeSchema.parse(input);
     const retryOptions = {
@@ -62,7 +73,7 @@ async function TypeTube(
       retries: 4,
     };
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       userDataDir: "other",
       args: [
         "--incognito",
@@ -78,7 +89,7 @@ async function TypeTube(
     const spin = randomUUID();
     let metaTube: any[] = [];
     let url, snapshot, content, $: any, videoElements;
-    let TubeResp: TypeVideo[] | TypeSearch[] | TypePlaylist[];
+    let TubeResp: TypeVideo[] | TypeSearch[] | TypePlaylist[] | InfoVideo;
     switch (filter) {
       case "Video":
         TubeResp = await retry(async () => {
@@ -90,6 +101,9 @@ async function TypeTube(
             decodeURIComponent(query) +
             "&sp=EgIIAQ%253D%253D";
           await page.goto(url);
+          for (let i = 0; i < 40; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
           spinnies.update(spin, {
             text: colors.yellow("@scrape: ") + "waiting for hydration...",
           });
@@ -101,9 +115,6 @@ async function TypeTube(
             spinnies.update(spin, {
               text: colors.yellow("@scrape: ") + "took snapshot...",
             });
-          }
-          for (let i = 0; i < 40; i++) {
-            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           content = await page.content();
           $ = load(content);
@@ -162,6 +173,7 @@ async function TypeTube(
         }, retryOptions);
         return TubeResp;
       case "Search":
+      case "InfoSearch":
         TubeResp = await retry(async () => {
           spinnies.add(spin, {
             text: colors.green("@scrape: ") + "booting chromium...",
@@ -170,6 +182,9 @@ async function TypeTube(
             "https://www.youtube.com/results?search_query=" +
             decodeURIComponent(query);
           await page.goto(url);
+          for (let i = 0; i < 40; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
           spinnies.update(spin, {
             text: colors.yellow("@scrape: ") + "waiting for hydration...",
           });
@@ -181,9 +196,6 @@ async function TypeTube(
             spinnies.update(spin, {
               text: colors.yellow("@scrape: ") + "took snapshot...",
             });
-          }
-          for (let i = 0; i < 40; i++) {
-            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           content = await page.content();
           $ = load(content);
@@ -251,6 +263,9 @@ async function TypeTube(
             decodeURIComponent(query) +
             "&sp=EgIQAw%253D%253D";
           await page.goto(url);
+          for (let i = 0; i < 40; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
           spinnies.update(spin, {
             text: colors.yellow("@scrape: ") + "waiting for hydration...",
           });
@@ -309,6 +324,83 @@ async function TypeTube(
           return metaTube;
         }, retryOptions);
         return TubeResp;
+      case "InfoVideo":
+        TubeResp = await retry(async () => {
+          spinnies.add(spin, {
+            text: colors.green("@scrape: ") + "booting chromium...",
+          });
+          await page.goto(query);
+          for (let i = 0; i < 40; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
+          spinnies.update(spin, {
+            text: colors.yellow("@scrape: ") + "waiting for hydration...",
+          });
+          if (screenshot) {
+            snapshot = await page.screenshot({
+              path: "TypeVideo.png",
+            });
+            fs.writeFileSync("TypeVideo.png", snapshot);
+            spinnies.update(spin, {
+              text: colors.yellow("@scrape: ") + "took snapshot...",
+            });
+          }
+          const videoId = getId(query).id as string;
+          await page.waitForSelector(
+            "yt-formatted-string.style-scope.ytd-watch-metadata",
+            { timeout: 10000 }
+          );
+          await page.waitForSelector(
+            "a.yt-simple-endpoint.style-scope.yt-formatted-string",
+            { timeout: 10000 }
+          );
+          await page.waitForSelector(
+            "yt-formatted-string.style-scope.ytd-watch-info-text",
+            { timeout: 10000 }
+          );
+          setTimeout(() => {}, 1000);
+          const htmlContent = await page.content();
+          const $ = load(htmlContent);
+          const title = $("yt-formatted-string.style-scope.ytd-watch-metadata")
+            .text()
+            .trim();
+          const author = $(
+            "a.yt-simple-endpoint.style-scope.yt-formatted-string"
+          )
+            .text()
+            .trim();
+          const viewsElement = $(
+            "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('views')"
+          ).first();
+          const views = viewsElement.text().trim().replace(" views", "");
+          const uploadOnElement = $(
+            "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('ago')"
+          ).first();
+          const uploadOn = uploadOnElement.text().trim();
+          const thumbnailUrls = [
+            `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/default.jpg`,
+          ];
+          const metaTube: InfoVideo = {
+            views,
+            title,
+            author,
+            videoId,
+            uploadOn,
+            thumbnailUrls,
+            videoLink: "https://www.youtube.com/watch?v=" + videoId,
+          };
+          spinnies.succeed(spin, {
+            text: colors.green("@info: ") + colors.white("scrapping done"),
+          });
+          await page.close();
+          await browser.close();
+          return metaTube;
+        }, retryOptions);
+        return TubeResp;
       default:
         spinnies.add(spin, {
           text: colors.green("@scrape: ") + "booting chromium...",
@@ -330,7 +422,12 @@ async function TypeTube(
 
 (async () => {
   console.clear();
-  let FnTube: TypeVideo[] | TypeSearch[] | TypePlaylist[] | undefined;
+  let FnTube:
+    | TypeVideo[]
+    | TypeSearch[]
+    | TypePlaylist[]
+    | InfoVideo
+    | undefined;
   try {
     console.log(colors.blue("@test:"), "Search");
     console.log(colors.blue("@screenshot:"), false);
@@ -338,6 +435,26 @@ async function TypeTube(
       screenshot: false,
       query: "Emptiness",
       filter: "Search",
+    });
+    if (FnTube) console.log(colors.green("@pass"), FnTube);
+    else console.error(colors.red("@fail"), FnTube);
+
+    console.log(colors.blue("@test:"), "InfoSearch");
+    console.log(colors.blue("@screenshot:"), false);
+    FnTube = await TypeTube({
+      screenshot: false,
+      query: "Emptiness",
+      filter: "InfoSearch",
+    });
+    if (FnTube) console.log(colors.green("@pass"), FnTube);
+    else console.error(colors.red("@fail"), FnTube);
+
+    console.log(colors.blue("@test:"), "InfoVideo");
+    console.log(colors.blue("@screenshot:"), false);
+    FnTube = await TypeTube({
+      screenshot: false,
+      filter: "InfoVideo",
+      query: "https://www.youtube.com/watch?v=ZFWC4SiZBao",
     });
     if (FnTube) console.log(colors.green("@pass"), FnTube);
     else console.error(colors.red("@fail"), FnTube);
