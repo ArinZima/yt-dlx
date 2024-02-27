@@ -85,9 +85,9 @@ function runScript() {
         console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
         runScript();
       }
-      rl.close();
     }
   );
 }
 
+// Start running the script
 runScript();
