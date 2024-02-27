@@ -3,7 +3,7 @@ import * as tsup from "tsup";
 export default tsup.defineConfig({
   entry: ["scripts/cli/**/*.ts"],
   format: ["cjs", "esm"],
-  outDir: "proto/cli",
+  outDir: "shared/cli",
   platform: "node",
   minifyIdentifiers: false,
   minifyWhitespace: false,

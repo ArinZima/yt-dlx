@@ -12,13 +12,13 @@ export default [
     input: "scripts/index.ts",
     output: [
       {
-        file: "proto/index.esm.js",
+        file: "shared/index.esm.js",
         footer: banner,
         format: "es",
         banner,
       },
       {
-        file: "proto/index.cjs.js",
+        file: "shared/index.cjs.js",
         footer: banner,
         format: "cjs",
         banner,
@@ -86,7 +86,7 @@ export default [
     input: "scripts/index.ts",
     output: [
       {
-        file: "proto/index.d.ts",
+        file: "shared/index.d.ts",
         footer: banner,
         format: "es",
         banner,

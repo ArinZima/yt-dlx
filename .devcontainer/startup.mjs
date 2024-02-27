@@ -17,7 +17,7 @@ const scripts = {
   upload:
     "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
   clean: "bun run clean:base && bun run clean:frontend",
-  "clean:base": "rm -rf node_modules temp proto bun.lockb",
+  "clean:base": "rm -rf node_modules temp shared bun.lockb",
   "clean:frontend": "cd frontend && rm -rf node_modules .next bun.lockb",
   make: "bun run make:base && bun run make:frontend",
   "make:base": "bun install",
