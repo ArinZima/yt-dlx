@@ -9,7 +9,7 @@ const colors = {
 };
 
 const scripts = {
-  start: "node .devcontainer/startup.mjs",
+  start: "bun .devcontainer/startup.mjs",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
   remake: "bun run clean && bun run make && bun run build",
   "remake:update":
@@ -20,8 +20,8 @@ const scripts = {
   "clean:base": "rm -rf node_modules temp proto yarn.lock",
   "clean:frontend": "cd frontend && rm -rf node_modules .next yarn.lock",
   make: "bun run make:base && bun run make:frontend",
-  "make:base": "bun run install",
-  "make:frontend": "cd frontend && bun run install",
+  "make:base": "bun install",
+  "make:frontend": "cd frontend && bun install",
   build: "bun run build:base && bun run build:frontend",
   "build:base":
     "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
