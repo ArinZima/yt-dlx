@@ -9,29 +9,29 @@ const colors = {
 };
 
 const scripts = {
-  prepublishOnly: "yarn build && yarn test && npm pkg fix && yarn publish",
   start: "node .devcontainer/startup.mjs",
   setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
-  remake: "yarn clean && yarn make && yarn build",
-  "remake:update": "yarn clean && yarn make && yarn update && yarn build",
+  remake: "bun run clean && bun run make && bun run build",
+  "remake:update":
+    "bun run clean && bun run make && bun install --latest && bun run build",
   upload:
-    "yarn test && yarn cli && yarn remake && npm pkg fix && yarn publish --access=public && yarn update",
-  clean: "yarn clean:base && yarn clean:frontend",
+    "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
+  clean: "bun run clean:base && bun run clean:frontend",
   "clean:base": "rm -rf node_modules temp proto yarn.lock",
   "clean:frontend": "cd frontend && rm -rf node_modules .next yarn.lock",
-  make: "yarn make:base && yarn make:frontend",
-  "make:base": "yarn install",
-  "make:frontend": "cd frontend && yarn install",
-  build: "yarn build:base && yarn build:frontend",
+  make: "bun run make:base && bun run make:frontend",
+  "make:base": "bun run install",
+  "make:frontend": "cd frontend && bun run install",
+  build: "bun run build:base && bun run build:frontend",
   "build:base":
     "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
-  "build:frontend": "cd frontend && yarn build",
-  update: "yarn make && yarn update:base && yarn update:frontend",
-  "update:base": "yarn upgrade --latest",
-  "update:frontend": "cd frontend && yarn upgrade --latest",
-  cli: "yarn link && yarn test:cli && yarn unlink",
+  "build:frontend": "cd frontend && bun run build",
+  update: "bun run make && bun run update:base && bun run update:frontend",
+  "update:base": "bun install --latest",
+  "update:frontend": "cd frontend && bun install --latest",
+  cli: "bun run link && bun run test:cli && bun run unlink",
   spec: "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-  test: "yarn test:base && yarn spec && yarn cli",
+  test: "bun run test:base && bun run spec && bun run cli",
   "test:base":
     "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
   "test:cli":
