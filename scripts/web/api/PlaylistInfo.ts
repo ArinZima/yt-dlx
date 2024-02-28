@@ -34,23 +34,43 @@ export default async function PlaylistInfo(
 ): Promise<PlaylistInfoType | undefined> {
   try {
     await crawler();
+    let query: string;
     const spinnies = new spinClient();
     const QuerySchema = z.object({
       query: z
         .string()
         .min(1)
         .refine(
-          async (query) => {
-            const result = await YouTubeId(query);
-            return result !== null;
+          async (input) => {
+            switch (true) {
+              case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+                input
+              ):
+                const resultLink = await YouTubeId(input);
+                if (resultLink !== null) {
+                  query = input;
+                  return true;
+                }
+                break;
+              default:
+                const resultId = await YouTubeId(
+                  `https://www.youtube.com/playlist?list=${input}`
+                );
+                if (resultId !== null) {
+                  query = `https://www.youtube.com/playlist?list=${input}`;
+                  return true;
+                }
+                break;
+            }
+            return false;
           },
           {
-            message: "Query must be a valid YouTube Playlist link.",
+            message: "Query must be a valid YouTube Playlist Link or ID.",
           }
         ),
       screenshot: z.boolean().optional(),
     });
-    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const { screenshot } = await QuerySchema.parseAsync(input);
     const retryOptions = {
       maxTimeout: 6000,
       minTimeout: 1000,
