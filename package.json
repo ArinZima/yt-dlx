@@ -29,7 +29,8 @@
     "update:frontend": "cd frontend && bun install --latest",
     "cli": "bun run link && bun run test:cli && bun run unlink",
     "spec": "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-    "test": "bun run test:base && bun run spec && bun run cli",
+    "test": "bun run test:base && bun run test:scrape && bun run spec && bun run cli",
+    "test:scrape": "vitest --config 'vitest.config.mts'",
     "test:base": "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
     "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
   },
