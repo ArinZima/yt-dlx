@@ -28,10 +28,9 @@
     "update:base": "bun install --latest",
     "update:frontend": "cd frontend && bun install --latest",
     "cli": "bun run link && bun run test:cli && bun run unlink",
-    "spec": "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-    "test": "bun run test:base && bun run test:scrape && bun run spec && bun run cli",
-    "test:scrape": "vitest --config 'vitest.config.mts'",
-    "test:base": "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+    "spec": "vitest --config 'vitest.config.mts'",
+    "test": "bun run test:bun && bun run test:cli",
+    "test:bun": "bun test --timeout 60000 --bail --watch",
     "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
   },
   "files": [
@@ -68,7 +67,6 @@
   "dependencies": {
     "async-retry": "^1.3.3",
     "axios": "^1.6.7",
-    "body-parser": "^1.20.2",
     "bun": "latest",
     "cheerio": "^1.0.0-rc.12",
     "colors": "^1.4.0",
@@ -76,9 +74,7 @@
     "dotenv": "^16.4.4",
     "express": "^4.18.2",
     "fluent-ffmpeg": "^2.1.2",
-    "get-video-id": "^4.1.5",
     "minimist": "^1.2.8",
-    "package-json": "^10.0.0",
     "puppeteer": "^22.2.0",
     "readline-sync": "^1.4.10",
     "spinnies": "^0.5.1",
@@ -89,28 +85,26 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "typescript": "latest",
-    "@types/async": "latest",
-    "@types/async-retry": "latest",
-    "@types/cheerio": "latest",
-    "@types/node": "latest",
-    "@types/spinnies": "latest",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/chai": "^4.3.11",
+    "@types/async": "latest",
+    "@types/async-retry": "latest",
+    "@types/bun": "latest",
+    "@types/cheerio": "latest",
     "@types/fluent-ffmpeg": "^2.1.24",
     "@types/fs-extra": "^11.0.4",
     "@types/minimist": "^1.2.5",
+    "@types/node": "latest",
     "@types/readline-sync": "^1.4.8",
     "@types/rollup-plugin-progress": "^1.1.4",
+    "@types/spinnies": "latest",
     "@types/yt-search": "^2.10.3",
-    "chai": "^5.1.0",
     "rollup": "^4.12.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-progress": "^1.1.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.0.2"
+    "tsup": "^8.0.2",
+    "typescript": "latest"
   }
 }

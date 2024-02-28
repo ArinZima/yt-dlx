@@ -2,12 +2,13 @@ import * as fs from "fs";
 import ytdlx from "../..";
 import fsx from "fs-extra";
 import colors from "colors";
-import * as chai from "chai";
+import * as bun from "bun:test";
 
-async function AutoDownloadTest() {
+// =======================================================[PASS-TEST]=======================================================
+bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
   try {
     let holder: any;
-    console.log(colors.bold.yellow("\n@test:"), "ytdlx.audio.single.custom()");
+    console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytdlx.audio.single.custom({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
@@ -18,7 +19,6 @@ async function AutoDownloadTest() {
     });
     switch (true) {
       case "status" in holder:
-        chai.expect(holder.status).to.equal(200);
         console.log(
           colors.bold.green("@pass:"),
           `with status ${holder.status}`
@@ -26,11 +26,10 @@ async function AutoDownloadTest() {
         await fsx.remove("audio");
         break;
       default:
-        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("audio");
-        process.exit(0);
+        throw (colors.bold.red("@error:"), holder);
     }
-    console.log(colors.bold.yellow("\n@test:"), "ytdlx.audio.single.custom()");
+    console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytdlx.audio.single.custom({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
@@ -42,7 +41,6 @@ async function AutoDownloadTest() {
     });
     switch (true) {
       case "status" in holder:
-        chai.expect(holder.status).to.equal(200);
         console.log(
           colors.bold.green("@pass:"),
           `with status ${holder.status}`
@@ -50,19 +48,19 @@ async function AutoDownloadTest() {
         await fsx.remove("audio");
         break;
       default:
-        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("audio");
-        process.exit(0);
+        throw (colors.bold.red("@error:"), holder);
     }
   } catch (error) {
-    console.error("\n", colors.bold.red("@error:"), error);
     await fsx.remove("audio");
+    throw (colors.bold.red("@error:"), error);
   }
-}
-async function StreamingTest() {
+});
+// =======================================================[PASS-TEST]=======================================================
+bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
   try {
     let holder: any;
-    console.log(colors.bold.yellow("\n@test:"), "ytdlx.audio.single.custom()");
+    console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytdlx.audio.single.custom({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
@@ -73,7 +71,6 @@ async function StreamingTest() {
     });
     switch (true) {
       case "stream" in holder && "filename" in holder:
-        chai.expect(holder.stream && holder.filename).to.exist;
         holder.stream.pipe(fs.createWriteStream(holder.filename));
         console.log(
           colors.bold.green("@pass:"),
@@ -82,12 +79,11 @@ async function StreamingTest() {
         await fsx.remove("audio");
         break;
       default:
-        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("audio");
-        process.exit(0);
+        throw (colors.bold.red("@error:"), holder);
     }
 
-    console.log(colors.bold.yellow("\n@test:"), "ytdlx.audio.single.custom()");
+    console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytdlx.audio.single.custom({
       query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
@@ -99,7 +95,6 @@ async function StreamingTest() {
     });
     switch (true) {
       case "stream" in holder && "filename" in holder:
-        chai.expect(holder.stream && holder.filename).to.exist;
         holder.stream.pipe(fs.createWriteStream(holder.filename));
         console.log(
           colors.bold.green("@pass:"),
@@ -108,19 +103,11 @@ async function StreamingTest() {
         await fsx.remove("audio");
         break;
       default:
-        console.error("\n", colors.bold.red("@error:"), holder);
         await fsx.remove("audio");
-        process.exit(0);
+        throw (colors.bold.red("@error:"), holder);
     }
   } catch (error) {
-    console.error("\n", colors.bold.red("@error:"), error);
     await fsx.remove("audio");
+    throw (colors.bold.red("@error:"), error);
   }
-}
-
-(async () => {
-  console.log(colors.bold.blue("@test type:"), "AutoDownloadTest()");
-  await AutoDownloadTest();
-  console.log(colors.bold.blue("@test type:"), "StreamingTest()");
-  await StreamingTest();
-})();
+});
