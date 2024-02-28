@@ -45,3 +45,60 @@ vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
     console.error(colors.red("@error:"), error.message);
   }
 });
+
+vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
+  try {
+    let metaTube:
+      | TypeVideo[]
+      | TypePlaylist[]
+      | VideoInfoType
+      | PlaylistInfoType;
+
+    metaTube = (await core.VideoInfo({
+      query: "dQw4w9WgXcQ",
+      screenshot: false,
+    })) as VideoInfoType;
+    if (metaTube) {
+      console.log(
+        colors.green("@pass:"),
+        "single video data received using video-id"
+      );
+    } else console.error(colors.red("@fail:"), metaTube);
+
+    metaTube = (await core.PlaylistInfo({
+      query: "PLRBp0Fe2GpgnIh0AiYKh7o7HnYAej-5ph",
+      screenshot: false,
+    })) as PlaylistInfoType;
+    if (metaTube) {
+      console.log(
+        colors.green("@pass:"),
+        "single playlist data received using playlist-id"
+      );
+    } else console.error(colors.red("@fail:"), metaTube);
+
+    metaTube = (await core.VideoInfo({
+      query: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      screenshot: false,
+    })) as VideoInfoType;
+    if (metaTube) {
+      console.log(
+        colors.green("@pass:"),
+        "single video data received using video-link"
+      );
+    } else console.error(colors.red("@fail:"), metaTube);
+
+    metaTube = (await core.PlaylistInfo({
+      query:
+        "https://www.youtube.com/playlist?list=PLRBp0Fe2GpgnIh0AiYKh7o7HnYAej-5ph",
+      screenshot: false,
+    })) as PlaylistInfoType;
+    if (metaTube) {
+      console.log(
+        colors.green("@pass:"),
+        "single playlist data received using playlist-link"
+      );
+    } else console.error(colors.red("@fail:"), metaTube);
+  } catch (error: any) {
+    console.error(colors.red("@error:"), error.message);
+  }
+});

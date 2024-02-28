@@ -77,7 +77,7 @@ export default async function Engine({
     default:
       console.log(
         colors.bold.green("@info:"),
-        "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlx"
+        "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx/yt-dlx"
       );
       return JSON.parse(TubeDlp);
   }
