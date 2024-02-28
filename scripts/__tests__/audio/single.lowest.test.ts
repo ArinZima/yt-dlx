@@ -3,7 +3,8 @@ import ytdlx from "../..";
 import fsx from "fs-extra";
 import colors from "colors";
 import * as bun from "bun:test";
-
+import * as vitest from "vitest";
+// =======================================================[PASS-TEST]=======================================================
 bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
   try {
     let holder: any;
