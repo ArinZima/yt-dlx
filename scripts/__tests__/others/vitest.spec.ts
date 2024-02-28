@@ -5,10 +5,10 @@ import type {
   VideoInfoType,
   PlaylistInfoType,
 } from "../../web/ytdlx_web";
-import * as bun from "bun:test";
+import * as vitest from "vitest";
 import core from "../../web/ytdlx_web";
 
-bun.test(colors.blue("\n\n@tesing: ") + "using bun", async () => {
+vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
   try {
     let metaTube:
       | TypeVideo[]
