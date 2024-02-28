@@ -65,11 +65,10 @@
     "yt"
   ],
   "dependencies": {
-    "@types/chai": "^4.3.12",
     "async-retry": "latest",
     "axios": "latest",
     "bun": "latest",
-    "chai": "^5.1.0",
+    "chai": "latest",
     "cheerio": "latest",
     "colors": "latest",
     "crypto": "latest",
@@ -87,6 +86,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/chai": "latest",
     "@rollup/plugin-json": "latest",
     "@rollup/plugin-typescript": "latest",
     "@types/async": "latest",
