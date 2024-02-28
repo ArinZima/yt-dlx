@@ -1562,19 +1562,20 @@ async function AudioLowest(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }
@@ -1784,19 +1785,20 @@ async function AudioHighest(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }
@@ -1938,19 +1940,20 @@ async function VideoLowest$1(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }
@@ -2092,19 +2095,20 @@ async function VideoHighest(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }
@@ -2219,19 +2223,20 @@ async function AudioVideoLowest(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }
@@ -2346,19 +2351,20 @@ async function AudioVideoHighest(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }
@@ -2533,19 +2539,20 @@ async function AudioQualityCustom(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }
@@ -2687,19 +2694,20 @@ async function VideoLowest(input) {
     catch (error) {
         if (error instanceof z.ZodError) {
             return {
-                message: error.errors.map((err) => err.message).join(", "),
+                message: colors.red("@error: ") +
+                    error.errors.map((error) => error.message).join(", "),
                 status: 500,
             };
         }
         else if (error instanceof Error) {
             return {
-                message: error.message,
+                message: colors.red("@error: ") + error.message,
                 status: 500,
             };
         }
         else {
             return {
-                message: "Internal server error",
+                message: colors.red("@error: ") + "internal server error",
                 status: 500,
             };
         }

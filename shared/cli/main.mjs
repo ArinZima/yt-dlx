@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import colors20 from 'colors';
+import colors28 from 'colors';
 import * as fs from 'fs';
 import fs__default from 'fs';
 import { load } from 'cheerio';
@@ -19,7 +19,7 @@ import minimist from 'minimist';
 
 function help() {
   return Promise.resolve(
-    colors20.bold.white(`
+    colors28.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -207,9 +207,9 @@ async function crawler() {
       await browser.close();
     switch (true) {
       case error instanceof Error:
-        throw new Error(colors20.red("@error: ") + error.message);
+        throw new Error(colors28.red("@error: ") + error.message);
       default:
-        throw new Error(colors20.red("@error: ") + "internal server error");
+        throw new Error(colors28.red("@error: ") + "internal server error");
     }
   }
 }
@@ -247,7 +247,7 @@ async function SearchVideos(input) {
     let TubeResp;
     let snapshot;
     spinnies.add(spin, {
-      text: colors20.green("@scrape: ") + "booting chromium..."
+      text: colors28.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
@@ -258,7 +258,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -266,7 +266,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
-              text: colors20.yellow("@scrape: ") + "took snapshot..."
+              text: colors28.yellow("@scrape: ") + "took snapshot..."
             });
           }
           content = await page.content();
@@ -305,7 +305,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors20.green("@info: ") + colors20.white("scrapping done")
+            text: colors28.green("@info: ") + colors28.white("scrapping done")
           });
           if (page)
             await page.close();
@@ -322,7 +322,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -330,7 +330,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
-              text: colors20.yellow("@scrape: ") + "took snapshot..."
+              text: colors28.yellow("@scrape: ") + "took snapshot..."
             });
           }
           const content2 = await page.content();
@@ -349,7 +349,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors20.green("@info: ") + colors20.white("scrapping done")
+            text: colors28.green("@info: ") + colors28.white("scrapping done")
           });
           if (page)
             await page.close();
@@ -360,7 +360,7 @@ async function SearchVideos(input) {
         return TubeResp;
       default:
         spinnies.fail(spin, {
-          text: colors20.red("@error: ") + colors20.white("wrong filter type provided.")
+          text: colors28.red("@error: ") + colors28.white("wrong filter type provided.")
         });
         if (page)
           await page.close();
@@ -376,12 +376,12 @@ async function SearchVideos(input) {
     switch (true) {
       case error instanceof ZodError:
         throw new Error(
-          colors20.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+          colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
         );
       case error instanceof Error:
-        throw new Error(colors20.red("@error: ") + error.message);
+        throw new Error(colors28.red("@error: ") + error.message);
       default:
-        throw new Error(colors20.red("@error: ") + "internal server error");
+        throw new Error(colors28.red("@error: ") + "internal server error");
     }
   }
 }
@@ -413,14 +413,14 @@ async function PlaylistInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors20.green("@scrape: ") + "booting chromium..."
+        text: colors28.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -428,7 +428,7 @@ async function PlaylistInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors20.yellow("@scrape: ") + "took snapshot..."
+          text: colors28.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const content = await page.content();
@@ -471,7 +471,7 @@ async function PlaylistInfo(input) {
         });
       });
       spinnies.succeed(spin, {
-        text: colors20.green("@info: ") + colors20.white("scrapping done")
+        text: colors28.green("@info: ") + colors28.white("scrapping done")
       });
       await page.close();
       await browser.close();
@@ -526,14 +526,14 @@ async function VideoInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors20.green("@scrape: ") + "booting chromium..."
+        text: colors28.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -541,7 +541,7 @@ async function VideoInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors20.yellow("@scrape: ") + "took snapshot..."
+          text: colors28.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const videoId = await YouTubeID(query);
@@ -588,7 +588,7 @@ async function VideoInfo(input) {
         videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
       spinnies.succeed(spin, {
-        text: colors20.green("@info: ") + colors20.white("scrapping done")
+        text: colors28.green("@info: ") + colors28.white("scrapping done")
       });
       await page.close();
       await browser.close();
@@ -787,18 +787,18 @@ async function Engine({
 }) {
   let videoId, TubeDlp;
   let TubeBody;
-  console.log(colors20.bold.green("@info: ") + `using yt-dlx version ${version}`);
+  console.log(colors28.bold.green("@info: ") + `using yt-dlx version ${version}`);
   if (!query || query.trim() === "") {
-    console.log(colors20.bold.red("@error: ") + "'query' is required...");
+    console.log(colors28.bold.red("@error: ") + "'query' is required...");
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors20.bold.red("@error: ") + "use extract_playlist_videos() for playlists..."
+      colors28.bold.red("@error: ") + "use extract_playlist_videos() for playlists..."
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors20.bold.green("@info: ") + `fetching metadata for: ${query}`
+      colors28.bold.green("@info: ") + `fetching metadata for: ${query}`
     );
     videoId = await YouTubeID(query);
   } else
@@ -811,12 +811,12 @@ async function Engine({
       });
       if (!TubeBody || TubeBody.length === 0) {
         console.log(
-          colors20.bold.red("@error: ") + "no data returned from server..."
+          colors28.bold.red("@error: ") + "no data returned from server..."
         );
         return null;
       } else if (TubeBody[0]) {
         console.log(
-          colors20.bold.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
+          colors28.bold.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
         );
         TubeDlp = await ytxc(TubeBody[0].videoLink);
       }
@@ -825,12 +825,12 @@ async function Engine({
       TubeBody = await ytdlx_web_default.VideoInfo({ query });
       if (!TubeBody) {
         console.log(
-          colors20.bold.red("@error: ") + "no data returned from server..."
+          colors28.bold.red("@error: ") + "no data returned from server..."
         );
         return null;
       } else {
         console.log(
-          colors20.bold.green("@info: ") + `preparing payload for ${TubeBody.title}`
+          colors28.bold.green("@info: ") + `preparing payload for ${TubeBody.title}`
         );
         TubeDlp = await ytxc(TubeBody.videoLink);
       }
@@ -839,12 +839,12 @@ async function Engine({
   switch (TubeDlp) {
     case null:
       console.log(
-        colors20.bold.red("@error: ") + "no data returned from server..."
+        colors28.bold.red("@error: ") + "no data returned from server..."
       );
       return null;
     default:
       console.log(
-        colors20.bold.green("@info:"),
+        colors28.bold.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlx"
       );
       return JSON.parse(TubeDlp);
@@ -964,7 +964,7 @@ async function get_playlist({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors20.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -975,7 +975,7 @@ async function get_playlist({
       });
       if (resp === void 0) {
         console.error(
-          colors20.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -990,18 +990,18 @@ async function get_playlist({
           if (metaTube === void 0)
             continue;
           console.log(
-            colors20.bold.green("INFO:"),
-            colors20.bold.green("<("),
+            colors28.bold.green("INFO:"),
+            colors28.bold.green("<("),
             metaTube.title,
-            colors20.bold.green("by"),
+            colors28.bold.green("by"),
             metaTube.author,
-            colors20.bold.green(")>")
+            colors28.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId))
             continue;
           proTubeArr.push({ ...metaTube });
         } catch (error) {
-          console.error(colors20.bold.red("@error: "), error);
+          console.error(colors28.bold.red("@error: "), error);
         }
       }
     }
@@ -1161,7 +1161,7 @@ async function extract_playlist_videos({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors20.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -1172,7 +1172,7 @@ async function extract_playlist_videos({
       });
       if (resp === void 0) {
         console.error(
-          colors20.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -1192,7 +1192,7 @@ async function extract_playlist_videos({
             proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors20.bold.red("@error: "), error);
+          console.error(colors28.bold.red("@error: "), error);
         }
       }
     }
@@ -1213,7 +1213,7 @@ async function bigEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors20.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1227,7 +1227,7 @@ async function bigEntry(metaBody) {
           return item;
       }
       console.log(
-        colors20.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1238,14 +1238,14 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  let color = colors20.green;
+  let color = colors28.green;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
   if (prog.percent < 20)
-    color = colors20.red;
+    color = colors28.red;
   else if (prog.percent < 80)
-    color = colors20.yellow;
+    color = colors28.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
@@ -1436,17 +1436,17 @@ async function AudioLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -1464,7 +1464,7 @@ async function bigEntry2(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors20.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1478,7 +1478,7 @@ async function bigEntry2(metaBody) {
           return item;
       }
       console.log(
-        colors20.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1664,17 +1664,17 @@ async function AudioHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -1819,17 +1819,17 @@ async function VideoLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -1974,17 +1974,17 @@ async function VideoHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -2100,17 +2100,17 @@ async function AudioVideoLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -2226,17 +2226,17 @@ async function AudioVideoHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -2416,17 +2416,17 @@ async function AudioQualityCustom(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -2571,17 +2571,17 @@ async function VideoLowest2(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -2624,7 +2624,7 @@ async function ListVideoLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors20.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2803,7 +2803,7 @@ async function ListVideoHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors20.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2998,7 +2998,7 @@ async function ListVideoQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors20.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3183,7 +3183,7 @@ async function ListAudioLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors20.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3398,7 +3398,7 @@ async function ListAudioHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors20.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3615,7 +3615,7 @@ async function ListAudioQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors20.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -5751,7 +5751,7 @@ async function ListAudioVideoLowest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors20.bold.red("ERROR: ") + video.title
+                  message: colors28.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5915,7 +5915,7 @@ async function ListAudioVideoHighest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors20.bold.red("ERROR: ") + video.title
+                  message: colors28.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -6017,7 +6017,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors20.green("Installed Version: yt-dlx@" + version));
+      console.error(colors28.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -6025,14 +6025,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.extract({
           query: proTube.query
@@ -6040,14 +6040,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "search-yt":
     case "s":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.search({
           query: proTube.query
@@ -6055,14 +6055,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.list_formats({
           query: proTube.query
@@ -6070,14 +6070,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "get-video-data":
     case "vi":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.get_video_data({
           query: proTube.query
@@ -6085,14 +6085,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio.single.highest({
           query: proTube.query
@@ -6100,14 +6100,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio.single.lowest({
           query: proTube.query
@@ -6115,14 +6115,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.video.single.highest({
           query: proTube.query
@@ -6130,14 +6130,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.video.single.lowest({
           query: proTube.query
@@ -6145,14 +6145,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio_video.single.highest({
           query: proTube.query
@@ -6160,14 +6160,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio_video.single.lowest({
           query: proTube.query
@@ -6175,17 +6175,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors20.red("error: no format"));
+        console.error(colors28.red("error: no format"));
       }
       scripts_default.audio.single.custom({
         query: proTube.query,
@@ -6194,17 +6194,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors20.red("error: no format"));
+        console.error(colors28.red("error: no format"));
       }
       scripts_default.video.single.custom({
         query: proTube.query,
@@ -6213,7 +6213,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
@@ -6222,7 +6222,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
@@ -6233,7 +6233,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors20.red(error));
+    console.error(colors28.red(error));
     process.exit();
   });
 } else
