@@ -18,27 +18,20 @@ export default async function Engine({
   let videoId: string | null, TubeDlp: any;
   let TubeBody: TypeVideo[] | TypePlaylist[] | VideoInfoType | PlaylistInfoType;
   console.log(
-    colors.bold.green("@info: ") +
-      `using yt-dlx version <(${version})>` +
-      colors.reset("")
+    colors.bold.green("@info: ") + `using yt-dlx version <(${version})>`
   );
   if (!query || query.trim() === "") {
-    console.log(
-      colors.bold.red("@error: ") + "'query' is required..." + colors.reset("")
-    );
+    console.log(colors.bold.red("@error: ") + "'query' is required...");
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
       colors.bold.red("@error: ") +
-        "use extract_playlist_videos() for playlists..." +
-        colors.reset("")
+        "use extract_playlist_videos() for playlists..."
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors.bold.green("@info: ") +
-        `fetching metadata for: <(${query})>` +
-        colors.reset("")
+      colors.bold.green("@info: ") + `fetching metadata for: <(${query})>`
     );
     videoId = await YouTubeID(query);
   } else videoId = await YouTubeID(query);
@@ -50,16 +43,13 @@ export default async function Engine({
       })) as TypeVideo[];
       if (!TubeBody || TubeBody.length === 0) {
         console.log(
-          colors.bold.red("@error: ") +
-            "no data returned from server..." +
-            colors.reset("")
+          colors.bold.red("@error: ") + "no data returned from server..."
         );
         return null;
       } else if (TubeBody[0]) {
         console.log(
           colors.bold.green("@info: ") +
-            `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` +
-            colors.reset("")
+            `preparing payload for <(${TubeBody[0].title}`
         );
         TubeDlp = await ytxc(TubeBody[0].videoLink);
       }
@@ -68,16 +58,13 @@ export default async function Engine({
       TubeBody = (await ytdlx_web.VideoInfo({ query: query })) as VideoInfoType;
       if (!TubeBody) {
         console.log(
-          colors.bold.red("@error: ") +
-            "no data returned from server..." +
-            colors.reset("")
+          colors.bold.red("@error: ") + "no data returned from server..."
         );
         return null;
       } else {
         console.log(
           colors.bold.green("@info: ") +
-            `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` +
-            colors.reset("")
+            `preparing payload for <(${TubeBody.title}`
         );
         TubeDlp = await ytxc(TubeBody.videoLink);
       }
@@ -86,9 +73,7 @@ export default async function Engine({
   switch (TubeDlp) {
     case null:
       console.log(
-        colors.bold.red("@error: ") +
-          "no data returned from server..." +
-          colors.reset("")
+        colors.bold.red("@error: ") + "no data returned from server..."
       );
       return null;
     default:
