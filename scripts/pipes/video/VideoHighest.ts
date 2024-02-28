@@ -150,7 +150,9 @@ export default async function VideoHighest(
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path.join(metaFold, metaName) : metaName,
+          filename: folderName
+            ? path.join(metaFold, metaName.replace("-.", "."))
+            : metaName.replace("-.", "."),
         };
 
       default:

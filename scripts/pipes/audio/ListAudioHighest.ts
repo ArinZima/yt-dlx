@@ -204,7 +204,9 @@ export default async function ListAudioHighest(
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path.join(metaFold, metaName) : metaName,
+            filename: folderName
+              ? path.join(metaFold, metaName.replace("-.", "."))
+              : metaName.replace("-.", "."),
           });
           break;
         default:

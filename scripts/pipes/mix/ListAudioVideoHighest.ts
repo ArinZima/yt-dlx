@@ -162,8 +162,8 @@ export default async function ListAudioVideoHighest(
                   results.push({
                     stream: readStream,
                     filename: folderName
-                      ? path.join(metaFold, metaName)
-                      : metaName,
+                      ? path.join(metaFold, metaName.replace("-.", "."))
+                      : metaName.replace("-.", "."),
                   });
                 } else {
                   await new Promise<void>((resolve, reject) => {
