@@ -9,7 +9,6 @@ const colors = {
 };
 
 const scripts = {
-  "start": "node .devcontainer/startup.mjs",
   "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
   "remake": "bun run clean && bun run make && bun run build",
   "remake:update": "bun run clean && bun run make && bun install --latest && bun run build",
