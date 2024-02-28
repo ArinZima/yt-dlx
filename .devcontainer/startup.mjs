@@ -9,33 +9,29 @@ const colors = {
 };
 
 const scripts = {
-  start: "node .devcontainer/startup.mjs",
-  setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
-  remake: "bun run clean && bun run make && bun run build",
-  "remake:update":
-    "bun run clean && bun run make && bun install --latest && bun run build",
-  upload:
-    "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
-  clean: "bun run clean:base && bun run clean:frontend",
+  "start": "node .devcontainer/startup.mjs",
+  "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
+  "remake": "bun run clean && bun run make && bun run build",
+  "remake:update": "bun run clean && bun run make && bun install --latest && bun run build",
+  "upload": "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
+  "clean": "bun run clean:base && bun run clean:frontend",
   "clean:base": "rm -rf node_modules temp shared bun.lockb",
   "clean:frontend": "cd frontend && rm -rf node_modules .next bun.lockb",
-  make: "bun run make:base && bun run make:frontend",
+  "make": "bun run make:base && bun run make:frontend",
   "make:base": "bun install",
   "make:frontend": "cd frontend && bun install",
-  build: "bun run build:base && bun run build:frontend",
-  "build:base":
-    "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
+  "build": "bun run build:base && bun run build:frontend",
+  "build:base": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
   "build:frontend": "cd frontend && bun run build",
-  update: "bun run make && bun run update:base && bun run update:frontend",
+  "update": "bun run make && bun run update:base && bun run update:frontend",
   "update:base": "bun install --latest",
   "update:frontend": "cd frontend && bun install --latest",
-  cli: "bun run link && bun run test:cli && bun run unlink",
-  spec: "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
-  test: "bun run test:base && bun run spec && bun run cli",
-  "test:base":
-    "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
-  "test:cli":
-    "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
+  "cli": "bun run link && bun run test:cli && bun run unlink",
+  "spec": "tsup 'scripts/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.mjs'",
+  "test": "bun run test:base && bun run test:scrape && bun run spec && bun run cli",
+  "test:scrape": "vitest --config 'vitest.config.mts'",
+  "test:base": "tsup 'scripts/__tests__' --outDir 'temp' && node 'temp/cjs.mjs'",
+  "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
 };
 
 function runScript() {
