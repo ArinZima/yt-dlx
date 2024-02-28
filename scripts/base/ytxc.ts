@@ -243,7 +243,7 @@ export default async function ytxc(url: string): Promise<any> {
           }
         }
       });
-      return {
+      return JSON.stringify({
         AudioTube:
           pushTube
             .filter((item: { Tube: string }) => item.Tube === "AudioTube")
@@ -260,7 +260,7 @@ export default async function ytxc(url: string): Promise<any> {
           pushTube
             .filter((item: { Tube: string }) => item.Tube === "metaTube")
             .map((item: { reTube: any }) => item.reTube)[0] || null,
-      };
+      });
     } else return null;
   } catch (error) {
     console.error("@error:", error);
