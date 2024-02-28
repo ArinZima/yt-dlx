@@ -766,7 +766,7 @@ async function ytxc(query, port, proxy, username, password) {
 }
 
 // package.json
-var version = "2.0.2";
+var version = "2.0.4";
 
 // scripts/base/agent.ts
 async function Engine({
