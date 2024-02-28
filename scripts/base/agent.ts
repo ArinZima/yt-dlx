@@ -17,9 +17,7 @@ export default async function Engine({
 }): Promise<any | null> {
   let videoId: string | null, TubeDlp: any;
   let TubeBody: TypeVideo[] | TypePlaylist[] | VideoInfoType | PlaylistInfoType;
-  console.log(
-    colors.bold.green("@info: ") + `using yt-dlx version <(${version})>`
-  );
+  console.log(colors.bold.green("@info: ") + `using yt-dlx version ${version}`);
   if (!query || query.trim() === "") {
     console.log(colors.bold.red("@error: ") + "'query' is required...");
     return null;
@@ -31,7 +29,7 @@ export default async function Engine({
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors.bold.green("@info: ") + `fetching metadata for: <(${query})>`
+      colors.bold.green("@info: ") + `fetching metadata for: ${query}`
     );
     videoId = await YouTubeID(query);
   } else videoId = await YouTubeID(query);
@@ -49,7 +47,7 @@ export default async function Engine({
       } else if (TubeBody[0]) {
         console.log(
           colors.bold.green("@info: ") +
-            `preparing payload for <(${TubeBody[0].title}`
+            `preparing payload for ${TubeBody[0].title}`
         );
         TubeDlp = await ytxc(TubeBody[0].videoLink);
       }
@@ -64,7 +62,7 @@ export default async function Engine({
       } else {
         console.log(
           colors.bold.green("@info: ") +
-            `preparing payload for <(${TubeBody.title}`
+            `preparing payload for ${TubeBody.title}`
         );
         TubeDlp = await ytxc(TubeBody.videoLink);
       }
