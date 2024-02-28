@@ -697,7 +697,7 @@ async function ytxc(url) {
   try {
     const metaTube = await retry__default.default(
       async (bail) => {
-        const result = await bun.$`util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --proxy "socks5://127.0.0.1:9050" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
+        const result = await bun.$`util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
         if (!result)
           bail(new Error(result));
         else
@@ -796,12 +796,12 @@ async function ytxc(url) {
           }
         }
       });
-      return {
+      return JSON.stringify({
         AudioTube: pushTube.filter((item) => item.Tube === "AudioTube").map((item) => item.reTube) || null,
         VideoTube: pushTube.filter((item) => item.Tube === "VideoTube").map((item) => item.reTube) || null,
         HDRVideoTube: pushTube.filter((item) => item.Tube === "HDRVideoTube").map((item) => item.reTube) || null,
         metaTube: pushTube.filter((item) => item.Tube === "metaTube").map((item) => item.reTube)[0] || null
-      };
+      });
     } else
       return null;
   } catch (error) {
@@ -819,9 +819,7 @@ async function Engine({
 }) {
   let videoId, TubeDlp;
   let TubeBody;
-  console.log(
-    colors20__default.default.bold.green("@info: ") + `using yt-dlx version <(${version})>`
-  );
+  console.log(colors20__default.default.bold.green("@info: ") + `using yt-dlx version ${version}`);
   if (!query || query.trim() === "") {
     console.log(colors20__default.default.bold.red("@error: ") + "'query' is required...");
     return null;
@@ -832,7 +830,7 @@ async function Engine({
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors20__default.default.bold.green("@info: ") + `fetching metadata for: <(${query})>`
+      colors20__default.default.bold.green("@info: ") + `fetching metadata for: ${query}`
     );
     videoId = await YouTubeID(query);
   } else
@@ -850,7 +848,7 @@ async function Engine({
         return null;
       } else if (TubeBody[0]) {
         console.log(
-          colors20__default.default.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].title}`
+          colors20__default.default.bold.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
         );
         TubeDlp = await ytxc(TubeBody[0].videoLink);
       }
@@ -864,7 +862,7 @@ async function Engine({
         return null;
       } else {
         console.log(
-          colors20__default.default.bold.green("@info: ") + `preparing payload for <(${TubeBody.title}`
+          colors20__default.default.bold.green("@info: ") + `preparing payload for ${TubeBody.title}`
         );
         TubeDlp = await ytxc(TubeBody.videoLink);
       }

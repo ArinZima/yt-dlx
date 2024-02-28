@@ -825,7 +825,7 @@ function sizeFormat(filesize) {
 async function ytxc(url) {
     try {
         const metaTube = await retry(async (bail) => {
-            const result = await bun.$ `util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --proxy "socks5://127.0.0.1:9050" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
+            const result = await bun.$ `util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
             if (!result)
                 bail(new Error(result));
             else
@@ -929,7 +929,7 @@ async function ytxc(url) {
                     }
                 }
             });
-            return {
+            return JSON.stringify({
                 AudioTube: pushTube
                     .filter((item) => item.Tube === "AudioTube")
                     .map((item) => item.reTube) || null,
@@ -942,7 +942,7 @@ async function ytxc(url) {
                 metaTube: pushTube
                     .filter((item) => item.Tube === "metaTube")
                     .map((item) => item.reTube)[0] || null,
-            };
+            });
         }
         else
             return null;
@@ -958,7 +958,7 @@ var version = "2.0.4";
 async function Engine({ query, }) {
     let videoId, TubeDlp;
     let TubeBody;
-    console.log(colors.bold.green("@info: ") + `using yt-dlx version <(${version})>`);
+    console.log(colors.bold.green("@info: ") + `using yt-dlx version ${version}`);
     if (!query || query.trim() === "") {
         console.log(colors.bold.red("@error: ") + "'query' is required...");
         return null;
@@ -969,7 +969,7 @@ async function Engine({ query, }) {
         return null;
     }
     else if (/https/i.test(query) && !/list/i.test(query)) {
-        console.log(colors.bold.green("@info: ") + `fetching metadata for: <(${query})>`);
+        console.log(colors.bold.green("@info: ") + `fetching metadata for: ${query}`);
         videoId = await YouTubeID(query);
     }
     else
@@ -986,7 +986,7 @@ async function Engine({ query, }) {
             }
             else if (TubeBody[0]) {
                 console.log(colors.bold.green("@info: ") +
-                    `preparing payload for <(${TubeBody[0].title}`);
+                    `preparing payload for ${TubeBody[0].title}`);
                 TubeDlp = await ytxc(TubeBody[0].videoLink);
             }
             break;
@@ -998,7 +998,7 @@ async function Engine({ query, }) {
             }
             else {
                 console.log(colors.bold.green("@info: ") +
-                    `preparing payload for <(${TubeBody.title}`);
+                    `preparing payload for ${TubeBody.title}`);
                 TubeDlp = await ytxc(TubeBody.videoLink);
             }
             break;
