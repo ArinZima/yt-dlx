@@ -2,6 +2,7 @@ import * as fs from "fs";
 import ytdlx from "../..";
 import fsx from "fs-extra";
 import colors from "colors";
+import * as chai from "chai";
 import * as bun from "bun:test";
 // =======================================================[PASS-TEST]=======================================================
 bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
@@ -17,13 +18,16 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        console.log(holder.status);
-        chai.expect(holder.status).to.equal(200);
-        console.log(
-          colors.bold.green("@pass:"),
-          `with status ${holder.status}`
-        );
-        await fsx.remove("audio");
+        chai
+          .expect(holder.status)
+          .to.equal(200)
+          .and.satisfy(async () => {
+            console.log(
+              colors.bold.green("@pass:"),
+              `with status ${holder.status}`
+            );
+            await fsx.remove("audio");
+          });
         break;
       default:
         await fsx.remove("audio");
@@ -40,12 +44,16 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        chai.expect(holder.status).to.equal(200);
-        console.log(
-          colors.bold.green("@pass:"),
-          `with status ${holder.status}`
-        );
-        await fsx.remove("audio");
+        chai
+          .expect(holder.status)
+          .to.equal(200)
+          .and.satisfy(async () => {
+            console.log(
+              colors.bold.green("@pass:"),
+              `with status ${holder.status}`
+            );
+            await fsx.remove("audio");
+          });
         break;
       default:
         await fsx.remove("audio");
@@ -70,13 +78,16 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
     });
     switch (true) {
       case "stream" in holder && "filename" in holder:
-        chai.expect(holder.stream && holder.filename).to.exist;
-        holder.stream.pipe(fs.createWriteStream(holder.filename));
-        console.log(
-          colors.bold.green("@pass:"),
-          `with filename ${holder.filename}`
-        );
-        await fsx.remove("audio");
+        chai
+          .expect(holder.stream && holder.filename)
+          .to.exist.and.satisfy(async () => {
+            holder.stream.pipe(fs.createWriteStream(holder.filename));
+            console.log(
+              colors.bold.green("@pass:"),
+              `with filename ${holder.filename}`
+            );
+            await fsx.remove("audio");
+          });
         break;
       default:
         await fsx.remove("audio");
@@ -94,13 +105,16 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
     });
     switch (true) {
       case "stream" in holder && "filename" in holder:
-        chai.expect(holder.stream && holder.filename).to.exist;
-        holder.stream.pipe(fs.createWriteStream(holder.filename));
-        console.log(
-          colors.bold.green("@pass:"),
-          `with filename ${holder.filename}`
-        );
-        await fsx.remove("audio");
+        chai
+          .expect(holder.stream && holder.filename)
+          .to.exist.and.satisfy(async () => {
+            holder.stream.pipe(fs.createWriteStream(holder.filename));
+            console.log(
+              colors.bold.green("@pass:"),
+              `with filename ${holder.filename}`
+            );
+            await fsx.remove("audio");
+          });
         break;
       default:
         await fsx.remove("audio");
