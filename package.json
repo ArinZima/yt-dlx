@@ -80,23 +80,28 @@
     "readline-sync": "^1.4.10",
     "spinnies": "^0.5.1",
     "stream": "^0.0.2",
-    "yt-dlx": "^2.0.2",
     "yt-search": "^2.10.4",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "crypto": "^1.0.1",
+    "vitest": "latest",
+    "yt-dlx": "latest"
   },
   "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "latest",
+    "@types/async": "latest",
+    "@types/async-retry": "latest",
+    "@types/cheerio": "latest",
+    "@types/node": "latest",
+    "@types/spinnies": "latest",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/async": "^3.2.24",
-    "@types/async-retry": "^1.4.8",
     "@types/chai": "^4.3.11",
     "@types/fluent-ffmpeg": "^2.1.24",
     "@types/fs-extra": "^11.0.4",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^20.11.19",
     "@types/readline-sync": "^1.4.8",
     "@types/rollup-plugin-progress": "^1.1.4",
-    "@types/spinnies": "^0.5.3",
     "@types/yt-search": "^2.10.3",
     "chai": "^5.1.0",
     "rollup": "^4.12.0",
@@ -104,7 +109,6 @@
     "rollup-plugin-progress": "^1.1.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.0.2",
-    "typescript": "^5.3.3"
+    "tsup": "^8.0.2"
   }
 }

@@ -2,17 +2,18 @@
 import { fileURLToPath } from 'url';
 import * as path3 from 'path';
 import path3__default from 'path';
-import colors19 from 'colors';
+import colors20 from 'colors';
+import * as fs from 'fs';
+import fs__default from 'fs';
 import { load } from 'cheerio';
 import retry from 'async-retry';
 import spinClient from 'spinnies';
-import puppeteer from 'puppeteer';
+import * as z6 from 'zod';
+import { z, ZodError } from 'zod';
 import { randomUUID } from 'crypto';
+import puppeteer from 'puppeteer';
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import * as z3 from 'zod';
-import { z, ZodError } from 'zod';
-import * as fs from 'fs';
 import fluentffmpeg from 'fluent-ffmpeg';
 import axios from 'axios';
 import { Readable, Writable } from 'stream';
@@ -24,7 +25,7 @@ var getDirname = () => path3__default.dirname(getFilename());
 var __dirname = /* @__PURE__ */ getDirname();
 function help() {
   return Promise.resolve(
-    colors19.bold.white(`
+    colors20.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -182,39 +183,374 @@ function YouTubeID(videoLink) {
     resolve(null);
   });
 }
-
-// scripts/web/webVideo.ts
-var spinnies = new spinClient();
-async function webVideo({
-  videoLink
-}) {
-  if (!videoLink)
-    return void 0;
-  const retryOptions = {
-    maxTimeout: 6e3,
-    minTimeout: 1e3,
-    retries: 4
-  };
-  const spin = randomUUID();
+var browser;
+var page;
+async function crawler() {
   try {
-    const metaTube = await retry(async () => {
-      const browser = await puppeteer.launch({
-        userDataDir: "other",
-        headless: true
-      });
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-zygote",
+        // Disables the use of the zygote process for forking child processes
+        "--incognito",
+        // Launch Chrome in incognito mode to avoid cookies and cache interference
+        "--no-sandbox",
+        // Disable the sandbox mode (useful for running in Docker containers)
+        "--enable-automation",
+        // Enable automation in Chrome (e.g., for Selenium)
+        "--disable-dev-shm-usage"
+        // Disable /dev/shm usage (useful for running in Docker containers)
+      ]
+    });
+    page = await browser.newPage();
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
+    );
+  } catch (error) {
+    if (page)
+      await page.close();
+    if (browser)
+      await browser.close();
+    switch (true) {
+      case error instanceof Error:
+        throw new Error(colors20.red("@error: ") + error.message);
+      default:
+        throw new Error(colors20.red("@error: ") + "internal server error");
+    }
+  }
+}
+
+// scripts/web/api/SearchVideos.ts
+async function SearchVideos(input) {
+  try {
+    await crawler();
+    const QuerySchema = z.object({
+      query: z.string().min(1).refine(
+        async (query2) => {
+          const result = await YouTubeID(query2);
+          return result === null;
+        },
+        {
+          message: "Query must not be a YouTube video/Playlist link"
+        }
+      ),
+      screenshot: z.boolean().optional()
+    });
+    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const retryOptions = {
+      maxTimeout: 6e3,
+      minTimeout: 1e3,
+      retries: 4
+    };
+    let url;
+    let $;
+    const spin = randomUUID();
+    let content;
+    let metaTube = [];
+    const spinnies = new spinClient();
+    let videoElements;
+    let playlistMeta = [];
+    let TubeResp;
+    let snapshot;
+    spinnies.add(spin, {
+      text: colors20.green("@scrape: ") + "booting chromium..."
+    });
+    switch (input.type) {
+      case "video":
+        TubeResp = await retry(async () => {
+          url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAQ%253D%253D";
+          await page.goto(url);
+          for (let i = 0; i < 40; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
+          spinnies.update(spin, {
+            text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+          });
+          if (screenshot) {
+            snapshot = await page.screenshot({
+              path: "TypeVideo.png"
+            });
+            fs__default.writeFileSync("TypeVideo.png", snapshot);
+            spinnies.update(spin, {
+              text: colors20.yellow("@scrape: ") + "took snapshot..."
+            });
+          }
+          content = await page.content();
+          $ = load(content);
+          videoElements = $(
+            "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
+          );
+          videoElements.each(async (_, vide) => {
+            const videoId = await YouTubeID(
+              "https://www.youtube.com" + $(vide).find("a").attr("href")
+            );
+            const authorContainer = $(vide).find(".ytd-channel-name a");
+            const uploadedOnElement = $(vide).find(
+              ".inline-metadata-item.style-scope.ytd-video-meta-block"
+            );
+            metaTube.push({
+              title: $(vide).find("#video-title").text().trim() || void 0,
+              views: $(vide).find(
+                ".inline-metadata-item.style-scope.ytd-video-meta-block"
+              ).filter(
+                (_2, vide2) => $(vide2).text().includes("views")
+              ).text().trim().replace(/ views/g, "") || void 0,
+              author: authorContainer.text().trim() || void 0,
+              videoId,
+              uploadOn: uploadedOnElement.length >= 2 ? $(uploadedOnElement[1]).text().trim() : void 0,
+              authorUrl: "https://www.youtube.com" + authorContainer.attr("href") || void 0,
+              videoLink: "https://www.youtube.com/watch?v=" + videoId,
+              thumbnailUrls: [
+                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/default.jpg`
+              ],
+              description: $(vide).find(".metadata-snippet-text").text().trim() || void 0
+            });
+          });
+          spinnies.succeed(spin, {
+            text: colors20.green("@info: ") + colors20.white("scrapping done")
+          });
+          if (page)
+            await page.close();
+          if (browser)
+            await browser.close();
+          return metaTube;
+        }, retryOptions);
+        return TubeResp;
+      case "playlist":
+        TubeResp = await retry(async () => {
+          url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAw%253D%253D";
+          await page.goto(url);
+          for (let i = 0; i < 80; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
+          spinnies.update(spin, {
+            text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+          });
+          if (screenshot) {
+            snapshot = await page.screenshot({
+              path: "TypePlaylist.png"
+            });
+            fs__default.writeFileSync("TypePlaylist.png", snapshot);
+            spinnies.update(spin, {
+              text: colors20.yellow("@scrape: ") + "took snapshot..."
+            });
+          }
+          const content2 = await page.content();
+          const $2 = load(content2);
+          const playlistElements = $2("ytd-playlist-renderer");
+          playlistElements.each((_index, element) => {
+            const playlistLink = $2(element).find(".style-scope.ytd-playlist-renderer #view-more a").attr("href");
+            const vCount = $2(element).text().trim();
+            playlistMeta.push({
+              title: $2(element).find(".style-scope.ytd-playlist-renderer #video-title").text().replace(/\s+/g, " ").trim() || void 0,
+              author: $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text().replace(/\s+/g, " ").trim() || void 0,
+              playlistId: playlistLink.split("list=")[1],
+              playlistLink: "https://www.youtube.com" + playlistLink,
+              authorUrl: $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") ? "https://www.youtube.com" + $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") : void 0,
+              videoCount: parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) || void 0
+            });
+          });
+          spinnies.succeed(spin, {
+            text: colors20.green("@info: ") + colors20.white("scrapping done")
+          });
+          if (page)
+            await page.close();
+          if (browser)
+            await browser.close();
+          return playlistMeta;
+        }, retryOptions);
+        return TubeResp;
+      default:
+        spinnies.fail(spin, {
+          text: colors20.red("@error: ") + colors20.white("wrong filter type provided.")
+        });
+        if (page)
+          await page.close();
+        if (browser)
+          await browser.close();
+        return void 0;
+    }
+  } catch (error) {
+    if (page)
+      await page.close();
+    if (browser)
+      await browser.close();
+    switch (true) {
+      case error instanceof ZodError:
+        throw new Error(
+          colors20.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        );
+      case error instanceof Error:
+        throw new Error(colors20.red("@error: ") + error.message);
+      default:
+        throw new Error(colors20.red("@error: ") + "internal server error");
+    }
+  }
+}
+async function PlaylistInfo(input) {
+  try {
+    await crawler();
+    const spinnies = new spinClient();
+    const QuerySchema = z.object({
+      query: z.string().min(1).refine(
+        async (query2) => {
+          const result = await YouTubeID(query2);
+          return result !== null;
+        },
+        {
+          message: "Query must be a valid YouTube Playlist link."
+        }
+      ),
+      screenshot: z.boolean().optional()
+    });
+    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const retryOptions = {
+      maxTimeout: 6e3,
+      minTimeout: 1e3,
+      retries: 4
+    };
+    let metaTube = [];
+    const spin = randomUUID();
+    let TubeResp;
+    let snapshot;
+    TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors19.green("@scrape: ") + "booting chromium..."
+        text: colors20.green("@scrape: ") + "booting chromium..."
       });
-      const page = await browser.newPage();
-      await page.setUserAgent(
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      );
-      const videoId = await YouTubeID(videoLink);
-      if (!videoId) {
-        throw new Error("Failed to extract video ID");
+      await page.goto(query);
+      for (let i = 0; i < 40; i++) {
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
-      const newLink = "https://www.youtube.com/watch?v=" + videoId;
-      await page.goto(newLink);
+      spinnies.update(spin, {
+        text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+      });
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "FilterVideo.png"
+        });
+        fs__default.writeFileSync("FilterVideo.png", snapshot);
+        spinnies.update(spin, {
+          text: colors20.yellow("@scrape: ") + "took snapshot..."
+        });
+      }
+      const content = await page.content();
+      const $ = load(content);
+      const playlistTitle = $(
+        "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
+      ).text().trim();
+      const videoCountText = $("yt-formatted-string.byline-item").text();
+      const playlistVideoCount = parseInt(videoCountText.match(/\d+/)[0]);
+      const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
+      const playlistViews = parseInt(
+        viewsText.replace(/,/g, "").match(/\d+/)[0]
+      );
+      let playlistDescription = $("span#plain-snippet-text").text();
+      $("ytd-playlist-video-renderer").each(async (_index, element) => {
+        const title = $(element).find("h3").text().trim();
+        const videoLink = "https://www.youtube.com" + $(element).find("a").attr("href");
+        const videoId = await YouTubeID(videoLink);
+        const newLink = "https://www.youtube.com/watch?v=" + videoId;
+        const author = $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text();
+        const authorUrl = "https://www.youtube.com" + $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href");
+        const views = $(element).find(".style-scope.ytd-video-meta-block span:first-child").text();
+        const ago = $(element).find(".style-scope.ytd-video-meta-block span:last-child").text();
+        const thumbnailUrls = [
+          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/default.jpg`
+        ];
+        metaTube.push({
+          ago,
+          author,
+          videoId,
+          authorUrl,
+          thumbnailUrls,
+          videoLink: newLink,
+          title: title.trim(),
+          views: views.replace(/ views/g, "")
+        });
+      });
+      spinnies.succeed(spin, {
+        text: colors20.green("@info: ") + colors20.white("scrapping done")
+      });
+      await page.close();
+      await browser.close();
+      return {
+        playlistVideos: metaTube,
+        playlistDescription: playlistDescription.trim(),
+        playlistVideoCount,
+        playlistViews,
+        playlistTitle
+      };
+    }, retryOptions);
+    return TubeResp;
+  } catch (error) {
+    if (page)
+      await page.close();
+    if (browser)
+      await browser.close();
+    switch (true) {
+      case error instanceof ZodError:
+        throw error.errors.map((err) => err.message).join(", ");
+      case error instanceof Error:
+        throw error.message;
+      default:
+        throw "Internal server error";
+    }
+  }
+}
+async function VideoInfo(input) {
+  try {
+    await crawler();
+    const spinnies = new spinClient();
+    const QuerySchema = z.object({
+      query: z.string().min(1).refine(
+        async (query2) => {
+          const result = await YouTubeID(query2);
+          return result !== null;
+        },
+        {
+          message: "Query must be a valid YouTube video link."
+        }
+      ),
+      screenshot: z.boolean().optional()
+    });
+    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const retryOptions = {
+      maxTimeout: 6e3,
+      minTimeout: 1e3,
+      retries: 4
+    };
+    let TubeResp;
+    const spin = randomUUID();
+    let snapshot;
+    TubeResp = await retry(async () => {
+      spinnies.add(spin, {
+        text: colors20.green("@scrape: ") + "booting chromium..."
+      });
+      await page.goto(query);
+      for (let i = 0; i < 40; i++) {
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+      }
+      spinnies.update(spin, {
+        text: colors20.yellow("@scrape: ") + "waiting for hydration..."
+      });
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "FilterVideo.png"
+        });
+        fs__default.writeFileSync("FilterVideo.png", snapshot);
+        spinnies.update(spin, {
+          text: colors20.yellow("@scrape: ") + "took snapshot..."
+        });
+      }
+      const videoId = await YouTubeID(query);
       await page.waitForSelector(
         "yt-formatted-string.style-scope.ytd-watch-metadata",
         { timeout: 1e4 }
@@ -248,205 +584,46 @@ async function webVideo({
         `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/default.jpg`
       ];
-      const data = {
+      const metaTube = {
         views,
         author,
         videoId,
+        uploadOn,
         thumbnailUrls,
-        videoLink: newLink,
-        title,
-        uploadOn
+        title: title.trim(),
+        videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
+      spinnies.succeed(spin, {
+        text: colors20.green("@info: ") + colors20.white("scrapping done")
+      });
+      await page.close();
       await browser.close();
-      return data;
+      return metaTube;
     }, retryOptions);
-    spinnies.succeed(spin, {
-      text: colors19.yellow("@info: ") + colors19.white("scrapping done, video found " + metaTube.title)
-    });
-    return metaTube;
+    return TubeResp;
   } catch (error) {
-    spinnies.fail(spin, {
-      text: colors19.red("@error: ") + error.message
-    });
-    return void 0;
-  }
-}
-var spinnies2 = new spinClient();
-async function webSearch({
-  query
-}) {
-  if (!query)
-    return void 0;
-  const retryOptions = {
-    maxTimeout: 6e3,
-    minTimeout: 1e3,
-    retries: 4
-  };
-  const spin = randomUUID();
-  try {
-    const metaTube = await retry(async () => {
-      const data = [];
-      const browser = await puppeteer.launch({
-        userDataDir: "other",
-        headless: true
-      });
-      spinnies2.add(spin, {
-        text: colors19.green("@scrape: ") + "booting chromium..."
-      });
-      const page = await browser.newPage();
-      await page.setUserAgent(
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      );
-      const searchUrl = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
-      spinnies2.update(spin, {
-        text: colors19.yellow("@scrape: ") + "waiting for hydration..."
-      });
-      await page.goto(searchUrl);
-      for (let i = 0; i < 5; i++) {
-        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-      }
-      const content = await page.content();
-      const $ = load(content);
-      const videoElements = $(
-        "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
-      );
-      videoElements.each(async (_, vide) => {
-        const videoId = await YouTubeID(
-          "https://www.youtube.com" + $(vide).find("a").attr("href")
-        );
-        const authorContainer = $(vide).find(".ytd-channel-name a");
-        const uploadedOnElement = $(vide).find(
-          ".inline-metadata-item.style-scope.ytd-video-meta-block"
-        );
-        data.push({
-          title: $(vide).find("#video-title").text().trim() || void 0,
-          views: $(vide).find(".inline-metadata-item.style-scope.ytd-video-meta-block").filter((_2, vide2) => $(vide2).text().includes("views")).text().trim().replace(/ views/g, "") || void 0,
-          author: authorContainer.text().trim() || void 0,
-          videoId,
-          uploadOn: uploadedOnElement.length >= 2 ? $(uploadedOnElement[1]).text().trim() : void 0,
-          authorUrl: "https://www.youtube.com" + authorContainer.attr("href") || void 0,
-          videoLink: "https://www.youtube.com/watch?v=" + videoId,
-          thumbnailUrls: [
-            `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/default.jpg`
-          ],
-          description: $(vide).find(".metadata-snippet-text").text().trim() || void 0
-        });
-      });
+    if (page)
+      await page.close();
+    if (browser)
       await browser.close();
-      return data;
-    }, retryOptions);
-    spinnies2.succeed(spin, {
-      text: colors19.yellow("@info: ") + colors19.white("scrapping done, total videos found " + metaTube.length)
-    });
-    return metaTube;
-  } catch (error) {
-    spinnies2.fail(spin, {
-      text: colors19.red("@error: ") + error.message
-    });
-    return void 0;
-  }
-}
-var spinnies3 = new spinClient();
-async function webPlaylist({
-  playlistLink
-}) {
-  const retryOptions = {
-    maxTimeout: 6e3,
-    minTimeout: 1e3,
-    retries: 4
-  };
-  const spin = randomUUID();
-  try {
-    const metaTube = await retry(async () => {
-      const playlistData = [];
-      const browser = await puppeteer.launch({
-        userDataDir: "other",
-        headless: true
-      });
-      spinnies3.add(spin, {
-        text: colors19.green("@scrape: ") + "booting chromium..."
-      });
-      const page = await browser.newPage();
-      await page.setUserAgent(
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      );
-      await page.goto(playlistLink);
-      for (let i = 0; i < 5; i++) {
-        await page.evaluate(() => {
-          window.scrollBy(0, window.innerHeight);
-        });
-      }
-      spinnies3.update(spin, {
-        text: colors19.yellow("@scrape: ") + "waiting for hydration..."
-      });
-      const content = await page.content();
-      const $ = load(content);
-      const playlistTitle = $(
-        "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
-      ).text().trim();
-      const videoCountText = $("yt-formatted-string.byline-item").text();
-      const videoCount = parseInt(videoCountText.match(/\d+/)[0]);
-      const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
-      const views = viewsText.replace(/,/g, "").match(/\d+/)[0];
-      let playlistDescription = $("span#plain-snippet-text").text();
-      const VideoElements = $("ytd-playlist-video-renderer");
-      VideoElements.each(async (_, vide) => {
-        const title = $(vide).find("h3").text().trim();
-        const videoLink = "https://www.youtube.com" + $(vide).find("a").attr("href");
-        const videoId = await YouTubeID(videoLink);
-        const newLink = "https://www.youtube.com/watch?v=" + videoId;
-        const author = $(vide).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text();
-        const authorUrl = "https://www.youtube.com" + $(vide).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href");
-        const views2 = $(vide).find(".style-scope.ytd-video-meta-block span:first-child").text();
-        const ago = $(vide).find(".style-scope.ytd-video-meta-block span:last-child").text();
-        const thumbnailUrls = [
-          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/default.jpg`
-        ];
-        playlistData.push({
-          ago,
-          title,
-          author,
-          videoId,
-          authorUrl,
-          thumbnailUrls,
-          videoLink: newLink,
-          views: views2.replace(/ views/g, "")
-        });
-      });
-      await browser.close();
-      return {
-        views,
-        count: videoCount,
-        videos: playlistData,
-        title: playlistTitle,
-        description: playlistDescription.trim()
-      };
-    }, retryOptions);
-    spinnies3.succeed(spin, {
-      text: colors19.yellow("@info: ") + colors19.white(
-        "scrapping done, total playlist videos found " + metaTube.videos.length
-      )
-    });
-    return metaTube;
-  } catch (error) {
-    spinnies3.fail(spin, {
-      text: colors19.red("@error: ") + error.message
-    });
-    return void 0;
+    switch (true) {
+      case error instanceof ZodError:
+        throw error.errors.map((err) => err.message).join(", ");
+      case error instanceof Error:
+        throw error.message;
+      default:
+        throw "Internal server error";
+    }
   }
 }
 
 // scripts/web/ytdlx_web.ts
-var ytdlx_web = { webPlaylist, webSearch, webVideo };
-var ytdlx_web_default = ytdlx_web;
+var core = {
+  SearchVideos,
+  PlaylistInfo,
+  VideoInfo
+};
+var ytdlx_web_default = core;
 
 // scripts/pipes/command/search.ts
 async function search({ query }) {
@@ -597,21 +774,21 @@ async function Engine({
 }) {
   let videoId, TubeDlp, TubeBody;
   console.log(
-    colors19.bold.green("@info: ") + `using yt-dlx version <(${version})>` + colors19.reset("")
+    colors20.bold.green("@info: ") + `using yt-dlx version <(${version})>` + colors20.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors19.bold.red("@error: ") + "'query' is required..." + colors19.reset("")
+      colors20.bold.red("@error: ") + "'query' is required..." + colors20.reset("")
     );
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors19.bold.red("@error: ") + "use extract_playlist_videos() for playlists..." + colors19.reset("")
+      colors20.bold.red("@error: ") + "use extract_playlist_videos() for playlists..." + colors20.reset("")
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors19.bold.green("@info: ") + `fetching metadata for: <(${query})>` + colors19.reset("")
+      colors20.bold.green("@info: ") + `fetching metadata for: <(${query})>` + colors20.reset("")
     );
     videoId = await YouTubeID(query);
   } else
@@ -621,12 +798,12 @@ async function Engine({
       TubeBody = await ytdlx_web_default.webSearch({ query });
       if (TubeBody === null) {
         console.log(
-          colors19.bold.red("@error: ") + "no data returned from server..." + colors19.reset("")
+          colors20.bold.red("@error: ") + "no data returned from server..." + colors20.reset("")
         );
         return null;
       }
       console.log(
-        colors19.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` + colors19.reset("")
+        colors20.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` + colors20.reset("")
       );
       TubeDlp = await ytxc(TubeBody[0].videoLink);
       break;
@@ -634,12 +811,12 @@ async function Engine({
       TubeBody = await ytdlx_web_default.webVideo({ videoLink: query });
       if (TubeBody === null) {
         console.log(
-          colors19.bold.red("@error: ") + "no data returned from server..." + colors19.reset("")
+          colors20.bold.red("@error: ") + "no data returned from server..." + colors20.reset("")
         );
         return null;
       }
       console.log(
-        colors19.bold.green("@info: ") + `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` + colors19.reset("")
+        colors20.bold.green("@info: ") + `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` + colors20.reset("")
       );
       TubeDlp = await ytxc(TubeBody.videoLink);
       break;
@@ -647,12 +824,12 @@ async function Engine({
   switch (TubeDlp) {
     case null:
       console.log(
-        colors19.bold.red("@error: ") + "no data returned from server..." + colors19.reset("")
+        colors20.bold.red("@error: ") + "no data returned from server..." + colors20.reset("")
       );
       return null;
     default:
       console.log(
-        colors19.bold.green("@info:"),
+        colors20.bold.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlx"
       );
       return JSON.parse(TubeDlp);
@@ -772,7 +949,7 @@ async function get_playlist({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors19.bold.red("@error: "),
+          colors20.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -783,7 +960,7 @@ async function get_playlist({
       });
       if (resp === void 0) {
         console.error(
-          colors19.bold.red("@error: "),
+          colors20.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -798,24 +975,24 @@ async function get_playlist({
           if (metaTube === void 0)
             continue;
           console.log(
-            colors19.bold.green("INFO:"),
-            colors19.bold.green("<("),
+            colors20.bold.green("INFO:"),
+            colors20.bold.green("<("),
             metaTube.title,
-            colors19.bold.green("by"),
+            colors20.bold.green("by"),
             metaTube.author,
-            colors19.bold.green(")>")
+            colors20.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId))
             continue;
           proTubeArr.push({ ...metaTube });
         } catch (error) {
-          console.error(colors19.bold.red("@error: "), error);
+          console.error(colors20.bold.red("@error: "), error);
         }
       }
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z3.ZodError ? error.errors : error;
+    return error instanceof z6.ZodError ? error.errors : error;
   }
 }
 function list_formats({
@@ -823,8 +1000,8 @@ function list_formats({
 }) {
   return new Promise(async (resolve, reject2) => {
     try {
-      const zval = z3.object({
-        query: z3.string().min(1)
+      const zval = z6.object({
+        query: z6.string().min(1)
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -851,7 +1028,7 @@ function list_formats({
       };
       resolve(EnBody);
     } catch (error) {
-      reject2(error instanceof z3.ZodError ? error.errors : error);
+      reject2(error instanceof z6.ZodError ? error.errors : error);
     }
   });
 }
@@ -892,11 +1069,11 @@ function get_video_data({
           }
         }
         return `${count}`;
-        z3;
+        z6;
       };
       var calculateUploadAgo = calculateUploadAgo2, calculateVideoDuration = calculateVideoDuration2, formatCount = formatCount2;
-      const zval = z3.object({
-        query: z3.string().min(1)
+      const zval = z6.object({
+        query: z6.string().min(1)
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -955,7 +1132,7 @@ function get_video_data({
         )
       });
     } catch (error) {
-      reject2(error instanceof z3.ZodError ? error.errors : error);
+      reject2(error instanceof z6.ZodError ? error.errors : error);
     }
   });
 }
@@ -969,7 +1146,7 @@ async function extract_playlist_videos({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors19.bold.red("@error: "),
+          colors20.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -980,7 +1157,7 @@ async function extract_playlist_videos({
       });
       if (resp === void 0) {
         console.error(
-          colors19.bold.red("@error: "),
+          colors20.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -1000,13 +1177,13 @@ async function extract_playlist_videos({
             proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors19.bold.red("@error: "), error);
+          console.error(colors20.bold.red("@error: "), error);
         }
       }
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z3.ZodError ? error.errors : error;
+    return error instanceof z6.ZodError ? error.errors : error;
   }
 }
 async function checkUrl(url) {
@@ -1021,7 +1198,7 @@ async function bigEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors19.bold.red("@error:"),
+        colors20.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1035,7 +1212,7 @@ async function bigEntry(metaBody) {
           return item;
       }
       console.log(
-        colors19.bold.red("@error:"),
+        colors20.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1046,14 +1223,14 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  let color = colors19.green;
+  let color = colors20.green;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
   if (prog.percent < 20)
-    color = colors19.red;
+    color = colors20.red;
   else if (prog.percent < 80)
-    color = colors19.yellow;
+    color = colors20.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
@@ -1272,7 +1449,7 @@ async function bigEntry2(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors19.bold.red("@error:"),
+        colors20.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1286,7 +1463,7 @@ async function bigEntry2(metaBody) {
           return item;
       }
       console.log(
-        colors19.bold.red("@error:"),
+        colors20.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -2432,7 +2609,7 @@ async function ListVideoLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19.bold.green("INFO:"),
+      colors20.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2611,7 +2788,7 @@ async function ListVideoHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19.bold.green("INFO:"),
+      colors20.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2806,7 +2983,7 @@ async function ListVideoQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19.bold.green("INFO:"),
+      colors20.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2991,7 +3168,7 @@ async function ListAudioLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19.bold.green("INFO:"),
+      colors20.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3206,7 +3383,7 @@ async function ListAudioHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19.bold.green("INFO:"),
+      colors20.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3423,7 +3600,7 @@ async function ListAudioQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19.bold.green("INFO:"),
+      colors20.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -5559,7 +5736,7 @@ async function ListAudioVideoLowest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors19.bold.red("ERROR: ") + video.title
+                  message: colors20.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5723,7 +5900,7 @@ async function ListAudioVideoHighest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors19.bold.red("ERROR: ") + video.title
+                  message: colors20.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5825,7 +6002,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors19.green("Installed Version: yt-dlx@" + version));
+      console.error(colors20.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -5833,14 +6010,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19.red(error));
+        console.error(colors20.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.info.extract({
           query: proTube.query
@@ -5848,14 +6025,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "search-yt":
     case "s":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.info.search({
           query: proTube.query
@@ -5863,14 +6040,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.info.list_formats({
           query: proTube.query
@@ -5878,14 +6055,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "get-video-data":
     case "vi":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.info.get_video_data({
           query: proTube.query
@@ -5893,14 +6070,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.audio.single.highest({
           query: proTube.query
@@ -5908,14 +6085,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.audio.single.lowest({
           query: proTube.query
@@ -5923,14 +6100,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.video.single.highest({
           query: proTube.query
@@ -5938,14 +6115,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.video.single.lowest({
           query: proTube.query
@@ -5953,14 +6130,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.audio_video.single.highest({
           query: proTube.query
@@ -5968,14 +6145,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       } else
         scripts_default.audio_video.single.lowest({
           query: proTube.query
@@ -5983,17 +6160,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19.red(error));
+          console.error(colors20.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors19.red("error: no format"));
+        console.error(colors20.red("error: no format"));
       }
       scripts_default.audio.single.custom({
         query: proTube.query,
@@ -6002,17 +6179,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19.red(error));
+        console.error(colors20.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19.red("error: no query"));
+        console.error(colors20.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors19.red("error: no format"));
+        console.error(colors20.red("error: no format"));
       }
       scripts_default.video.single.custom({
         query: proTube.query,
@@ -6021,7 +6198,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19.red(error));
+        console.error(colors20.red(error));
         process.exit();
       });
       break;
@@ -6030,7 +6207,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19.red(error));
+        console.error(colors20.red(error));
         process.exit();
       });
       break;
@@ -6041,7 +6218,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors19.red(error));
+    console.error(colors20.red(error));
     process.exit();
   });
 } else

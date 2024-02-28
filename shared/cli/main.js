@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 'use strict';
 
-var colors19 = require('colors');
+var colors20 = require('colors');
+var fs = require('fs');
 var cheerio = require('cheerio');
 var retry = require('async-retry');
 var spinClient = require('spinnies');
-var puppeteer = require('puppeteer');
+var z6 = require('zod');
 var crypto = require('crypto');
+var puppeteer = require('puppeteer');
 var path2 = require('path');
 var util = require('util');
 var child_process = require('child_process');
-var z3 = require('zod');
-var fs = require('fs');
 var fluentffmpeg = require('fluent-ffmpeg');
 var axios = require('axios');
 var stream = require('stream');
@@ -38,13 +38,13 @@ function _interopNamespace(e) {
   return Object.freeze(n);
 }
 
-var colors19__default = /*#__PURE__*/_interopDefault(colors19);
+var colors20__default = /*#__PURE__*/_interopDefault(colors20);
+var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
 var retry__default = /*#__PURE__*/_interopDefault(retry);
 var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
+var z6__namespace = /*#__PURE__*/_interopNamespace(z6);
 var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
 var path2__namespace = /*#__PURE__*/_interopNamespace(path2);
-var z3__namespace = /*#__PURE__*/_interopNamespace(z3);
-var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
 var fluentffmpeg__default = /*#__PURE__*/_interopDefault(fluentffmpeg);
 var axios__default = /*#__PURE__*/_interopDefault(axios);
 var readline__default = /*#__PURE__*/_interopDefault(readline);
@@ -52,7 +52,7 @@ var minimist__default = /*#__PURE__*/_interopDefault(minimist);
 
 function help() {
   return Promise.resolve(
-    colors19__default.default.bold.white(`
+    colors20__default.default.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -210,39 +210,374 @@ function YouTubeID(videoLink) {
     resolve(null);
   });
 }
-
-// scripts/web/webVideo.ts
-var spinnies = new spinClient__default.default();
-async function webVideo({
-  videoLink
-}) {
-  if (!videoLink)
-    return void 0;
-  const retryOptions = {
-    maxTimeout: 6e3,
-    minTimeout: 1e3,
-    retries: 4
-  };
-  const spin = crypto.randomUUID();
+var browser;
+var page;
+async function crawler() {
   try {
-    const metaTube = await retry__default.default(async () => {
-      const browser = await puppeteer__default.default.launch({
-        userDataDir: "other",
-        headless: true
-      });
+    browser = await puppeteer__default.default.launch({
+      headless: true,
+      args: [
+        "--no-zygote",
+        // Disables the use of the zygote process for forking child processes
+        "--incognito",
+        // Launch Chrome in incognito mode to avoid cookies and cache interference
+        "--no-sandbox",
+        // Disable the sandbox mode (useful for running in Docker containers)
+        "--enable-automation",
+        // Enable automation in Chrome (e.g., for Selenium)
+        "--disable-dev-shm-usage"
+        // Disable /dev/shm usage (useful for running in Docker containers)
+      ]
+    });
+    page = await browser.newPage();
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
+    );
+  } catch (error) {
+    if (page)
+      await page.close();
+    if (browser)
+      await browser.close();
+    switch (true) {
+      case error instanceof Error:
+        throw new Error(colors20__default.default.red("@error: ") + error.message);
+      default:
+        throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+    }
+  }
+}
+
+// scripts/web/api/SearchVideos.ts
+async function SearchVideos(input) {
+  try {
+    await crawler();
+    const QuerySchema = z6.z.object({
+      query: z6.z.string().min(1).refine(
+        async (query2) => {
+          const result = await YouTubeID(query2);
+          return result === null;
+        },
+        {
+          message: "Query must not be a YouTube video/Playlist link"
+        }
+      ),
+      screenshot: z6.z.boolean().optional()
+    });
+    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const retryOptions = {
+      maxTimeout: 6e3,
+      minTimeout: 1e3,
+      retries: 4
+    };
+    let url;
+    let $;
+    const spin = crypto.randomUUID();
+    let content;
+    let metaTube = [];
+    const spinnies = new spinClient__default.default();
+    let videoElements;
+    let playlistMeta = [];
+    let TubeResp;
+    let snapshot;
+    spinnies.add(spin, {
+      text: colors20__default.default.green("@scrape: ") + "booting chromium..."
+    });
+    switch (input.type) {
+      case "video":
+        TubeResp = await retry__default.default(async () => {
+          url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAQ%253D%253D";
+          await page.goto(url);
+          for (let i = 0; i < 40; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
+          spinnies.update(spin, {
+            text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+          });
+          if (screenshot) {
+            snapshot = await page.screenshot({
+              path: "TypeVideo.png"
+            });
+            fs__namespace.default.writeFileSync("TypeVideo.png", snapshot);
+            spinnies.update(spin, {
+              text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+            });
+          }
+          content = await page.content();
+          $ = cheerio.load(content);
+          videoElements = $(
+            "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
+          );
+          videoElements.each(async (_, vide) => {
+            const videoId = await YouTubeID(
+              "https://www.youtube.com" + $(vide).find("a").attr("href")
+            );
+            const authorContainer = $(vide).find(".ytd-channel-name a");
+            const uploadedOnElement = $(vide).find(
+              ".inline-metadata-item.style-scope.ytd-video-meta-block"
+            );
+            metaTube.push({
+              title: $(vide).find("#video-title").text().trim() || void 0,
+              views: $(vide).find(
+                ".inline-metadata-item.style-scope.ytd-video-meta-block"
+              ).filter(
+                (_2, vide2) => $(vide2).text().includes("views")
+              ).text().trim().replace(/ views/g, "") || void 0,
+              author: authorContainer.text().trim() || void 0,
+              videoId,
+              uploadOn: uploadedOnElement.length >= 2 ? $(uploadedOnElement[1]).text().trim() : void 0,
+              authorUrl: "https://www.youtube.com" + authorContainer.attr("href") || void 0,
+              videoLink: "https://www.youtube.com/watch?v=" + videoId,
+              thumbnailUrls: [
+                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/default.jpg`
+              ],
+              description: $(vide).find(".metadata-snippet-text").text().trim() || void 0
+            });
+          });
+          spinnies.succeed(spin, {
+            text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+          });
+          if (page)
+            await page.close();
+          if (browser)
+            await browser.close();
+          return metaTube;
+        }, retryOptions);
+        return TubeResp;
+      case "playlist":
+        TubeResp = await retry__default.default(async () => {
+          url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAw%253D%253D";
+          await page.goto(url);
+          for (let i = 0; i < 80; i++) {
+            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          }
+          spinnies.update(spin, {
+            text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+          });
+          if (screenshot) {
+            snapshot = await page.screenshot({
+              path: "TypePlaylist.png"
+            });
+            fs__namespace.default.writeFileSync("TypePlaylist.png", snapshot);
+            spinnies.update(spin, {
+              text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+            });
+          }
+          const content2 = await page.content();
+          const $2 = cheerio.load(content2);
+          const playlistElements = $2("ytd-playlist-renderer");
+          playlistElements.each((_index, element) => {
+            const playlistLink = $2(element).find(".style-scope.ytd-playlist-renderer #view-more a").attr("href");
+            const vCount = $2(element).text().trim();
+            playlistMeta.push({
+              title: $2(element).find(".style-scope.ytd-playlist-renderer #video-title").text().replace(/\s+/g, " ").trim() || void 0,
+              author: $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text().replace(/\s+/g, " ").trim() || void 0,
+              playlistId: playlistLink.split("list=")[1],
+              playlistLink: "https://www.youtube.com" + playlistLink,
+              authorUrl: $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") ? "https://www.youtube.com" + $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") : void 0,
+              videoCount: parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) || void 0
+            });
+          });
+          spinnies.succeed(spin, {
+            text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+          });
+          if (page)
+            await page.close();
+          if (browser)
+            await browser.close();
+          return playlistMeta;
+        }, retryOptions);
+        return TubeResp;
+      default:
+        spinnies.fail(spin, {
+          text: colors20__default.default.red("@error: ") + colors20__default.default.white("wrong filter type provided.")
+        });
+        if (page)
+          await page.close();
+        if (browser)
+          await browser.close();
+        return void 0;
+    }
+  } catch (error) {
+    if (page)
+      await page.close();
+    if (browser)
+      await browser.close();
+    switch (true) {
+      case error instanceof z6.ZodError:
+        throw new Error(
+          colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        );
+      case error instanceof Error:
+        throw new Error(colors20__default.default.red("@error: ") + error.message);
+      default:
+        throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+    }
+  }
+}
+async function PlaylistInfo(input) {
+  try {
+    await crawler();
+    const spinnies = new spinClient__default.default();
+    const QuerySchema = z6.z.object({
+      query: z6.z.string().min(1).refine(
+        async (query2) => {
+          const result = await YouTubeID(query2);
+          return result !== null;
+        },
+        {
+          message: "Query must be a valid YouTube Playlist link."
+        }
+      ),
+      screenshot: z6.z.boolean().optional()
+    });
+    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const retryOptions = {
+      maxTimeout: 6e3,
+      minTimeout: 1e3,
+      retries: 4
+    };
+    let metaTube = [];
+    const spin = crypto.randomUUID();
+    let TubeResp;
+    let snapshot;
+    TubeResp = await retry__default.default(async () => {
       spinnies.add(spin, {
-        text: colors19__default.default.green("@scrape: ") + "booting chromium..."
+        text: colors20__default.default.green("@scrape: ") + "booting chromium..."
       });
-      const page = await browser.newPage();
-      await page.setUserAgent(
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      );
-      const videoId = await YouTubeID(videoLink);
-      if (!videoId) {
-        throw new Error("Failed to extract video ID");
+      await page.goto(query);
+      for (let i = 0; i < 40; i++) {
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
-      const newLink = "https://www.youtube.com/watch?v=" + videoId;
-      await page.goto(newLink);
+      spinnies.update(spin, {
+        text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+      });
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "FilterVideo.png"
+        });
+        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
+        spinnies.update(spin, {
+          text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+        });
+      }
+      const content = await page.content();
+      const $ = cheerio.load(content);
+      const playlistTitle = $(
+        "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
+      ).text().trim();
+      const videoCountText = $("yt-formatted-string.byline-item").text();
+      const playlistVideoCount = parseInt(videoCountText.match(/\d+/)[0]);
+      const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
+      const playlistViews = parseInt(
+        viewsText.replace(/,/g, "").match(/\d+/)[0]
+      );
+      let playlistDescription = $("span#plain-snippet-text").text();
+      $("ytd-playlist-video-renderer").each(async (_index, element) => {
+        const title = $(element).find("h3").text().trim();
+        const videoLink = "https://www.youtube.com" + $(element).find("a").attr("href");
+        const videoId = await YouTubeID(videoLink);
+        const newLink = "https://www.youtube.com/watch?v=" + videoId;
+        const author = $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text();
+        const authorUrl = "https://www.youtube.com" + $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href");
+        const views = $(element).find(".style-scope.ytd-video-meta-block span:first-child").text();
+        const ago = $(element).find(".style-scope.ytd-video-meta-block span:last-child").text();
+        const thumbnailUrls = [
+          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          `https://img.youtube.com/vi/${videoId}/default.jpg`
+        ];
+        metaTube.push({
+          ago,
+          author,
+          videoId,
+          authorUrl,
+          thumbnailUrls,
+          videoLink: newLink,
+          title: title.trim(),
+          views: views.replace(/ views/g, "")
+        });
+      });
+      spinnies.succeed(spin, {
+        text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+      });
+      await page.close();
+      await browser.close();
+      return {
+        playlistVideos: metaTube,
+        playlistDescription: playlistDescription.trim(),
+        playlistVideoCount,
+        playlistViews,
+        playlistTitle
+      };
+    }, retryOptions);
+    return TubeResp;
+  } catch (error) {
+    if (page)
+      await page.close();
+    if (browser)
+      await browser.close();
+    switch (true) {
+      case error instanceof z6.ZodError:
+        throw error.errors.map((err) => err.message).join(", ");
+      case error instanceof Error:
+        throw error.message;
+      default:
+        throw "Internal server error";
+    }
+  }
+}
+async function VideoInfo(input) {
+  try {
+    await crawler();
+    const spinnies = new spinClient__default.default();
+    const QuerySchema = z6.z.object({
+      query: z6.z.string().min(1).refine(
+        async (query2) => {
+          const result = await YouTubeID(query2);
+          return result !== null;
+        },
+        {
+          message: "Query must be a valid YouTube video link."
+        }
+      ),
+      screenshot: z6.z.boolean().optional()
+    });
+    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const retryOptions = {
+      maxTimeout: 6e3,
+      minTimeout: 1e3,
+      retries: 4
+    };
+    let TubeResp;
+    const spin = crypto.randomUUID();
+    let snapshot;
+    TubeResp = await retry__default.default(async () => {
+      spinnies.add(spin, {
+        text: colors20__default.default.green("@scrape: ") + "booting chromium..."
+      });
+      await page.goto(query);
+      for (let i = 0; i < 40; i++) {
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+      }
+      spinnies.update(spin, {
+        text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+      });
+      if (screenshot) {
+        snapshot = await page.screenshot({
+          path: "FilterVideo.png"
+        });
+        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
+        spinnies.update(spin, {
+          text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+        });
+      }
+      const videoId = await YouTubeID(query);
       await page.waitForSelector(
         "yt-formatted-string.style-scope.ytd-watch-metadata",
         { timeout: 1e4 }
@@ -276,205 +611,46 @@ async function webVideo({
         `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
         `https://img.youtube.com/vi/${videoId}/default.jpg`
       ];
-      const data = {
+      const metaTube = {
         views,
         author,
         videoId,
+        uploadOn,
         thumbnailUrls,
-        videoLink: newLink,
-        title,
-        uploadOn
+        title: title.trim(),
+        videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
+      spinnies.succeed(spin, {
+        text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+      });
+      await page.close();
       await browser.close();
-      return data;
+      return metaTube;
     }, retryOptions);
-    spinnies.succeed(spin, {
-      text: colors19__default.default.yellow("@info: ") + colors19__default.default.white("scrapping done, video found " + metaTube.title)
-    });
-    return metaTube;
+    return TubeResp;
   } catch (error) {
-    spinnies.fail(spin, {
-      text: colors19__default.default.red("@error: ") + error.message
-    });
-    return void 0;
-  }
-}
-var spinnies2 = new spinClient__default.default();
-async function webSearch({
-  query
-}) {
-  if (!query)
-    return void 0;
-  const retryOptions = {
-    maxTimeout: 6e3,
-    minTimeout: 1e3,
-    retries: 4
-  };
-  const spin = crypto.randomUUID();
-  try {
-    const metaTube = await retry__default.default(async () => {
-      const data = [];
-      const browser = await puppeteer__default.default.launch({
-        userDataDir: "other",
-        headless: true
-      });
-      spinnies2.add(spin, {
-        text: colors19__default.default.green("@scrape: ") + "booting chromium..."
-      });
-      const page = await browser.newPage();
-      await page.setUserAgent(
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      );
-      const searchUrl = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
-      spinnies2.update(spin, {
-        text: colors19__default.default.yellow("@scrape: ") + "waiting for hydration..."
-      });
-      await page.goto(searchUrl);
-      for (let i = 0; i < 5; i++) {
-        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-      }
-      const content = await page.content();
-      const $ = cheerio.load(content);
-      const videoElements = $(
-        "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
-      );
-      videoElements.each(async (_, vide) => {
-        const videoId = await YouTubeID(
-          "https://www.youtube.com" + $(vide).find("a").attr("href")
-        );
-        const authorContainer = $(vide).find(".ytd-channel-name a");
-        const uploadedOnElement = $(vide).find(
-          ".inline-metadata-item.style-scope.ytd-video-meta-block"
-        );
-        data.push({
-          title: $(vide).find("#video-title").text().trim() || void 0,
-          views: $(vide).find(".inline-metadata-item.style-scope.ytd-video-meta-block").filter((_2, vide2) => $(vide2).text().includes("views")).text().trim().replace(/ views/g, "") || void 0,
-          author: authorContainer.text().trim() || void 0,
-          videoId,
-          uploadOn: uploadedOnElement.length >= 2 ? $(uploadedOnElement[1]).text().trim() : void 0,
-          authorUrl: "https://www.youtube.com" + authorContainer.attr("href") || void 0,
-          videoLink: "https://www.youtube.com/watch?v=" + videoId,
-          thumbnailUrls: [
-            `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-            `https://img.youtube.com/vi/${videoId}/default.jpg`
-          ],
-          description: $(vide).find(".metadata-snippet-text").text().trim() || void 0
-        });
-      });
+    if (page)
+      await page.close();
+    if (browser)
       await browser.close();
-      return data;
-    }, retryOptions);
-    spinnies2.succeed(spin, {
-      text: colors19__default.default.yellow("@info: ") + colors19__default.default.white("scrapping done, total videos found " + metaTube.length)
-    });
-    return metaTube;
-  } catch (error) {
-    spinnies2.fail(spin, {
-      text: colors19__default.default.red("@error: ") + error.message
-    });
-    return void 0;
-  }
-}
-var spinnies3 = new spinClient__default.default();
-async function webPlaylist({
-  playlistLink
-}) {
-  const retryOptions = {
-    maxTimeout: 6e3,
-    minTimeout: 1e3,
-    retries: 4
-  };
-  const spin = crypto.randomUUID();
-  try {
-    const metaTube = await retry__default.default(async () => {
-      const playlistData = [];
-      const browser = await puppeteer__default.default.launch({
-        userDataDir: "other",
-        headless: true
-      });
-      spinnies3.add(spin, {
-        text: colors19__default.default.green("@scrape: ") + "booting chromium..."
-      });
-      const page = await browser.newPage();
-      await page.setUserAgent(
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      );
-      await page.goto(playlistLink);
-      for (let i = 0; i < 5; i++) {
-        await page.evaluate(() => {
-          window.scrollBy(0, window.innerHeight);
-        });
-      }
-      spinnies3.update(spin, {
-        text: colors19__default.default.yellow("@scrape: ") + "waiting for hydration..."
-      });
-      const content = await page.content();
-      const $ = cheerio.load(content);
-      const playlistTitle = $(
-        "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
-      ).text().trim();
-      const videoCountText = $("yt-formatted-string.byline-item").text();
-      const videoCount = parseInt(videoCountText.match(/\d+/)[0]);
-      const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
-      const views = viewsText.replace(/,/g, "").match(/\d+/)[0];
-      let playlistDescription = $("span#plain-snippet-text").text();
-      const VideoElements = $("ytd-playlist-video-renderer");
-      VideoElements.each(async (_, vide) => {
-        const title = $(vide).find("h3").text().trim();
-        const videoLink = "https://www.youtube.com" + $(vide).find("a").attr("href");
-        const videoId = await YouTubeID(videoLink);
-        const newLink = "https://www.youtube.com/watch?v=" + videoId;
-        const author = $(vide).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text();
-        const authorUrl = "https://www.youtube.com" + $(vide).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href");
-        const views2 = $(vide).find(".style-scope.ytd-video-meta-block span:first-child").text();
-        const ago = $(vide).find(".style-scope.ytd-video-meta-block span:last-child").text();
-        const thumbnailUrls = [
-          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/default.jpg`
-        ];
-        playlistData.push({
-          ago,
-          title,
-          author,
-          videoId,
-          authorUrl,
-          thumbnailUrls,
-          videoLink: newLink,
-          views: views2.replace(/ views/g, "")
-        });
-      });
-      await browser.close();
-      return {
-        views,
-        count: videoCount,
-        videos: playlistData,
-        title: playlistTitle,
-        description: playlistDescription.trim()
-      };
-    }, retryOptions);
-    spinnies3.succeed(spin, {
-      text: colors19__default.default.yellow("@info: ") + colors19__default.default.white(
-        "scrapping done, total playlist videos found " + metaTube.videos.length
-      )
-    });
-    return metaTube;
-  } catch (error) {
-    spinnies3.fail(spin, {
-      text: colors19__default.default.red("@error: ") + error.message
-    });
-    return void 0;
+    switch (true) {
+      case error instanceof z6.ZodError:
+        throw error.errors.map((err) => err.message).join(", ");
+      case error instanceof Error:
+        throw error.message;
+      default:
+        throw "Internal server error";
+    }
   }
 }
 
 // scripts/web/ytdlx_web.ts
-var ytdlx_web = { webPlaylist, webSearch, webVideo };
-var ytdlx_web_default = ytdlx_web;
+var core = {
+  SearchVideos,
+  PlaylistInfo,
+  VideoInfo
+};
+var ytdlx_web_default = core;
 
 // scripts/pipes/command/search.ts
 async function search({ query }) {
@@ -625,21 +801,21 @@ async function Engine({
 }) {
   let videoId, TubeDlp, TubeBody;
   console.log(
-    colors19__default.default.bold.green("@info: ") + `using yt-dlx version <(${version})>` + colors19__default.default.reset("")
+    colors20__default.default.bold.green("@info: ") + `using yt-dlx version <(${version})>` + colors20__default.default.reset("")
   );
   if (!query || query.trim() === "") {
     console.log(
-      colors19__default.default.bold.red("@error: ") + "'query' is required..." + colors19__default.default.reset("")
+      colors20__default.default.bold.red("@error: ") + "'query' is required..." + colors20__default.default.reset("")
     );
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors19__default.default.bold.red("@error: ") + "use extract_playlist_videos() for playlists..." + colors19__default.default.reset("")
+      colors20__default.default.bold.red("@error: ") + "use extract_playlist_videos() for playlists..." + colors20__default.default.reset("")
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors19__default.default.bold.green("@info: ") + `fetching metadata for: <(${query})>` + colors19__default.default.reset("")
+      colors20__default.default.bold.green("@info: ") + `fetching metadata for: <(${query})>` + colors20__default.default.reset("")
     );
     videoId = await YouTubeID(query);
   } else
@@ -649,12 +825,12 @@ async function Engine({
       TubeBody = await ytdlx_web_default.webSearch({ query });
       if (TubeBody === null) {
         console.log(
-          colors19__default.default.bold.red("@error: ") + "no data returned from server..." + colors19__default.default.reset("")
+          colors20__default.default.bold.red("@error: ") + "no data returned from server..." + colors20__default.default.reset("")
         );
         return null;
       }
       console.log(
-        colors19__default.default.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` + colors19__default.default.reset("")
+        colors20__default.default.bold.green("@info: ") + `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` + colors20__default.default.reset("")
       );
       TubeDlp = await ytxc(TubeBody[0].videoLink);
       break;
@@ -662,12 +838,12 @@ async function Engine({
       TubeBody = await ytdlx_web_default.webVideo({ videoLink: query });
       if (TubeBody === null) {
         console.log(
-          colors19__default.default.bold.red("@error: ") + "no data returned from server..." + colors19__default.default.reset("")
+          colors20__default.default.bold.red("@error: ") + "no data returned from server..." + colors20__default.default.reset("")
         );
         return null;
       }
       console.log(
-        colors19__default.default.bold.green("@info: ") + `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` + colors19__default.default.reset("")
+        colors20__default.default.bold.green("@info: ") + `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` + colors20__default.default.reset("")
       );
       TubeDlp = await ytxc(TubeBody.videoLink);
       break;
@@ -675,12 +851,12 @@ async function Engine({
   switch (TubeDlp) {
     case null:
       console.log(
-        colors19__default.default.bold.red("@error: ") + "no data returned from server..." + colors19__default.default.reset("")
+        colors20__default.default.bold.red("@error: ") + "no data returned from server..." + colors20__default.default.reset("")
       );
       return null;
     default:
       console.log(
-        colors19__default.default.bold.green("@info:"),
+        colors20__default.default.bold.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/shovitdutta/yt-dlx"
       );
       return JSON.parse(TubeDlp);
@@ -800,7 +976,7 @@ async function get_playlist({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors19__default.default.bold.red("@error: "),
+          colors20__default.default.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -811,7 +987,7 @@ async function get_playlist({
       });
       if (resp === void 0) {
         console.error(
-          colors19__default.default.bold.red("@error: "),
+          colors20__default.default.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -826,24 +1002,24 @@ async function get_playlist({
           if (metaTube === void 0)
             continue;
           console.log(
-            colors19__default.default.bold.green("INFO:"),
-            colors19__default.default.bold.green("<("),
+            colors20__default.default.bold.green("INFO:"),
+            colors20__default.default.bold.green("<("),
             metaTube.title,
-            colors19__default.default.bold.green("by"),
+            colors20__default.default.bold.green("by"),
             metaTube.author,
-            colors19__default.default.bold.green(")>")
+            colors20__default.default.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId))
             continue;
           proTubeArr.push({ ...metaTube });
         } catch (error) {
-          console.error(colors19__default.default.bold.red("@error: "), error);
+          console.error(colors20__default.default.bold.red("@error: "), error);
         }
       }
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z3__namespace.ZodError ? error.errors : error;
+    return error instanceof z6__namespace.ZodError ? error.errors : error;
   }
 }
 function list_formats({
@@ -851,8 +1027,8 @@ function list_formats({
 }) {
   return new Promise(async (resolve, reject2) => {
     try {
-      const zval = z3__namespace.object({
-        query: z3__namespace.string().min(1)
+      const zval = z6__namespace.object({
+        query: z6__namespace.string().min(1)
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -879,7 +1055,7 @@ function list_formats({
       };
       resolve(EnBody);
     } catch (error) {
-      reject2(error instanceof z3__namespace.ZodError ? error.errors : error);
+      reject2(error instanceof z6__namespace.ZodError ? error.errors : error);
     }
   });
 }
@@ -920,11 +1096,11 @@ function get_video_data({
           }
         }
         return `${count}`;
-        z3__namespace;
+        z6__namespace;
       };
       var calculateUploadAgo = calculateUploadAgo2, calculateVideoDuration = calculateVideoDuration2, formatCount = formatCount2;
-      const zval = z3__namespace.object({
-        query: z3__namespace.string().min(1)
+      const zval = z6__namespace.object({
+        query: z6__namespace.string().min(1)
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -983,7 +1159,7 @@ function get_video_data({
         )
       });
     } catch (error) {
-      reject2(error instanceof z3__namespace.ZodError ? error.errors : error);
+      reject2(error instanceof z6__namespace.ZodError ? error.errors : error);
     }
   });
 }
@@ -997,7 +1173,7 @@ async function extract_playlist_videos({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors19__default.default.bold.red("@error: "),
+          colors20__default.default.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -1008,7 +1184,7 @@ async function extract_playlist_videos({
       });
       if (resp === void 0) {
         console.error(
-          colors19__default.default.bold.red("@error: "),
+          colors20__default.default.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -1028,13 +1204,13 @@ async function extract_playlist_videos({
             proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors19__default.default.bold.red("@error: "), error);
+          console.error(colors20__default.default.bold.red("@error: "), error);
         }
       }
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z3__namespace.ZodError ? error.errors : error;
+    return error instanceof z6__namespace.ZodError ? error.errors : error;
   }
 }
 async function checkUrl(url) {
@@ -1049,7 +1225,7 @@ async function bigEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors19__default.default.bold.red("@error:"),
+        colors20__default.default.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1063,7 +1239,7 @@ async function bigEntry(metaBody) {
           return item;
       }
       console.log(
-        colors19__default.default.bold.red("@error:"),
+        colors20__default.default.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1074,14 +1250,14 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  let color = colors19__default.default.green;
+  let color = colors20__default.default.green;
   readline__default.default.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
   if (prog.percent < 20)
-    color = colors19__default.default.red;
+    color = colors20__default.default.red;
   else if (prog.percent < 80)
-    color = colors19__default.default.yellow;
+    color = colors20__default.default.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
@@ -1092,13 +1268,13 @@ var progressBar = (prog) => {
 var progressBar_default = progressBar;
 
 // scripts/pipes/audio/AudioLowest.ts
-var AudioLowestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var AudioLowestInputSchema = z6.z.object({
+  query: z6.z.string().min(1),
+  filter: z6.z.string().optional(),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  outputFormat: z6.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function AudioLowest(input) {
   try {
@@ -1270,7 +1446,7 @@ async function AudioLowest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -1300,7 +1476,7 @@ async function bigEntry2(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors19__default.default.bold.red("@error:"),
+        colors20__default.default.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1314,19 +1490,19 @@ async function bigEntry2(metaBody) {
           return item;
       }
       console.log(
-        colors19__default.default.bold.red("@error:"),
+        colors20__default.default.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
   }
 }
-var AudioHighestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var AudioHighestInputSchema = z6.z.object({
+  query: z6.z.string().min(1),
+  filter: z6.z.string().optional(),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  outputFormat: z6.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function AudioHighest(input) {
   try {
@@ -1498,7 +1674,7 @@ async function AudioHighest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -1516,13 +1692,13 @@ async function AudioHighest(input) {
     }
   }
 }
-var VideoLowestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  filter: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var VideoLowestInputSchema = z6.z.object({
+  query: z6.z.string().min(1),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  filter: z6.z.string().optional(),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function VideoLowest(input) {
   try {
@@ -1653,7 +1829,7 @@ async function VideoLowest(input) {
         };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -1671,13 +1847,13 @@ async function VideoLowest(input) {
     }
   }
 }
-var VideoHighestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
-  filter: z3.z.string().optional()
+var VideoHighestInputSchema = z6.z.object({
+  query: z6.z.string().min(1),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z6.z.string().optional()
 });
 async function VideoHighest(input) {
   try {
@@ -1808,7 +1984,7 @@ async function VideoHighest(input) {
         };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -1826,12 +2002,12 @@ async function VideoHighest(input) {
     }
   }
 }
-var AudioVideoLowestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var AudioVideoLowestInputSchema = z6.z.object({
+  query: z6.z.string().min(1),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function AudioVideoLowest(input) {
   try {
@@ -1934,7 +2110,7 @@ async function AudioVideoLowest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -1952,12 +2128,12 @@ async function AudioVideoLowest(input) {
     }
   }
 }
-var AudioVideoHighestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var AudioVideoHighestInputSchema = z6.z.object({
+  query: z6.z.string().min(1),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function AudioVideoHighest(input) {
   try {
@@ -2060,7 +2236,7 @@ async function AudioVideoHighest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -2078,14 +2254,14 @@ async function AudioVideoHighest(input) {
     }
   }
 }
-var AudioQualityCustomInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  quality: z3.z.enum(["high", "medium", "low", "ultralow"]),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var AudioQualityCustomInputSchema = z6.z.object({
+  query: z6.z.string().min(1),
+  filter: z6.z.string().optional(),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  quality: z6.z.enum(["high", "medium", "low", "ultralow"]),
+  outputFormat: z6.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function AudioQualityCustom(input) {
   try {
@@ -2250,7 +2426,7 @@ async function AudioQualityCustom(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -2268,13 +2444,13 @@ async function AudioQualityCustom(input) {
     }
   }
 }
-var VideoLowestInputSchema2 = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  filter: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var VideoLowestInputSchema2 = z6.z.object({
+  query: z6.z.string().min(1),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  filter: z6.z.string().optional(),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function VideoLowest2(input) {
   try {
@@ -2405,7 +2581,7 @@ async function VideoLowest2(input) {
         };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return {
         message: error.errors.map((err) => err.message).join(", "),
         status: 500
@@ -2423,13 +2599,13 @@ async function VideoLowest2(input) {
     }
   }
 }
-var ListVideoLowestInputSchema = z3.z.object({
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListVideoLowestInputSchema = z6.z.object({
+  filter: z6.z.string().optional(),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListVideoLowest(input) {
   try {
@@ -2460,7 +2636,7 @@ async function ListVideoLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19__default.default.bold.green("INFO:"),
+      colors20__default.default.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2578,7 +2754,7 @@ async function ListVideoLowest(input) {
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -2602,13 +2778,13 @@ async function ListVideoLowest(input) {
     }
   }
 }
-var ListVideoHighestInputSchema = z3.z.object({
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListVideoHighestInputSchema = z6.z.object({
+  filter: z6.z.string().optional(),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListVideoHighest(input) {
   try {
@@ -2639,7 +2815,7 @@ async function ListVideoHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19__default.default.bold.green("INFO:"),
+      colors20__default.default.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2757,7 +2933,7 @@ async function ListVideoHighest(input) {
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -2781,12 +2957,12 @@ async function ListVideoHighest(input) {
     }
   }
 }
-var ListVideoQualityCustomInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  quality: z3.z.enum([
+var ListVideoQualityCustomInputSchema = z6.z.object({
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  quality: z6.z.enum([
     "144p",
     "240p",
     "360p",
@@ -2801,8 +2977,8 @@ var ListVideoQualityCustomInputSchema = z3.z.object({
     "8640p",
     "12000p"
   ]),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
-  filter: z3.z.string().optional()
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z6.z.string().optional()
 });
 async function ListVideoQualityCustom(input) {
   try {
@@ -2834,7 +3010,7 @@ async function ListVideoQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19__default.default.bold.green("INFO:"),
+      colors20__default.default.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2958,7 +3134,7 @@ async function ListVideoQualityCustom(input) {
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -2982,13 +3158,13 @@ async function ListVideoQualityCustom(input) {
     }
   }
 }
-var ListAudioLowestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
-  filter: z3.z.string().optional()
+var ListAudioLowestInputSchema = z6.z.object({
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  outputFormat: z6.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z6.z.string().optional()
 });
 async function ListAudioLowest(input) {
   try {
@@ -3019,7 +3195,7 @@ async function ListAudioLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19__default.default.bold.green("INFO:"),
+      colors20__default.default.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3173,7 +3349,7 @@ async function ListAudioLowest(input) {
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -3197,13 +3373,13 @@ async function ListAudioLowest(input) {
     }
   }
 }
-var ListAudioHighestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
-  filter: z3.z.string().optional()
+var ListAudioHighestInputSchema = z6.z.object({
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  outputFormat: z6.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z6.z.string().optional()
 });
 async function ListAudioHighest(input) {
   try {
@@ -3234,7 +3410,7 @@ async function ListAudioHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19__default.default.bold.green("INFO:"),
+      colors20__default.default.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3388,7 +3564,7 @@ async function ListAudioHighest(input) {
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -3412,14 +3588,14 @@ async function ListAudioHighest(input) {
     }
   }
 }
-var ListAudioQualityCustomInputSchema = z3.z.object({
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  quality: z3.z.enum(["high", "medium", "low", "ultralow"]),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var ListAudioQualityCustomInputSchema = z6.z.object({
+  filter: z6.z.string().optional(),
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  quality: z6.z.enum(["high", "medium", "low", "ultralow"]),
+  outputFormat: z6.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function ListAudioQualityCustom(input) {
   try {
@@ -3451,7 +3627,7 @@ async function ListAudioQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors19__default.default.bold.green("INFO:"),
+      colors20__default.default.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3610,7 +3786,7 @@ async function ListAudioQualityCustom(input) {
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -5456,12 +5632,12 @@ var index = {
   during: whilst$1,
   doDuring: doWhilst$1
 };
-var ListAudioVideoLowestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListAudioVideoLowestInputSchema = z6.z.object({
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListAudioVideoLowest(input) {
   try {
@@ -5587,7 +5763,7 @@ async function ListAudioVideoLowest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors19__default.default.bold.red("ERROR: ") + video.title
+                  message: colors20__default.default.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5596,7 +5772,7 @@ async function ListAudioVideoLowest(input) {
         }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -5620,12 +5796,12 @@ async function ListAudioVideoLowest(input) {
     }
   }
 }
-var ListAudioVideoHighestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListAudioVideoHighestInputSchema = z6.z.object({
+  stream: z6.z.boolean().optional(),
+  verbose: z6.z.boolean().optional(),
+  folderName: z6.z.string().optional(),
+  playlistUrls: z6.z.array(z6.z.string().min(1)),
+  outputFormat: z6.z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListAudioVideoHighest(input) {
   try {
@@ -5751,7 +5927,7 @@ async function ListAudioVideoHighest(input) {
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors19__default.default.bold.red("ERROR: ") + video.title
+                  message: colors20__default.default.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5760,7 +5936,7 @@ async function ListAudioVideoHighest(input) {
         }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof z6.ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -5853,7 +6029,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors19__default.default.green("Installed Version: yt-dlx@" + version));
+      console.error(colors20__default.default.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -5861,14 +6037,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19__default.default.red(error));
+        console.error(colors20__default.default.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.info.extract({
           query: proTube.query
@@ -5876,14 +6052,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "search-yt":
     case "s":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.info.search({
           query: proTube.query
@@ -5891,14 +6067,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.info.list_formats({
           query: proTube.query
@@ -5906,14 +6082,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "get-video-data":
     case "vi":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.info.get_video_data({
           query: proTube.query
@@ -5921,14 +6097,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.audio.single.highest({
           query: proTube.query
@@ -5936,14 +6112,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.audio.single.lowest({
           query: proTube.query
@@ -5951,14 +6127,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.video.single.highest({
           query: proTube.query
@@ -5966,14 +6142,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.video.single.lowest({
           query: proTube.query
@@ -5981,14 +6157,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.audio_video.single.highest({
           query: proTube.query
@@ -5996,14 +6172,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       } else
         scripts_default.audio_video.single.lowest({
           query: proTube.query
@@ -6011,17 +6187,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors19__default.default.red(error));
+          console.error(colors20__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors19__default.default.red("error: no format"));
+        console.error(colors20__default.default.red("error: no format"));
       }
       scripts_default.audio.single.custom({
         query: proTube.query,
@@ -6030,17 +6206,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19__default.default.red(error));
+        console.error(colors20__default.default.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors19__default.default.red("error: no query"));
+        console.error(colors20__default.default.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors19__default.default.red("error: no format"));
+        console.error(colors20__default.default.red("error: no format"));
       }
       scripts_default.video.single.custom({
         query: proTube.query,
@@ -6049,7 +6225,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19__default.default.red(error));
+        console.error(colors20__default.default.red(error));
         process.exit();
       });
       break;
@@ -6058,7 +6234,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors19__default.default.red(error));
+        console.error(colors20__default.default.red(error));
         process.exit();
       });
       break;
@@ -6069,7 +6245,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors19__default.default.red(error));
+    console.error(colors20__default.default.red(error));
     process.exit();
   });
 } else
