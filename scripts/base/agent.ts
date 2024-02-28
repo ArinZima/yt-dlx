@@ -37,7 +37,7 @@ export default async function Engine({
   } else videoId = await YouTubeID(query);
   switch (videoId) {
     case null:
-      TubeBody = await ytdlx_web.webSearch({ query: query });
+      TubeBody = await ytdlx_web.SearchVideos({ query: query, type: "video" });
       if (TubeBody === null) {
         console.log(
           colors.bold.red("@error: ") +
@@ -54,7 +54,7 @@ export default async function Engine({
       TubeDlp = await ytxc(TubeBody[0].videoLink);
       break;
     default:
-      TubeBody = await ytdlx_web.webVideo({ videoLink: query });
+      TubeBody = await ytdlx_web.VideoInfo({ query: query });
       if (TubeBody === null) {
         console.log(
           colors.bold.red("@error: ") +

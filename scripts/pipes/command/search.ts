@@ -9,7 +9,7 @@ export default async function search({ query }: { query: string }) {
           status: 500,
         };
       default:
-        return await ytdlx_web.webSearch({ query });
+        return await ytdlx_web.SearchVideos({ query, type: "video" });
     }
   } catch (error) {
     switch (true) {

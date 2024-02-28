@@ -82,14 +82,14 @@ export default async function ListVideoQualityCustom(
     let results: ListVideoQualityCustomType[] = [];
     const uniqueVideoIds = new Set();
     for (const videoLink of playlistUrls) {
-      const metaList = await ytdlx_web.webPlaylist({ playlistLink: videoLink });
+      const metaList = await ytdlx_web.PlaylistInfo({ query: videoLink });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500,
         };
       }
-      const uniqueVideos = metaList.videos.filter(
+      const uniqueVideos = metaList.playlistVideos.filter(
         (video) => !uniqueVideoIds.has(video.videoId)
       );
       parseList.push(...uniqueVideos);
@@ -101,8 +101,8 @@ export default async function ListVideoQualityCustom(
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await ytdlx_web.webVideo({
-        videoLink: i.videoLink,
+      const TubeBody = await ytdlx_web.VideoInfo({
+        query: i.videoLink,
       });
       if (TubeBody === undefined) continue;
       const metaBody = await ytdlx({

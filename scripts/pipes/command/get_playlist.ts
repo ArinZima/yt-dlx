@@ -30,8 +30,8 @@ export default async function get_playlist({
         );
         continue;
       }
-      const resp = await ytdlx_web.webPlaylist({
-        playlistLink: ispUrl[1],
+      const resp = await ytdlx_web.PlaylistInfo({
+        query: ispUrl[1],
       });
       if (resp === undefined) {
         console.error(
@@ -41,11 +41,11 @@ export default async function get_playlist({
         );
         continue;
       }
-      for (let i = 0; i < resp.videos.length; i++) {
+      for (let i = 0; i < resp.playlistVideos.length; i++) {
         try {
-          const videoLink = resp.videos[i]?.videoLink;
+          const videoLink = resp.playlistVideos[i]?.videoLink;
           if (videoLink === undefined) continue;
-          const metaTube = await ytdlx_web.webVideo({ videoLink });
+          const metaTube = await ytdlx_web.VideoInfo({ query: videoLink });
           if (metaTube === undefined) continue;
           console.log(
             colors.bold.green("INFO:"),

@@ -23,8 +23,8 @@ export default async function extract_playlist_videos({
         );
         continue;
       }
-      const resp = await ytdlx_web.webPlaylist({
-        playlistLink: ispUrl[1],
+      const resp = await ytdlx_web.PlaylistInfo({
+        query: ispUrl[1],
       });
       if (resp === undefined) {
         console.error(
@@ -34,9 +34,9 @@ export default async function extract_playlist_videos({
         );
         continue;
       }
-      for (let i = 0; i < resp.videos.length; i++) {
+      for (let i = 0; i < resp.playlistVideos.length; i++) {
         try {
-          const videoId = resp.videos[i]?.videoId;
+          const videoId = resp.playlistVideos[i]?.videoId;
           if (videoId === undefined) continue;
           if (processedVideoIds.has(videoId)) continue;
           const data = await Engine({ query: videoId });
