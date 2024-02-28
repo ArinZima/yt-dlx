@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/agent";
@@ -209,17 +210,19 @@ export default async function AudioQualityCustom(
   } catch (error) {
     if (error instanceof ZodError) {
       return {
-        message: error.errors.map((err) => err.message).join(", "),
+        message:
+          colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", "),
         status: 500,
       };
     } else if (error instanceof Error) {
       return {
-        message: error.message,
+        message: colors.red("@error: ") + error.message,
         status: 500,
       };
     } else {
       return {
-        message: "Internal server error",
+        message: colors.red("@error: ") + "internal server error",
         status: 500,
       };
     }
