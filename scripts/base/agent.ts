@@ -1,3 +1,9 @@
+import type {
+  TypeVideo,
+  TypePlaylist,
+  VideoInfoType,
+  PlaylistInfoType,
+} from "../web/ytdlx_web";
 import ytxc from "./ytxc";
 import colors from "colors";
 import YouTubeID from "../web/YouTubeId";
@@ -9,7 +15,8 @@ export default async function Engine({
 }: {
   query: string;
 }): Promise<any | null> {
-  let videoId: string | null, TubeDlp: any, TubeBody: any;
+  let videoId: string | null, TubeDlp: any;
+  let TubeBody: TypeVideo[] | TypePlaylist[] | VideoInfoType | PlaylistInfoType;
   console.log(
     colors.bold.green("@info: ") +
       `using yt-dlx version <(${version})>` +
@@ -37,38 +44,43 @@ export default async function Engine({
   } else videoId = await YouTubeID(query);
   switch (videoId) {
     case null:
-      TubeBody = await ytdlx_web.SearchVideos({ query: query, type: "video" });
-      if (TubeBody === null) {
+      TubeBody = (await ytdlx_web.SearchVideos({
+        query: query,
+        type: "video",
+      })) as TypeVideo[];
+      if (!TubeBody || TubeBody.length === 0) {
         console.log(
           colors.bold.red("@error: ") +
             "no data returned from server..." +
             colors.reset("")
         );
         return null;
+      } else if (TubeBody[0]) {
+        console.log(
+          colors.bold.green("@info: ") +
+            `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` +
+            colors.reset("")
+        );
+        TubeDlp = await ytxc(TubeBody[0].videoLink);
       }
-      console.log(
-        colors.bold.green("@info: ") +
-          `preparing payload for <(${TubeBody[0].title} Author: ${TubeBody[0].author})>` +
-          colors.reset("")
-      );
-      TubeDlp = await ytxc(TubeBody[0].videoLink);
       break;
     default:
-      TubeBody = await ytdlx_web.VideoInfo({ query: query });
-      if (TubeBody === null) {
+      TubeBody = (await ytdlx_web.VideoInfo({ query: query })) as VideoInfoType;
+      if (!TubeBody) {
         console.log(
           colors.bold.red("@error: ") +
             "no data returned from server..." +
             colors.reset("")
         );
         return null;
+      } else {
+        console.log(
+          colors.bold.green("@info: ") +
+            `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` +
+            colors.reset("")
+        );
+        TubeDlp = await ytxc(TubeBody.videoLink);
       }
-      console.log(
-        colors.bold.green("@info: ") +
-          `preparing payload for <(${TubeBody.title} Author: ${TubeBody.author})>` +
-          colors.reset("")
-      );
-      TubeDlp = await ytxc(TubeBody.videoLink);
       break;
   }
   switch (TubeDlp) {
