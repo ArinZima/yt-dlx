@@ -25,7 +25,7 @@ vitest.test(colors.blue("@tesing: ") + "using vitest", async () => {
     console.log(colors.green("@pass:"), "video search results received");
 
     metaTube = (await core.VideoInfo({
-      query: metaTube[0].videoLink,
+      query: metaTube[0]?.videoLink as string,
       screenshot: false,
     })) as VideoInfoType;
     console.log(colors.green("@pass:"), "single video data received");
@@ -38,7 +38,7 @@ vitest.test(colors.blue("@tesing: ") + "using vitest", async () => {
     console.log(colors.green("@pass:"), "playlist search results received");
 
     metaTube = (await core.PlaylistInfo({
-      query: metaTube[0].playlistLink,
+      query: metaTube[0]?.playlistLink as string,
       screenshot: false,
     })) as PlaylistInfoType;
     console.log(colors.green("@pass:"), "single playlist data received");
