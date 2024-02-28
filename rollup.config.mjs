@@ -32,6 +32,7 @@ export default [
       }),
     ],
     external: [
+      "bun",
       "crypto",
       "path",
       "util",
@@ -58,6 +59,7 @@ export default [
       "yt-dlx",
       "yt-search",
       "zod",
+      "@types/bun",
       "@rollup/plugin-json",
       "@rollup/plugin-typescript",
       "@types/async",
