@@ -37,7 +37,6 @@ interface ListVideoQualityCustomOC {
   filter?: keyof VideoFilters;
 }
 type ListVideoQualityCustomType = 200 | StreamResult;
-
 const ListVideoQualityCustomInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -61,10 +60,9 @@ const ListVideoQualityCustomInputSchema = z.object({
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
   filter: z.string().optional(),
 });
-
 export default async function ListVideoQualityCustom(
   input: ListVideoQualityCustomOC
-): Promise<ListVideoQualityCustomType[] | any> {
+): Promise<any> {
   try {
     const {
       filter,

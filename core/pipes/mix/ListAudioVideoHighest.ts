@@ -43,7 +43,7 @@ const ListAudioVideoHighestInputSchema = z.object({
 
 export default async function ListAudioVideoHighest(
   input: ListAudioVideoHighestOC
-): Promise<ListAudioVideoHighestType[]> {
+): Promise<any> {
   try {
     const {
       stream,

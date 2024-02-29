@@ -23,7 +23,6 @@ interface ListVideoHighestOC {
   filter?: keyof VideoFilters;
 }
 type ListVideoHighestType = 200 | ErrorResult | StreamResult;
-
 const ListVideoHighestInputSchema = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -32,10 +31,9 @@ const ListVideoHighestInputSchema = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
-
 export default async function ListVideoHighest(
   input: ListVideoHighestOC
-): Promise<ListVideoHighestType[] | any> {
+): Promise<any> {
   try {
     const {
       filter,

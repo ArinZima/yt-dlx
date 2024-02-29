@@ -7,7 +7,6 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
@@ -21,8 +20,6 @@ interface AudioQualityCustomOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type AudioQualityCustomType = Promise<200 | ErrorResult | StreamResult>;
-
 const AudioQualityCustomInputSchema = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -35,7 +32,7 @@ const AudioQualityCustomInputSchema = z.object({
 
 export default async function AudioQualityCustom(
   input: AudioQualityCustomOC
-): AudioQualityCustomType {
+): Promise<200 | StreamResult> {
   try {
     const {
       query,
@@ -49,20 +46,14 @@ export default async function AudioQualityCustom(
 
     const metaResp = await ytdlx({ query });
     if (!metaResp) {
-      return {
-        message: "The specified quality was not found...",
-        status: 500,
-      };
+      throw new Error("The specified quality was not found...");
     }
     const metaBody = metaResp.AudioStore.filter(
       (op: { meta_dl: { formatnote: string } }) =>
         op.meta_dl.formatnote === quality
     );
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const title: string = metaResp.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -75,10 +66,7 @@ export default async function AudioQualityCustom(
     const ytc = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === undefined) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.addInput(metaResp.metaTube.thumbnail);

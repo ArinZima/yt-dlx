@@ -40,10 +40,9 @@ const ListAudioVideoLowestInputSchema = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
-
 export default async function ListAudioVideoLowest(
   input: ListAudioVideoLowestOC
-): Promise<ListAudioVideoLowestType[]> {
+): Promise<any> {
   try {
     const {
       stream,

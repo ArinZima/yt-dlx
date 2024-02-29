@@ -30,10 +30,9 @@ const ListAudioHighestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
   filter: z.string().optional(),
 });
-
 export default async function ListAudioHighest(
   input: ListAudioHighestOC
-): Promise<ListAudioHighestType[] | any> {
+): Promise<any> {
   try {
     const {
       filter,

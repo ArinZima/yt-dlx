@@ -19,7 +19,6 @@ type AudioHighestOC = {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 };
-
 const AudioHighestInputSchema = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -28,11 +27,9 @@ const AudioHighestInputSchema = z.object({
   folderName: z.string().optional(),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
-
-type AudioHighestType = Promise<200 | StreamResult>;
 export default async function AudioHighest(
   input: AudioHighestOC
-): AudioHighestType {
+): Promise<200 | StreamResult> {
   try {
     const {
       query,

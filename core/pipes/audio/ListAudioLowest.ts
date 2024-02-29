@@ -30,10 +30,9 @@ const ListAudioLowestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
   filter: z.string().optional(),
 });
-
 export default async function ListAudioLowest(
   input: ListAudioLowestOC
-): Promise<ListAudioLowestType[] | any> {
+): Promise<any> {
   try {
     const {
       filter,

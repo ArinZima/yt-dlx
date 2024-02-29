@@ -33,10 +33,9 @@ const ListAudioQualityCustomInputSchema = z.object({
   quality: z.enum(["high", "medium", "low", "ultralow"]),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
-
 export default async function ListAudioQualityCustom(
   input: ListAudioQualityCustomOC
-): Promise<ListAudioQualityCustomType[] | any> {
+): Promise<any> {
   try {
     const {
       filter,

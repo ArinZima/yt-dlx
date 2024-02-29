@@ -22,7 +22,6 @@ interface ListVideoLowestOC {
   filter?: keyof VideoFilters;
 }
 type ListVideoLowestType = 200 | StreamResult;
-
 const ListVideoLowestInputSchema = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -31,10 +30,9 @@ const ListVideoLowestInputSchema = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
-
 export default async function ListVideoLowest(
   input: ListVideoLowestOC
-): Promise<ListVideoLowestType[] | any> {
+): Promise<any> {
   try {
     const {
       filter,
