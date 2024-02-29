@@ -7,6 +7,13 @@ const app = express();
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+app.get("/ip", (req, res) => {
+  const ip = req.socket.remoteAddress;
+  console.log("Server IP Address:", ip);
+  res.send(ip);
+});
+
 (async () => {
   let counter = 1;
   while (true) {
