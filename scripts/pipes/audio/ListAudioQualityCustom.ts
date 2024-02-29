@@ -12,7 +12,6 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioQualities = "high" | "medium" | "low" | "ultralow";
@@ -25,7 +24,7 @@ interface ListAudioQualityCustomOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioQualityCustomType = SuccessResult | ErrorResult | StreamResult;
+type ListAudioQualityCustomType = 200 | ErrorResult | StreamResult;
 
 const ListAudioQualityCustomInputSchema = z.object({
   filter: z.string().optional(),

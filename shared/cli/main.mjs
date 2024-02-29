@@ -1437,18 +1437,9 @@ async function AudioLowest(input) {
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
-          return {
-            status: 200,
-            message: "process ended..."
-          };
-        }).run();
+        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => resolve()).run();
       });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -1659,18 +1650,9 @@ async function AudioHighest(input) {
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
-          return {
-            status: 200,
-            message: "process ended..."
-          };
-        }).run();
+        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => resolve()).run();
       });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -1818,14 +1800,9 @@ async function VideoLowest(input) {
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-            resolve();
-          }).run();
+          ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => resolve()).run();
         });
-        return {
-          message: "process ended...",
-          status: 200
-        };
+        return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -1973,14 +1950,9 @@ async function VideoHighest(input) {
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-            resolve();
-          }).run();
+          ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => resolve()).run();
         });
-        return {
-          message: "process ended...",
-          status: 200
-        };
+        return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2095,18 +2067,9 @@ async function AudioVideoLowest(input) {
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
-          return {
-            status: 200,
-            message: "process ended..."
-          };
-        }).run();
+        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => resolve()).run();
       });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2221,18 +2184,9 @@ async function AudioVideoHighest(input) {
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-          resolve();
-          return {
-            status: 200,
-            message: "process ended..."
-          };
-        }).run();
+        ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => resolve()).run();
       });
-      return {
-        status: 200,
-        message: "process ended..."
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2415,14 +2369,9 @@ async function AudioQualityCustom(input) {
       await new Promise((resolve, reject2) => {
         ytc.output(
           path3.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
-        ).on("error", reject2).on("end", () => {
-          resolve();
-        }).run();
+        ).on("error", reject2).on("end", () => resolve()).run();
       });
-      return {
-        message: "process ended...",
-        status: 200
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2570,14 +2519,9 @@ async function VideoLowest2(input) {
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => {
-            resolve();
-          }).run();
+          ytc.output(path3.join(metaFold, metaName)).on("error", reject2).on("end", () => resolve()).run();
         });
-        return {
-          message: "process ended...",
-          status: 200
-        };
+        return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {

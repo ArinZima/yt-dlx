@@ -9,7 +9,6 @@ import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type VideoFormat = "mp4" | "avi" | "mov";
 interface AudioVideoHighestOC {
@@ -19,7 +18,7 @@ interface AudioVideoHighestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-type AudioVideoHighest = Promise<SuccessResult | ErrorResult | StreamResult>;
+type AudioVideoHighest = Promise<200 | ErrorResult | StreamResult>;
 
 const AudioVideoHighestInputSchema = z.object({
   query: z.string().min(1),
@@ -123,19 +122,10 @@ export default async function AudioVideoHighest(
         ytc
           .output(path.join(metaFold, metaName))
           .on("error", reject)
-          .on("end", () => {
-            resolve();
-            return {
-              status: 200,
-              message: "process ended...",
-            };
-          })
+          .on("end", () => resolve())
           .run();
       });
-      return {
-        status: 200,
-        message: "process ended...",
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {

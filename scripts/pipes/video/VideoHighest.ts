@@ -10,7 +10,6 @@ import progressBar from "../../base/progressBar";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type VideoFormat = "mp4" | "avi" | "mov";
 interface VideoHighestOC {
@@ -21,7 +20,7 @@ interface VideoHighestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type VideoHighestType = Promise<SuccessResult | ErrorResult | StreamResult>;
+type VideoHighestType = Promise<200 | ErrorResult | StreamResult>;
 
 const VideoHighestInputSchema = z.object({
   query: z.string().min(1),
@@ -160,16 +159,11 @@ export default async function VideoHighest(
           ytc
             .output(path.join(metaFold, metaName))
             .on("error", reject)
-            .on("end", () => {
-              resolve();
-            })
+            .on("end", () => resolve())
             .run();
         });
 
-        return {
-          message: "process ended...",
-          status: 200,
-        };
+        return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {

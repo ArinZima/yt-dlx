@@ -10,7 +10,6 @@ import progressBar from "../../base/progressBar";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioHighestOC = {
@@ -31,7 +30,7 @@ const AudioHighestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 
-type AudioHighestType = Promise<SuccessResult | ErrorResult | StreamResult>;
+type AudioHighestType = Promise<200 | ErrorResult | StreamResult>;
 export default async function AudioHighest(
   input: AudioHighestOC
 ): AudioHighestType {
@@ -196,19 +195,10 @@ export default async function AudioHighest(
         ytc
           .output(path.join(metaFold, metaName))
           .on("error", reject)
-          .on("end", () => {
-            resolve();
-            return {
-              status: 200,
-              message: "process ended...",
-            };
-          })
+          .on("end", () => resolve())
           .run();
       });
-      return {
-        status: 200,
-        message: "process ended...",
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {

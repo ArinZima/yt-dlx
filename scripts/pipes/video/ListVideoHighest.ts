@@ -12,7 +12,6 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type VideoFormat = "mp4" | "avi" | "mov";
 interface ListVideoHighestOC {
@@ -23,7 +22,7 @@ interface ListVideoHighestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type ListVideoHighestType = SuccessResult | ErrorResult | StreamResult;
+type ListVideoHighestType = 200 | ErrorResult | StreamResult;
 
 const ListVideoHighestInputSchema = z.object({
   filter: z.string().optional(),

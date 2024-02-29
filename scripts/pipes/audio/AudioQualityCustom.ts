@@ -10,7 +10,6 @@ import progressBar from "../../base/progressBar";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioQualities = "high" | "medium" | "low" | "ultralow";
@@ -22,9 +21,7 @@ interface AudioQualityCustomOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type AudioQualityCustomType = Promise<
-  SuccessResult | ErrorResult | StreamResult
->;
+type AudioQualityCustomType = Promise<200 | ErrorResult | StreamResult>;
 
 const AudioQualityCustomInputSchema = z.object({
   query: z.string().min(1),
@@ -197,15 +194,10 @@ export default async function AudioQualityCustom(
             path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
           )
           .on("error", reject)
-          .on("end", () => {
-            resolve();
-          })
+          .on("end", () => resolve())
           .run();
       });
-      return {
-        message: "process ended...",
-        status: 200,
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {

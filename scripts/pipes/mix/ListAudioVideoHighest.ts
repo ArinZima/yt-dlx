@@ -11,7 +11,6 @@ import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type VideoFormat = "mp4" | "avi" | "mov";
 interface metaVideo {
@@ -34,7 +33,7 @@ interface ListAudioVideoHighestOC {
   playlistUrls: string[];
   outputFormat?: VideoFormat;
 }
-type ListAudioVideoHighestType = SuccessResult | ErrorResult | StreamResult;
+type ListAudioVideoHighestType = 200 | ErrorResult | StreamResult;
 
 const ListAudioVideoHighestInputSchema = z.object({
   stream: z.boolean().optional(),

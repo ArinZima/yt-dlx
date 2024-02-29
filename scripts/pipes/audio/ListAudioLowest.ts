@@ -12,7 +12,6 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 interface ListAudioLowestOC {
@@ -23,7 +22,7 @@ interface ListAudioLowestOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioLowestType = SuccessResult | ErrorResult | StreamResult;
+type ListAudioLowestType = 200 | ErrorResult | StreamResult;
 
 const ListAudioLowestInputSchema = z.object({
   stream: z.boolean().optional(),

@@ -10,7 +10,6 @@ import progressBar from "../../base/progressBar";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
-import type SuccessResult from "../../interface/SuccessResult";
 
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioLowestOC = {
@@ -21,7 +20,7 @@ type AudioLowestOC = {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 };
-type AudioLowestType = Promise<SuccessResult | ErrorResult | StreamResult>;
+type AudioLowestType = Promise<200 | ErrorResult | StreamResult>;
 
 const AudioLowestInputSchema = z.object({
   query: z.string().min(1),
@@ -196,19 +195,10 @@ export default async function AudioLowest(
         ytc
           .output(path.join(metaFold, metaName))
           .on("error", reject)
-          .on("end", () => {
-            resolve();
-            return {
-              status: 200,
-              message: "process ended...",
-            };
-          })
+          .on("end", () => resolve())
           .run();
       });
-      return {
-        status: 200,
-        message: "process ended...",
-      };
+      return 200;
     }
   } catch (error) {
     if (error instanceof ZodError) {
