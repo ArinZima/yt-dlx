@@ -16,11 +16,11 @@ RUN apt-get update \
         nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install --global --force yarn yt-dlx
+RUN npm install --global --force bun yt-dlx
 WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
-RUN yarn run remake
+RUN bun run remake
 RUN npx playwright install
 RUN npx playwright install-deps
 CMD ["node", ".devcontainer/server.mjs"]
