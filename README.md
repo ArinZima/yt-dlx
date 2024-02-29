@@ -1,6 +1,8 @@
-# YT-DLX: Elevate Your Video Downloading & Streaming Experience 🚀
+<div style="text-align: center;">
+    <img src="https://i.postimg.cc/sXx2CgB7/yt-dlx-removebg.png" alt="yt-dlx Logo" style="max-width: 200%; height: 200;">
+</div>
 
-![yt-dlx Logo](https://i.postimg.cc/sXx2CgB7/yt-dlx-removebg.png)
+# YT-DLX: Elevate Your Video Downloading & Streaming Experience 🚀
 
 [![npm version](https://img.shields.io/npm/v/yt-dlx.svg)](https://www.npmjs.com/package/yt-dlx)
 ![license](https://img.shields.io/npm/l/yt-dlx.svg)
