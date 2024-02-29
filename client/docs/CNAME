@@ -1,0 +1,3 @@
+https://rebrand.ly/mixly
+curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh bash -
