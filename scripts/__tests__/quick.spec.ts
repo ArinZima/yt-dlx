@@ -1,5 +1,14 @@
 console.clear();
 import colors from "colors";
-import * as vitest from "vitest";
+import Agent from "../base/agent";
 
-vitest.test(colors.blue("@tesing"), async () => {});
+(async () => {
+  try {
+    const metaTube = await Agent({
+      query: "sQEgklEwhSo",
+    });
+    console.log(colors.green("@info:"), metaTube);
+  } catch (error: any) {
+    console.error(colors.red("@error:"), error.message);
+  }
+})();
