@@ -13,7 +13,6 @@ var path2 = require('path');
 var util = require('util');
 var child_process = require('child_process');
 var fluentffmpeg = require('fluent-ffmpeg');
-var axios = require('axios');
 var stream = require('stream');
 var readline = require('readline');
 var minimist = require('minimist');
@@ -46,7 +45,6 @@ var z6__namespace = /*#__PURE__*/_interopNamespace(z6);
 var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
 var path2__namespace = /*#__PURE__*/_interopNamespace(path2);
 var fluentffmpeg__default = /*#__PURE__*/_interopDefault(fluentffmpeg);
-var axios__default = /*#__PURE__*/_interopDefault(axios);
 var readline__default = /*#__PURE__*/_interopDefault(readline);
 var minimist__default = /*#__PURE__*/_interopDefault(minimist);
 
@@ -863,67 +861,76 @@ var version = "2.0.4";
 async function Agent({
   query
 }) {
-  let videoId, respEngine;
-  let TubeBody;
-  console.log(colors29__default.default.bold.green("@info: ") + `using yt-dlx version ${version}`);
-  switch (true) {
-    case (!query || query.trim() === ""):
-      throw new Error(colors29__default.default.bold.red("@error: ") + "'query' is required.");
-    case (/https/i.test(query) && /list/i.test(query)):
-      throw new Error(
-        colors29__default.default.bold.red("@error: ") + "use extract_playlist_videos()."
-      );
-    case (/https/i.test(query) && !/list/i.test(query)):
-      videoId = await YouTubeID(query);
-      break;
-    default:
-      videoId = await YouTubeID(query);
-  }
-  console.log(colors29__default.default.bold.green("@info: ") + `fetching metadata for ${query}`);
-  switch (videoId) {
-    case null:
-      TubeBody = await web_default.search.SearchVideos({
-        query,
-        type: "video"
-      });
-      if (!TubeBody || TubeBody.length === 0) {
+  try {
+    let videoId;
+    let respEngine = null;
+    let TubeBody;
+    console.log(colors29__default.default.green("@info: ") + `using yt-dlx version ${version}`);
+    switch (true) {
+      case (!query || query.trim() === ""):
+        throw new Error(colors29__default.default.red("@error: ") + "'query' is required.");
+      case (/https/i.test(query) && /list/i.test(query)):
         throw new Error(
-          colors29__default.default.bold.red("@error: ") + "no data returned from server."
+          colors29__default.default.red("@error: ") + "use extract_playlist_videos()."
         );
-      } else if (TubeBody[0]) {
+      case (/https/i.test(query) && !/list/i.test(query)):
+        videoId = await YouTubeID(query);
+        break;
+      default:
+        videoId = await YouTubeID(query);
+    }
+    console.log(colors29__default.default.green("@info: ") + `fetching metadata for ${query}`);
+    switch (videoId) {
+      case null:
+        TubeBody = await web_default.search.SearchVideos({
+          query,
+          type: "video"
+        });
+        if (!TubeBody || TubeBody.length === 0) {
+          throw new Error(
+            colors29__default.default.red("@error: ") + "no data returned from server."
+          );
+        } else if (TubeBody[0]) {
+          console.log(
+            colors29__default.default.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
+          );
+          respEngine = await Engine(TubeBody[0].videoLink);
+        } else {
+          throw new Error(
+            colors29__default.default.red("@error: ") + "no data returned from server."
+          );
+        }
+        break;
+      default:
+        TubeBody = await web_default.search.VideoInfo({
+          query
+        });
+        if (!TubeBody) {
+          throw new Error(
+            colors29__default.default.red("@error: ") + "no data returned from server."
+          );
+        }
         console.log(
-          colors29__default.default.bold.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
-        );
-        respEngine = await Engine(TubeBody[0].videoLink);
-      }
-      break;
-    default:
-      TubeBody = await web_default.search.VideoInfo({
-        query
-      });
-      if (!TubeBody) {
-        throw new Error(
-          colors29__default.default.bold.red("@error: ") + "no data returned from server."
-        );
-      } else {
-        console.log(
-          colors29__default.default.bold.green("@info: ") + `preparing payload for ${TubeBody.title}`
+          colors29__default.default.green("@info: ") + `preparing payload for ${TubeBody.title}`
         );
         respEngine = await Engine(TubeBody.videoLink);
-      }
-      break;
-  }
-  switch (respEngine) {
-    case null:
-      throw new Error(
-        colors29__default.default.bold.red("@error: ") + "no data returned from server."
-      );
-    default:
+        break;
+    }
+    if (respEngine === null) {
+      throw new Error(colors29__default.default.red("@error: ") + "no data returned from server.");
+    } else {
       console.log(
-        colors29__default.default.bold.green("@info:"),
+        colors29__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
       );
       return respEngine;
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
+    } else {
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+    }
   }
 }
 
@@ -1279,19 +1286,16 @@ async function extract_playlist_videos({
 }
 async function checkUrl(url) {
   try {
-    const response = await axios__default.default.head(url);
+    const response = await fetch(url, { method: "HEAD" });
     return response.status === 200;
   } catch (error) {
     return false;
   }
 }
-async function bigEntry(metaBody) {
+async function lowEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
-      console.log(
-        colors29__default.default.bold.red("@error:"),
-        "sorry no downloadable data found"
-      );
+      console.log(colors29__default.default.red("@error:"), "sorry no downloadable data found");
       return null;
     default:
       const sortedByFileSize = [...metaBody].sort(
@@ -1302,10 +1306,7 @@ async function bigEntry(metaBody) {
         if (mediaurl && await checkUrl(mediaurl))
           return item;
       }
-      console.log(
-        colors29__default.default.bold.red("@error:"),
-        "sorry no downloadable data found"
-      );
+      console.log(colors29__default.default.red("@error:"), "sorry no downloadable data found");
       return null;
   }
 }
@@ -1365,7 +1366,7 @@ async function AudioLowest(input) {
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry(metaBody.AudioTube);
+    const metaEntry = await lowEntry(metaBody.AudioTube);
     if (metaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -1530,19 +1531,16 @@ async function AudioLowest(input) {
 }
 async function checkUrl2(url) {
   try {
-    const response = await axios__default.default.head(url);
+    const response = await fetch(url, { method: "HEAD" });
     return response.status === 200;
   } catch (error) {
     return false;
   }
 }
-async function bigEntry2(metaBody) {
+async function bigEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
-      console.log(
-        colors29__default.default.bold.red("@error:"),
-        "sorry no downloadable data found"
-      );
+      console.log(colors29__default.default.red("@error:"), "sorry no downloadable data found");
       return null;
     default:
       const sortedByFileSize = [...metaBody].sort(
@@ -1553,10 +1551,7 @@ async function bigEntry2(metaBody) {
         if (mediaurl && await checkUrl2(mediaurl))
           return item;
       }
-      console.log(
-        colors29__default.default.bold.red("@error:"),
-        "sorry no downloadable data found"
-      );
+      console.log(colors29__default.default.red("@error:"), "sorry no downloadable data found");
       return null;
   }
 }
@@ -1593,7 +1588,7 @@ async function AudioHighest(input) {
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry2(metaBody.AudioTube);
+    const metaEntry = await bigEntry(metaBody.AudioTube);
     if (metaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -1789,7 +1784,7 @@ async function VideoLowest(input) {
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry(metaBody.VideoTube);
+    const metaEntry = await lowEntry(metaBody.VideoTube);
     if (metaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -1944,7 +1939,7 @@ async function VideoHighest(input) {
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry2(metaBody.VideoTube);
+    const metaEntry = await bigEntry(metaBody.VideoTube);
     if (metaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -2098,8 +2093,8 @@ async function AudioVideoLowest(input) {
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg__default.default();
-    const AmetaEntry = await bigEntry(metaBody.AudioTube);
-    const VmetaEntry = await bigEntry(metaBody.VideoTube);
+    const AmetaEntry = await lowEntry(metaBody.AudioTube);
+    const VmetaEntry = await lowEntry(metaBody.VideoTube);
     if (AmetaEntry === null || VmetaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -2224,8 +2219,8 @@ async function AudioVideoHighest(input) {
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg__default.default();
-    const AmetaEntry = await bigEntry2(metaBody.AudioTube);
-    const VmetaEntry = await bigEntry2(metaBody.VideoTube);
+    const AmetaEntry = await bigEntry(metaBody.AudioTube);
+    const VmetaEntry = await bigEntry(metaBody.VideoTube);
     if (AmetaEntry === null || VmetaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -2362,7 +2357,7 @@ async function AudioQualityCustom(input) {
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg__default.default();
-    const metaEntry = await bigEntry2(metaBody);
+    const metaEntry = await bigEntry(metaBody);
     if (metaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -2541,7 +2536,7 @@ async function VideoLowest2(input) {
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry2(metaBody.VideoTube);
+    const metaEntry = await bigEntry(metaBody.VideoTube);
     if (metaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",
@@ -2722,7 +2717,7 @@ async function ListVideoLowest(input) {
       const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
       if (!fs__namespace.existsSync(metaFold))
         fs__namespace.mkdirSync(metaFold, { recursive: true });
-      const metaEntry = await bigEntry(metaBody.VideoTube);
+      const metaEntry = await lowEntry(metaBody.VideoTube);
       if (metaEntry === null)
         continue;
       const ytc = fluentffmpeg__default.default();
@@ -2901,7 +2896,7 @@ async function ListVideoHighest(input) {
       const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
       if (!fs__namespace.existsSync(metaFold))
         fs__namespace.mkdirSync(metaFold, { recursive: true });
-      const metaEntry = await bigEntry2(metaBody.VideoTube);
+      const metaEntry = await bigEntry(metaBody.VideoTube);
       if (metaEntry === null)
         continue;
       const ytc = fluentffmpeg__default.default();
@@ -3101,7 +3096,7 @@ async function ListVideoQualityCustom(input) {
       const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
       if (!fs__namespace.existsSync(metaFold))
         fs__namespace.mkdirSync(metaFold, { recursive: true });
-      const metaEntry = await bigEntry2(newBody);
+      const metaEntry = await bigEntry(newBody);
       if (metaEntry === null)
         continue;
       const ytc = fluentffmpeg__default.default();
@@ -3281,7 +3276,7 @@ async function ListAudioLowest(input) {
       const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
       if (!fs__namespace.existsSync(metaFold))
         fs__namespace.mkdirSync(metaFold, { recursive: true });
-      const metaEntry = await bigEntry(metaBody.AudioTube);
+      const metaEntry = await lowEntry(metaBody.AudioTube);
       if (metaEntry === null)
         continue;
       const ytc = fluentffmpeg__default.default();
@@ -3496,7 +3491,7 @@ async function ListAudioHighest(input) {
       const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
       if (!fs__namespace.existsSync(metaFold))
         fs__namespace.mkdirSync(metaFold, { recursive: true });
-      const metaEntry = await bigEntry2(metaBody.AudioTube);
+      const metaEntry = await bigEntry(metaBody.AudioTube);
       if (metaEntry === null)
         continue;
       const ytc = fluentffmpeg__default.default();
@@ -3718,7 +3713,7 @@ async function ListAudioQualityCustom(input) {
       const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
       if (!fs__namespace.existsSync(metaFold))
         fs__namespace.mkdirSync(metaFold, { recursive: true });
-      const metaEntry = await bigEntry2(newBody);
+      const metaEntry = await bigEntry(newBody);
       if (metaEntry === null)
         continue;
       const ytc = fluentffmpeg__default.default();
@@ -5766,8 +5761,8 @@ async function ListAudioVideoLowest(input) {
                 if (!fs__namespace.existsSync(metaFold))
                   fs__namespace.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg__default.default();
-                const AmetaEntry = await bigEntry(metaBody.AudioTube);
-                const VmetaEntry = await bigEntry(metaBody.VideoTube);
+                const AmetaEntry = await lowEntry(metaBody.AudioTube);
+                const VmetaEntry = await lowEntry(metaBody.VideoTube);
                 if (AmetaEntry === null || VmetaEntry === null)
                   return;
                 ytc.addInput(VmetaEntry.meta_dl.mediaurl);
@@ -5930,8 +5925,8 @@ async function ListAudioVideoHighest(input) {
                 if (!fs__namespace.existsSync(metaFold))
                   fs__namespace.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg__default.default();
-                const AmetaEntry = await bigEntry2(metaBody.AudioTube);
-                const VmetaEntry = await bigEntry2(metaBody.VideoTube);
+                const AmetaEntry = await bigEntry(metaBody.AudioTube);
+                const VmetaEntry = await bigEntry(metaBody.VideoTube);
                 if (AmetaEntry === null || VmetaEntry === null)
                   return;
                 ytc.addInput(VmetaEntry.meta_dl.mediaurl);

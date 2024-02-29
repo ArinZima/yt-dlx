@@ -1,17 +1,16 @@
-import axios from "axios";
 import colors from "colors";
 import type TubeConfig from "../interface/TubeConfig";
 
 async function checkUrl(url: string): Promise<boolean> {
   try {
-    const response = await axios.head(url);
+    const response = await fetch(url, { method: "HEAD" });
     return response.status === 200;
   } catch (error) {
     return false;
   }
 }
 
-export default async function bigEntry(
+export default async function lowEntry(
   metaBody: TubeConfig[]
 ): Promise<TubeConfig | null> {
   switch (true) {
