@@ -50,7 +50,7 @@ function runScript() {
     );
   });
   rl.question(
-    `${colors.green}@info:${colors.reset} enter the ${colors.green}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
+    `${colors.green}@info:${colors.reset} enter the ${colors.red}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
     (answer) => {
       console.log(colors.reset);
       const scriptIndex = parseInt(answer) - 1;
