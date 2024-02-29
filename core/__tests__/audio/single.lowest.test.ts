@@ -15,14 +15,12 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
       folderName: "audio",
       stream: false,
     });
-    switch (true) {
-      case holder:
-        console.log(colors.bold.green("@pass:"), holder);
-        await fsx.remove("audio");
-        break;
-      default:
-        await fsx.remove("audio");
-        throw (colors.bold.red("@error:"), holder);
+    if (holder) {
+      console.log(colors.bold.green("@pass:"), holder);
+      await fsx.remove("audio");
+    } else {
+      await fsx.remove("audio");
+      throw (colors.bold.red("@error:"), holder);
     }
     console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.lowest()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
@@ -33,14 +31,12 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
       folderName: "audio",
       stream: false,
     });
-    switch (true) {
-      case holder:
-        console.log(colors.bold.green("@pass:"), holder);
-        await fsx.remove("audio");
-        break;
-      default:
-        await fsx.remove("audio");
-        throw (colors.bold.red("@error:"), holder);
+    if (holder) {
+      console.log(colors.bold.green("@pass:"), holder);
+      await fsx.remove("audio");
+    } else {
+      await fsx.remove("audio");
+      throw (colors.bold.red("@error:"), holder);
     }
   } catch (error) {
     await fsx.remove("audio");
@@ -59,20 +55,14 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
       folderName: "audio",
       stream: true,
     });
-    switch (true) {
-      case "stream" in holder && "filename" in holder:
-        holder.stream.pipe(fs.createWriteStream(holder.filename));
-        console.log(
-          colors.bold.green("@pass:"),
-          `with filename ${holder.filename}`
-        );
-        await fsx.remove("audio");
-        break;
-      default:
-        await fsx.remove("audio");
-        throw (colors.bold.red("@error:"), holder);
+    if (holder.stream && holder.filename) {
+      holder.stream.pipe(fs.createWriteStream(holder.filename));
+      console.log(colors.bold.green("@pass:"), holder.filename);
+      await fsx.remove("audio");
+    } else {
+      await fsx.remove("audio");
+      throw (colors.bold.red("@error:"), holder);
     }
-
     console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.lowest()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytdlx.audio.single.lowest({
@@ -82,18 +72,13 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
       folderName: "audio",
       stream: true,
     });
-    switch (true) {
-      case "stream" in holder && "filename" in holder:
-        holder.stream.pipe(fs.createWriteStream(holder.filename));
-        console.log(
-          colors.bold.green("@pass:"),
-          `with filename ${holder.filename}`
-        );
-        await fsx.remove("audio");
-        break;
-      default:
-        await fsx.remove("audio");
-        throw (colors.bold.red("@error:"), holder);
+    if (holder.stream && holder.filename) {
+      holder.stream.pipe(fs.createWriteStream(holder.filename));
+      console.log(colors.bold.green("@pass:"), holder.filename);
+      await fsx.remove("audio");
+    } else {
+      await fsx.remove("audio");
+      throw (colors.bold.red("@error:"), holder);
     }
   } catch (error) {
     await fsx.remove("audio");
