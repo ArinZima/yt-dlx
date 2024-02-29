@@ -17,7 +17,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case holder:
-        console.log(colors.bold.green("@pass"));
+        console.log(colors.bold.green("@pass:"), holder);
         await fsx.remove("audio");
         break;
       default:
@@ -35,7 +35,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case holder:
-        console.log(colors.bold.green("@pass"));
+        console.log(colors.bold.green("@pass:"), holder);
         await fsx.remove("audio");
         break;
       default:
