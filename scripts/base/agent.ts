@@ -3,11 +3,12 @@ import type {
   TypePlaylist,
   VideoInfoType,
   PlaylistInfoType,
-} from "../ytdlx_web";
+} from "..";
+
+import core from "..";
 import ytxc from "./ytxc";
 import colors from "colors";
 import YouTubeID from "../web/YouTubeId";
-import ytdlx_web from "../ytdlx_web";
 import { version } from "../../package.json";
 
 export default async function Engine({
@@ -35,7 +36,7 @@ export default async function Engine({
   } else videoId = await YouTubeID(query);
   switch (videoId) {
     case null:
-      TubeBody = (await ytdlx_web.SearchVideos({
+      TubeBody = (await core.search.SearchVideos({
         query: query,
         type: "video",
       })) as TypeVideo[];
@@ -53,7 +54,9 @@ export default async function Engine({
       }
       break;
     default:
-      TubeBody = (await ytdlx_web.VideoInfo({ query: query })) as VideoInfoType;
+      TubeBody = (await core.search.VideoInfo({
+        query: query,
+      })) as VideoInfoType;
       if (!TubeBody) {
         console.log(
           colors.bold.red("@error: ") + "no data returned from server..."
