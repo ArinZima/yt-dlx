@@ -29,7 +29,7 @@ const core = {
   update: "bun run make && bun run update:base && bun run update:client",
   "update:base": "bun install --latest && bun update --latest",
   "update:client": "cd client && bun install --latest && bun update --latest",
-  cli: "bun run link && bun run test:cli && bun run unlink",
+  cli: "bun link && bun run test:cli && bun unlink",
   test: "bun run test:bun && bun run test:cli",
   "test:bun": "bun test --timeout 60000 --bail --watch",
   "test:spec":
