@@ -23,7 +23,6 @@ app.get("/ip", (req, res) => {
       console.log(colors.green("@info:"), `iteration ${counter}`);
       execSync("bun remove yt-dlx", { stdio: "inherit" });
       execSync("bun add yt-dlx@latest", { stdio: "inherit" });
-      execSync("rm -rf node_modules bun.lockb", { stdio: "inherit" });
       counter++;
       await sleep(8000);
     } catch (error) {
