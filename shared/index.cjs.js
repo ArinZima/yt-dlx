@@ -684,10 +684,12 @@ async function VideoInfo(input) {
     }
 }
 
-const core = {
-    SearchVideos,
-    PlaylistInfo,
-    VideoInfo,
+const web = {
+    search: {
+        SearchVideos,
+        PlaylistInfo,
+        VideoInfo,
+    },
 };
 
 async function search({ query }) {
@@ -699,7 +701,7 @@ async function search({ query }) {
                     status: 500,
                 };
             default:
-                return await core.SearchVideos({ query, type: "video" });
+                return await web.search.SearchVideos({ query, type: "video" });
         }
     }
     catch (error) {
@@ -1008,7 +1010,7 @@ async function Engine({ query, }) {
         videoId = await YouTubeID(query);
     switch (videoId) {
         case null:
-            TubeBody = (await core.SearchVideos({
+            TubeBody = (await web.search.SearchVideos({
                 query: query,
                 type: "video",
             }));
@@ -1023,7 +1025,9 @@ async function Engine({ query, }) {
             }
             break;
         default:
-            TubeBody = (await core.VideoInfo({ query: query }));
+            TubeBody = (await web.search.VideoInfo({
+                query: query,
+            }));
             if (!TubeBody) {
                 console.log(colors.bold.red("@error: ") + "no data returned from server...");
                 return null;
@@ -1154,7 +1158,7 @@ async function get_playlist({ playlistUrls, }) {
                 console.error(colors.bold.red("@error: "), "Invalid YouTube Playlist URL:", videoLink);
                 continue;
             }
-            const resp = await core.PlaylistInfo({
+            const resp = await web.search.PlaylistInfo({
                 query: ispUrl[1],
             });
             if (resp === undefined) {
@@ -1166,7 +1170,7 @@ async function get_playlist({ playlistUrls, }) {
                     const videoLink = resp.playlistVideos[i]?.videoLink;
                     if (videoLink === undefined)
                         continue;
-                    const metaTube = await core.VideoInfo({ query: videoLink });
+                    const metaTube = await web.search.VideoInfo({ query: videoLink });
                     if (metaTube === undefined)
                         continue;
                     console.log(colors.bold.green("INFO:"), colors.bold.green("<("), metaTube.title, colors.bold.green("by"), metaTube.author, colors.bold.green(")>"));
@@ -1333,7 +1337,7 @@ async function extract_playlist_videos({ playlistUrls, }) {
                 console.error(colors.bold.red("@error: "), "Invalid YouTube Playlist URL:", videoLink);
                 continue;
             }
-            const resp = await core.PlaylistInfo({
+            const resp = await web.search.PlaylistInfo({
                 query: ispUrl[1],
             });
             if (resp === undefined) {
@@ -2776,7 +2780,7 @@ async function ListVideoLowest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
-            const metaList = await core.PlaylistInfo({ query: videoLink });
+            const metaList = await web.search.PlaylistInfo({ query: videoLink });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
@@ -2789,7 +2793,7 @@ async function ListVideoLowest(input) {
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await core.VideoInfo({
+            const TubeBody = await web.search.VideoInfo({
                 query: i.videoLink,
             });
             if (TubeBody === undefined)
@@ -2949,7 +2953,7 @@ async function ListVideoHighest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
-            const metaList = await core.PlaylistInfo({ query: videoLink });
+            const metaList = await web.search.PlaylistInfo({ query: videoLink });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
@@ -2962,7 +2966,7 @@ async function ListVideoHighest(input) {
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await core.VideoInfo({
+            const TubeBody = await web.search.VideoInfo({
                 query: i.videoLink,
             });
             if (TubeBody === undefined)
@@ -3137,7 +3141,7 @@ async function ListVideoQualityCustom(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
-            const metaList = await core.PlaylistInfo({ query: videoLink });
+            const metaList = await web.search.PlaylistInfo({ query: videoLink });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
@@ -3150,7 +3154,7 @@ async function ListVideoQualityCustom(input) {
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await core.VideoInfo({
+            const TubeBody = await web.search.VideoInfo({
                 query: i.videoLink,
             });
             if (TubeBody === undefined)
@@ -3316,7 +3320,7 @@ async function ListAudioLowest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
-            const metaList = await core.PlaylistInfo({ query: videoLink });
+            const metaList = await web.search.PlaylistInfo({ query: videoLink });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
@@ -3329,7 +3333,7 @@ async function ListAudioLowest(input) {
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await core.VideoInfo({
+            const TubeBody = await web.search.VideoInfo({
                 query: i.videoLink,
             });
             if (TubeBody === undefined)
@@ -3527,7 +3531,7 @@ async function ListAudioHighest(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
-            const metaList = await core.PlaylistInfo({ query: videoLink });
+            const metaList = await web.search.PlaylistInfo({ query: videoLink });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
@@ -3540,7 +3544,7 @@ async function ListAudioHighest(input) {
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await core.VideoInfo({
+            const TubeBody = await web.search.VideoInfo({
                 query: i.videoLink,
             });
             if (TubeBody === undefined)
@@ -3739,7 +3743,7 @@ async function ListAudioQualityCustom(input) {
         let results = [];
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
-            const metaList = await core.PlaylistInfo({ query: videoLink });
+            const metaList = await web.search.PlaylistInfo({ query: videoLink });
             if (metaList === null || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
@@ -3752,7 +3756,7 @@ async function ListAudioQualityCustom(input) {
         }
         console.log(colors.bold.green("INFO:"), "🎁Total Unique Videos:", parseList.length);
         for (const i of parseList) {
-            const TubeBody = await core.VideoInfo({
+            const TubeBody = await web.search.VideoInfo({
                 query: i.videoLink,
             });
             if (TubeBody === undefined)

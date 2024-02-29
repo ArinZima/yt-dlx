@@ -24,21 +24,7 @@ import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
 import ListAudioVideoLowest from "./pipes/mix/ListAudioVideoLowest";
 import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 
-import SearchVideos from "./web/api/SearchVideos";
-import PlaylistInfo from "./web/api/PlaylistInfo";
-import VideoInfo from "./web/api/VideoInfo";
-
-import type { VideoInfoType } from "./web/api/VideoInfo";
-import type { PlaylistInfoType } from "./web/api/PlaylistInfo";
-import type { TypePlaylist, TypeVideo } from "./web/api/SearchVideos";
-export type { TypeVideo, TypePlaylist, VideoInfoType, PlaylistInfoType };
-
 const ytdlx = {
-  search: {
-    SearchVideos,
-    PlaylistInfo,
-    VideoInfo,
-  },
   info: {
     help,
     search,

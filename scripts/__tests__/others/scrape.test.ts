@@ -4,9 +4,9 @@ import type {
   TypePlaylist,
   VideoInfoType,
   PlaylistInfoType,
-} from "../../";
+} from "../../web";
 import * as vitest from "vitest";
-import core from "../../";
+import web from "../../web";
 
 vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
   try {
@@ -16,27 +16,27 @@ vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
       | VideoInfoType
       | PlaylistInfoType;
 
-    metaTube = (await core.search.SearchVideos({
+    metaTube = (await web.search.SearchVideos({
       screenshot: false,
       query: "Rick Astley - Never Gonna Give You Up (Official Music Video)",
       type: "video",
     })) as TypeVideo[];
     console.log(colors.green("@pass:"), "video search results received");
 
-    metaTube = (await core.search.VideoInfo({
+    metaTube = (await web.search.VideoInfo({
       query: metaTube[0]?.videoLink as string,
       screenshot: false,
     })) as VideoInfoType;
     console.log(colors.green("@pass:"), "single video data received");
 
-    metaTube = (await core.search.SearchVideos({
+    metaTube = (await web.search.SearchVideos({
       query: metaTube.title,
       screenshot: false,
       type: "playlist",
     })) as TypePlaylist[];
     console.log(colors.green("@pass:"), "playlist search results received");
 
-    metaTube = (await core.search.PlaylistInfo({
+    metaTube = (await web.search.PlaylistInfo({
       query: metaTube[0]?.playlistLink as string,
       screenshot: false,
     })) as PlaylistInfoType;
@@ -54,7 +54,7 @@ vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
       | VideoInfoType
       | PlaylistInfoType;
 
-    metaTube = (await core.search.VideoInfo({
+    metaTube = (await web.search.VideoInfo({
       query: "dQw4w9WgXcQ",
       screenshot: false,
     })) as VideoInfoType;
@@ -65,7 +65,7 @@ vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
       );
     } else console.error(colors.red("@fail:"), metaTube);
 
-    metaTube = (await core.search.PlaylistInfo({
+    metaTube = (await web.search.PlaylistInfo({
       query: "PLRBp0Fe2GpgnIh0AiYKh7o7HnYAej-5ph",
       screenshot: false,
     })) as PlaylistInfoType;
@@ -76,7 +76,7 @@ vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
       );
     } else console.error(colors.red("@fail:"), metaTube);
 
-    metaTube = (await core.search.VideoInfo({
+    metaTube = (await web.search.VideoInfo({
       query: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       screenshot: false,
     })) as VideoInfoType;
@@ -87,7 +87,7 @@ vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
       );
     } else console.error(colors.red("@fail:"), metaTube);
 
-    metaTube = (await core.search.PlaylistInfo({
+    metaTube = (await web.search.PlaylistInfo({
       query:
         "https://www.youtube.com/playlist?list=PLRBp0Fe2GpgnIh0AiYKh7o7HnYAej-5ph",
       screenshot: false,

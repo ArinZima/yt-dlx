@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import core from "../../";
 import colors from "colors";
+import web from "../../web";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/agent";
@@ -55,7 +55,7 @@ export default async function ListAudioQualityCustom(
     let results: ListAudioQualityCustomType[] = [];
     const uniqueVideoIds = new Set();
     for (const videoLink of playlistUrls) {
-      const metaList = await core.search.PlaylistInfo({ query: videoLink });
+      const metaList = await web.search.PlaylistInfo({ query: videoLink });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
@@ -74,7 +74,7 @@ export default async function ListAudioQualityCustom(
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await core.search.VideoInfo({
+      const TubeBody = await web.search.VideoInfo({
         query: i.videoLink,
       });
       if (TubeBody === undefined) continue;

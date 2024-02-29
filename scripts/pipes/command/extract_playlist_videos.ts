@@ -1,6 +1,6 @@
-import core from "../../";
 import * as z from "zod";
 import colors from "colors";
+import web from "../../web";
 import Engine from "../../base/agent";
 
 interface extract_playlist_videosOC {
@@ -23,7 +23,7 @@ export default async function extract_playlist_videos({
         );
         continue;
       }
-      const resp = await core.search.PlaylistInfo({
+      const resp = await web.search.PlaylistInfo({
         query: ispUrl[1],
       });
       if (resp === undefined) {

@@ -3,9 +3,9 @@ import type {
   TypePlaylist,
   VideoInfoType,
   PlaylistInfoType,
-} from "..";
+} from "../web";
 
-import core from "..";
+import core from "../web";
 import ytxc from "./ytxc";
 import colors from "colors";
 import YouTubeID from "../web/YouTubeId";

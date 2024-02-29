@@ -1,4 +1,4 @@
-import core from "../../";
+import web from "../../web";
 export default async function search({ query }: { query: string }) {
   try {
     switch (true) {
@@ -8,7 +8,7 @@ export default async function search({ query }: { query: string }) {
           status: 500,
         };
       default:
-        return await core.search.SearchVideos({ query, type: "video" });
+        return await web.search.SearchVideos({ query, type: "video" });
     }
   } catch (error) {
     switch (true) {
