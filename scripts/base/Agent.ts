@@ -24,15 +24,13 @@ export default async function Agent({
       | TypePlaylist[]
       | VideoInfoType
       | PlaylistInfoType;
-    console.log(
-      colors.bold.green("@info: ") + `using yt-dlx version ${version}`
-    );
+    console.log(colors.green("@info: ") + `using yt-dlx version ${version}`);
     switch (true) {
       case !query || query.trim() === "":
-        throw new Error(colors.bold.red("@error: ") + "'query' is required.");
+        throw new Error(colors.red("@error: ") + "'query' is required.");
       case /https/i.test(query) && /list/i.test(query):
         throw new Error(
-          colors.bold.red("@error: ") + "use extract_playlist_videos()."
+          colors.red("@error: ") + "use extract_playlist_videos()."
         );
       case /https/i.test(query) && !/list/i.test(query):
         videoId = await YouTubeID(query);
@@ -40,9 +38,7 @@ export default async function Agent({
       default:
         videoId = await YouTubeID(query);
     }
-    console.log(
-      colors.bold.green("@info: ") + `fetching metadata for ${query}`
-    );
+    console.log(colors.green("@info: ") + `fetching metadata for ${query}`);
     switch (videoId) {
       case null:
         TubeBody = (await core.search.SearchVideos({
@@ -51,17 +47,17 @@ export default async function Agent({
         })) as TypeVideo[];
         if (!TubeBody || TubeBody.length === 0) {
           throw new Error(
-            colors.bold.red("@error: ") + "no data returned from server."
+            colors.red("@error: ") + "no data returned from server."
           );
         } else if (TubeBody[0]) {
           console.log(
-            colors.bold.green("@info: ") +
+            colors.green("@info: ") +
               `preparing payload for ${TubeBody[0].title}`
           );
           respEngine = await Engine(TubeBody[0].videoLink);
         } else {
           throw new Error(
-            colors.bold.red("@error: ") + "no data returned from server."
+            colors.red("@error: ") + "no data returned from server."
           );
         }
         break;
@@ -71,27 +67,23 @@ export default async function Agent({
         })) as VideoInfoType;
         if (!TubeBody) {
           throw new Error(
-            colors.bold.red("@error: ") + "no data returned from server."
+            colors.red("@error: ") + "no data returned from server."
           );
         }
         console.log(
-          colors.bold.green("@info: ") +
-            `preparing payload for ${TubeBody.title}`
+          colors.green("@info: ") + `preparing payload for ${TubeBody.title}`
         );
         respEngine = await Engine(TubeBody.videoLink);
         break;
     }
-    switch (respEngine) {
-      case null:
-        throw new Error(
-          colors.bold.red("@error: ") + "no data returned from server."
-        );
-      default:
-        console.log(
-          colors.bold.green("@info:"),
-          "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-        );
-        return respEngine;
+    if (respEngine === null) {
+      throw new Error(colors.red("@error: ") + "no data returned from server.");
+    } else {
+      console.log(
+        colors.green("@info:"),
+        "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+      );
+      return respEngine;
     }
   } catch (error: any) {
     if (error instanceof Error) {

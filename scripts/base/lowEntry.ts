@@ -16,10 +16,7 @@ export default async function bigEntry(
 ): Promise<TubeConfig | null> {
   switch (true) {
     case !metaBody || metaBody.length === 0:
-      console.log(
-        colors.bold.red("@error:"),
-        "sorry no downloadable data found"
-      );
+      console.log(colors.red("@error:"), "sorry no downloadable data found");
       return null;
     default:
       const sortedByFileSize = [...metaBody].sort(
@@ -29,10 +26,7 @@ export default async function bigEntry(
         const { mediaurl } = item.meta_dl;
         if (mediaurl && (await checkUrl(mediaurl))) return item;
       }
-      console.log(
-        colors.bold.red("@error:"),
-        "sorry no downloadable data found"
-      );
+      console.log(colors.red("@error:"), "sorry no downloadable data found");
       return null;
   }
 }

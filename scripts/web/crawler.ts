@@ -6,6 +6,7 @@ export let page: Page;
 export default async function crawler() {
   try {
     browser = await puppeteer.launch({
+      userDataDir: "TaskFile",
       headless: true,
       args: [
         "--no-zygote", // Disables the use of the zygote process for forking child processes
