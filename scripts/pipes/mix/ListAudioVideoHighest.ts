@@ -34,7 +34,6 @@ interface ListAudioVideoHighestOC {
   outputFormat?: VideoFormat;
 }
 type ListAudioVideoHighestType = 200 | ErrorResult | StreamResult;
-
 const ListAudioVideoHighestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -54,7 +53,6 @@ export default async function ListAudioVideoHighest(
       playlistUrls,
       outputFormat = "mp4",
     } = ListAudioVideoHighestInputSchema.parse(input);
-
     switch (true) {
       case playlistUrls.length === 0:
         return [

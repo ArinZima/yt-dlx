@@ -7,7 +7,6 @@ import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
@@ -20,7 +19,7 @@ interface VideoLowestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type VideoLowestType = Promise<200 | ErrorResult | StreamResult>;
+type VideoLowestType = Promise<200 | StreamResult>;
 
 const VideoLowestInputSchema = z.object({
   query: z.string().min(1),
@@ -46,10 +45,7 @@ export default async function VideoLowest(
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     let metaName: string = "";
     const title: string = metaBody.metaTube.title.replace(
@@ -63,10 +59,7 @@ export default async function VideoLowest(
 
     const metaEntry = await lowEntry(metaBody.VideoStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -165,22 +158,14 @@ export default async function VideoLowest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return {
-        message:
-          colors.red("@error: ") +
-          error.errors.map((error) => error.message).join(", "),
-        status: 500,
-      };
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors.red("@error: ") + error.message,
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors.red("@error: ") + "internal server error",
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

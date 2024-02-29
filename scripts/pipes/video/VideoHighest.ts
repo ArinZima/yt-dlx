@@ -46,10 +46,7 @@ export default async function VideoHighest(
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -63,10 +60,7 @@ export default async function VideoHighest(
 
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -167,22 +161,14 @@ export default async function VideoHighest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return {
-        message:
-          colors.red("@error: ") +
-          error.errors.map((error) => error.message).join(", "),
-        status: 500,
-      };
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors.red("@error: ") + error.message,
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors.red("@error: ") + "internal server error",
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

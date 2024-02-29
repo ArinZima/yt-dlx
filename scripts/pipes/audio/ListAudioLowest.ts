@@ -9,7 +9,6 @@ import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
@@ -22,8 +21,7 @@ interface ListAudioLowestOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioLowestType = 200 | ErrorResult | StreamResult;
-
+type ListAudioLowestType = 200 | StreamResult;
 const ListAudioLowestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),

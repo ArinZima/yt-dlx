@@ -201,22 +201,14 @@ export default async function AudioQualityCustom(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return {
-        message:
-          colors.red("@error: ") +
-          error.errors.map((error) => error.message).join(", "),
-        status: 500,
-      };
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors.red("@error: ") + error.message,
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors.red("@error: ") + "internal server error",
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

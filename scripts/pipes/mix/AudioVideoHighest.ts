@@ -7,7 +7,6 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 
 type VideoFormat = "mp4" | "avi" | "mov";
@@ -18,8 +17,7 @@ interface AudioVideoHighestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-type AudioVideoHighest = Promise<200 | ErrorResult | StreamResult>;
-
+type AudioVideoHighest = Promise<200 | StreamResult>;
 const AudioVideoHighestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -42,10 +40,7 @@ export default async function AudioVideoHighest(
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -60,10 +55,7 @@ export default async function AudioVideoHighest(
     const AmetaEntry = await bigEntry(metaBody.AudioStore);
     const VmetaEntry = await bigEntry(metaBody.VideoStore);
     if (AmetaEntry === null || VmetaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     ytc.addInput(VmetaEntry.meta_dl.mediaurl);
     ytc.addInput(AmetaEntry.meta_dl.mediaurl);
@@ -129,22 +121,14 @@ export default async function AudioVideoHighest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return {
-        message:
-          colors.red("@error: ") +
-          error.errors.map((error) => error.message).join(", "),
-        status: 500,
-      };
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors.red("@error: ") + error.message,
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors.red("@error: ") + "internal server error",
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

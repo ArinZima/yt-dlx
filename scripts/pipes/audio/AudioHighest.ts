@@ -7,7 +7,6 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
@@ -30,7 +29,7 @@ const AudioHighestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 
-type AudioHighestType = Promise<200 | ErrorResult | StreamResult>;
+type AudioHighestType = Promise<200 | StreamResult>;
 export default async function AudioHighest(
   input: AudioHighestOC
 ): AudioHighestType {
@@ -46,12 +45,8 @@ export default async function AudioHighest(
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
-
     let metaName: string = "";
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -63,10 +58,7 @@ export default async function AudioHighest(
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -202,22 +194,14 @@ export default async function AudioHighest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return {
-        message:
-          colors.red("@error: ") +
-          error.errors.map((error) => error.message).join(", "),
-        status: 500,
-      };
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors.red("@error: ") + error.message,
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors.red("@error: ") + "internal server error",
-        status: 500,
-      };
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

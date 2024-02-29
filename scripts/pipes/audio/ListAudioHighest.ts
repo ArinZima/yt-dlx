@@ -9,7 +9,6 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
@@ -22,8 +21,7 @@ interface ListAudioHighestOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioHighestType = 200 | ErrorResult | StreamResult;
-
+type ListAudioHighestType = 200 | StreamResult;
 const ListAudioHighestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),

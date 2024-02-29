@@ -9,7 +9,6 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
@@ -24,8 +23,7 @@ interface ListAudioQualityCustomOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioQualityCustomType = 200 | ErrorResult | StreamResult;
-
+type ListAudioQualityCustomType = 200 | StreamResult;
 const ListAudioQualityCustomInputSchema = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),

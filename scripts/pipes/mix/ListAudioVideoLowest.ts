@@ -34,7 +34,6 @@ interface ListAudioVideoLowestOC {
   outputFormat?: VideoFormat;
 }
 type ListAudioVideoLowestType = 200 | ErrorResult | StreamResult;
-
 const ListAudioVideoLowestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -54,7 +53,6 @@ export default async function ListAudioVideoLowest(
       playlistUrls,
       outputFormat = "mp4",
     } = ListAudioVideoLowestInputSchema.parse(input);
-
     switch (true) {
       case playlistUrls.length === 0:
         return [
