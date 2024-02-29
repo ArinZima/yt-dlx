@@ -11,6 +11,20 @@ bun.test(colors.blue("\n\n@tesing: ") + "Quick-Tests()", async () => {
       query: "sQEgklEwhSo",
       folderName: ".temp",
       verbose: false,
+      stream: false,
+    });
+    console.log(metaTube);
+  } catch (error: any) {
+    console.error(colors.red("@error:"), error.message);
+  }
+});
+
+bun.test(colors.blue("\n\n@tesing: ") + "Quick-Tests()", async () => {
+  try {
+    const metaTube: any = await AudioVideoHighest({
+      query: "sQEgklEwhSo",
+      folderName: ".temp",
+      verbose: false,
       stream: true,
     });
     const outputPath = path.join(metaTube.filename);

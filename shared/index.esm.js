@@ -12,10 +12,10 @@ import * as z from 'zod';
 import { z as z$1, ZodError } from 'zod';
 import { randomUUID } from 'crypto';
 import puppeteer from 'puppeteer';
+import * as bun from 'bun';
 import * as path from 'path';
-import { promisify } from 'util';
-import { exec } from 'child_process';
 import fluentffmpeg from 'fluent-ffmpeg';
+import { execSync } from 'child_process';
 import { Readable, Writable } from 'stream';
 import readline from 'readline';
 import async from 'async';
@@ -671,156 +671,14 @@ function help() {
 ✕─────────────────────────────────────────────────────────────────────────────────────────────────────────────✕`));
 }
 
-function sizeFormat(filesize) {
-    if (isNaN(filesize) || filesize < 0)
-        return filesize;
-    const bytesPerMegabyte = 1024 * 1024;
-    const bytesPerGigabyte = bytesPerMegabyte * 1024;
-    const bytesPerTerabyte = bytesPerGigabyte * 1024;
-    if (filesize < bytesPerMegabyte)
-        return filesize + " B";
-    else if (filesize < bytesPerGigabyte) {
-        return (filesize / bytesPerMegabyte).toFixed(2) + " MB";
-    }
-    else if (filesize < bytesPerTerabyte) {
-        return (filesize / bytesPerGigabyte).toFixed(2) + " GB";
-    }
-    else
-        return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
-}
-async function Engine(query) {
-    try {
-        let pushTube = [];
-        let proLoc = "";
-        let maxTries = 6;
-        let currentDir = __dirname;
-        while (maxTries > 0) {
-            const enginePath = path.join(currentDir, "util", "Engine");
-            if (fs.existsSync(enginePath)) {
-                proLoc = enginePath;
-                break;
-            }
-            else {
-                currentDir = path.join(currentDir, "..");
-                maxTries--;
-            }
-        }
-        if (proLoc !== "") {
-            proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
-            proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
-            proLoc += ` '${query}'`;
-        }
-        else {
-            throw new Error(colors.red("@error: ") + "could not find the engine file.");
-        }
-        const result = await promisify(exec)(proLoc);
-        const metaTube = await JSON.parse(result.stdout.toString());
-        await metaTube.formats.forEach((io) => {
-            const rmval = new Set(["storyboard", "Default"]);
-            if (rmval.has(io.format_note) && io.filesize === undefined)
-                return;
-            const reTube = {
-                meta_audio: {
-                    samplerate: io.asr,
-                    channels: io.audio_channels,
-                    codec: io.acodec,
-                    extension: io.audio_ext,
-                    bitrate: io.abr,
-                },
-                meta_video: {
-                    bitrate: io.vbr,
-                    width: io.width,
-                    codec: io.vcodec,
-                    height: io.height,
-                    extension: io.video_ext,
-                    resolution: io.resolution,
-                    aspectratio: io.aspect_ratio,
-                },
-                meta_dl: {
-                    mediaurl: io.url,
-                    formatid: io.format_id,
-                    formatnote: io.format_note,
-                    originalformat: io.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
-                },
-                meta_info: {
-                    totalbitrate: io.tbr,
-                    framespersecond: io.fps,
-                    qriginalextension: io.ext,
-                    filesizebytes: io.filesize,
-                    dynamicrange: io.dynamic_range,
-                    extensionconatainer: io.container,
-                    filesizeformatted: sizeFormat(io.filesize),
-                },
-            };
-            pushTube.push({
-                Tube: "metaTube",
-                reTube: {
-                    id: metaTube.id,
-                    title: metaTube.title,
-                    channel: metaTube.channel,
-                    uploader: metaTube.uploader,
-                    duration: metaTube.duration,
-                    thumbnail: metaTube.thumbnail,
-                    age_limit: metaTube.age_limit,
-                    channel_id: metaTube.channel_id,
-                    categories: metaTube.categories,
-                    display_id: metaTube.display_id,
-                    description: metaTube.description,
-                    channel_url: metaTube.channel_url,
-                    webpage_url: metaTube.webpage_url,
-                    live_status: metaTube.live_status,
-                    upload_date: metaTube.upload_date,
-                    uploader_id: metaTube.uploader_id,
-                    original_url: metaTube.original_url,
-                    uploader_url: metaTube.uploader_url,
-                    duration_string: metaTube.duration_string,
-                },
-            });
-            if (reTube.meta_dl.formatnote) {
-                switch (true) {
-                    case (reTube.meta_dl.formatnote.includes("ultralow") ||
-                        reTube.meta_dl.formatnote.includes("medium") ||
-                        reTube.meta_dl.formatnote.includes("high") ||
-                        reTube.meta_dl.formatnote.includes("low")) &&
-                        reTube.meta_video.resolution &&
-                        reTube.meta_video.resolution.includes("audio"):
-                        pushTube.push({ Tube: "AudioStore", reTube });
-                        break;
-                    case reTube.meta_dl.formatnote.includes("HDR"):
-                        pushTube.push({ Tube: "HDRVideoStore", reTube });
-                        break;
-                    default:
-                        pushTube.push({ Tube: "VideoStore", reTube });
-                        break;
-                }
-            }
-        });
-        return {
-            AudioStore: pushTube
-                .filter((item) => item.Tube === "AudioStore")
-                .map((item) => item.reTube) || undefined,
-            VideoStore: pushTube
-                .filter((item) => item.Tube === "VideoStore")
-                .map((item) => item.reTube) || undefined,
-            HDRVideoStore: pushTube
-                .filter((item) => item.Tube === "HDRVideoStore")
-                .map((item) => item.reTube) || undefined,
-            metaTube: pushTube
-                .filter((item) => item.Tube === "metaTube")
-                .map((item) => item.reTube)[0] || undefined,
-        };
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            throw new Error(colors.red("@error: ") + error.message);
-        }
-        else {
-            throw new Error(colors.red("@error: ") + "internal server error");
-        }
-    }
-}
-// import { $ } from "bun";
-// import retry from "async-retry";
+// import * as fs from "fs";
+// import colors from "colors";
+// import * as path from "path";
+// import { promisify } from "util";
+// import { exec } from "child_process";
+// import type TubeConfig from "../interface/TubeConfig";
+// import type TubeFormat from "../interface/TubeFormat";
+// import type EngineResult from "../interface/EngineResult";
 // function sizeFormat(filesize: number) {
 // if (isNaN(filesize) || filesize < 0) return filesize;
 // const bytesPerMegabyte = 1024 * 1024;
@@ -833,69 +691,67 @@ async function Engine(query) {
 // return (filesize / bytesPerGigabyte).toFixed(2) + " GB";
 // } else return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
 // }
-// export default async function Engine(url: string): Promise<any> {
+// export default async function Engine(query: string): Promise<EngineResult> {
 // try {
-// const metaTube = await retry(
-// async (bail) => {
-// const result =
-// await $`util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
-// if (!result) bail(new Error(result));
-// else return result;
-// },
-// {
-// factor: 2,
-// retries: 4,
-// minTimeout: 1000,
-// maxTimeout: 4000,
-// randomize: false,
-// }
-// );
-// if (metaTube) {
-// delete metaTube.automatic_captions;
-// delete metaTube.requested_formats;
-// delete metaTube._filename;
-// delete metaTube.subtitles;
-// delete metaTube.filename;
-// delete metaTube._version;
-// delete metaTube.heatmap;
-// delete metaTube._type;
 // let pushTube: any[] = [];
-// metaTube.formats.forEach((core: any) => {
+// let proLoc: string = "";
+// let maxTries: number = 6;
+// let currentDir: string = __dirname;
+// while (maxTries > 0) {
+// const enginePath = path.join(currentDir, "util", "engine");
+// if (fs.existsSync(enginePath)) {
+// proLoc = enginePath;
+// break;
+// } else {
+// currentDir = path.join(currentDir, "..");
+// maxTries--;
+// }
+// }
+// if (proLoc !== "") {
+// proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
+// proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
+// proLoc += ` '${query}'`;
+// } else {
+// throw new Error(
+// colors.red("@error: ") + "could not find the engine file."
+// );
+// }
+// const result = await promisify(exec)(proLoc);
+// const metaTube = await JSON.parse(result.stdout.toString());
+// await metaTube.formats.forEach((io: TubeFormat) => {
 // const rmval = new Set(["storyboard", "Default"]);
-// if (rmval.has(core.format_note) && core.filesize === undefined) return;
-// const reTube: any = {
+// if (rmval.has(io.format_note) && io.filesize === undefined) return;
+// const reTube: TubeConfig = {
 // meta_audio: {
-// bitrate: core.abr,
-// codec: core.acodec,
-// samplerate: core.asr,
-// extension: core.audio_ext,
-// channels: core.audio_channels,
+// samplerate: io.asr,
+// channels: io.audio_channels,
+// codec: io.acodec,
+// extension: io.audio_ext,
+// bitrate: io.abr,
 // },
 // meta_video: {
-// bitrate: core.vbr,
-// width: core.width,
-// codec: core.vcodec,
-// height: core.height,
-// extension: core.video_ext,
-// resolution: core.resolution,
-// aspectratio: core.aspect_ratio,
+// bitrate: io.vbr,
+// width: io.width,
+// codec: io.vcodec,
+// height: io.height,
+// extension: io.video_ext,
+// resolution: io.resolution,
+// aspectratio: io.aspect_ratio,
 // },
 // meta_dl: {
-// mediaurl: core.url,
-// originalformat: core.format
-// .replace(/[-\s]+/g, "_")
-// .replace(/_/g, "_"),
-// formatid: core.format_id,
-// formatnote: core.format_note,
+// mediaurl: io.url,
+// formatid: io.format_id,
+// formatnote: io.format_note,
+// originalformat: io.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
 // },
 // meta_info: {
-// framespersecond: core.fps,
-// totalbitrate: core.tbr,
-// qriginalextension: core.ext,
-// filesizebytes: core.filesize,
-// dynamicrange: core.dynamic_range,
-// extensionconatainer: core.container,
-// filesizeformatted: sizeFormat(core.filesize),
+// totalbitrate: io.tbr,
+// framespersecond: io.fps,
+// qriginalextension: io.ext,
+// filesizebytes: io.filesize,
+// dynamicrange: io.dynamic_range,
+// extensionconatainer: io.container,
+// filesizeformatted: sizeFormat(io.filesize),
 // },
 // };
 // pushTube.push({
@@ -941,7 +797,7 @@ async function Engine(query) {
 // }
 // }
 // });
-// return JSON.stringify({
+// return {
 // AudioStore:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "AudioStore")
@@ -958,13 +814,162 @@ async function Engine(query) {
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "metaTube")
 // .map((item: { reTube: any }) => item.reTube)[0] || undefined,
-// });
-// } else return undefined;
-// } catch (error) {
-// console.error("@error:", error);
-// return undefined;
+// };
+// } catch (error: any) {
+// if (error instanceof Error) {
+// throw new Error(colors.red("@error: ") + error.message);
+// } else {
+// throw new Error(colors.red("@error: ") + "internal server error");
 // }
 // }
+// }
+function sizeFormat(filesize) {
+    if (isNaN(filesize) || filesize < 0)
+        return filesize;
+    const bytesPerMegabyte = 1024 * 1024;
+    const bytesPerGigabyte = bytesPerMegabyte * 1024;
+    const bytesPerTerabyte = bytesPerGigabyte * 1024;
+    if (filesize < bytesPerMegabyte)
+        return filesize + " B";
+    else if (filesize < bytesPerGigabyte) {
+        return (filesize / bytesPerMegabyte).toFixed(2) + " MB";
+    }
+    else if (filesize < bytesPerTerabyte) {
+        return (filesize / bytesPerGigabyte).toFixed(2) + " GB";
+    }
+    else
+        return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
+}
+async function Engine(url) {
+    try {
+        const metaTube = await retry(async (bail) => {
+            const result = await bun.$ `util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
+            if (!result)
+                bail(new Error(result));
+            else
+                return result;
+        }, {
+            factor: 2,
+            retries: 4,
+            minTimeout: 1000,
+            maxTimeout: 4000,
+            randomize: false,
+        });
+        if (metaTube) {
+            delete metaTube.automatic_captions;
+            delete metaTube.requested_formats;
+            delete metaTube._filename;
+            delete metaTube.subtitles;
+            delete metaTube.filename;
+            delete metaTube._version;
+            delete metaTube.heatmap;
+            delete metaTube._type;
+            let pushTube = [];
+            metaTube.formats.forEach((core) => {
+                const rmval = new Set(["storyboard", "Default"]);
+                if (rmval.has(core.format_note) && core.filesize === undefined)
+                    return;
+                const reTube = {
+                    meta_audio: {
+                        bitrate: core.abr,
+                        codec: core.acodec,
+                        samplerate: core.asr,
+                        extension: core.audio_ext,
+                        channels: core.audio_channels,
+                    },
+                    meta_video: {
+                        bitrate: core.vbr,
+                        width: core.width,
+                        codec: core.vcodec,
+                        height: core.height,
+                        extension: core.video_ext,
+                        resolution: core.resolution,
+                        aspectratio: core.aspect_ratio,
+                    },
+                    meta_dl: {
+                        mediaurl: core.url,
+                        originalformat: core.format
+                            .replace(/[-\s]+/g, "_")
+                            .replace(/_/g, "_"),
+                        formatid: core.format_id,
+                        formatnote: core.format_note,
+                    },
+                    meta_info: {
+                        framespersecond: core.fps,
+                        totalbitrate: core.tbr,
+                        qriginalextension: core.ext,
+                        filesizebytes: core.filesize,
+                        dynamicrange: core.dynamic_range,
+                        extensionconatainer: core.container,
+                        filesizeformatted: sizeFormat(core.filesize),
+                    },
+                };
+                pushTube.push({
+                    Tube: "metaTube",
+                    reTube: {
+                        id: metaTube.id,
+                        title: metaTube.title,
+                        channel: metaTube.channel,
+                        uploader: metaTube.uploader,
+                        duration: metaTube.duration,
+                        thumbnail: metaTube.thumbnail,
+                        age_limit: metaTube.age_limit,
+                        channel_id: metaTube.channel_id,
+                        categories: metaTube.categories,
+                        display_id: metaTube.display_id,
+                        description: metaTube.description,
+                        channel_url: metaTube.channel_url,
+                        webpage_url: metaTube.webpage_url,
+                        live_status: metaTube.live_status,
+                        upload_date: metaTube.upload_date,
+                        uploader_id: metaTube.uploader_id,
+                        original_url: metaTube.original_url,
+                        uploader_url: metaTube.uploader_url,
+                        duration_string: metaTube.duration_string,
+                    },
+                });
+                if (reTube.meta_dl.formatnote) {
+                    switch (true) {
+                        case (reTube.meta_dl.formatnote.includes("ultralow") ||
+                            reTube.meta_dl.formatnote.includes("medium") ||
+                            reTube.meta_dl.formatnote.includes("high") ||
+                            reTube.meta_dl.formatnote.includes("low")) &&
+                            reTube.meta_video.resolution &&
+                            reTube.meta_video.resolution.includes("audio"):
+                            pushTube.push({ Tube: "AudioStore", reTube });
+                            break;
+                        case reTube.meta_dl.formatnote.includes("HDR"):
+                            pushTube.push({ Tube: "HDRVideoStore", reTube });
+                            break;
+                        default:
+                            pushTube.push({ Tube: "VideoStore", reTube });
+                            break;
+                    }
+                }
+            });
+            return {
+                AudioStore: pushTube
+                    .filter((item) => item.Tube === "AudioStore")
+                    .map((item) => item.reTube) || undefined,
+                VideoStore: pushTube
+                    .filter((item) => item.Tube === "VideoStore")
+                    .map((item) => item.reTube) || undefined,
+                HDRVideoStore: pushTube
+                    .filter((item) => item.Tube === "HDRVideoStore")
+                    .map((item) => item.reTube) || undefined,
+                metaTube: pushTube
+                    .filter((item) => item.Tube === "metaTube")
+                    .map((item) => item.reTube)[0] || undefined,
+            };
+        }
+        else
+            return undefined;
+    }
+    catch (error) {
+        console.error("@error:", error);
+        return undefined;
+    }
+}
 
 var version = "3.0.0";
 
@@ -1353,30 +1358,81 @@ async function extract_playlist_videos({ playlistUrls, }) {
     }
 }
 
-async function checkUrl$1(url) {
+async function ffmpeg() {
     try {
-        const response = await fetch(url, { method: "HEAD" });
-        return response.status === 200;
+        return new Promise(async (resolve) => {
+            let proc = fluentffmpeg();
+            try {
+                const ffmpegPath = execSync("which ffmpeg").toString().trim();
+                const ffprobePath = execSync("which ffprobe").toString().trim();
+                if (fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath)) {
+                    proc.setFfprobePath(ffprobePath);
+                    proc.setFfmpegPath(ffmpegPath);
+                }
+                else {
+                    throw new Error(colors.red("@error: ") +
+                        "could not find the ffmpeg & ffprobe files.");
+                }
+            }
+            catch (error) {
+                throw new Error(colors.red("@error: ") +
+                    "An error occurred while locating ffmpeg & ffprobe executables.");
+            }
+            proc.addInputOption("-threads", "0");
+            resolve(proc);
+        });
     }
     catch (error) {
-        return false;
+        if (error instanceof Error) {
+            throw new Error(colors.red("@error: ") + error.message);
+        }
+        else {
+            throw new Error(colors.red("@error: ") + "internal server error");
+        }
     }
 }
+/**
+ * This function is not available
+ *
+ * let bvc: string | null = null;
+ * let bac: string | null = null;
+ * fluentffmpeg.getAvailableCodecs((err, codecs) => {
+ * if (err) reject({ bvc: null, bac: null });
+ * if (!codecs) reject({ bvc: null, bac: null });
+ * Object.keys(codecs).forEach((codec) => {
+ * if (codec.includes("h264") || codec.includes("hevc")) {
+ * const ci = codecs[codec] as { capabilities?: string[] };
+ * if (!bvc || ci.capabilities?.includes("GPU")) bvc = codec;
+ * }
+ * if (codec.includes("aac") || codec.includes("mp3")) {
+ * const ci = codecs[codec] as { capabilities?: string[] };
+ * if (!bac || ci.capabilities?.includes("GPU")) bac = codec;
+ * }
+ * });
+ * if (bac && bvc) {
+ * console.log(colors.green("@ffmpeg:"), "using video codec", bvc);
+ * console.log(colors.green("@ffmpeg:"), "using audio codec", bac);
+ * proc.videoCodec(bvc);
+ * proc.audioCodec(bac);
+ * } else {
+ * console.log(colors.yellow("@ffmpeg:"), "no video & audio codec found.");
+ * proc.videoCodec("");
+ * proc.audioCodec("");
+ * }
+ * proc.videoCodec("");
+ * proc.audioCodec("");
+ * resolve(proc);
+ * });
+ *
+ */
+
 async function lowEntry(metaBody) {
-    switch (true) {
-        case !metaBody || metaBody.length === 0:
-            console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return undefined;
-        default:
-            const sortedByFileSize = [...metaBody].sort((a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes);
-            for (const item of sortedByFileSize) {
-                const { mediaurl } = item.meta_dl;
-                if (mediaurl && (await checkUrl$1(mediaurl)))
-                    return item;
-            }
-            console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return undefined;
+    if (!metaBody || metaBody.length === 0) {
+        console.log(colors.red("@error:"), "sorry no downloadable data found");
+        return undefined;
     }
+    const sortedByFileSize = [...metaBody].sort((a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes);
+    return sortedByFileSize[0];
 }
 
 const progressBar = (prog) => {
@@ -1432,14 +1488,14 @@ async function AudioLowest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        const ytc = fluentffmpeg();
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.addInput(metaBody.metaTube.thumbnail);
-        ytc.addOutputOption("-map", "1:0");
-        ytc.addOutputOption("-map", "0:a:0");
-        ytc.addOutputOption("-id3v2_version", "3");
-        ytc.format(outputFormat);
-        ytc.on("start", (command) => {
+        const proc = await ffmpeg();
+        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaBody.metaTube.thumbnail);
+        proc.addOutputOption("-map", "1:0");
+        proc.addOutputOption("-map", "0:a:0");
+        proc.addOutputOption("-id3v2_version", "3");
+        proc.format(outputFormat);
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -1447,90 +1503,90 @@ async function AudioLowest(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         switch (filter) {
             case "bassboost":
-                ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                 metaName = `yt-dlp-(AudioLowest_bassboost)-${title}.${outputFormat}`;
                 break;
             case "echo":
-                ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
                 metaName = `yt-dlp-(AudioLowest_echo)-${title}.${outputFormat}`;
                 break;
             case "flanger":
-                ytc.withAudioFilter(["flanger"]);
+                proc.withAudioFilter(["flanger"]);
                 metaName = `yt-dlp-(AudioLowest_flanger)-${title}.${outputFormat}`;
                 break;
             case "nightcore":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
                 metaName = `yt-dlp-(AudioLowest_nightcore)-${title}.${outputFormat}`;
                 break;
             case "panning":
-                ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                proc.withAudioFilter(["apulsator=hz=0.08"]);
                 metaName = `yt-dlp-(AudioLowest_panning)-${title}.${outputFormat}`;
                 break;
             case "phaser":
-                ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                proc.withAudioFilter(["aphaser=in_gain=0.4"]);
                 metaName = `yt-dlp-(AudioLowest_phaser)-${title}.${outputFormat}`;
                 break;
             case "reverse":
-                ytc.withAudioFilter(["areverse"]);
+                proc.withAudioFilter(["areverse"]);
                 metaName = `yt-dlp-(AudioLowest_reverse)-${title}.${outputFormat}`;
                 break;
             case "slow":
-                ytc.withAudioFilter(["atempo=0.8"]);
+                proc.withAudioFilter(["atempo=0.8"]);
                 metaName = `yt-dlp-(AudioLowest_slow)-${title}.${outputFormat}`;
                 break;
             case "speed":
-                ytc.withAudioFilter(["atempo=2"]);
+                proc.withAudioFilter(["atempo=2"]);
                 metaName = `yt-dlp-(AudioLowest_speed)-${title}.${outputFormat}`;
                 break;
             case "subboost":
-                ytc.withAudioFilter(["asubboost"]);
+                proc.withAudioFilter(["asubboost"]);
                 metaName = `yt-dlp-(AudioLowest_subboost)-${title}.${outputFormat}`;
                 break;
             case "superslow":
-                ytc.withAudioFilter(["atempo=0.5"]);
+                proc.withAudioFilter(["atempo=0.5"]);
                 metaName = `yt-dlp-(AudioLowest_superslow)-${title}.${outputFormat}`;
                 break;
             case "superspeed":
-                ytc.withAudioFilter(["atempo=3"]);
+                proc.withAudioFilter(["atempo=3"]);
                 metaName = `yt-dlp-(AudioLowest_superspeed)-${title}.${outputFormat}`;
                 break;
             case "surround":
-                ytc.withAudioFilter(["surround"]);
+                proc.withAudioFilter(["surround"]);
                 metaName = `yt-dlp-(AudioLowest_surround)-${title}.${outputFormat}`;
                 break;
             case "vaporwave":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
                 metaName = `yt-dlp-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
                 break;
             case "vibrato":
-                ytc.withAudioFilter(["vibrato=f=6.5"]);
+                proc.withAudioFilter(["vibrato=f=6.5"]);
                 metaName = `yt-dlp-(AudioLowest_vibrato)-${title}.${outputFormat}`;
                 break;
             default:
-                ytc.withAudioFilter([]);
+                proc.withAudioFilter([]);
                 metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
                 break;
         }
@@ -1548,7 +1604,7 @@ async function AudioLowest(input) {
                     callback();
                 },
             });
-            ytc.pipe(writeStream, { end: true });
+            proc.pipe(writeStream, { end: true });
             return {
                 stream: readStream,
                 filename: folderName
@@ -1558,10 +1614,10 @@ async function AudioLowest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc.output(path.join(metaFold, metaName));
-                ytc.on("end", () => resolve());
-                ytc.on("error", reject);
-                ytc.run();
+                proc.output(path.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
             });
             return true;
         }
@@ -1580,30 +1636,13 @@ async function AudioLowest(input) {
     }
 }
 
-async function checkUrl(url) {
-    try {
-        const response = await fetch(url, { method: "HEAD" });
-        return response.status === 200;
-    }
-    catch (error) {
-        return false;
-    }
-}
 async function bigEntry(metaBody) {
-    switch (true) {
-        case !metaBody || metaBody.length === 0:
-            console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return undefined;
-        default:
-            const sortedByFileSize = [...metaBody].sort((a, b) => b.meta_info.filesizebytes - a.meta_info.filesizebytes);
-            for (const item of sortedByFileSize) {
-                const { mediaurl } = item.meta_dl;
-                if (mediaurl && (await checkUrl(mediaurl)))
-                    return item;
-            }
-            console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return undefined;
+    if (!metaBody || metaBody.length === 0) {
+        console.log(colors.red("@error:"), "sorry no downloadable data found");
+        return undefined;
     }
+    const sortedByFileSize = [...metaBody].sort((a, b) => b.meta_info.filesizebytes - a.meta_info.filesizebytes);
+    return sortedByFileSize[0];
 }
 
 const AudioHighestInputSchema = z$1.object({
@@ -1632,14 +1671,14 @@ async function AudioHighest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        const ytc = fluentffmpeg();
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.addInput(metaBody.metaTube.thumbnail);
-        ytc.addOutputOption("-map", "1:0");
-        ytc.addOutputOption("-map", "0:a:0");
-        ytc.addOutputOption("-id3v2_version", "3");
-        ytc.format(outputFormat);
-        ytc.on("start", (command) => {
+        const proc = await ffmpeg();
+        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaBody.metaTube.thumbnail);
+        proc.addOutputOption("-map", "1:0");
+        proc.addOutputOption("-map", "0:a:0");
+        proc.addOutputOption("-id3v2_version", "3");
+        proc.format(outputFormat);
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -1647,90 +1686,90 @@ async function AudioHighest(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         switch (filter) {
             case "bassboost":
-                ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                 metaName = `yt-dlp-(AudioHighest_bassboost)-${title}.${outputFormat}`;
                 break;
             case "echo":
-                ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
                 metaName = `yt-dlp-(AudioHighest_echo)-${title}.${outputFormat}`;
                 break;
             case "flanger":
-                ytc.withAudioFilter(["flanger"]);
+                proc.withAudioFilter(["flanger"]);
                 metaName = `yt-dlp-(AudioHighest_flanger)-${title}.${outputFormat}`;
                 break;
             case "nightcore":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
                 metaName = `yt-dlp-(AudioHighest_nightcore)-${title}.${outputFormat}`;
                 break;
             case "panning":
-                ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                proc.withAudioFilter(["apulsator=hz=0.08"]);
                 metaName = `yt-dlp-(AudioHighest_panning)-${title}.${outputFormat}`;
                 break;
             case "phaser":
-                ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                proc.withAudioFilter(["aphaser=in_gain=0.4"]);
                 metaName = `yt-dlp-(AudioHighest_phaser)-${title}.${outputFormat}`;
                 break;
             case "reverse":
-                ytc.withAudioFilter(["areverse"]);
+                proc.withAudioFilter(["areverse"]);
                 metaName = `yt-dlp-(AudioHighest_reverse)-${title}.${outputFormat}`;
                 break;
             case "slow":
-                ytc.withAudioFilter(["atempo=0.8"]);
+                proc.withAudioFilter(["atempo=0.8"]);
                 metaName = `yt-dlp-(AudioHighest_slow)-${title}.${outputFormat}`;
                 break;
             case "speed":
-                ytc.withAudioFilter(["atempo=2"]);
+                proc.withAudioFilter(["atempo=2"]);
                 metaName = `yt-dlp-(AudioHighest_speed)-${title}.${outputFormat}`;
                 break;
             case "subboost":
-                ytc.withAudioFilter(["asubboost"]);
+                proc.withAudioFilter(["asubboost"]);
                 metaName = `yt-dlp-(AudioHighest_subboost)-${title}.${outputFormat}`;
                 break;
             case "superslow":
-                ytc.withAudioFilter(["atempo=0.5"]);
+                proc.withAudioFilter(["atempo=0.5"]);
                 metaName = `yt-dlp-(AudioHighest_superslow)-${title}.${outputFormat}`;
                 break;
             case "superspeed":
-                ytc.withAudioFilter(["atempo=3"]);
+                proc.withAudioFilter(["atempo=3"]);
                 metaName = `yt-dlp-(AudioHighest_superspeed)-${title}.${outputFormat}`;
                 break;
             case "surround":
-                ytc.withAudioFilter(["surround"]);
+                proc.withAudioFilter(["surround"]);
                 metaName = `yt-dlp-(AudioHighest_surround)-${title}.${outputFormat}`;
                 break;
             case "vaporwave":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
                 metaName = `yt-dlp-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
                 break;
             case "vibrato":
-                ytc.withAudioFilter(["vibrato=f=6.5"]);
+                proc.withAudioFilter(["vibrato=f=6.5"]);
                 metaName = `yt-dlp-(AudioHighest_vibrato)-${title}.${outputFormat}`;
                 break;
             default:
-                ytc.withAudioFilter([]);
+                proc.withAudioFilter([]);
                 metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
                 break;
         }
@@ -1748,7 +1787,7 @@ async function AudioHighest(input) {
                     callback();
                 },
             });
-            ytc.pipe(writeStream, { end: true });
+            proc.pipe(writeStream, { end: true });
             return {
                 stream: readStream,
                 filename: folderName
@@ -1758,10 +1797,10 @@ async function AudioHighest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc.output(path.join(metaFold, metaName));
-                ytc.on("end", () => resolve());
-                ytc.on("error", reject);
-                ytc.run();
+                proc.output(path.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
             });
             return true;
         }
@@ -1806,42 +1845,42 @@ async function VideoLowest$1(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        const ytc = fluentffmpeg();
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.format(outputFormat);
+        const proc = await ffmpeg();
+        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.format(outputFormat);
         switch (filter) {
             case "grayscale":
-                ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                proc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
                 break;
             case "invert":
-                ytc.withVideoFilter("negate");
+                proc.withVideoFilter("negate");
                 metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
                 break;
             case "rotate90":
-                ytc.withVideoFilter("rotate=PI/2");
+                proc.withVideoFilter("rotate=PI/2");
                 metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
                 break;
             case "rotate180":
-                ytc.withVideoFilter("rotate=PI");
+                proc.withVideoFilter("rotate=PI");
                 metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
                 break;
             case "rotate270":
-                ytc.withVideoFilter("rotate=3*PI/2");
+                proc.withVideoFilter("rotate=3*PI/2");
                 metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
                 break;
             case "flipHorizontal":
-                ytc.withVideoFilter("hflip");
+                proc.withVideoFilter("hflip");
                 metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
                 break;
             case "flipVertical":
-                ytc.withVideoFilter("vflip");
+                proc.withVideoFilter("vflip");
                 metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
                 break;
             default:
                 metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
         }
-        ytc.on("start", (command) => {
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -1849,25 +1888,25 @@ async function VideoLowest$1(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         switch (stream) {
@@ -1885,7 +1924,7 @@ async function VideoLowest$1(input) {
                         callback();
                     },
                 });
-                ytc.pipe(writeStream, { end: true });
+                proc.pipe(writeStream, { end: true });
                 return {
                     stream: readStream,
                     filename: folderName
@@ -1894,10 +1933,10 @@ async function VideoLowest$1(input) {
                 };
             default:
                 await new Promise((resolve, reject) => {
-                    ytc.output(path.join(metaFold, metaName));
-                    ytc.on("end", () => resolve());
-                    ytc.on("error", reject);
-                    ytc.run();
+                    proc.output(path.join(metaFold, metaName));
+                    proc.on("end", () => resolve());
+                    proc.on("error", reject);
+                    proc.run();
                 });
                 return true;
         }
@@ -1942,42 +1981,42 @@ async function VideoHighest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        const ytc = fluentffmpeg();
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.format(outputFormat);
+        const proc = await ffmpeg();
+        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.format(outputFormat);
         switch (filter) {
             case "grayscale":
-                ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                proc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 metaName = `yt-dlp_(VideoHighest-grayscale)_${title}.${outputFormat}`;
                 break;
             case "invert":
-                ytc.withVideoFilter("negate");
+                proc.withVideoFilter("negate");
                 metaName = `yt-dlp_(VideoHighest-invert)_${title}.${outputFormat}`;
                 break;
             case "rotate90":
-                ytc.withVideoFilter("rotate=PI/2");
+                proc.withVideoFilter("rotate=PI/2");
                 metaName = `yt-dlp_(VideoHighest-rotate90)_${title}.${outputFormat}`;
                 break;
             case "rotate180":
-                ytc.withVideoFilter("rotate=PI");
+                proc.withVideoFilter("rotate=PI");
                 metaName = `yt-dlp_(VideoHighest-rotate180)_${title}.${outputFormat}`;
                 break;
             case "rotate270":
-                ytc.withVideoFilter("rotate=3*PI/2");
+                proc.withVideoFilter("rotate=3*PI/2");
                 metaName = `yt-dlp_(VideoHighest-rotate270)_${title}.${outputFormat}`;
                 break;
             case "flipHorizontal":
-                ytc.withVideoFilter("hflip");
+                proc.withVideoFilter("hflip");
                 metaName = `yt-dlp_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
                 break;
             case "flipVertical":
-                ytc.withVideoFilter("vflip");
+                proc.withVideoFilter("vflip");
                 metaName = `yt-dlp_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
                 break;
             default:
                 metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
         }
-        ytc.on("start", (command) => {
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -1985,25 +2024,25 @@ async function VideoHighest(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         switch (stream) {
@@ -2021,7 +2060,7 @@ async function VideoHighest(input) {
                         callback();
                     },
                 });
-                ytc.pipe(writeStream, { end: true });
+                proc.pipe(writeStream, { end: true });
                 return {
                     stream: readStream,
                     filename: folderName
@@ -2030,10 +2069,10 @@ async function VideoHighest(input) {
                 };
             default:
                 await new Promise((resolve, reject) => {
-                    ytc.output(path.join(metaFold, metaName));
-                    ytc.on("end", () => resolve());
-                    ytc.on("error", reject);
-                    ytc.run();
+                    proc.output(path.join(metaFold, metaName));
+                    proc.on("end", () => resolve());
+                    proc.on("error", reject);
+                    proc.run();
                 });
                 return true;
         }
@@ -2073,16 +2112,16 @@ async function AudioVideoLowest(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const ytc = fluentffmpeg();
+        const proc = await ffmpeg();
         const AmetaEntry = await lowEntry(metaBody.AudioStore);
         const VmetaEntry = await lowEntry(metaBody.VideoStore);
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        ytc.addInput(VmetaEntry.meta_dl.mediaurl);
-        ytc.addInput(AmetaEntry.meta_dl.mediaurl);
-        ytc.format(outputFormat);
-        ytc.on("start", (command) => {
+        proc.addInput(VmetaEntry.meta_dl.mediaurl);
+        proc.addInput(AmetaEntry.meta_dl.mediaurl);
+        proc.format(outputFormat);
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -2090,25 +2129,25 @@ async function AudioVideoLowest(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         if (stream) {
@@ -2125,7 +2164,7 @@ async function AudioVideoLowest(input) {
                     callback();
                 },
             });
-            ytc.pipe(writeStream, { end: true });
+            proc.pipe(writeStream, { end: true });
             return {
                 stream: readStream,
                 filename: folderName
@@ -2135,10 +2174,10 @@ async function AudioVideoLowest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc.output(path.join(metaFold, metaName));
-                ytc.on("end", () => resolve());
-                ytc.on("error", reject);
-                ytc.run();
+                proc.output(path.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
             });
             return true;
         }
@@ -2178,16 +2217,16 @@ async function AudioVideoHighest(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const ytc = fluentffmpeg();
+        const proc = await ffmpeg();
         const AmetaEntry = await bigEntry(metaBody.AudioStore);
         const VmetaEntry = await bigEntry(metaBody.VideoStore);
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        ytc.addInput(VmetaEntry.meta_dl.mediaurl);
-        ytc.addInput(AmetaEntry.meta_dl.mediaurl);
-        ytc.format(outputFormat);
-        ytc.on("start", (command) => {
+        proc.addInput(VmetaEntry.meta_dl.mediaurl);
+        proc.addInput(AmetaEntry.meta_dl.mediaurl);
+        proc.format(outputFormat);
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -2195,25 +2234,25 @@ async function AudioVideoHighest(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         if (stream) {
@@ -2230,7 +2269,7 @@ async function AudioVideoHighest(input) {
                     callback();
                 },
             });
-            ytc.pipe(writeStream, { end: true });
+            proc.pipe(writeStream, { end: true });
             return {
                 stream: readStream,
                 filename: folderName
@@ -2240,10 +2279,10 @@ async function AudioVideoHighest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc.output(path.join(metaFold, metaName));
-                ytc.on("end", () => resolve());
-                ytc.on("error", reject);
-                ytc.run();
+                proc.output(path.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
             });
             return true;
         }
@@ -2295,7 +2334,7 @@ async function AudioQualityCustom(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const ytc = fluentffmpeg();
+        const proc = await ffmpeg();
         const metaEntry = await bigEntry(metaBody);
         if (metaEntry === undefined) {
             return {
@@ -2303,81 +2342,81 @@ async function AudioQualityCustom(input) {
                 status: 500,
             };
         }
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.addInput(metaResp.metaTube.thumbnail);
-        ytc.addOutputOption("-map", "1:0");
-        ytc.addOutputOption("-map", "0:a:0");
-        ytc.addOutputOption("-id3v2_version", "3");
-        ytc.withAudioBitrate(metaEntry.meta_audio.bitrate);
-        ytc.withAudioChannels(metaEntry.meta_audio.channels);
-        ytc.format(outputFormat);
+        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaResp.metaTube.thumbnail);
+        proc.addOutputOption("-map", "1:0");
+        proc.addOutputOption("-map", "0:a:0");
+        proc.addOutputOption("-id3v2_version", "3");
+        proc.withAudioBitrate(metaEntry.meta_audio.bitrate);
+        proc.withAudioChannels(metaEntry.meta_audio.channels);
+        proc.format(outputFormat);
         switch (filter) {
             case "bassboost":
-                ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "echo":
-                ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "flanger":
-                ytc.withAudioFilter(["flanger"]);
+                proc.withAudioFilter(["flanger"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "nightcore":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "panning":
-                ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                proc.withAudioFilter(["apulsator=hz=0.08"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "phaser":
-                ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                proc.withAudioFilter(["aphaser=in_gain=0.4"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "reverse":
-                ytc.withAudioFilter(["areverse"]);
+                proc.withAudioFilter(["areverse"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "slow":
-                ytc.withAudioFilter(["atempo=0.8"]);
+                proc.withAudioFilter(["atempo=0.8"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "speed":
-                ytc.withAudioFilter(["atempo=2"]);
+                proc.withAudioFilter(["atempo=2"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "subboost":
-                ytc.withAudioFilter(["asubboost"]);
+                proc.withAudioFilter(["asubboost"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "superslow":
-                ytc.withAudioFilter(["atempo=0.5"]);
+                proc.withAudioFilter(["atempo=0.5"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "superspeed":
-                ytc.withAudioFilter(["atempo=3"]);
+                proc.withAudioFilter(["atempo=3"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "surround":
-                ytc.withAudioFilter(["surround"]);
+                proc.withAudioFilter(["surround"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "vaporwave":
-                ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "vibrato":
-                ytc.withAudioFilter(["vibrato=f=6.5"]);
+                proc.withAudioFilter(["vibrato=f=6.5"]);
                 metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             default:
-                ytc.withAudioFilter([]);
+                proc.withAudioFilter([]);
                 metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
                 break;
         }
-        ytc.on("start", (command) => {
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -2385,25 +2424,25 @@ async function AudioQualityCustom(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         if (stream) {
@@ -2420,7 +2459,7 @@ async function AudioQualityCustom(input) {
                     callback();
                 },
             });
-            ytc.pipe(writeStream, { end: true });
+            proc.pipe(writeStream, { end: true });
             return {
                 stream: readStream,
                 filename: folderName
@@ -2430,10 +2469,10 @@ async function AudioQualityCustom(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc.output(path.join(metaFold, metaName));
-                ytc.on("end", () => resolve());
-                ytc.on("error", reject);
-                ytc.run();
+                proc.output(path.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
             });
             return true;
         }
@@ -2478,42 +2517,42 @@ async function VideoLowest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        const ytc = fluentffmpeg();
-        ytc.addInput(metaEntry.meta_dl.mediaurl);
-        ytc.format(outputFormat);
+        const proc = await ffmpeg();
+        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.format(outputFormat);
         switch (filter) {
             case "grayscale":
-                ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                proc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
                 break;
             case "invert":
-                ytc.withVideoFilter("negate");
+                proc.withVideoFilter("negate");
                 metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
                 break;
             case "rotate90":
-                ytc.withVideoFilter("rotate=PI/2");
+                proc.withVideoFilter("rotate=PI/2");
                 metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
                 break;
             case "rotate180":
-                ytc.withVideoFilter("rotate=PI");
+                proc.withVideoFilter("rotate=PI");
                 metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
                 break;
             case "rotate270":
-                ytc.withVideoFilter("rotate=3*PI/2");
+                proc.withVideoFilter("rotate=3*PI/2");
                 metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
                 break;
             case "flipHorizontal":
-                ytc.withVideoFilter("hflip");
+                proc.withVideoFilter("hflip");
                 metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
                 break;
             case "flipVertical":
-                ytc.withVideoFilter("vflip");
+                proc.withVideoFilter("vflip");
                 metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
                 break;
             default:
                 metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
         }
-        ytc.on("start", (command) => {
+        proc.on("start", (command) => {
             if (verbose)
                 console.log(command);
             progressBar({
@@ -2521,25 +2560,25 @@ async function VideoLowest(input) {
                 percent: undefined,
             });
         });
-        ytc.on("end", () => {
+        proc.on("end", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("close", () => {
+        proc.on("close", () => {
             progressBar({
                 timemark: undefined,
                 percent: undefined,
             });
         });
-        ytc.on("progress", (prog) => {
+        proc.on("progress", (prog) => {
             progressBar({
                 timemark: prog.timemark,
                 percent: prog.percent,
             });
         });
-        ytc.on("error", (error) => {
+        proc.on("error", (error) => {
             return error;
         });
         switch (stream) {
@@ -2557,7 +2596,7 @@ async function VideoLowest(input) {
                         callback();
                     },
                 });
-                ytc.pipe(writeStream, { end: true });
+                proc.pipe(writeStream, { end: true });
                 return {
                     stream: readStream,
                     filename: folderName
@@ -2566,10 +2605,10 @@ async function VideoLowest(input) {
                 };
             default:
                 await new Promise((resolve, reject) => {
-                    ytc.output(path.join(metaFold, metaName));
-                    ytc.on("end", () => resolve());
-                    ytc.on("error", reject);
-                    ytc.run();
+                    proc.output(path.join(metaFold, metaName));
+                    proc.on("end", () => resolve());
+                    proc.on("error", reject);
+                    proc.run();
                 });
                 return true;
         }
@@ -2636,10 +2675,10 @@ async function ListVideoLowest(input) {
             const metaEntry = await lowEntry(metaBody.VideoStore);
             if (metaEntry === undefined)
                 continue;
-            const ytc = fluentffmpeg();
-            ytc.addInput(metaEntry.meta_dl.mediaurl);
-            ytc.format(outputFormat);
-            ytc.on("start", (command) => {
+            const proc = await ffmpeg();
+            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.format(outputFormat);
+            proc.on("start", (command) => {
                 if (verbose)
                     console.log(command);
                 progressBar({
@@ -2647,19 +2686,19 @@ async function ListVideoLowest(input) {
                     percent: undefined,
                 });
             });
-            ytc.on("end", () => {
+            proc.on("end", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("close", () => {
+            proc.on("close", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("progress", (prog) => {
+            proc.on("progress", (prog) => {
                 progressBar({
                     timemark: prog.timemark,
                     percent: prog.percent,
@@ -2667,31 +2706,31 @@ async function ListVideoLowest(input) {
             });
             switch (filter) {
                 case "grayscale":
-                    ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    proc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                     metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
                     break;
                 case "invert":
-                    ytc.withVideoFilter("negate");
+                    proc.withVideoFilter("negate");
                     metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
                     break;
                 case "rotate90":
-                    ytc.withVideoFilter("rotate=PI/2");
+                    proc.withVideoFilter("rotate=PI/2");
                     metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
                     break;
                 case "rotate180":
-                    ytc.withVideoFilter("rotate=PI");
+                    proc.withVideoFilter("rotate=PI");
                     metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
                     break;
                 case "rotate270":
-                    ytc.withVideoFilter("rotate=3*PI/2");
+                    proc.withVideoFilter("rotate=3*PI/2");
                     metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
                     break;
                 case "flipHorizontal":
-                    ytc.withVideoFilter("hflip");
+                    proc.withVideoFilter("hflip");
                     metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
                     break;
                 case "flipVertical":
-                    ytc.withVideoFilter("vflip");
+                    proc.withVideoFilter("vflip");
                     metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
                     break;
                 default:
@@ -2712,7 +2751,7 @@ async function ListVideoLowest(input) {
                             callback();
                         },
                     });
-                    ytc.pipe(writeStream, { end: true });
+                    proc.pipe(writeStream, { end: true });
                     results.push({
                         stream: readStream,
                         filename: folderName
@@ -2722,10 +2761,10 @@ async function ListVideoLowest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc.output(path.join(metaFold, metaName));
-                        ytc.on("end", () => resolve());
-                        ytc.on("error", reject);
-                        ytc.run();
+                        proc.output(path.join(metaFold, metaName));
+                        proc.on("end", () => resolve());
+                        proc.on("error", reject);
+                        proc.run();
                     });
                     break;
             }
@@ -2793,10 +2832,10 @@ async function ListVideoHighest(input) {
             const metaEntry = await bigEntry(metaBody.VideoStore);
             if (metaEntry === undefined)
                 continue;
-            const ytc = fluentffmpeg();
-            ytc.addInput(metaEntry.meta_dl.mediaurl);
-            ytc.format(outputFormat);
-            ytc.on("start", (command) => {
+            const proc = await ffmpeg();
+            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.format(outputFormat);
+            proc.on("start", (command) => {
                 if (verbose)
                     console.log(command);
                 progressBar({
@@ -2804,19 +2843,19 @@ async function ListVideoHighest(input) {
                     percent: undefined,
                 });
             });
-            ytc.on("end", () => {
+            proc.on("end", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("close", () => {
+            proc.on("close", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("progress", (prog) => {
+            proc.on("progress", (prog) => {
                 progressBar({
                     timemark: prog.timemark,
                     percent: prog.percent,
@@ -2824,31 +2863,31 @@ async function ListVideoHighest(input) {
             });
             switch (filter) {
                 case "grayscale":
-                    ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    proc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                     metaName = `yt-dlp_(VideoHighest-grayscale)_${title}.${outputFormat}`;
                     break;
                 case "invert":
-                    ytc.withVideoFilter("negate");
+                    proc.withVideoFilter("negate");
                     metaName = `yt-dlp_(VideoHighest-invert)_${title}.${outputFormat}`;
                     break;
                 case "rotate90":
-                    ytc.withVideoFilter("rotate=PI/2");
+                    proc.withVideoFilter("rotate=PI/2");
                     metaName = `yt-dlp_(VideoHighest-rotate90)_${title}.${outputFormat}`;
                     break;
                 case "rotate180":
-                    ytc.withVideoFilter("rotate=PI");
+                    proc.withVideoFilter("rotate=PI");
                     metaName = `yt-dlp_(VideoHighest-rotate180)_${title}.${outputFormat}`;
                     break;
                 case "rotate270":
-                    ytc.withVideoFilter("rotate=3*PI/2");
+                    proc.withVideoFilter("rotate=3*PI/2");
                     metaName = `yt-dlp_(VideoHighest-rotate270)_${title}.${outputFormat}`;
                     break;
                 case "flipHorizontal":
-                    ytc.withVideoFilter("hflip");
+                    proc.withVideoFilter("hflip");
                     metaName = `yt-dlp_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
                     break;
                 case "flipVertical":
-                    ytc.withVideoFilter("vflip");
+                    proc.withVideoFilter("vflip");
                     metaName = `yt-dlp_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
                     break;
                 default:
@@ -2869,7 +2908,7 @@ async function ListVideoHighest(input) {
                             callback();
                         },
                     });
-                    ytc.pipe(writeStream, { end: true });
+                    proc.pipe(writeStream, { end: true });
                     results.push({
                         stream: readStream,
                         filename: folderName
@@ -2879,10 +2918,10 @@ async function ListVideoHighest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc.output(path.join(metaFold, metaName));
-                        ytc.on("end", () => resolve());
-                        ytc.on("error", reject);
-                        ytc.run();
+                        proc.output(path.join(metaFold, metaName));
+                        proc.on("end", () => resolve());
+                        proc.on("error", reject);
+                        proc.run();
                     });
                     break;
             }
@@ -2968,10 +3007,10 @@ async function ListVideoQualityCustom(input) {
             const metaEntry = await bigEntry(newBody);
             if (metaEntry === undefined)
                 continue;
-            const ytc = fluentffmpeg();
-            ytc.addInput(metaEntry.meta_dl.mediaurl);
-            ytc.format(outputFormat);
-            ytc.on("start", (command) => {
+            const proc = await ffmpeg();
+            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.format(outputFormat);
+            proc.on("start", (command) => {
                 if (verbose)
                     console.log(command);
                 progressBar({
@@ -2979,19 +3018,19 @@ async function ListVideoQualityCustom(input) {
                     percent: undefined,
                 });
             });
-            ytc.on("end", () => {
+            proc.on("end", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("close", () => {
+            proc.on("close", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("progress", (prog) => {
+            proc.on("progress", (prog) => {
                 progressBar({
                     timemark: prog.timemark,
                     percent: prog.percent,
@@ -2999,37 +3038,37 @@ async function ListVideoQualityCustom(input) {
             });
             switch (filter) {
                 case "grayscale":
-                    ytc.withVideoFilter([
+                    proc.withVideoFilter([
                         "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3",
                     ]);
                     metaName = `yt-dlp_(VideoQualityCustom-grayscale)_${title}.${outputFormat}`;
                     break;
                 case "invert":
-                    ytc.withVideoFilter(["negate"]);
+                    proc.withVideoFilter(["negate"]);
                     metaName = `yt-dlp_(VideoQualityCustom-invert)_${title}.${outputFormat}`;
                     break;
                 case "rotate90":
-                    ytc.withVideoFilter(["rotate=PI/2"]);
+                    proc.withVideoFilter(["rotate=PI/2"]);
                     metaName = `yt-dlp_(VideoQualityCustom-rotate90)_${title}.${outputFormat}`;
                     break;
                 case "rotate180":
-                    ytc.withVideoFilter(["rotate=PI"]);
+                    proc.withVideoFilter(["rotate=PI"]);
                     metaName = `yt-dlp_(VideoQualityCustom-rotate180)_${title}.${outputFormat}`;
                     break;
                 case "rotate270":
-                    ytc.withVideoFilter(["rotate=3*PI/2"]);
+                    proc.withVideoFilter(["rotate=3*PI/2"]);
                     metaName = `yt-dlp_(VideoQualityCustom-rotate270)_${title}.${outputFormat}`;
                     break;
                 case "flipHorizontal":
-                    ytc.withVideoFilter(["hflip"]);
+                    proc.withVideoFilter(["hflip"]);
                     metaName = `yt-dlp_(VideoQualityCustom-flipHorizontal)_${title}.${outputFormat}`;
                     break;
                 case "flipVertical":
-                    ytc.withVideoFilter(["vflip"]);
+                    proc.withVideoFilter(["vflip"]);
                     metaName = `yt-dlp_(VideoQualityCustom-flipVertical)_${title}.${outputFormat}`;
                     break;
                 default:
-                    ytc.withVideoFilter([]);
+                    proc.withVideoFilter([]);
                     metaName = `yt-dlp_(VideoQualityCustom)_${title}.${outputFormat}`;
             }
             switch (true) {
@@ -3047,7 +3086,7 @@ async function ListVideoQualityCustom(input) {
                             callback();
                         },
                     });
-                    ytc.pipe(writeStream, { end: true });
+                    proc.pipe(writeStream, { end: true });
                     results.push({
                         stream: readStream,
                         filename: folderName
@@ -3057,10 +3096,10 @@ async function ListVideoQualityCustom(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc.output(path.join(metaFold, metaName));
-                        ytc.on("end", () => resolve());
-                        ytc.on("error", reject);
-                        ytc.run();
+                        proc.output(path.join(metaFold, metaName));
+                        proc.on("end", () => resolve());
+                        proc.on("error", reject);
+                        proc.run();
                     });
                     break;
             }
@@ -3125,14 +3164,14 @@ async function ListAudioLowest(input) {
             const metaEntry = await lowEntry(metaBody.AudioStore);
             if (metaEntry === undefined)
                 continue;
-            const ytc = fluentffmpeg();
-            ytc.addInput(metaEntry.meta_dl.mediaurl);
-            ytc.addInput(metaBody.metaTube.thumbnail);
-            ytc.addOutputOption("-map", "1:0");
-            ytc.addOutputOption("-map", "0:a:0");
-            ytc.addOutputOption("-id3v2_version", "3");
-            ytc.format(outputFormat);
-            ytc.on("start", (command) => {
+            const proc = await ffmpeg();
+            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaBody.metaTube.thumbnail);
+            proc.addOutputOption("-map", "1:0");
+            proc.addOutputOption("-map", "0:a:0");
+            proc.addOutputOption("-id3v2_version", "3");
+            proc.format(outputFormat);
+            proc.on("start", (command) => {
                 if (verbose)
                     console.log(command);
                 progressBar({
@@ -3140,19 +3179,19 @@ async function ListAudioLowest(input) {
                     percent: undefined,
                 });
             });
-            ytc.on("end", () => {
+            proc.on("end", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("close", () => {
+            proc.on("close", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("progress", (prog) => {
+            proc.on("progress", (prog) => {
                 progressBar({
                     timemark: prog.timemark,
                     percent: prog.percent,
@@ -3160,67 +3199,67 @@ async function ListAudioLowest(input) {
             });
             switch (filter) {
                 case "bassboost":
-                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                     metaName = `yt-dlp-(AudioLowest_bassboost)-${title}.${outputFormat}`;
                     break;
                 case "echo":
-                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
                     metaName = `yt-dlp-(AudioLowest_echo)-${title}.${outputFormat}`;
                     break;
                 case "flanger":
-                    ytc.withAudioFilter(["flanger"]);
+                    proc.withAudioFilter(["flanger"]);
                     metaName = `yt-dlp-(AudioLowest_flanger)-${title}.${outputFormat}`;
                     break;
                 case "nightcore":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
                     metaName = `yt-dlp-(AudioLowest_nightcore)-${title}.${outputFormat}`;
                     break;
                 case "panning":
-                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                    proc.withAudioFilter(["apulsator=hz=0.08"]);
                     metaName = `yt-dlp-(AudioLowest_panning)-${title}.${outputFormat}`;
                     break;
                 case "phaser":
-                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    proc.withAudioFilter(["aphaser=in_gain=0.4"]);
                     metaName = `yt-dlp-(AudioLowest_phaser)-${title}.${outputFormat}`;
                     break;
                 case "reverse":
-                    ytc.withAudioFilter(["areverse"]);
+                    proc.withAudioFilter(["areverse"]);
                     metaName = `yt-dlp-(AudioLowest_reverse)-${title}.${outputFormat}`;
                     break;
                 case "slow":
-                    ytc.withAudioFilter(["atempo=0.8"]);
+                    proc.withAudioFilter(["atempo=0.8"]);
                     metaName = `yt-dlp-(AudioLowest_slow)-${title}.${outputFormat}`;
                     break;
                 case "speed":
-                    ytc.withAudioFilter(["atempo=2"]);
+                    proc.withAudioFilter(["atempo=2"]);
                     metaName = `yt-dlp-(AudioLowest_speed)-${title}.${outputFormat}`;
                     break;
                 case "subboost":
-                    ytc.withAudioFilter(["asubboost"]);
+                    proc.withAudioFilter(["asubboost"]);
                     metaName = `yt-dlp-(AudioLowest_subboost)-${title}.${outputFormat}`;
                     break;
                 case "superslow":
-                    ytc.withAudioFilter(["atempo=0.5"]);
+                    proc.withAudioFilter(["atempo=0.5"]);
                     metaName = `yt-dlp-(AudioLowest_superslow)-${title}.${outputFormat}`;
                     break;
                 case "superspeed":
-                    ytc.withAudioFilter(["atempo=3"]);
+                    proc.withAudioFilter(["atempo=3"]);
                     metaName = `yt-dlp-(AudioLowest_superspeed)-${title}.${outputFormat}`;
                     break;
                 case "surround":
-                    ytc.withAudioFilter(["surround"]);
+                    proc.withAudioFilter(["surround"]);
                     metaName = `yt-dlp-(AudioLowest_surround)-${title}.${outputFormat}`;
                     break;
                 case "vaporwave":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
                     metaName = `yt-dlp-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
                     break;
                 case "vibrato":
-                    ytc.withAudioFilter(["vibrato=f=6.5"]);
+                    proc.withAudioFilter(["vibrato=f=6.5"]);
                     metaName = `yt-dlp-(AudioLowest_vibrato)-${title}.${outputFormat}`;
                     break;
                 default:
-                    ytc.withAudioFilter([]);
+                    proc.withAudioFilter([]);
                     metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
                     break;
             }
@@ -3239,7 +3278,7 @@ async function ListAudioLowest(input) {
                             callback();
                         },
                     });
-                    ytc.pipe(writeStream, { end: true });
+                    proc.pipe(writeStream, { end: true });
                     results.push({
                         stream: readStream,
                         filename: folderName
@@ -3249,10 +3288,10 @@ async function ListAudioLowest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc.output(path.join(metaFold, metaName));
-                        ytc.on("end", () => resolve());
-                        ytc.on("error", reject);
-                        ytc.run();
+                        proc.output(path.join(metaFold, metaName));
+                        proc.on("end", () => resolve());
+                        proc.on("error", reject);
+                        proc.run();
                     });
                     break;
             }
@@ -3317,14 +3356,14 @@ async function ListAudioHighest(input) {
             const metaEntry = await bigEntry(metaBody.AudioStore);
             if (metaEntry === undefined)
                 continue;
-            const ytc = fluentffmpeg();
-            ytc.addInput(metaEntry.meta_dl.mediaurl);
-            ytc.addInput(metaBody.metaTube.thumbnail);
-            ytc.addOutputOption("-map", "1:0");
-            ytc.addOutputOption("-map", "0:a:0");
-            ytc.addOutputOption("-id3v2_version", "3");
-            ytc.format(outputFormat);
-            ytc.on("start", (command) => {
+            const proc = await ffmpeg();
+            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaBody.metaTube.thumbnail);
+            proc.addOutputOption("-map", "1:0");
+            proc.addOutputOption("-map", "0:a:0");
+            proc.addOutputOption("-id3v2_version", "3");
+            proc.format(outputFormat);
+            proc.on("start", (command) => {
                 if (verbose)
                     console.log(command);
                 progressBar({
@@ -3332,19 +3371,19 @@ async function ListAudioHighest(input) {
                     percent: undefined,
                 });
             });
-            ytc.on("end", () => {
+            proc.on("end", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("close", () => {
+            proc.on("close", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("progress", (prog) => {
+            proc.on("progress", (prog) => {
                 progressBar({
                     timemark: prog.timemark,
                     percent: prog.percent,
@@ -3352,67 +3391,67 @@ async function ListAudioHighest(input) {
             });
             switch (filter) {
                 case "bassboost":
-                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                     metaName = `yt-dlp-(AudioHighest_bassboost)-${title}.${outputFormat}`;
                     break;
                 case "echo":
-                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
                     metaName = `yt-dlp-(AudioHighest_echo)-${title}.${outputFormat}`;
                     break;
                 case "flanger":
-                    ytc.withAudioFilter(["flanger"]);
+                    proc.withAudioFilter(["flanger"]);
                     metaName = `yt-dlp-(AudioHighest_flanger)-${title}.${outputFormat}`;
                     break;
                 case "nightcore":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
                     metaName = `yt-dlp-(AudioHighest_nightcore)-${title}.${outputFormat}`;
                     break;
                 case "panning":
-                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                    proc.withAudioFilter(["apulsator=hz=0.08"]);
                     metaName = `yt-dlp-(AudioHighest_panning)-${title}.${outputFormat}`;
                     break;
                 case "phaser":
-                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    proc.withAudioFilter(["aphaser=in_gain=0.4"]);
                     metaName = `yt-dlp-(AudioHighest_phaser)-${title}.${outputFormat}`;
                     break;
                 case "reverse":
-                    ytc.withAudioFilter(["areverse"]);
+                    proc.withAudioFilter(["areverse"]);
                     metaName = `yt-dlp-(AudioHighest_reverse)-${title}.${outputFormat}`;
                     break;
                 case "slow":
-                    ytc.withAudioFilter(["atempo=0.8"]);
+                    proc.withAudioFilter(["atempo=0.8"]);
                     metaName = `yt-dlp-(AudioHighest_slow)-${title}.${outputFormat}`;
                     break;
                 case "speed":
-                    ytc.withAudioFilter(["atempo=2"]);
+                    proc.withAudioFilter(["atempo=2"]);
                     metaName = `yt-dlp-(AudioHighest_speed)-${title}.${outputFormat}`;
                     break;
                 case "subboost":
-                    ytc.withAudioFilter(["asubboost"]);
+                    proc.withAudioFilter(["asubboost"]);
                     metaName = `yt-dlp-(AudioHighest_subboost)-${title}.${outputFormat}`;
                     break;
                 case "superslow":
-                    ytc.withAudioFilter(["atempo=0.5"]);
+                    proc.withAudioFilter(["atempo=0.5"]);
                     metaName = `yt-dlp-(AudioHighest_superslow)-${title}.${outputFormat}`;
                     break;
                 case "superspeed":
-                    ytc.withAudioFilter(["atempo=3"]);
+                    proc.withAudioFilter(["atempo=3"]);
                     metaName = `yt-dlp-(AudioHighest_superspeed)-${title}.${outputFormat}`;
                     break;
                 case "surround":
-                    ytc.withAudioFilter(["surround"]);
+                    proc.withAudioFilter(["surround"]);
                     metaName = `yt-dlp-(AudioHighest_surround)-${title}.${outputFormat}`;
                     break;
                 case "vaporwave":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
                     metaName = `yt-dlp-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
                     break;
                 case "vibrato":
-                    ytc.withAudioFilter(["vibrato=f=6.5"]);
+                    proc.withAudioFilter(["vibrato=f=6.5"]);
                     metaName = `yt-dlp-(AudioHighest_vibrato)-${title}.${outputFormat}`;
                     break;
                 default:
-                    ytc.withAudioFilter([]);
+                    proc.withAudioFilter([]);
                     metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
                     break;
             }
@@ -3431,7 +3470,7 @@ async function ListAudioHighest(input) {
                             callback();
                         },
                     });
-                    ytc.pipe(writeStream, { end: true });
+                    proc.pipe(writeStream, { end: true });
                     results.push({
                         stream: readStream,
                         filename: folderName
@@ -3441,10 +3480,10 @@ async function ListAudioHighest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc.output(path.join(metaFold, metaName));
-                        ytc.on("end", () => resolve());
-                        ytc.on("error", reject);
-                        ytc.run();
+                        proc.output(path.join(metaFold, metaName));
+                        proc.on("end", () => resolve());
+                        proc.on("error", reject);
+                        proc.run();
                     });
                     break;
             }
@@ -3513,14 +3552,14 @@ async function ListAudioQualityCustom(input) {
             const metaEntry = await bigEntry(newBody);
             if (metaEntry === undefined)
                 continue;
-            const ytc = fluentffmpeg();
-            ytc.addInput(metaEntry.meta_dl.mediaurl);
-            ytc.addInput(metaBody.metaTube.thumbnail);
-            ytc.addOutputOption("-map", "1:0");
-            ytc.addOutputOption("-map", "0:a:0");
-            ytc.addOutputOption("-id3v2_version", "3");
-            ytc.format(outputFormat);
-            ytc.on("start", (command) => {
+            const proc = await ffmpeg();
+            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaBody.metaTube.thumbnail);
+            proc.addOutputOption("-map", "1:0");
+            proc.addOutputOption("-map", "0:a:0");
+            proc.addOutputOption("-id3v2_version", "3");
+            proc.format(outputFormat);
+            proc.on("start", (command) => {
                 if (verbose)
                     console.log(command);
                 progressBar({
@@ -3528,19 +3567,19 @@ async function ListAudioQualityCustom(input) {
                     percent: undefined,
                 });
             });
-            ytc.on("end", () => {
+            proc.on("end", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("close", () => {
+            proc.on("close", () => {
                 progressBar({
                     timemark: undefined,
                     percent: undefined,
                 });
             });
-            ytc.on("progress", (prog) => {
+            proc.on("progress", (prog) => {
                 progressBar({
                     timemark: prog.timemark,
                     percent: prog.percent,
@@ -3548,67 +3587,67 @@ async function ListAudioQualityCustom(input) {
             });
             switch (filter) {
                 case "bassboost":
-                    ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                     metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                     break;
                 case "echo":
-                    ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
                     metaName = `yt-dlp-(AudioQualityCustom_echo)-${title}.${outputFormat}`;
                     break;
                 case "flanger":
-                    ytc.withAudioFilter(["flanger"]);
+                    proc.withAudioFilter(["flanger"]);
                     metaName = `yt-dlp-(AudioQualityCustom_flanger)-${title}.${outputFormat}`;
                     break;
                 case "nightcore":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
                     metaName = `yt-dlp-(AudioQualityCustom_nightcore)-${title}.${outputFormat}`;
                     break;
                 case "panning":
-                    ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                    proc.withAudioFilter(["apulsator=hz=0.08"]);
                     metaName = `yt-dlp-(AudioQualityCustom_panning)-${title}.${outputFormat}`;
                     break;
                 case "phaser":
-                    ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    proc.withAudioFilter(["aphaser=in_gain=0.4"]);
                     metaName = `yt-dlp-(AudioQualityCustom_phaser)-${title}.${outputFormat}`;
                     break;
                 case "reverse":
-                    ytc.withAudioFilter(["areverse"]);
+                    proc.withAudioFilter(["areverse"]);
                     metaName = `yt-dlp-(AudioQualityCustom_reverse)-${title}.${outputFormat}`;
                     break;
                 case "slow":
-                    ytc.withAudioFilter(["atempo=0.8"]);
+                    proc.withAudioFilter(["atempo=0.8"]);
                     metaName = `yt-dlp-(AudioQualityCustom_slow)-${title}.${outputFormat}`;
                     break;
                 case "speed":
-                    ytc.withAudioFilter(["atempo=2"]);
+                    proc.withAudioFilter(["atempo=2"]);
                     metaName = `yt-dlp-(AudioQualityCustom_speed)-${title}.${outputFormat}`;
                     break;
                 case "subboost":
-                    ytc.withAudioFilter(["asubboost"]);
+                    proc.withAudioFilter(["asubboost"]);
                     metaName = `yt-dlp-(AudioQualityCustom_subboost)-${title}.${outputFormat}`;
                     break;
                 case "superslow":
-                    ytc.withAudioFilter(["atempo=0.5"]);
+                    proc.withAudioFilter(["atempo=0.5"]);
                     metaName = `yt-dlp-(AudioQualityCustom_superslow)-${title}.${outputFormat}`;
                     break;
                 case "superspeed":
-                    ytc.withAudioFilter(["atempo=3"]);
+                    proc.withAudioFilter(["atempo=3"]);
                     metaName = `yt-dlp-(AudioQualityCustom_superspeed)-${title}.${outputFormat}`;
                     break;
                 case "surround":
-                    ytc.withAudioFilter(["surround"]);
+                    proc.withAudioFilter(["surround"]);
                     metaName = `yt-dlp-(AudioQualityCustom_surround)-${title}.${outputFormat}`;
                     break;
                 case "vaporwave":
-                    ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
                     metaName = `yt-dlp-(AudioQualityCustom_vaporwave)-${title}.${outputFormat}`;
                     break;
                 case "vibrato":
-                    ytc.withAudioFilter(["vibrato=f=6.5"]);
+                    proc.withAudioFilter(["vibrato=f=6.5"]);
                     metaName = `yt-dlp-(AudioQualityCustom_vibrato)-${title}.${outputFormat}`;
                     break;
                 default:
-                    ytc.withAudioFilter([]);
+                    proc.withAudioFilter([]);
                     metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
                     break;
             }
@@ -3627,7 +3666,7 @@ async function ListAudioQualityCustom(input) {
                             callback();
                         },
                     });
-                    ytc.pipe(writeStream, { end: true });
+                    proc.pipe(writeStream, { end: true });
                     results.push({
                         stream: readStream,
                         filename: folderName
@@ -3637,10 +3676,10 @@ async function ListAudioQualityCustom(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc.output(path.join(metaFold, metaName));
-                        ytc.on("end", () => resolve());
-                        ytc.on("error", reject);
-                        ytc.run();
+                        proc.output(path.join(metaFold, metaName));
+                        proc.on("end", () => resolve());
+                        proc.on("error", reject);
+                        proc.run();
                     });
                     break;
             }
@@ -3699,15 +3738,15 @@ async function ListAudioVideoLowest(input) {
                                 : process.cwd();
                             if (!fs.existsSync(metaFold))
                                 fs.mkdirSync(metaFold, { recursive: true });
-                            const ytc = fluentffmpeg();
+                            const proc = await ffmpeg();
                             const AmetaEntry = await lowEntry(metaBody.AudioStore);
                             const VmetaEntry = await lowEntry(metaBody.VideoStore);
                             if (AmetaEntry === undefined || VmetaEntry === undefined)
                                 return;
-                            ytc.addInput(VmetaEntry.meta_dl.mediaurl);
-                            ytc.addInput(AmetaEntry.meta_dl.mediaurl);
-                            ytc.format(outputFormat);
-                            ytc.on("start", (command) => {
+                            proc.addInput(VmetaEntry.meta_dl.mediaurl);
+                            proc.addInput(AmetaEntry.meta_dl.mediaurl);
+                            proc.format(outputFormat);
+                            proc.on("start", (command) => {
                                 if (verbose)
                                     console.log(command);
                                 progressBar({
@@ -3715,19 +3754,19 @@ async function ListAudioVideoLowest(input) {
                                     percent: undefined,
                                 });
                             });
-                            ytc.on("end", () => {
+                            proc.on("end", () => {
                                 progressBar({
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
-                            ytc.on("close", () => {
+                            proc.on("close", () => {
                                 progressBar({
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
-                            ytc.on("progress", (prog) => {
+                            proc.on("progress", (prog) => {
                                 progressBar({
                                     timemark: prog.timemark,
                                     percent: prog.percent,
@@ -3747,7 +3786,7 @@ async function ListAudioVideoLowest(input) {
                                         callback();
                                     },
                                 });
-                                ytc.pipe(writeStream, { end: true });
+                                proc.pipe(writeStream, { end: true });
                                 results.push({
                                     stream: readStream,
                                     filename: folderName
@@ -3757,10 +3796,10 @@ async function ListAudioVideoLowest(input) {
                             }
                             else {
                                 await new Promise((resolve, reject) => {
-                                    ytc.output(path.join(metaFold, metaName));
-                                    ytc.on("end", () => resolve());
-                                    ytc.on("error", reject);
-                                    ytc.run();
+                                    proc.output(path.join(metaFold, metaName));
+                                    proc.on("end", () => resolve());
+                                    proc.on("error", reject);
+                                    proc.run();
                                 });
                             }
                         }
@@ -3825,15 +3864,15 @@ async function ListAudioVideoHighest(input) {
                                 : process.cwd();
                             if (!fs.existsSync(metaFold))
                                 fs.mkdirSync(metaFold, { recursive: true });
-                            const ytc = fluentffmpeg();
+                            const proc = await ffmpeg();
                             const AmetaEntry = await bigEntry(metaBody.AudioStore);
                             const VmetaEntry = await bigEntry(metaBody.VideoStore);
                             if (AmetaEntry === undefined || VmetaEntry === undefined)
                                 return;
-                            ytc.addInput(VmetaEntry.meta_dl.mediaurl);
-                            ytc.addInput(AmetaEntry.meta_dl.mediaurl);
-                            ytc.format(outputFormat);
-                            ytc.on("start", (command) => {
+                            proc.addInput(VmetaEntry.meta_dl.mediaurl);
+                            proc.addInput(AmetaEntry.meta_dl.mediaurl);
+                            proc.format(outputFormat);
+                            proc.on("start", (command) => {
                                 if (verbose)
                                     console.log(command);
                                 progressBar({
@@ -3841,19 +3880,19 @@ async function ListAudioVideoHighest(input) {
                                     percent: undefined,
                                 });
                             });
-                            ytc.on("end", () => {
+                            proc.on("end", () => {
                                 progressBar({
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
-                            ytc.on("close", () => {
+                            proc.on("close", () => {
                                 progressBar({
                                     timemark: undefined,
                                     percent: undefined,
                                 });
                             });
-                            ytc.on("progress", (prog) => {
+                            proc.on("progress", (prog) => {
                                 progressBar({
                                     timemark: prog.timemark,
                                     percent: prog.percent,
@@ -3873,7 +3912,7 @@ async function ListAudioVideoHighest(input) {
                                         callback();
                                     },
                                 });
-                                ytc.pipe(writeStream, { end: true });
+                                proc.pipe(writeStream, { end: true });
                                 results.push({
                                     stream: readStream,
                                     filename: folderName
@@ -3883,10 +3922,10 @@ async function ListAudioVideoHighest(input) {
                             }
                             else {
                                 await new Promise((resolve, reject) => {
-                                    ytc.output(path.join(metaFold, metaName));
-                                    ytc.on("end", () => resolve());
-                                    ytc.on("error", reject);
-                                    ytc.run();
+                                    proc.output(path.join(metaFold, metaName));
+                                    proc.on("end", () => resolve());
+                                    proc.on("error", reject);
+                                    proc.run();
                                 });
                             }
                         }

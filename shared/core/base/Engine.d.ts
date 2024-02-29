@@ -1,3 +1,2 @@
-import type EngineResult from "../interface/EngineResult";
-export default function Engine(query: string): Promise<EngineResult>;
+export default function Engine(url: string): Promise<any>;
 //# sourceMappingURL=Engine.d.ts.map
