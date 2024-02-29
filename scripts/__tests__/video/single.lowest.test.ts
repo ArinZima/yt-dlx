@@ -2,10 +2,9 @@ import * as fs from "fs";
 import ytdlx from "../..";
 import fsx from "fs-extra";
 import colors from "colors";
-import * as chai from "chai";
-import * as bun from "bun:test";
+import * as vitest from "vitest";
 // =======================================================[PASS-TEST]=======================================================
-bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
+vitest.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
   try {
     let holder: any;
     console.log(colors.bold.yellow("@test:"), "ytdlx.video.single.lowest()");
@@ -18,7 +17,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        chai
+        vitest
           .expect(holder.status)
           .to.equal(200)
           .and.satisfy(async () => {
@@ -44,7 +43,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        chai
+        vitest
           .expect(holder.status)
           .to.equal(200)
           .and.satisfy(async () => {
@@ -65,7 +64,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
   }
 });
 // =======================================================[PASS-TEST]=======================================================
-bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
+vitest.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
   try {
     let holder: any;
     console.log(colors.bold.yellow("@test:"), "ytdlx.video.single.lowest()");
@@ -78,7 +77,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
     });
     switch (true) {
       case "stream" in holder && "filename" in holder:
-        chai
+        vitest
           .expect(holder.stream && holder.filename)
           .to.exist.and.satisfy(async () => {
             holder.stream.pipe(fs.createWriteStream(holder.filename));
@@ -105,7 +104,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
     });
     switch (true) {
       case "stream" in holder && "filename" in holder:
-        chai
+        vitest
           .expect(holder.stream && holder.filename)
           .to.exist.and.satisfy(async () => {
             holder.stream.pipe(fs.createWriteStream(holder.filename));

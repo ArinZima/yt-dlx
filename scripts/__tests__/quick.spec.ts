@@ -1,8 +1,9 @@
 console.clear();
 import colors from "colors";
+import * as bun from "bun:test";
 import Agent from "../base/Agent";
 
-(async () => {
+bun.test(colors.blue("\n\n@tesing: ") + "Quick-Tests()", async () => {
   try {
     const metaTube = await Agent({
       query: "sQEgklEwhSo",
@@ -11,4 +12,4 @@ import Agent from "../base/Agent";
   } catch (error: any) {
     console.error(colors.red("@error:"), error.message);
   }
-})();
+});
