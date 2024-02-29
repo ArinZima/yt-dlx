@@ -8,30 +8,18 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
+import type AudioFilters from "../../interface/AudioFilters";
 
+type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioHighestOC = {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  filter?:
-    | keyof "bassboost"
-    | "echo"
-    | "flanger"
-    | "nightcore"
-    | "panning"
-    | "phaser"
-    | "reverse"
-    | "slow"
-    | "speed"
-    | "subboost"
-    | "superslow"
-    | "superspeed"
-    | "surround"
-    | "vaporwave"
-    | "vibrato";
-  outputFormat?: keyof "mp3" | "ogg" | "flac" | "aiff";
+  outputFormat?: AudioFormat;
+  filter?: keyof AudioFilters;
 };
+
 const AudioHighestInputSchema = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -40,9 +28,11 @@ const AudioHighestInputSchema = z.object({
   folderName: z.string().optional(),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
+
+type AudioHighestType = Promise<200 | StreamResult>;
 export default async function AudioHighest(
   input: AudioHighestOC
-): Promise<200 | StreamResult> {
+): AudioHighestType {
   try {
     const {
       query,
@@ -52,6 +42,7 @@ export default async function AudioHighest(
       folderName,
       outputFormat = "mp3",
     } = AudioHighestInputSchema.parse(input);
+
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");

@@ -1,4 +1,3 @@
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 type VideoFormat = "mp4" | "avi" | "mov";
@@ -10,7 +9,7 @@ interface ListVideoLowestOC {
     outputFormat?: VideoFormat;
     filter?: keyof VideoFilters;
 }
-type ListVideoLowestType = 200 | ErrorResult | StreamResult;
+type ListVideoLowestType = 200 | StreamResult;
 export default function ListVideoLowest(input: ListVideoLowestOC): Promise<ListVideoLowestType[] | any>;
 export {};
 //# sourceMappingURL=ListVideoLowest.d.ts.map

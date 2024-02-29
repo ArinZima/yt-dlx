@@ -7,31 +7,22 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
+import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
+import type AudioFilters from "../../interface/AudioFilters";
 
+type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
+type AudioQualities = "high" | "medium" | "low" | "ultralow";
 interface AudioQualityCustomOC {
   query: string;
   stream?: boolean;
   folderName?: string;
-  filter?:
-    | keyof "bassboost"
-    | "echo"
-    | "flanger"
-    | "nightcore"
-    | "panning"
-    | "phaser"
-    | "reverse"
-    | "slow"
-    | "speed"
-    | "subboost"
-    | "superslow"
-    | "superspeed"
-    | "surround"
-    | "vaporwave"
-    | "vibrato";
-  outputFormat?: keyof "mp3" | "ogg" | "flac" | "aiff";
-  quality: keyof "high" | "medium" | "low" | "ultralow";
+  quality: AudioQualities;
+  outputFormat?: AudioFormat;
+  filter?: keyof AudioFilters;
 }
+type AudioQualityCustomType = Promise<200 | ErrorResult | StreamResult>;
+
 const AudioQualityCustomInputSchema = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -44,7 +35,7 @@ const AudioQualityCustomInputSchema = z.object({
 
 export default async function AudioQualityCustom(
   input: AudioQualityCustomOC
-): Promise<200 | StreamResult> {
+): AudioQualityCustomType {
   try {
     const {
       query,
@@ -58,14 +49,20 @@ export default async function AudioQualityCustom(
 
     const metaResp = await ytdlx({ query });
     if (!metaResp) {
-      throw new Error("The specified quality was not found...");
+      return {
+        message: "The specified quality was not found...",
+        status: 500,
+      };
     }
     const metaBody = metaResp.AudioStore.filter(
       (op: { meta_dl: { formatnote: string } }) =>
         op.meta_dl.formatnote === quality
     );
     if (!metaBody) {
-      throw new Error("Unable to get response from YouTube...");
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500,
+      };
     }
     const title: string = metaResp.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -78,7 +75,10 @@ export default async function AudioQualityCustom(
     const ytc = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === undefined) {
-      throw new Error("Unable to get response from YouTube...");
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500,
+      };
     }
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.addInput(metaResp.metaTube.thumbnail);

@@ -10,22 +10,19 @@ import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
 import type StreamResult from "../../interface/StreamResult";
+import type VideoFilters from "../../interface/VideoFilters";
+
+type VideoFormat = "mp4" | "avi" | "mov";
 interface ListVideoLowestOC {
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
   playlistUrls: string[];
-  outputFormat?: keyof "mp4" | "avi" | "mov";
-  filter?:
-    | keyof "grayscale"
-    | "invert"
-    | "rotate90"
-    | "rotate180"
-    | "rotate270"
-    | "flipHorizontal"
-    | "flipVertical";
+  outputFormat?: VideoFormat;
+  filter?: keyof VideoFilters;
 }
 type ListVideoLowestType = 200 | StreamResult;
+
 const ListVideoLowestInputSchema = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -34,9 +31,10 @@ const ListVideoLowestInputSchema = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
+
 export default async function ListVideoLowest(
   input: ListVideoLowestOC
-): Promise<any> {
+): Promise<ListVideoLowestType[] | any> {
   try {
     const {
       filter,

@@ -10,6 +10,8 @@ import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
 import type StreamResult from "../../interface/StreamResult";
+
+type VideoFormat = "mp4" | "avi" | "mov";
 interface metaVideo {
   title: string;
   description: string;
@@ -28,7 +30,7 @@ interface ListAudioVideoHighestOC {
   verbose?: boolean;
   folderName?: string;
   playlistUrls: string[];
-  outputFormat?: keyof "mp4" | "avi" | "mov";
+  outputFormat?: VideoFormat;
 }
 type ListAudioVideoHighestType = 200 | StreamResult;
 const ListAudioVideoHighestInputSchema = z.object({
@@ -41,7 +43,7 @@ const ListAudioVideoHighestInputSchema = z.object({
 
 export default async function ListAudioVideoHighest(
   input: ListAudioVideoHighestOC
-): Promise<any> {
+): Promise<ListAudioVideoHighestType[]> {
   try {
     const {
       stream,

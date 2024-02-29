@@ -8,21 +8,19 @@ import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
+import type VideoFilters from "../../interface/VideoFilters";
+
+type VideoFormat = "mp4" | "avi" | "mov";
 interface VideoLowestOC {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  outputFormat?: keyof "mp4" | "avi" | "mov";
-  filter?:
-    | keyof "grayscale"
-    | "invert"
-    | "rotate90"
-    | "rotate180"
-    | "rotate270"
-    | "flipHorizontal"
-    | "flipVertical";
+  outputFormat?: VideoFormat;
+  filter?: keyof VideoFilters;
 }
+type VideoLowestType = Promise<200 | StreamResult>;
+
 const VideoLowestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -31,9 +29,10 @@ const VideoLowestInputSchema = z.object({
   filter: z.string().optional(),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
+
 export default async function VideoLowest(
   input: VideoLowestOC
-): Promise<200 | StreamResult> {
+): VideoLowestType {
   try {
     const {
       query,

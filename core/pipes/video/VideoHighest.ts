@@ -7,22 +7,21 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
+import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
+import type VideoFilters from "../../interface/VideoFilters";
+
+type VideoFormat = "mp4" | "avi" | "mov";
 interface VideoHighestOC {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  outputFormat?: keyof "mp4" | "avi" | "mov";
-  filter?:
-    | keyof "grayscale"
-    | "invert"
-    | "rotate90"
-    | "rotate180"
-    | "rotate270"
-    | "flipHorizontal"
-    | "flipVertical";
+  outputFormat?: VideoFormat;
+  filter?: keyof VideoFilters;
 }
+type VideoHighestType = Promise<200 | ErrorResult | StreamResult>;
+
 const VideoHighestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -34,7 +33,7 @@ const VideoHighestInputSchema = z.object({
 
 export default async function VideoHighest(
   input: VideoHighestOC
-): Promise<200 | StreamResult> {
+): VideoHighestType {
   try {
     const {
       query,

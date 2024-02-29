@@ -2151,13 +2151,19 @@ async function AudioQualityCustom(input) {
     } = AudioQualityCustomInputSchema.parse(input);
     const metaResp = await Agent({ query });
     if (!metaResp) {
-      throw new Error("The specified quality was not found...");
+      return {
+        message: "The specified quality was not found...",
+        status: 500
+      };
     }
     const metaBody = metaResp.AudioStore.filter(
       (op) => op.meta_dl.formatnote === quality
     );
     if (!metaBody) {
-      throw new Error("Unable to get response from YouTube...");
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
+      };
     }
     const title = metaResp.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -2169,7 +2175,10 @@ async function AudioQualityCustom(input) {
     const ytc = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === void 0) {
-      throw new Error("Unable to get response from YouTube...");
+      return {
+        message: "Unable to get response from YouTube...",
+        status: 500
+      };
     }
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.addInput(metaResp.metaTube.thumbnail);

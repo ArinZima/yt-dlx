@@ -1,4 +1,3 @@
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 type VideoFormat = "mp4" | "avi" | "mov";
 interface ListAudioVideoHighestOC {
@@ -8,7 +7,7 @@ interface ListAudioVideoHighestOC {
     playlistUrls: string[];
     outputFormat?: VideoFormat;
 }
-type ListAudioVideoHighestType = 200 | ErrorResult | StreamResult;
+type ListAudioVideoHighestType = 200 | StreamResult;
 export default function ListAudioVideoHighest(input: ListAudioVideoHighestOC): Promise<ListAudioVideoHighestType[]>;
 export {};
 //# sourceMappingURL=ListAudioVideoHighest.d.ts.map

@@ -46,7 +46,7 @@ function YouTubeID(videoLink) {
                 }
             }
         }
-        resolve(null);
+        resolve(undefined);
     });
 }
 
@@ -90,7 +90,7 @@ async function SearchVideos(input) {
                 .min(1)
                 .refine(async (query) => {
                 const result = await YouTubeID(query);
-                return result === null;
+                return result === undefined;
             }, {
                 message: "Query must not be a YouTube video/Playlist link",
             }),
@@ -289,14 +289,14 @@ async function PlaylistInfo(input) {
                 switch (true) {
                     case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(input):
                         const resultLink = await YouTubeID(input);
-                        if (resultLink !== null) {
+                        if (resultLink !== undefined) {
                             query = input;
                             return true;
                         }
                         break;
                     default:
                         const resultId = await YouTubeID(`https://www.youtube.com/playlist?list=${input}`);
-                        if (resultId !== null) {
+                        if (resultId !== undefined) {
                             query = `https://www.youtube.com/playlist?list=${input}`;
                             return true;
                         }
@@ -428,14 +428,14 @@ async function VideoInfo(input) {
                 switch (true) {
                     case /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?(.*&)?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(input):
                         const resultLink = await YouTubeID(input);
-                        if (resultLink !== null) {
+                        if (resultLink !== undefined) {
                             query = input;
                             return true;
                         }
                         break;
                     default:
                         const resultId = await YouTubeID(`https://www.youtube.com/watch?v=${input}`);
-                        if (resultId !== null) {
+                        if (resultId !== undefined) {
                             query = `https://www.youtube.com/watch?v=${input}`;
                             return true;
                         }
@@ -717,7 +717,7 @@ async function Engine(query) {
         const metaTube = await JSON.parse(result.stdout.toString());
         await metaTube.formats.forEach((io) => {
             const rmval = new Set(["storyboard", "Default"]);
-            if (rmval.has(io.format_note) && io.filesize === null)
+            if (rmval.has(io.format_note) && io.filesize === undefined)
                 return;
             const reTube = {
                 meta_audio: {
@@ -798,16 +798,16 @@ async function Engine(query) {
         return {
             AudioStore: pushTube
                 .filter((item) => item.Tube === "AudioStore")
-                .map((item) => item.reTube) || null,
+                .map((item) => item.reTube) || undefined,
             VideoStore: pushTube
                 .filter((item) => item.Tube === "VideoStore")
-                .map((item) => item.reTube) || null,
+                .map((item) => item.reTube) || undefined,
             HDRVideoStore: pushTube
                 .filter((item) => item.Tube === "HDRVideoStore")
-                .map((item) => item.reTube) || null,
+                .map((item) => item.reTube) || undefined,
             metaTube: pushTube
                 .filter((item) => item.Tube === "metaTube")
-                .map((item) => item.reTube)[0] || null,
+                .map((item) => item.reTube)[0] || undefined,
         };
     }
     catch (error) {
@@ -862,7 +862,7 @@ async function Engine(query) {
 // let pushTube: any[] = [];
 // metaTube.formats.forEach((core: any) => {
 // const rmval = new Set(["storyboard", "Default"]);
-// if (rmval.has(core.format_note) && core.filesize === null) return;
+// if (rmval.has(core.format_note) && core.filesize === undefined) return;
 // const reTube: any = {
 // meta_audio: {
 // bitrate: core.abr,
@@ -945,24 +945,24 @@ async function Engine(query) {
 // AudioStore:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "AudioStore")
-// .map((item: { reTube: any }) => item.reTube) || null,
+// .map((item: { reTube: any }) => item.reTube) || undefined,
 // VideoStore:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "VideoStore")
-// .map((item: { reTube: any }) => item.reTube) || null,
+// .map((item: { reTube: any }) => item.reTube) || undefined,
 // HDRVideoStore:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "HDRVideoStore")
-// .map((item: { reTube: any }) => item.reTube) || null,
+// .map((item: { reTube: any }) => item.reTube) || undefined,
 // metaTube:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "metaTube")
-// .map((item: { reTube: any }) => item.reTube)[0] || null,
+// .map((item: { reTube: any }) => item.reTube)[0] || undefined,
 // });
-// } else return null;
+// } else return undefined;
 // } catch (error) {
 // console.error("@error:", error);
-// return null;
+// return undefined;
 // }
 // }
 
@@ -971,7 +971,7 @@ var version = "2.0.4";
 async function Agent({ query, }) {
     try {
         let videoId;
-        let respEngine = null;
+        let respEngine = undefined;
         let TubeBody;
         console.log(colors.green("@info: ") + `using yt-dlx version ${version}`);
         switch (true) {
@@ -987,7 +987,7 @@ async function Agent({ query, }) {
         }
         console.log(colors.green("@info: ") + `fetching metadata for ${query}`);
         switch (videoId) {
-            case null:
+            case undefined:
                 TubeBody = (await web.search.SearchVideos({
                     query: query,
                     type: "video",
@@ -1015,7 +1015,7 @@ async function Agent({ query, }) {
                 respEngine = await Engine(TubeBody.videoLink);
                 break;
         }
-        if (respEngine === null) {
+        if (respEngine === undefined) {
             throw new Error(colors.red("@error: ") + "no data returned from server.");
         }
         else {
@@ -1366,7 +1366,7 @@ async function lowEntry(metaBody) {
     switch (true) {
         case !metaBody || metaBody.length === 0:
             console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return null;
+            return undefined;
         default:
             const sortedByFileSize = [...metaBody].sort((a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes);
             for (const item of sortedByFileSize) {
@@ -1375,7 +1375,7 @@ async function lowEntry(metaBody) {
                     return item;
             }
             console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return null;
+            return undefined;
     }
 }
 
@@ -1427,7 +1427,7 @@ async function AudioLowest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const metaEntry = await lowEntry(metaBody.AudioStore);
-        if (metaEntry === null) {
+        if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         const ytc = fluentffmpeg();
@@ -1542,7 +1542,7 @@ async function AudioLowest(input) {
                     callback();
                 },
                 final(callback) {
-                    readStream.push(null);
+                    readStream.push(undefined);
                     callback();
                 },
             });
@@ -1592,7 +1592,7 @@ async function bigEntry(metaBody) {
     switch (true) {
         case !metaBody || metaBody.length === 0:
             console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return null;
+            return undefined;
         default:
             const sortedByFileSize = [...metaBody].sort((a, b) => b.meta_info.filesizebytes - a.meta_info.filesizebytes);
             for (const item of sortedByFileSize) {
@@ -1601,7 +1601,7 @@ async function bigEntry(metaBody) {
                     return item;
             }
             console.log(colors.red("@error:"), "sorry no downloadable data found");
-            return null;
+            return undefined;
     }
 }
 
@@ -1628,7 +1628,7 @@ async function AudioHighest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const metaEntry = await bigEntry(metaBody.AudioStore);
-        if (metaEntry === null) {
+        if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         const ytc = fluentffmpeg();
@@ -1743,7 +1743,7 @@ async function AudioHighest(input) {
                     callback();
                 },
                 final(callback) {
-                    readStream.push(null);
+                    readStream.push(undefined);
                     callback();
                 },
             });
@@ -1803,7 +1803,7 @@ async function VideoLowest$1(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const metaEntry = await lowEntry(metaBody.VideoStore);
-        if (metaEntry === null) {
+        if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         const ytc = fluentffmpeg();
@@ -1881,7 +1881,7 @@ async function VideoLowest$1(input) {
                         callback();
                     },
                     final(callback) {
-                        readStream.push(null);
+                        readStream.push(undefined);
                         callback();
                     },
                 });
@@ -1940,7 +1940,7 @@ async function VideoHighest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const metaEntry = await bigEntry(metaBody.VideoStore);
-        if (metaEntry === null) {
+        if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         const ytc = fluentffmpeg();
@@ -2018,7 +2018,7 @@ async function VideoHighest(input) {
                         callback();
                     },
                     final(callback) {
-                        readStream.push(null);
+                        readStream.push(undefined);
                         callback();
                     },
                 });
@@ -2078,7 +2078,7 @@ async function AudioVideoLowest(input) {
         const ytc = fluentffmpeg();
         const AmetaEntry = await lowEntry(metaBody.AudioStore);
         const VmetaEntry = await lowEntry(metaBody.VideoStore);
-        if (AmetaEntry === null || VmetaEntry === null) {
+        if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         ytc.addInput(VmetaEntry.meta_dl.mediaurl);
@@ -2123,7 +2123,7 @@ async function AudioVideoLowest(input) {
                     callback();
                 },
                 final(callback) {
-                    readStream.push(null);
+                    readStream.push(undefined);
                     callback();
                 },
             });
@@ -2184,7 +2184,7 @@ async function AudioVideoHighest(input) {
         const ytc = fluentffmpeg();
         const AmetaEntry = await bigEntry(metaBody.AudioStore);
         const VmetaEntry = await bigEntry(metaBody.VideoStore);
-        if (AmetaEntry === null || VmetaEntry === null) {
+        if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         ytc.addInput(VmetaEntry.meta_dl.mediaurl);
@@ -2229,7 +2229,7 @@ async function AudioVideoHighest(input) {
                     callback();
                 },
                 final(callback) {
-                    readStream.push(null);
+                    readStream.push(undefined);
                     callback();
                 },
             });
@@ -2300,7 +2300,7 @@ async function AudioQualityCustom(input) {
             fs.mkdirSync(metaFold, { recursive: true });
         const ytc = fluentffmpeg();
         const metaEntry = await bigEntry(metaBody);
-        if (metaEntry === null) {
+        if (metaEntry === undefined) {
             return {
                 message: "Unable to get response from YouTube...",
                 status: 500,
@@ -2403,7 +2403,7 @@ async function AudioQualityCustom(input) {
                     callback();
                 },
                 final(callback) {
-                    readStream.push(null);
+                    readStream.push(undefined);
                     callback();
                 },
             });
@@ -2463,7 +2463,7 @@ async function VideoLowest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const metaEntry = await bigEntry(metaBody.VideoStore);
-        if (metaEntry === null) {
+        if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         const ytc = fluentffmpeg();
@@ -2541,7 +2541,7 @@ async function VideoLowest(input) {
                         callback();
                     },
                     final(callback) {
-                        readStream.push(null);
+                        readStream.push(undefined);
                         callback();
                     },
                 });
@@ -2594,7 +2594,7 @@ async function ListVideoLowest(input) {
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
             const metaList = await web.search.PlaylistInfo({ query: videoLink });
-            if (metaList === null || !metaList) {
+            if (metaList === undefined || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
@@ -2614,7 +2614,7 @@ async function ListVideoLowest(input) {
             const metaBody = await Agent({
                 query: TubeBody.videoLink,
             });
-            if (metaBody === null)
+            if (metaBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
             const metaFold = folderName
@@ -2623,7 +2623,7 @@ async function ListVideoLowest(input) {
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
             const metaEntry = await lowEntry(metaBody.VideoStore);
-            if (metaEntry === null)
+            if (metaEntry === undefined)
                 continue;
             const ytc = fluentffmpeg();
             ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -2697,7 +2697,7 @@ async function ListVideoLowest(input) {
                             callback();
                         },
                         final(callback) {
-                            readStream.push(null);
+                            readStream.push(undefined);
                             callback();
                         },
                     });
@@ -2723,29 +2723,14 @@ async function ListVideoLowest(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }
@@ -2767,7 +2752,7 @@ async function ListVideoHighest(input) {
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
             const metaList = await web.search.PlaylistInfo({ query: videoLink });
-            if (metaList === null || !metaList) {
+            if (metaList === undefined || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
@@ -2787,7 +2772,7 @@ async function ListVideoHighest(input) {
             const metaBody = await Agent({
                 query: TubeBody.videoLink,
             });
-            if (metaBody === null)
+            if (metaBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
             const metaFold = folderName
@@ -2796,7 +2781,7 @@ async function ListVideoHighest(input) {
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
             const metaEntry = await bigEntry(metaBody.VideoStore);
-            if (metaEntry === null)
+            if (metaEntry === undefined)
                 continue;
             const ytc = fluentffmpeg();
             ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -2870,7 +2855,7 @@ async function ListVideoHighest(input) {
                             callback();
                         },
                         final(callback) {
-                            readStream.push(null);
+                            readStream.push(undefined);
                             callback();
                         },
                     });
@@ -2896,29 +2881,14 @@ async function ListVideoHighest(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }
@@ -2955,7 +2925,7 @@ async function ListVideoQualityCustom(input) {
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
             const metaList = await web.search.PlaylistInfo({ query: videoLink });
-            if (metaList === null || !metaList) {
+            if (metaList === undefined || !metaList) {
                 return {
                     message: "Unable to get response from YouTube...",
                     status: 500,
@@ -2975,10 +2945,10 @@ async function ListVideoQualityCustom(input) {
             const metaBody = await Agent({
                 query: TubeBody.videoLink,
             });
-            if (metaBody === null)
+            if (metaBody === undefined)
                 continue;
             const newBody = metaBody.VideoStore.filter((op) => op.meta_dl.formatnote === quality);
-            if (!newBody || newBody === null)
+            if (!newBody || newBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
             const metaFold = folderName
@@ -2987,7 +2957,7 @@ async function ListVideoQualityCustom(input) {
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
             const metaEntry = await bigEntry(newBody);
-            if (metaEntry === null)
+            if (metaEntry === undefined)
                 continue;
             const ytc = fluentffmpeg();
             ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -3064,7 +3034,7 @@ async function ListVideoQualityCustom(input) {
                             callback();
                         },
                         final(callback) {
-                            readStream.push(null);
+                            readStream.push(undefined);
                             callback();
                         },
                     });
@@ -3090,29 +3060,14 @@ async function ListVideoQualityCustom(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }
@@ -3134,11 +3089,8 @@ async function ListAudioLowest(input) {
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
             const metaList = await web.search.PlaylistInfo({ query: videoLink });
-            if (metaList === null || !metaList) {
-                return {
-                    message: "Unable to get response from YouTube...",
-                    status: 500,
-                };
+            if (metaList === undefined || !metaList) {
+                throw new Error("Unable to get response from YouTube...");
             }
             const uniqueVideos = metaList.playlistVideos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
@@ -3154,7 +3106,7 @@ async function ListAudioLowest(input) {
             const metaBody = await Agent({
                 query: TubeBody.videoLink,
             });
-            if (metaBody === null)
+            if (metaBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
             const metaFold = folderName
@@ -3163,7 +3115,7 @@ async function ListAudioLowest(input) {
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
             const metaEntry = await lowEntry(metaBody.AudioStore);
-            if (metaEntry === null)
+            if (metaEntry === undefined)
                 continue;
             const ytc = fluentffmpeg();
             ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -3275,7 +3227,7 @@ async function ListAudioLowest(input) {
                             callback();
                         },
                         final(callback) {
-                            readStream.push(null);
+                            readStream.push(undefined);
                             callback();
                         },
                     });
@@ -3301,29 +3253,14 @@ async function ListAudioLowest(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }
@@ -3345,11 +3282,8 @@ async function ListAudioHighest(input) {
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
             const metaList = await web.search.PlaylistInfo({ query: videoLink });
-            if (metaList === null || !metaList) {
-                return {
-                    message: "Unable to get response from YouTube...",
-                    status: 500,
-                };
+            if (metaList === undefined || !metaList) {
+                throw new Error("Unable to get response from YouTube...");
             }
             const uniqueVideos = metaList.playlistVideos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
@@ -3365,7 +3299,7 @@ async function ListAudioHighest(input) {
             const metaBody = await Agent({
                 query: TubeBody.videoLink,
             });
-            if (metaBody === null)
+            if (metaBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
             const metaFold = folderName
@@ -3374,7 +3308,7 @@ async function ListAudioHighest(input) {
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
             const metaEntry = await bigEntry(metaBody.AudioStore);
-            if (metaEntry === null)
+            if (metaEntry === undefined)
                 continue;
             const ytc = fluentffmpeg();
             ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -3486,7 +3420,7 @@ async function ListAudioHighest(input) {
                             callback();
                         },
                         final(callback) {
-                            readStream.push(null);
+                            readStream.push(undefined);
                             callback();
                         },
                     });
@@ -3512,29 +3446,14 @@ async function ListAudioHighest(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }
@@ -3557,11 +3476,8 @@ async function ListAudioQualityCustom(input) {
         const uniqueVideoIds = new Set();
         for (const videoLink of playlistUrls) {
             const metaList = await web.search.PlaylistInfo({ query: videoLink });
-            if (metaList === null || !metaList) {
-                return {
-                    message: "Unable to get response from YouTube...",
-                    status: 500,
-                };
+            if (metaList === undefined || !metaList) {
+                throw new Error("Unable to get response from YouTube...");
             }
             const uniqueVideos = metaList.playlistVideos.filter((video) => !uniqueVideoIds.has(video.videoId));
             parseList.push(...uniqueVideos);
@@ -3577,10 +3493,10 @@ async function ListAudioQualityCustom(input) {
             const metaBody = await Agent({
                 query: TubeBody.videoLink,
             });
-            if (metaBody === null)
+            if (metaBody === undefined)
                 continue;
             const newBody = metaBody.AudioStore.filter((op) => op.meta_dl.formatnote === quality);
-            if (!newBody || newBody === null)
+            if (!newBody || newBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
             const metaFold = folderName
@@ -3589,7 +3505,7 @@ async function ListAudioQualityCustom(input) {
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
             const metaEntry = await bigEntry(newBody);
-            if (metaEntry === null)
+            if (metaEntry === undefined)
                 continue;
             const ytc = fluentffmpeg();
             ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -3701,7 +3617,7 @@ async function ListAudioQualityCustom(input) {
                             callback();
                         },
                         final(callback) {
-                            readStream.push(null);
+                            readStream.push(undefined);
                             callback();
                         },
                     });
@@ -3727,29 +3643,14 @@ async function ListAudioQualityCustom(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }
@@ -3766,37 +3667,17 @@ async function ListAudioVideoLowest(input) {
         const { stream, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListAudioVideoLowestInputSchema.parse(input);
         switch (true) {
             case playlistUrls.length === 0:
-                return [
-                    {
-                        message: "playlistUrls parameter cannot be empty",
-                        status: 500,
-                    },
-                ];
+                throw new Error("playlistUrls parameter cannot be empty");
             case !Array.isArray(playlistUrls):
-                return [
-                    {
-                        message: "playlistUrls parameter must be an array",
-                        status: 500,
-                    },
-                ];
+                throw new Error("playlistUrls parameter must be an array");
             case !playlistUrls.every((url) => typeof url === "string" && url.trim().length > 0):
-                return [
-                    {
-                        message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
-                        status: 500,
-                    },
-                ];
+                throw new Error("Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.");
             default:
                 const videos = await get_playlist({
                     playlistUrls,
                 });
                 if (!videos) {
-                    return [
-                        {
-                            message: "Unable to get response from YouTube...",
-                            status: 500,
-                        },
-                    ];
+                    throw new Error("Unable to get response from YouTube..");
                 }
                 else {
                     const results = [];
@@ -3816,7 +3697,7 @@ async function ListAudioVideoLowest(input) {
                             const ytc = fluentffmpeg();
                             const AmetaEntry = await lowEntry(metaBody.AudioStore);
                             const VmetaEntry = await lowEntry(metaBody.VideoStore);
-                            if (AmetaEntry === null || VmetaEntry === null)
+                            if (AmetaEntry === undefined || VmetaEntry === undefined)
                                 return;
                             ytc.addInput(VmetaEntry.meta_dl.mediaurl);
                             ytc.addInput(AmetaEntry.meta_dl.mediaurl);
@@ -3857,7 +3738,7 @@ async function ListAudioVideoLowest(input) {
                                         callback();
                                     },
                                     final(callback) {
-                                        readStream.push(null);
+                                        readStream.push(undefined);
                                         callback();
                                     },
                                 });
@@ -3880,10 +3761,7 @@ async function ListAudioVideoLowest(input) {
                             }
                         }
                         catch (error) {
-                            results.push({
-                                status: 500,
-                                message: colors.bold.red("ERROR: ") + video.title,
-                            });
+                            results.push(200);
                         }
                     });
                     return results;
@@ -3892,29 +3770,14 @@ async function ListAudioVideoLowest(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }
@@ -3931,37 +3794,17 @@ async function ListAudioVideoHighest(input) {
         const { stream, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListAudioVideoHighestInputSchema.parse(input);
         switch (true) {
             case playlistUrls.length === 0:
-                return [
-                    {
-                        message: "playlistUrls parameter cannot be empty",
-                        status: 500,
-                    },
-                ];
+                throw new Error("playlistUrls parameter cannot be empty");
             case !Array.isArray(playlistUrls):
-                return [
-                    {
-                        message: "playlistUrls parameter must be an array",
-                        status: 500,
-                    },
-                ];
+                throw new Error("playlistUrls parameter must be an array");
             case !playlistUrls.every((url) => typeof url === "string" && url.trim().length > 0):
-                return [
-                    {
-                        message: "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
-                        status: 500,
-                    },
-                ];
+                throw new Error("Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.");
             default:
                 const videos = await get_playlist({
                     playlistUrls,
                 });
                 if (!videos) {
-                    return [
-                        {
-                            message: "Unable to get response from YouTube...",
-                            status: 500,
-                        },
-                    ];
+                    throw new Error("Unable to get response from YouTube..");
                 }
                 else {
                     const results = [];
@@ -3981,7 +3824,7 @@ async function ListAudioVideoHighest(input) {
                             const ytc = fluentffmpeg();
                             const AmetaEntry = await bigEntry(metaBody.AudioStore);
                             const VmetaEntry = await bigEntry(metaBody.VideoStore);
-                            if (AmetaEntry === null || VmetaEntry === null)
+                            if (AmetaEntry === undefined || VmetaEntry === undefined)
                                 return;
                             ytc.addInput(VmetaEntry.meta_dl.mediaurl);
                             ytc.addInput(AmetaEntry.meta_dl.mediaurl);
@@ -4022,7 +3865,7 @@ async function ListAudioVideoHighest(input) {
                                         callback();
                                     },
                                     final(callback) {
-                                        readStream.push(null);
+                                        readStream.push(undefined);
                                         callback();
                                     },
                                 });
@@ -4045,10 +3888,7 @@ async function ListAudioVideoHighest(input) {
                             }
                         }
                         catch (error) {
-                            results.push({
-                                status: 500,
-                                message: colors.bold.red("ERROR: ") + video.title,
-                            });
+                            results.push(200);
                         }
                     });
                     return results;
@@ -4057,29 +3897,14 @@ async function ListAudioVideoHighest(input) {
     }
     catch (error) {
         if (error instanceof ZodError) {
-            return [
-                {
-                    message: "Validation error: " +
-                        error.errors.map((e) => e.message).join(", "),
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
         }
         else if (error instanceof Error) {
-            return [
-                {
-                    message: error.message,
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + error.message);
         }
         else {
-            return [
-                {
-                    message: "Internal server error",
-                    status: 500,
-                },
-            ];
+            throw new Error(colors.red("@error: ") + "internal server error");
         }
     }
 }

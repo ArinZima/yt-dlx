@@ -1,4 +1,3 @@
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 type VideoFormat = "mp4" | "avi" | "mov";
@@ -12,7 +11,7 @@ interface ListVideoQualityCustomOC {
     outputFormat?: VideoFormat;
     filter?: keyof VideoFilters;
 }
-type ListVideoQualityCustomType = 200 | ErrorResult | StreamResult;
+type ListVideoQualityCustomType = 200 | StreamResult;
 export default function ListVideoQualityCustom(input: ListVideoQualityCustomOC): Promise<ListVideoQualityCustomType[] | any>;
 export {};
 //# sourceMappingURL=ListVideoQualityCustom.d.ts.map

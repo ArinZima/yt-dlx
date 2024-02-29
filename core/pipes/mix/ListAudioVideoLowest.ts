@@ -10,6 +10,8 @@ import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
 import type StreamResult from "../../interface/StreamResult";
+
+type VideoFormat = "mp4" | "avi" | "mov";
 interface metaVideo {
   title: string;
   description: string;
@@ -28,7 +30,7 @@ interface ListAudioVideoLowestOC {
   verbose?: boolean;
   folderName?: string;
   playlistUrls: string[];
-  outputFormat?: keyof "mp4" | "avi" | "mov";
+  outputFormat?: VideoFormat;
 }
 type ListAudioVideoLowestType = 200 | StreamResult;
 const ListAudioVideoLowestInputSchema = z.object({
@@ -38,9 +40,10 @@ const ListAudioVideoLowestInputSchema = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
+
 export default async function ListAudioVideoLowest(
   input: ListAudioVideoLowestOC
-): Promise<any> {
+): Promise<ListAudioVideoLowestType[]> {
   try {
     const {
       stream,

@@ -8,30 +8,18 @@ import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
+import type AudioFilters from "../../interface/AudioFilters";
 
+type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
 type AudioLowestOC = {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  filter?:
-    | keyof "bassboost"
-    | "echo"
-    | "flanger"
-    | "nightcore"
-    | "panning"
-    | "phaser"
-    | "reverse"
-    | "slow"
-    | "speed"
-    | "subboost"
-    | "superslow"
-    | "superspeed"
-    | "surround"
-    | "vaporwave"
-    | "vibrato";
-  outputFormat?: keyof "mp3" | "ogg" | "flac" | "aiff";
+  outputFormat?: AudioFormat;
+  filter?: keyof AudioFilters;
 };
+
 const AudioLowestInputSchema = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -40,9 +28,11 @@ const AudioLowestInputSchema = z.object({
   folderName: z.string().optional(),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
+
+type AudioLowestType = Promise<200 | StreamResult>;
 export default async function AudioLowest(
   input: AudioLowestOC
-): Promise<200 | StreamResult> {
+): AudioLowestType {
   try {
     const {
       query,
