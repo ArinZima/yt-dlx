@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import colors from "colors";
 import * as path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
@@ -8,9 +9,9 @@ import type EngineData from "../interface/EngineData";
 
 interface EngineResult {
   metaTube: EngineData;
-  AudioTube: (TubeConfig | EngineData)[] | null;
-  VideoTube: (TubeConfig | EngineData)[] | null;
-  HDRVideoTube: (TubeConfig | EngineData)[] | null;
+  AudioTube: TubeConfig[];
+  VideoTube: TubeConfig[];
+  HDRVideoTube: TubeConfig[];
 }
 
 export default async function Engine(
@@ -42,7 +43,7 @@ export default async function Engine(
     proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
     proLoc += ` '${query}'`;
   } else {
-    console.error("Could not find the Engine file.");
+    throw new Error(colors.red("@error: ") + "could not find the engine file.");
   }
   const result = await promisify(exec)(proLoc);
   const metaTube = await JSON.parse(result.stdout.toString());
@@ -95,7 +96,7 @@ export default async function Engine(
         channel_id: metaTube.channel_id,
         categories: metaTube.categories,
         display_id: metaTube.display_id,
-        Description: metaTube.Description,
+        description: metaTube.description,
         channel_url: metaTube.channel_url,
         webpage_url: metaTube.webpage_url,
         live_status: metaTube.live_status,

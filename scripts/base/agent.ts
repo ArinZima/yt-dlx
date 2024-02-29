@@ -16,7 +16,7 @@ export default async function Agent({
 }: {
   query: string;
 }): Promise<any> {
-  let videoId: string | null, TubeDlp: any;
+  let videoId: string | null, respEngine: any;
   let TubeBody: TypeVideo[] | TypePlaylist[] | VideoInfoType | PlaylistInfoType;
   console.log(colors.bold.green("@info: ") + `using yt-dlx version ${version}`);
   switch (true) {
@@ -48,7 +48,7 @@ export default async function Agent({
           colors.bold.green("@info: ") +
             `preparing payload for ${TubeBody[0].title}`
         );
-        TubeDlp = await Engine(TubeBody[0].videoLink);
+        respEngine = await Engine(TubeBody[0].videoLink);
       }
       break;
     default:
@@ -64,11 +64,11 @@ export default async function Agent({
           colors.bold.green("@info: ") +
             `preparing payload for ${TubeBody.title}`
         );
-        TubeDlp = await Engine(TubeBody.videoLink);
+        respEngine = await Engine(TubeBody.videoLink);
       }
       break;
   }
-  switch (TubeDlp) {
+  switch (respEngine) {
     case null:
       throw new Error(
         colors.bold.red("@error: ") + "no data returned from server."
@@ -78,6 +78,6 @@ export default async function Agent({
         colors.bold.green("@info:"),
         "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
       );
-      return JSON.parse(TubeDlp);
+      return respEngine;
   }
 }

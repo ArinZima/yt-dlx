@@ -9,7 +9,7 @@ export default interface MetaTubeData {
   channel_id: string;
   categories: string[];
   display_id: string;
-  Description: string;
+  description: string;
   channel_url: string;
   webpage_url: string;
   live_status: string;
