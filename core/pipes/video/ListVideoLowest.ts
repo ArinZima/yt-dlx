@@ -21,7 +21,7 @@ interface ListVideoLowestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type ListVideoLowestType = 200 | StreamResult;
+type ListVideoLowestType = true | StreamResult;
 
 const ListVideoLowestInputSchema = z.object({
   filter: z.string().optional(),

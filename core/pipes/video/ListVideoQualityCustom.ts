@@ -36,7 +36,7 @@ interface ListVideoQualityCustomOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type ListVideoQualityCustomType = 200 | StreamResult;
+type ListVideoQualityCustomType = true | StreamResult;
 
 const ListVideoQualityCustomInputSchema = z.object({
   stream: z.boolean().optional(),

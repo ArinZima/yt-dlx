@@ -21,7 +21,7 @@ interface ListAudioHighestOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioHighestType = 200 | StreamResult;
+type ListAudioHighestType = true | StreamResult;
 const ListAudioHighestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),

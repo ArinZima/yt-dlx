@@ -20,7 +20,7 @@ interface VideoHighestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type VideoHighestType = Promise<200 | ErrorResult | StreamResult>;
+type VideoHighestType = Promise<true | ErrorResult | StreamResult>;
 
 const VideoHighestInputSchema = z.object({
   query: z.string().min(1),
@@ -157,7 +157,7 @@ export default async function VideoHighest(
             .run();
         });
 
-        return 200;
+        return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

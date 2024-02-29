@@ -29,7 +29,7 @@ const AudioHighestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 
-type AudioHighestType = Promise<200 | StreamResult>;
+type AudioHighestType = Promise<true | StreamResult>;
 export default async function AudioHighest(
   input: AudioHighestOC
 ): AudioHighestType {
@@ -190,7 +190,7 @@ export default async function AudioHighest(
           .on("end", () => resolve())
           .run();
       });
-      return 200;
+      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

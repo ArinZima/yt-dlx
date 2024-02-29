@@ -22,7 +22,7 @@ interface ListVideoHighestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type ListVideoHighestType = 200 | ErrorResult | StreamResult;
+type ListVideoHighestType = true | ErrorResult | StreamResult;
 
 const ListVideoHighestInputSchema = z.object({
   filter: z.string().optional(),

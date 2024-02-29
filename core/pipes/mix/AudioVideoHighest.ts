@@ -17,7 +17,7 @@ interface AudioVideoHighestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-type AudioVideoHighest = Promise<200 | StreamResult>;
+type AudioVideoHighest = Promise<true | StreamResult>;
 const AudioVideoHighestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -117,7 +117,7 @@ export default async function AudioVideoHighest(
           .on("end", () => resolve())
           .run();
       });
-      return 200;
+      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

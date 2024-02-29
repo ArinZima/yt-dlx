@@ -21,7 +21,7 @@ interface AudioQualityCustomOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type AudioQualityCustomType = Promise<200 | ErrorResult | StreamResult>;
+type AudioQualityCustomType = Promise<true | ErrorResult | StreamResult>;
 
 const AudioQualityCustomInputSchema = z.object({
   query: z.string().min(1),
@@ -197,7 +197,7 @@ export default async function AudioQualityCustom(
           .on("end", () => resolve())
           .run();
       });
-      return 200;
+      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

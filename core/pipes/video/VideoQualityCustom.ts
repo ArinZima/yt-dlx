@@ -34,7 +34,7 @@ interface VideoLowestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type VideoLowestType = Promise<200 | StreamResult>;
+type VideoLowestType = Promise<true | StreamResult>;
 
 const VideoLowestInputSchema = z.object({
   query: z.string().min(1),
@@ -169,7 +169,7 @@ export default async function VideoLowest(
             .on("end", () => resolve())
             .run();
         });
-        return 200;
+        return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

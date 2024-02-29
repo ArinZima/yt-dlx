@@ -23,7 +23,7 @@ interface ListAudioQualityCustomOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioQualityCustomType = 200 | StreamResult;
+type ListAudioQualityCustomType = true | StreamResult;
 const ListAudioQualityCustomInputSchema = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),

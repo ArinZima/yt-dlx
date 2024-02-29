@@ -21,7 +21,7 @@ interface ListAudioLowestOC {
   outputFormat?: AudioFormat;
   filter?: keyof AudioFilters;
 }
-type ListAudioLowestType = 200 | StreamResult;
+type ListAudioLowestType = true | StreamResult;
 const ListAudioLowestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),

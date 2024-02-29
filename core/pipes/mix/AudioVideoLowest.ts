@@ -17,7 +17,7 @@ interface AudioVideoLowestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-type AudioVideoLowestType = Promise<200 | StreamResult>;
+type AudioVideoLowestType = Promise<true | StreamResult>;
 const AudioVideoLowestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -116,7 +116,7 @@ export default async function AudioVideoLowest(
           .on("end", () => resolve())
           .run();
       });
-      return 200;
+      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

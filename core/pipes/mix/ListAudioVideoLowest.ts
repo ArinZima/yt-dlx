@@ -32,7 +32,7 @@ interface ListAudioVideoLowestOC {
   playlistUrls: string[];
   outputFormat?: VideoFormat;
 }
-type ListAudioVideoLowestType = 200 | StreamResult;
+type ListAudioVideoLowestType = true | StreamResult;
 const ListAudioVideoLowestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -153,7 +153,7 @@ export default async function ListAudioVideoLowest(
                   });
                 }
               } catch (error) {
-                results.push(200);
+                results.push(true);
               }
             }
           );

@@ -32,7 +32,7 @@ interface ListAudioVideoHighestOC {
   playlistUrls: string[];
   outputFormat?: VideoFormat;
 }
-type ListAudioVideoHighestType = 200 | StreamResult;
+type ListAudioVideoHighestType = true | StreamResult;
 const ListAudioVideoHighestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -153,7 +153,7 @@ export default async function ListAudioVideoHighest(
                   });
                 }
               } catch (error) {
-                results.push(200);
+                results.push(true);
               }
             }
           );

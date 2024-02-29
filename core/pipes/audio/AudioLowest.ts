@@ -29,7 +29,7 @@ const AudioLowestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 
-type AudioLowestType = Promise<200 | StreamResult>;
+type AudioLowestType = Promise<true | StreamResult>;
 export default async function AudioLowest(
   input: AudioLowestOC
 ): AudioLowestType {
@@ -190,7 +190,7 @@ export default async function AudioLowest(
           .on("end", () => resolve())
           .run();
       });
-      return 200;
+      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
