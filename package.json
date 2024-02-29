@@ -16,7 +16,7 @@
     "remake:update": "bun run clean && bun run make && bun install --latest && bun run build",
     "upload": "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
     "clean": "bun run clean:base && bun run clean:frontend",
-    "clean:base": "rm -rf node_modules temp shared bun.lockb",
+    "clean:base": "rm -rf node_modules .temp shared bun.lockb",
     "clean:frontend": "cd frontend && rm -rf node_modules .next bun.lockb",
     "make": "bun run make:base && bun run make:frontend",
     "make:base": "bun install",
@@ -30,7 +30,7 @@
     "cli": "bun run link && bun run test:cli && bun run unlink",
     "test": "bun run test:bun && bun run test:cli",
     "test:bun": "bun test --timeout 60000 --bail --watch",
-    "test:quick": "tsup 'scripts/__tests__/quick.spec.ts' --outDir 'temp' && node temp/quick.spec.mjs",
+    "test:quick": "tsup 'scripts/__tests__/quick.spec.ts' --outDir '.temp' && node .temp/quick.spec.mjs",
     "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
   },
   "files": [
