@@ -1,57 +1,25 @@
 #!/usr/bin/env node
-'use strict';
-
-var colors28 = require('colors');
-var bun = require('bun');
-var retry3 = require('async-retry');
-var z3 = require('zod');
-var fs = require('fs');
-var path = require('path');
-var fluentffmpeg = require('fluent-ffmpeg');
-var axios = require('axios');
-var stream = require('stream');
-var readline = require('readline');
-var cheerio = require('cheerio');
-var spinClient = require('spinnies');
-var crypto = require('crypto');
-var puppeteer = require('puppeteer');
-var minimist = require('minimist');
-
-function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
-
-function _interopNamespace(e) {
-  if (e && e.__esModule) return e;
-  var n = Object.create(null);
-  if (e) {
-    Object.keys(e).forEach(function (k) {
-      if (k !== 'default') {
-        var d = Object.getOwnPropertyDescriptor(e, k);
-        Object.defineProperty(n, k, d.get ? d : {
-          enumerable: true,
-          get: function () { return e[k]; }
-        });
-      }
-    });
-  }
-  n.default = e;
-  return Object.freeze(n);
-}
-
-var colors28__default = /*#__PURE__*/_interopDefault(colors28);
-var retry3__default = /*#__PURE__*/_interopDefault(retry3);
-var z3__namespace = /*#__PURE__*/_interopNamespace(z3);
-var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
-var path__namespace = /*#__PURE__*/_interopNamespace(path);
-var fluentffmpeg__default = /*#__PURE__*/_interopDefault(fluentffmpeg);
-var axios__default = /*#__PURE__*/_interopDefault(axios);
-var readline__default = /*#__PURE__*/_interopDefault(readline);
-var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
-var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
-var minimist__default = /*#__PURE__*/_interopDefault(minimist);
+import colors28 from 'colors';
+import { $ } from 'bun';
+import retry3 from 'async-retry';
+import * as z3 from 'zod';
+import { z, ZodError } from 'zod';
+import * as fs from 'fs';
+import fs__default from 'fs';
+import * as path from 'path';
+import fluentffmpeg from 'fluent-ffmpeg';
+import axios from 'axios';
+import { Readable, Writable } from 'stream';
+import readline from 'readline';
+import { load } from 'cheerio';
+import spinClient from 'spinnies';
+import { randomUUID } from 'crypto';
+import puppeteer from 'puppeteer';
+import minimist from 'minimist';
 
 function help() {
   return Promise.resolve(
-    colors28__default.default.bold.white(`
+    colors28.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -224,9 +192,9 @@ function sizeFormat(filesize) {
 }
 async function ytxc(url) {
   try {
-    const metaTube = await retry3__default.default(
+    const metaTube = await retry3(
       async (bail) => {
-        const result = await bun.$`util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
+        const result = await $`util/Engine --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass --no-update --dump-json "${url}"`.json();
         if (!result)
           bail(new Error(result));
         else
@@ -378,18 +346,18 @@ async function Engine({
 }) {
   let videoId, TubeDlp;
   let TubeBody;
-  console.log(colors28__default.default.bold.green("@info: ") + `using yt-dlx version ${version}`);
+  console.log(colors28.bold.green("@info: ") + `using yt-dlx version ${version}`);
   if (!query || query.trim() === "") {
-    console.log(colors28__default.default.bold.red("@error: ") + "'query' is required...");
+    console.log(colors28.bold.red("@error: ") + "'query' is required...");
     return null;
   } else if (/https/i.test(query) && /list/i.test(query)) {
     console.log(
-      colors28__default.default.bold.red("@error: ") + "use extract_playlist_videos() for playlists..."
+      colors28.bold.red("@error: ") + "use extract_playlist_videos() for playlists..."
     );
     return null;
   } else if (/https/i.test(query) && !/list/i.test(query)) {
     console.log(
-      colors28__default.default.bold.green("@info: ") + `fetching metadata for: ${query}`
+      colors28.bold.green("@info: ") + `fetching metadata for: ${query}`
     );
     videoId = await YouTubeID(query);
   } else
@@ -402,12 +370,12 @@ async function Engine({
       });
       if (!TubeBody || TubeBody.length === 0) {
         console.log(
-          colors28__default.default.bold.red("@error: ") + "no data returned from server..."
+          colors28.bold.red("@error: ") + "no data returned from server..."
         );
         return null;
       } else if (TubeBody[0]) {
         console.log(
-          colors28__default.default.bold.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
+          colors28.bold.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
         );
         TubeDlp = await ytxc(TubeBody[0].videoLink);
       }
@@ -418,12 +386,12 @@ async function Engine({
       });
       if (!TubeBody) {
         console.log(
-          colors28__default.default.bold.red("@error: ") + "no data returned from server..."
+          colors28.bold.red("@error: ") + "no data returned from server..."
         );
         return null;
       } else {
         console.log(
-          colors28__default.default.bold.green("@info: ") + `preparing payload for ${TubeBody.title}`
+          colors28.bold.green("@info: ") + `preparing payload for ${TubeBody.title}`
         );
         TubeDlp = await ytxc(TubeBody.videoLink);
       }
@@ -432,12 +400,12 @@ async function Engine({
   switch (TubeDlp) {
     case null:
       console.log(
-        colors28__default.default.bold.red("@error: ") + "no data returned from server..."
+        colors28.bold.red("@error: ") + "no data returned from server..."
       );
       return null;
     default:
       console.log(
-        colors28__default.default.bold.green("@info:"),
+        colors28.bold.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
       );
       return JSON.parse(TubeDlp);
@@ -557,7 +525,7 @@ async function get_playlist({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors28__default.default.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -568,7 +536,7 @@ async function get_playlist({
       });
       if (resp === void 0) {
         console.error(
-          colors28__default.default.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -583,24 +551,24 @@ async function get_playlist({
           if (metaTube === void 0)
             continue;
           console.log(
-            colors28__default.default.bold.green("INFO:"),
-            colors28__default.default.bold.green("<("),
+            colors28.bold.green("INFO:"),
+            colors28.bold.green("<("),
             metaTube.title,
-            colors28__default.default.bold.green("by"),
+            colors28.bold.green("by"),
             metaTube.author,
-            colors28__default.default.bold.green(")>")
+            colors28.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId))
             continue;
           proTubeArr.push({ ...metaTube });
         } catch (error) {
-          console.error(colors28__default.default.bold.red("@error: "), error);
+          console.error(colors28.bold.red("@error: "), error);
         }
       }
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z3__namespace.ZodError ? error.errors : error;
+    return error instanceof z3.ZodError ? error.errors : error;
   }
 }
 function list_formats({
@@ -608,8 +576,8 @@ function list_formats({
 }) {
   return new Promise(async (resolve, reject2) => {
     try {
-      const zval = z3__namespace.object({
-        query: z3__namespace.string().min(1)
+      const zval = z3.object({
+        query: z3.string().min(1)
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -636,7 +604,7 @@ function list_formats({
       };
       resolve(EnBody);
     } catch (error) {
-      reject2(error instanceof z3__namespace.ZodError ? error.errors : error);
+      reject2(error instanceof z3.ZodError ? error.errors : error);
     }
   });
 }
@@ -677,11 +645,11 @@ function get_video_data({
           }
         }
         return `${count}`;
-        z3__namespace;
+        z3;
       };
       var calculateUploadAgo = calculateUploadAgo2, calculateVideoDuration = calculateVideoDuration2, formatCount = formatCount2;
-      const zval = z3__namespace.object({
-        query: z3__namespace.string().min(1)
+      const zval = z3.object({
+        query: z3.string().min(1)
       }).parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp)
@@ -740,7 +708,7 @@ function get_video_data({
         )
       });
     } catch (error) {
-      reject2(error instanceof z3__namespace.ZodError ? error.errors : error);
+      reject2(error instanceof z3.ZodError ? error.errors : error);
     }
   });
 }
@@ -754,7 +722,7 @@ async function extract_playlist_videos({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors28__default.default.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -765,7 +733,7 @@ async function extract_playlist_videos({
       });
       if (resp === void 0) {
         console.error(
-          colors28__default.default.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -785,18 +753,18 @@ async function extract_playlist_videos({
             proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors28__default.default.bold.red("@error: "), error);
+          console.error(colors28.bold.red("@error: "), error);
         }
       }
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z3__namespace.ZodError ? error.errors : error;
+    return error instanceof z3.ZodError ? error.errors : error;
   }
 }
 async function checkUrl(url) {
   try {
-    const response = await axios__default.default.head(url);
+    const response = await axios.head(url);
     return response.status === 200;
   } catch (error) {
     return false;
@@ -806,7 +774,7 @@ async function bigEntry(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors28__default.default.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -820,7 +788,7 @@ async function bigEntry(metaBody) {
           return item;
       }
       console.log(
-        colors28__default.default.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -831,14 +799,14 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  let color = colors28__default.default.green;
-  readline__default.default.cursorTo(process.stdout, 0);
+  let color = colors28.green;
+  readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
   if (prog.percent < 20)
-    color = colors28__default.default.red;
+    color = colors28.red;
   else if (prog.percent < 80)
-    color = colors28__default.default.yellow;
+    color = colors28.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
@@ -849,20 +817,20 @@ var progressBar = (prog) => {
 var progressBar_default = progressBar;
 
 // scripts/pipes/audio/AudioLowest.ts
-var AudioLowestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var AudioLowestInputSchema = z.object({
+  query: z.string().min(1),
+  filter: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function AudioLowest(input) {
   try {
     const {
       query,
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp3"
@@ -879,9 +847,9 @@ async function AudioLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioTube);
     if (metaEntry === null) {
       return {
@@ -889,7 +857,7 @@ async function AudioLowest(input) {
         status: 500
       };
     }
-    const ytc = fluentffmpeg__default.default();
+    const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.addInput(metaBody.metaTube.thumbnail);
     ytc.addOutputOption("-map", "1:0");
@@ -991,12 +959,12 @@ async function AudioLowest(input) {
         metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
         break;
     }
-    if (stream$1) {
-      const readStream = new stream.Readable({
+    if (stream) {
+      const readStream = new Readable({
         read() {
         }
       });
-      const writeStream = new stream.Writable({
+      const writeStream = new Writable({
         write(chunk, _encoding, callback) {
           readStream.push(chunk);
           callback();
@@ -1009,11 +977,11 @@ async function AudioLowest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1027,19 +995,19 @@ async function AudioLowest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
@@ -1047,7 +1015,7 @@ async function AudioLowest(input) {
 }
 async function checkUrl2(url) {
   try {
-    const response = await axios__default.default.head(url);
+    const response = await axios.head(url);
     return response.status === 200;
   } catch (error) {
     return false;
@@ -1057,7 +1025,7 @@ async function bigEntry2(metaBody) {
   switch (true) {
     case (!metaBody || metaBody.length === 0):
       console.log(
-        colors28__default.default.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
@@ -1071,26 +1039,26 @@ async function bigEntry2(metaBody) {
           return item;
       }
       console.log(
-        colors28__default.default.bold.red("@error:"),
+        colors28.bold.red("@error:"),
         "sorry no downloadable data found"
       );
       return null;
   }
 }
-var AudioHighestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var AudioHighestInputSchema = z.object({
+  query: z.string().min(1),
+  filter: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function AudioHighest(input) {
   try {
     const {
       query,
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp3"
@@ -1107,9 +1075,9 @@ async function AudioHighest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.AudioTube);
     if (metaEntry === null) {
       return {
@@ -1117,7 +1085,7 @@ async function AudioHighest(input) {
         status: 500
       };
     }
-    const ytc = fluentffmpeg__default.default();
+    const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.addInput(metaBody.metaTube.thumbnail);
     ytc.addOutputOption("-map", "1:0");
@@ -1219,12 +1187,12 @@ async function AudioHighest(input) {
         metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
         break;
     }
-    if (stream$1) {
-      const readStream = new stream.Readable({
+    if (stream) {
+      const readStream = new Readable({
         read() {
         }
       });
-      const writeStream = new stream.Writable({
+      const writeStream = new Writable({
         write(chunk, _encoding, callback) {
           readStream.push(chunk);
           callback();
@@ -1237,11 +1205,11 @@ async function AudioHighest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1255,38 +1223,38 @@ async function AudioHighest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
   }
 }
-var VideoLowestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  filter: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var VideoLowestInputSchema = z.object({
+  query: z.string().min(1),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  filter: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function VideoLowest(input) {
   try {
     const {
       query,
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4"
@@ -1303,9 +1271,9 @@ async function VideoLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoTube);
     if (metaEntry === null) {
       return {
@@ -1313,7 +1281,7 @@ async function VideoLowest(input) {
         status: 500
       };
     }
-    const ytc = fluentffmpeg__default.default();
+    const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);
     switch (filter2) {
@@ -1377,13 +1345,13 @@ async function VideoLowest(input) {
     ytc.on("error", (error) => {
       return error;
     });
-    switch (stream$1) {
+    switch (stream) {
       case true:
-        const readStream = new stream.Readable({
+        const readStream = new Readable({
           read() {
           }
         });
-        const writeStream = new stream.Writable({
+        const writeStream = new Writable({
           write(chunk, _encoding, callback) {
             readStream.push(chunk);
             callback();
@@ -1396,11 +1364,11 @@ async function VideoLowest(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+          filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -1410,37 +1378,37 @@ async function VideoLowest(input) {
         };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
   }
 }
-var VideoHighestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
-  filter: z3.z.string().optional()
+var VideoHighestInputSchema = z.object({
+  query: z.string().min(1),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z.string().optional()
 });
 async function VideoHighest(input) {
   try {
     const {
       query,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4",
@@ -1458,9 +1426,9 @@ async function VideoHighest(input) {
       "-"
     );
     let metaName = "";
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.VideoTube);
     if (metaEntry === null) {
       return {
@@ -1468,7 +1436,7 @@ async function VideoHighest(input) {
         status: 500
       };
     }
-    const ytc = fluentffmpeg__default.default();
+    const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);
     switch (filter2) {
@@ -1532,13 +1500,13 @@ async function VideoHighest(input) {
     ytc.on("error", (error) => {
       return error;
     });
-    switch (stream$1) {
+    switch (stream) {
       case true:
-        const readStream = new stream.Readable({
+        const readStream = new Readable({
           read() {
           }
         });
-        const writeStream = new stream.Writable({
+        const writeStream = new Writable({
           write(chunk, _encoding, callback) {
             readStream.push(chunk);
             callback();
@@ -1551,11 +1519,11 @@ async function VideoHighest(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+          filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -1565,36 +1533,36 @@ async function VideoHighest(input) {
         };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
   }
 }
-var AudioVideoLowestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var AudioVideoLowestInputSchema = z.object({
+  query: z.string().min(1),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function AudioVideoLowest(input) {
   try {
     const {
       query,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4"
@@ -1611,10 +1579,10 @@ async function AudioVideoLowest(input) {
       "-"
     );
     const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg__default.default();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
+    const ytc = fluentffmpeg();
     const AmetaEntry = await bigEntry(metaBody.AudioTube);
     const VmetaEntry = await bigEntry(metaBody.VideoTube);
     if (AmetaEntry === null || VmetaEntry === null) {
@@ -1655,12 +1623,12 @@ async function AudioVideoLowest(input) {
     ytc.on("error", (error) => {
       return error;
     });
-    if (stream$1) {
-      const readStream = new stream.Readable({
+    if (stream) {
+      const readStream = new Readable({
         read() {
         }
       });
-      const writeStream = new stream.Writable({
+      const writeStream = new Writable({
         write(chunk, _encoding, callback) {
           readStream.push(chunk);
           callback();
@@ -1673,11 +1641,11 @@ async function AudioVideoLowest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1691,36 +1659,36 @@ async function AudioVideoLowest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
   }
 }
-var AudioVideoHighestInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var AudioVideoHighestInputSchema = z.object({
+  query: z.string().min(1),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function AudioVideoHighest(input) {
   try {
     const {
       query,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4"
@@ -1737,10 +1705,10 @@ async function AudioVideoHighest(input) {
       "-"
     );
     const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg__default.default();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
+    const ytc = fluentffmpeg();
     const AmetaEntry = await bigEntry2(metaBody.AudioTube);
     const VmetaEntry = await bigEntry2(metaBody.VideoTube);
     if (AmetaEntry === null || VmetaEntry === null) {
@@ -1781,12 +1749,12 @@ async function AudioVideoHighest(input) {
     ytc.on("error", (error) => {
       return error;
     });
-    if (stream$1) {
-      const readStream = new stream.Readable({
+    if (stream) {
+      const readStream = new Readable({
         read() {
         }
       });
-      const writeStream = new stream.Writable({
+      const writeStream = new Writable({
         write(chunk, _encoding, callback) {
           readStream.push(chunk);
           callback();
@@ -1799,11 +1767,11 @@ async function AudioVideoHighest(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+        ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
           resolve();
           return {
             status: 200,
@@ -1817,39 +1785,39 @@ async function AudioVideoHighest(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
   }
 }
-var AudioQualityCustomInputSchema = z3.z.object({
-  query: z3.z.string().min(1),
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  quality: z3.z.enum(["high", "medium", "low", "ultralow"]),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var AudioQualityCustomInputSchema = z.object({
+  query: z.string().min(1),
+  filter: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  quality: z.enum(["high", "medium", "low", "ultralow"]),
+  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function AudioQualityCustom(input) {
   try {
     const {
       query,
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       quality,
       folderName,
@@ -1875,10 +1843,10 @@ async function AudioQualityCustom(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg__default.default();
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
+    const ytc = fluentffmpeg();
     const metaEntry = await bigEntry2(metaBody);
     if (metaEntry === null) {
       return {
@@ -1973,12 +1941,12 @@ async function AudioQualityCustom(input) {
     ytc.on("error", (error) => {
       return error;
     });
-    if (stream$1) {
-      const readStream = new stream.Readable({
+    if (stream) {
+      const readStream = new Readable({
         read() {
         }
       });
-      const writeStream = new stream.Writable({
+      const writeStream = new Writable({
         write(chunk, _encoding, callback) {
           readStream.push(chunk);
           callback();
@@ -1991,12 +1959,12 @@ async function AudioQualityCustom(input) {
       ytc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
-        filename: folderName ? path__namespace.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`) : `yt-dlp-(${quality})-${title}.${outputFormat}`
+        filename: folderName ? path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`) : `yt-dlp-(${quality})-${title}.${outputFormat}`
       };
     } else {
       await new Promise((resolve, reject2) => {
         ytc.output(
-          path__namespace.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
+          path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
         ).on("error", reject2).on("end", () => {
           resolve();
         }).run();
@@ -2007,38 +1975,38 @@ async function AudioQualityCustom(input) {
       };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
   }
 }
-var VideoLowestInputSchema2 = z3.z.object({
-  query: z3.z.string().min(1),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  filter: z3.z.string().optional(),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var VideoLowestInputSchema2 = z.object({
+  query: z.string().min(1),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  filter: z.string().optional(),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function VideoLowest2(input) {
   try {
     const {
       query,
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4"
@@ -2055,9 +2023,9 @@ async function VideoLowest2(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
+    const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry2(metaBody.VideoTube);
     if (metaEntry === null) {
       return {
@@ -2065,7 +2033,7 @@ async function VideoLowest2(input) {
         status: 500
       };
     }
-    const ytc = fluentffmpeg__default.default();
+    const ytc = fluentffmpeg();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
     ytc.format(outputFormat);
     switch (filter2) {
@@ -2129,13 +2097,13 @@ async function VideoLowest2(input) {
     ytc.on("error", (error) => {
       return error;
     });
-    switch (stream$1) {
+    switch (stream) {
       case true:
-        const readStream = new stream.Readable({
+        const readStream = new Readable({
           read() {
           }
         });
-        const writeStream = new stream.Writable({
+        const writeStream = new Writable({
           write(chunk, _encoding, callback) {
             readStream.push(chunk);
             callback();
@@ -2148,11 +2116,11 @@ async function VideoLowest2(input) {
         ytc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
-          filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+          filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
         };
       default:
         await new Promise((resolve, reject2) => {
-          ytc.output(path__namespace.join(metaFold, metaName)).on("error", reject2).on("end", () => {
+          ytc.output(path.join(metaFold, metaName)).on("error", reject2).on("end", () => {
             resolve();
           }).run();
         });
@@ -2162,37 +2130,37 @@ async function VideoLowest2(input) {
         };
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return {
-        message: colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
+        message: colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
         status: 500
       };
     } else if (error instanceof Error) {
       return {
-        message: colors28__default.default.red("@error: ") + error.message,
+        message: colors28.red("@error: ") + error.message,
         status: 500
       };
     } else {
       return {
-        message: colors28__default.default.red("@error: ") + "internal server error",
+        message: colors28.red("@error: ") + "internal server error",
         status: 500
       };
     }
   }
 }
-var ListVideoLowestInputSchema = z3.z.object({
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListVideoLowestInputSchema = z.object({
+  filter: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListVideoLowest(input) {
   try {
     const {
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       playlistUrls,
@@ -2217,7 +2185,7 @@ async function ListVideoLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors28__default.default.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2236,13 +2204,13 @@ async function ListVideoLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-      if (!fs__namespace.existsSync(metaFold))
-        fs__namespace.mkdirSync(metaFold, { recursive: true });
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      if (!fs.existsSync(metaFold))
+        fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry(metaBody.VideoTube);
       if (metaEntry === null)
         continue;
-      const ytc = fluentffmpeg__default.default();
+      const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.format(outputFormat);
       ytc.on("start", (command) => {
@@ -2306,12 +2274,12 @@ async function ListVideoLowest(input) {
           metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
       }
       switch (true) {
-        case stream$1:
-          const readStream = new stream.Readable({
+        case stream:
+          const readStream = new Readable({
             read() {
             }
           });
-          const writeStream = new stream.Writable({
+          const writeStream = new Writable({
             write(chunk, _encoding, callback) {
               readStream.push(chunk);
               callback();
@@ -2324,18 +2292,18 @@ async function ListVideoLowest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+            filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -2359,19 +2327,19 @@ async function ListVideoLowest(input) {
     }
   }
 }
-var ListVideoHighestInputSchema = z3.z.object({
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListVideoHighestInputSchema = z.object({
+  filter: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListVideoHighest(input) {
   try {
     const {
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       playlistUrls,
@@ -2396,7 +2364,7 @@ async function ListVideoHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors28__default.default.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2415,13 +2383,13 @@ async function ListVideoHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-      if (!fs__namespace.existsSync(metaFold))
-        fs__namespace.mkdirSync(metaFold, { recursive: true });
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      if (!fs.existsSync(metaFold))
+        fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(metaBody.VideoTube);
       if (metaEntry === null)
         continue;
-      const ytc = fluentffmpeg__default.default();
+      const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.format(outputFormat);
       ytc.on("start", (command) => {
@@ -2485,12 +2453,12 @@ async function ListVideoHighest(input) {
           metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
       }
       switch (true) {
-        case stream$1:
-          const readStream = new stream.Readable({
+        case stream:
+          const readStream = new Readable({
             read() {
             }
           });
-          const writeStream = new stream.Writable({
+          const writeStream = new Writable({
             write(chunk, _encoding, callback) {
               readStream.push(chunk);
               callback();
@@ -2503,18 +2471,18 @@ async function ListVideoHighest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+            filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -2538,12 +2506,12 @@ async function ListVideoHighest(input) {
     }
   }
 }
-var ListVideoQualityCustomInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  quality: z3.z.enum([
+var ListVideoQualityCustomInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  quality: z.enum([
     "144p",
     "240p",
     "360p",
@@ -2558,14 +2526,14 @@ var ListVideoQualityCustomInputSchema = z3.z.object({
     "8640p",
     "12000p"
   ]),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional(),
-  filter: z3.z.string().optional()
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+  filter: z.string().optional()
 });
 async function ListVideoQualityCustom(input) {
   try {
     const {
       filter: filter2,
-      stream: stream$1,
+      stream,
       quality,
       verbose,
       folderName,
@@ -2591,7 +2559,7 @@ async function ListVideoQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors28__default.default.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2615,13 +2583,13 @@ async function ListVideoQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-      if (!fs__namespace.existsSync(metaFold))
-        fs__namespace.mkdirSync(metaFold, { recursive: true });
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      if (!fs.existsSync(metaFold))
+        fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(newBody);
       if (metaEntry === null)
         continue;
-      const ytc = fluentffmpeg__default.default();
+      const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.format(outputFormat);
       ytc.on("start", (command) => {
@@ -2686,12 +2654,12 @@ async function ListVideoQualityCustom(input) {
           metaName = `yt-dlp_(VideoQualityCustom)_${title}.${outputFormat}`;
       }
       switch (true) {
-        case stream$1:
-          const readStream = new stream.Readable({
+        case stream:
+          const readStream = new Readable({
             read() {
             }
           });
-          const writeStream = new stream.Writable({
+          const writeStream = new Writable({
             write(chunk, _encoding, callback) {
               readStream.push(chunk);
               callback();
@@ -2704,18 +2672,18 @@ async function ListVideoQualityCustom(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+            filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -2739,19 +2707,19 @@ async function ListVideoQualityCustom(input) {
     }
   }
 }
-var ListAudioLowestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
-  filter: z3.z.string().optional()
+var ListAudioLowestInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z.string().optional()
 });
 async function ListAudioLowest(input) {
   try {
     const {
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       playlistUrls,
@@ -2776,7 +2744,7 @@ async function ListAudioLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors28__default.default.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2795,13 +2763,13 @@ async function ListAudioLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-      if (!fs__namespace.existsSync(metaFold))
-        fs__namespace.mkdirSync(metaFold, { recursive: true });
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      if (!fs.existsSync(metaFold))
+        fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry(metaBody.AudioTube);
       if (metaEntry === null)
         continue;
-      const ytc = fluentffmpeg__default.default();
+      const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.addInput(metaBody.metaTube.thumbnail);
       ytc.addOutputOption("-map", "1:0");
@@ -2901,12 +2869,12 @@ async function ListAudioLowest(input) {
           break;
       }
       switch (true) {
-        case stream$1:
-          const readStream = new stream.Readable({
+        case stream:
+          const readStream = new Readable({
             read() {
             }
           });
-          const writeStream = new stream.Writable({
+          const writeStream = new Writable({
             write(chunk, _encoding, callback) {
               readStream.push(chunk);
               callback();
@@ -2919,18 +2887,18 @@ async function ListAudioLowest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+            filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -2954,19 +2922,19 @@ async function ListAudioLowest(input) {
     }
   }
 }
-var ListAudioHighestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
-  filter: z3.z.string().optional()
+var ListAudioHighestInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
+  filter: z.string().optional()
 });
 async function ListAudioHighest(input) {
   try {
     const {
       filter: filter2,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       playlistUrls,
@@ -2991,7 +2959,7 @@ async function ListAudioHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors28__default.default.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3010,13 +2978,13 @@ async function ListAudioHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-      if (!fs__namespace.existsSync(metaFold))
-        fs__namespace.mkdirSync(metaFold, { recursive: true });
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      if (!fs.existsSync(metaFold))
+        fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(metaBody.AudioTube);
       if (metaEntry === null)
         continue;
-      const ytc = fluentffmpeg__default.default();
+      const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.addInput(metaBody.metaTube.thumbnail);
       ytc.addOutputOption("-map", "1:0");
@@ -3116,12 +3084,12 @@ async function ListAudioHighest(input) {
           break;
       }
       switch (true) {
-        case stream$1:
-          const readStream = new stream.Readable({
+        case stream:
+          const readStream = new Readable({
             read() {
             }
           });
-          const writeStream = new stream.Writable({
+          const writeStream = new Writable({
             write(chunk, _encoding, callback) {
               readStream.push(chunk);
               callback();
@@ -3134,18 +3102,18 @@ async function ListAudioHighest(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+            filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -3169,20 +3137,20 @@ async function ListAudioHighest(input) {
     }
   }
 }
-var ListAudioQualityCustomInputSchema = z3.z.object({
-  filter: z3.z.string().optional(),
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  quality: z3.z.enum(["high", "medium", "low", "ultralow"]),
-  outputFormat: z3.z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
+var ListAudioQualityCustomInputSchema = z.object({
+  filter: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  quality: z.enum(["high", "medium", "low", "ultralow"]),
+  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional()
 });
 async function ListAudioQualityCustom(input) {
   try {
     const {
       filter: filter2,
-      stream: stream$1,
+      stream,
       quality,
       verbose,
       folderName,
@@ -3208,7 +3176,7 @@ async function ListAudioQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors28__default.default.bold.green("INFO:"),
+      colors28.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3232,13 +3200,13 @@ async function ListAudioQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
-      const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-      if (!fs__namespace.existsSync(metaFold))
-        fs__namespace.mkdirSync(metaFold, { recursive: true });
+      const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+      if (!fs.existsSync(metaFold))
+        fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry = await bigEntry2(newBody);
       if (metaEntry === null)
         continue;
-      const ytc = fluentffmpeg__default.default();
+      const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.addInput(metaBody.metaTube.thumbnail);
       ytc.addOutputOption("-map", "1:0");
@@ -3338,12 +3306,12 @@ async function ListAudioQualityCustom(input) {
           break;
       }
       switch (true) {
-        case stream$1:
-          const readStream = new stream.Readable({
+        case stream:
+          const readStream = new Readable({
             read() {
             }
           });
-          const writeStream = new stream.Writable({
+          const writeStream = new Writable({
             write(chunk, _encoding, callback) {
               readStream.push(chunk);
               callback();
@@ -3356,18 +3324,18 @@ async function ListAudioQualityCustom(input) {
           ytc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
-            filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+            filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
           });
           break;
         default:
           await new Promise((resolve, reject2) => {
-            ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+            ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
           });
           break;
       }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -5213,17 +5181,17 @@ var index = {
   during: whilst$1,
   doDuring: doWhilst$1
 };
-var ListAudioVideoLowestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListAudioVideoLowestInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListAudioVideoLowest(input) {
   try {
     const {
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       playlistUrls,
@@ -5279,10 +5247,10 @@ async function ListAudioVideoLowest(input) {
                   "-"
                 );
                 let metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-                if (!fs__namespace.existsSync(metaFold))
-                  fs__namespace.mkdirSync(metaFold, { recursive: true });
-                const ytc = fluentffmpeg__default.default();
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const ytc = fluentffmpeg();
                 const AmetaEntry = await bigEntry(metaBody.AudioTube);
                 const VmetaEntry = await bigEntry(metaBody.VideoTube);
                 if (AmetaEntry === null || VmetaEntry === null)
@@ -5316,12 +5284,12 @@ async function ListAudioVideoLowest(input) {
                     percent: prog.percent
                   });
                 });
-                if (stream$1) {
-                  const readStream = new stream.Readable({
+                if (stream) {
+                  const readStream = new Readable({
                     read() {
                     }
                   });
-                  const writeStream = new stream.Writable({
+                  const writeStream = new Writable({
                     write(chunk, _encoding, callback) {
                       readStream.push(chunk);
                       callback();
@@ -5334,17 +5302,17 @@ async function ListAudioVideoLowest(input) {
                   ytc.pipe(writeStream, { end: true });
                   results.push({
                     stream: readStream,
-                    filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+                    filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
                   });
                 } else {
                   await new Promise((resolve, reject2) => {
-                    ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
                   });
                 }
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors28__default.default.bold.red("ERROR: ") + video.title
+                  message: colors28.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5353,7 +5321,7 @@ async function ListAudioVideoLowest(input) {
         }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -5377,17 +5345,17 @@ async function ListAudioVideoLowest(input) {
     }
   }
 }
-var ListAudioVideoHighestInputSchema = z3.z.object({
-  stream: z3.z.boolean().optional(),
-  verbose: z3.z.boolean().optional(),
-  folderName: z3.z.string().optional(),
-  playlistUrls: z3.z.array(z3.z.string().min(1)),
-  outputFormat: z3.z.enum(["mp4", "avi", "mov"]).optional()
+var ListAudioVideoHighestInputSchema = z.object({
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  folderName: z.string().optional(),
+  playlistUrls: z.array(z.string().min(1)),
+  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
 });
 async function ListAudioVideoHighest(input) {
   try {
     const {
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       playlistUrls,
@@ -5443,10 +5411,10 @@ async function ListAudioVideoHighest(input) {
                   "-"
                 );
                 let metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path__namespace.join(process.cwd(), folderName) : process.cwd();
-                if (!fs__namespace.existsSync(metaFold))
-                  fs__namespace.mkdirSync(metaFold, { recursive: true });
-                const ytc = fluentffmpeg__default.default();
+                const metaFold = folderName ? path.join(process.cwd(), folderName) : process.cwd();
+                if (!fs.existsSync(metaFold))
+                  fs.mkdirSync(metaFold, { recursive: true });
+                const ytc = fluentffmpeg();
                 const AmetaEntry = await bigEntry2(metaBody.AudioTube);
                 const VmetaEntry = await bigEntry2(metaBody.VideoTube);
                 if (AmetaEntry === null || VmetaEntry === null)
@@ -5480,12 +5448,12 @@ async function ListAudioVideoHighest(input) {
                     percent: prog.percent
                   });
                 });
-                if (stream$1) {
-                  const readStream = new stream.Readable({
+                if (stream) {
+                  const readStream = new Readable({
                     read() {
                     }
                   });
-                  const writeStream = new stream.Writable({
+                  const writeStream = new Writable({
                     write(chunk, _encoding, callback) {
                       readStream.push(chunk);
                       callback();
@@ -5498,17 +5466,17 @@ async function ListAudioVideoHighest(input) {
                   ytc.pipe(writeStream, { end: true });
                   results.push({
                     stream: readStream,
-                    filename: folderName ? path__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+                    filename: folderName ? path.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
                   });
                 } else {
                   await new Promise((resolve, reject2) => {
-                    ytc.output(path__namespace.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
+                    ytc.output(path.join(metaFold, metaName)).on("end", () => resolve()).on("error", reject2).run();
                   });
                 }
               } catch (error) {
                 results.push({
                   status: 500,
-                  message: colors28__default.default.bold.red("ERROR: ") + video.title
+                  message: colors28.bold.red("ERROR: ") + video.title
                 });
               }
             }
@@ -5517,7 +5485,7 @@ async function ListAudioVideoHighest(input) {
         }
     }
   } catch (error) {
-    if (error instanceof z3.ZodError) {
+    if (error instanceof ZodError) {
       return [
         {
           message: "Validation error: " + error.errors.map((e) => e.message).join(", "),
@@ -5545,7 +5513,7 @@ var browser;
 var page;
 async function crawler() {
   try {
-    browser = await puppeteer__default.default.launch({
+    browser = await puppeteer.launch({
       headless: true,
       args: [
         "--no-zygote",
@@ -5571,9 +5539,9 @@ async function crawler() {
       await browser.close();
     switch (true) {
       case error instanceof Error:
-        throw new Error(colors28__default.default.red("@error: ") + error.message);
+        throw new Error(colors28.red("@error: ") + error.message);
       default:
-        throw new Error(colors28__default.default.red("@error: ") + "internal server error");
+        throw new Error(colors28.red("@error: ") + "internal server error");
     }
   }
 }
@@ -5582,8 +5550,8 @@ async function crawler() {
 async function SearchVideos(input) {
   try {
     await crawler();
-    const QuerySchema = z3.z.object({
-      query: z3.z.string().min(1).refine(
+    const QuerySchema = z.object({
+      query: z.string().min(1).refine(
         async (query2) => {
           const result = await YouTubeID(query2);
           return result === null;
@@ -5592,7 +5560,7 @@ async function SearchVideos(input) {
           message: "Query must not be a YouTube video/Playlist link"
         }
       ),
-      screenshot: z3.z.boolean().optional()
+      screenshot: z.boolean().optional()
     });
     const { query, screenshot } = await QuerySchema.parseAsync(input);
     const retryOptions = {
@@ -5602,39 +5570,39 @@ async function SearchVideos(input) {
     };
     let url;
     let $2;
-    const spin = crypto.randomUUID();
+    const spin = randomUUID();
     let content;
     let metaTube = [];
-    const spinnies = new spinClient__default.default();
+    const spinnies = new spinClient();
     let videoElements;
     let playlistMeta = [];
     let TubeResp;
     let snapshot;
     spinnies.add(spin, {
-      text: colors28__default.default.green("@scrape: ") + "booting chromium..."
+      text: colors28.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
-        TubeResp = await retry3__default.default(async () => {
+        TubeResp = await retry3(async () => {
           url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAQ%253D%253D";
           await page.goto(url);
           for (let i = 0; i < 40; i++) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
               path: "TypeVideo.png"
             });
-            fs__namespace.default.writeFileSync("TypeVideo.png", snapshot);
+            fs__default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
-              text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
+              text: colors28.yellow("@scrape: ") + "took snapshot..."
             });
           }
           content = await page.content();
-          $2 = cheerio.load(content);
+          $2 = load(content);
           videoElements = $2(
             "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
           );
@@ -5669,7 +5637,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done")
+            text: colors28.green("@info: ") + colors28.white("scrapping done")
           });
           if (page)
             await page.close();
@@ -5679,26 +5647,26 @@ async function SearchVideos(input) {
         }, retryOptions);
         return TubeResp;
       case "playlist":
-        TubeResp = await retry3__default.default(async () => {
+        TubeResp = await retry3(async () => {
           url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAw%253D%253D";
           await page.goto(url);
           for (let i = 0; i < 80; i++) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
               path: "TypePlaylist.png"
             });
-            fs__namespace.default.writeFileSync("TypePlaylist.png", snapshot);
+            fs__default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
-              text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
+              text: colors28.yellow("@scrape: ") + "took snapshot..."
             });
           }
           const content2 = await page.content();
-          const $3 = cheerio.load(content2);
+          const $3 = load(content2);
           const playlistElements = $3("ytd-playlist-renderer");
           playlistElements.each((_index, element) => {
             const playlistLink = $3(element).find(".style-scope.ytd-playlist-renderer #view-more a").attr("href");
@@ -5713,7 +5681,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done")
+            text: colors28.green("@info: ") + colors28.white("scrapping done")
           });
           if (page)
             await page.close();
@@ -5724,7 +5692,7 @@ async function SearchVideos(input) {
         return TubeResp;
       default:
         spinnies.fail(spin, {
-          text: colors28__default.default.red("@error: ") + colors28__default.default.white("wrong filter type provided.")
+          text: colors28.red("@error: ") + colors28.white("wrong filter type provided.")
         });
         if (page)
           await page.close();
@@ -5738,14 +5706,14 @@ async function SearchVideos(input) {
     if (browser)
       await browser.close();
     switch (true) {
-      case error instanceof z3.ZodError:
+      case error instanceof ZodError:
         throw new Error(
-          colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+          colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
         );
       case error instanceof Error:
-        throw new Error(colors28__default.default.red("@error: ") + error.message);
+        throw new Error(colors28.red("@error: ") + error.message);
       default:
-        throw new Error(colors28__default.default.red("@error: ") + "internal server error");
+        throw new Error(colors28.red("@error: ") + "internal server error");
     }
   }
 }
@@ -5753,9 +5721,9 @@ async function PlaylistInfo(input) {
   try {
     await crawler();
     let query;
-    const spinnies = new spinClient__default.default();
-    const QuerySchema = z3.z.object({
-      query: z3.z.string().min(1).refine(
+    const spinnies = new spinClient();
+    const QuerySchema = z.object({
+      query: z.string().min(1).refine(
         async (input2) => {
           switch (true) {
             case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
@@ -5783,7 +5751,7 @@ async function PlaylistInfo(input) {
           message: "Query must be a valid YouTube Playlist Link or ID."
         }
       ),
-      screenshot: z3.z.boolean().optional()
+      screenshot: z.boolean().optional()
     });
     const { screenshot } = await QuerySchema.parseAsync(input);
     const retryOptions = {
@@ -5792,31 +5760,31 @@ async function PlaylistInfo(input) {
       retries: 4
     };
     let metaTube = [];
-    const spin = crypto.randomUUID();
+    const spin = randomUUID();
     let TubeResp;
     let snapshot;
-    TubeResp = await retry3__default.default(async () => {
+    TubeResp = await retry3(async () => {
       spinnies.add(spin, {
-        text: colors28__default.default.green("@scrape: ") + "booting chromium..."
+        text: colors28.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
+        fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
+          text: colors28.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const content = await page.content();
-      const $2 = cheerio.load(content);
+      const $2 = load(content);
       const playlistTitle = $2(
         "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
       ).text().trim();
@@ -5855,7 +5823,7 @@ async function PlaylistInfo(input) {
         });
       });
       spinnies.succeed(spin, {
-        text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done")
+        text: colors28.green("@info: ") + colors28.white("scrapping done")
       });
       await page.close();
       await browser.close();
@@ -5874,7 +5842,7 @@ async function PlaylistInfo(input) {
     if (browser)
       await browser.close();
     switch (true) {
-      case error instanceof z3.ZodError:
+      case error instanceof ZodError:
         throw error.errors.map((err) => err.message).join(", ");
       case error instanceof Error:
         throw error.message;
@@ -5887,9 +5855,9 @@ async function VideoInfo(input) {
   try {
     await crawler();
     let query;
-    const spinnies = new spinClient__default.default();
-    const QuerySchema = z3.z.object({
-      query: z3.z.string().min(1).refine(
+    const spinnies = new spinClient();
+    const QuerySchema = z.object({
+      query: z.string().min(1).refine(
         async (input2) => {
           switch (true) {
             case /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?(.*&)?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(
@@ -5917,7 +5885,7 @@ async function VideoInfo(input) {
           message: "Query must be a valid YouTube video Link or ID."
         }
       ),
-      screenshot: z3.z.boolean().optional()
+      screenshot: z.boolean().optional()
     });
     const { screenshot } = await QuerySchema.parseAsync(input);
     const retryOptions = {
@@ -5926,26 +5894,26 @@ async function VideoInfo(input) {
       retries: 4
     };
     let TubeResp;
-    const spin = crypto.randomUUID();
+    const spin = randomUUID();
     let snapshot;
-    TubeResp = await retry3__default.default(async () => {
+    TubeResp = await retry3(async () => {
       spinnies.add(spin, {
-        text: colors28__default.default.green("@scrape: ") + "booting chromium..."
+        text: colors28.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
+        fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
+          text: colors28.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const videoId = await YouTubeID(query);
@@ -5964,7 +5932,7 @@ async function VideoInfo(input) {
       setTimeout(() => {
       }, 1e3);
       const htmlContent = await page.content();
-      const $2 = cheerio.load(htmlContent);
+      const $2 = load(htmlContent);
       const title = $2("yt-formatted-string.style-scope.ytd-watch-metadata").text().trim();
       const author = $2("a.yt-simple-endpoint.style-scope.yt-formatted-string").text().trim();
       const viewsElement = $2(
@@ -5992,7 +5960,7 @@ async function VideoInfo(input) {
         videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
       spinnies.succeed(spin, {
-        text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done")
+        text: colors28.green("@info: ") + colors28.white("scrapping done")
       });
       await page.close();
       await browser.close();
@@ -6005,7 +5973,7 @@ async function VideoInfo(input) {
     if (browser)
       await browser.close();
     switch (true) {
-      case error instanceof z3.ZodError:
+      case error instanceof ZodError:
         throw error.errors.map((err) => err.message).join(", ");
       case error instanceof Error:
         throw error.message;
@@ -6064,7 +6032,7 @@ var ytdlx = {
   }
 };
 var scripts_default = ytdlx;
-var proTube = minimist__default.default(process.argv.slice(2), {
+var proTube = minimist(process.argv.slice(2), {
   string: ["query", "format"],
   alias: {
     h: "help",
@@ -6088,7 +6056,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors28__default.default.green("Installed Version: yt-dlx@" + version));
+      console.error(colors28.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -6096,14 +6064,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28__default.default.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.extract({
           query: proTube.query
@@ -6111,14 +6079,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "search-yt":
     case "s":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.search({
           query: proTube.query
@@ -6126,14 +6094,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.list_formats({
           query: proTube.query
@@ -6141,14 +6109,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "get-video-data":
     case "vi":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.info.get_video_data({
           query: proTube.query
@@ -6156,14 +6124,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio.single.highest({
           query: proTube.query
@@ -6171,14 +6139,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio.single.lowest({
           query: proTube.query
@@ -6186,14 +6154,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.video.single.highest({
           query: proTube.query
@@ -6201,14 +6169,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.video.single.lowest({
           query: proTube.query
@@ -6216,14 +6184,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio_video.single.highest({
           query: proTube.query
@@ -6231,14 +6199,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         scripts_default.audio_video.single.lowest({
           query: proTube.query
@@ -6246,17 +6214,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28__default.default.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors28__default.default.red("error: no format"));
+        console.error(colors28.red("error: no format"));
       }
       scripts_default.audio.single.custom({
         query: proTube.query,
@@ -6265,17 +6233,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28__default.default.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors28__default.default.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors28__default.default.red("error: no format"));
+        console.error(colors28.red("error: no format"));
       }
       scripts_default.video.single.custom({
         query: proTube.query,
@@ -6284,7 +6252,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28__default.default.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
@@ -6293,7 +6261,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28__default.default.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
@@ -6304,7 +6272,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors28__default.default.red(error));
+    console.error(colors28.red(error));
     process.exit();
   });
 } else
