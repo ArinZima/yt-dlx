@@ -82,6 +82,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/express": "latest",
     "@types/chai": "latest",
     "@rollup/plugin-json": "latest",
     "@rollup/plugin-typescript": "latest",
