@@ -4,7 +4,7 @@ import web from "../../web";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import ffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -91,33 +91,33 @@ export default async function ListAudioQualityCustom(
       if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
       const metaEntry: TubeConfig | undefined = await bigEntry(newBody);
       if (metaEntry === undefined) continue;
-      const ytc = fluentffmpeg();
-      ytc.addInput(metaEntry.meta_dl.mediaurl);
-      ytc.addInput(metaBody.metaTube.thumbnail);
-      ytc.addOutputOption("-map", "1:0");
-      ytc.addOutputOption("-map", "0:a:0");
-      ytc.addOutputOption("-id3v2_version", "3");
-      ytc.format(outputFormat);
-      ytc.on("start", (command) => {
+      const proc = await ffmpeg();
+      proc.addInput(metaEntry.meta_dl.mediaurl);
+      proc.addInput(metaBody.metaTube.thumbnail);
+      proc.addOutputOption("-map", "1:0");
+      proc.addOutputOption("-map", "0:a:0");
+      proc.addOutputOption("-id3v2_version", "3");
+      proc.format(outputFormat);
+      proc.on("start", (command) => {
         if (verbose) console.log(command);
         progressBar({
           timemark: undefined,
           percent: undefined,
         });
       });
-      ytc.on("end", () => {
+      proc.on("end", () => {
         progressBar({
           timemark: undefined,
           percent: undefined,
         });
       });
-      ytc.on("close", () => {
+      proc.on("close", () => {
         progressBar({
           timemark: undefined,
           percent: undefined,
         });
       });
-      ytc.on("progress", (prog) => {
+      proc.on("progress", (prog) => {
         progressBar({
           timemark: prog.timemark,
           percent: prog.percent,
@@ -125,67 +125,67 @@ export default async function ListAudioQualityCustom(
       });
       switch (filter) {
         case "bassboost":
-          ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
           metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
           break;
         case "echo":
-          ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
           metaName = `yt-dlp-(AudioQualityCustom_echo)-${title}.${outputFormat}`;
           break;
         case "flanger":
-          ytc.withAudioFilter(["flanger"]);
+          proc.withAudioFilter(["flanger"]);
           metaName = `yt-dlp-(AudioQualityCustom_flanger)-${title}.${outputFormat}`;
           break;
         case "nightcore":
-          ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
           metaName = `yt-dlp-(AudioQualityCustom_nightcore)-${title}.${outputFormat}`;
           break;
         case "panning":
-          ytc.withAudioFilter(["apulsator=hz=0.08"]);
+          proc.withAudioFilter(["apulsator=hz=0.08"]);
           metaName = `yt-dlp-(AudioQualityCustom_panning)-${title}.${outputFormat}`;
           break;
         case "phaser":
-          ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+          proc.withAudioFilter(["aphaser=in_gain=0.4"]);
           metaName = `yt-dlp-(AudioQualityCustom_phaser)-${title}.${outputFormat}`;
           break;
         case "reverse":
-          ytc.withAudioFilter(["areverse"]);
+          proc.withAudioFilter(["areverse"]);
           metaName = `yt-dlp-(AudioQualityCustom_reverse)-${title}.${outputFormat}`;
           break;
         case "slow":
-          ytc.withAudioFilter(["atempo=0.8"]);
+          proc.withAudioFilter(["atempo=0.8"]);
           metaName = `yt-dlp-(AudioQualityCustom_slow)-${title}.${outputFormat}`;
           break;
         case "speed":
-          ytc.withAudioFilter(["atempo=2"]);
+          proc.withAudioFilter(["atempo=2"]);
           metaName = `yt-dlp-(AudioQualityCustom_speed)-${title}.${outputFormat}`;
           break;
         case "subboost":
-          ytc.withAudioFilter(["asubboost"]);
+          proc.withAudioFilter(["asubboost"]);
           metaName = `yt-dlp-(AudioQualityCustom_subboost)-${title}.${outputFormat}`;
           break;
         case "superslow":
-          ytc.withAudioFilter(["atempo=0.5"]);
+          proc.withAudioFilter(["atempo=0.5"]);
           metaName = `yt-dlp-(AudioQualityCustom_superslow)-${title}.${outputFormat}`;
           break;
         case "superspeed":
-          ytc.withAudioFilter(["atempo=3"]);
+          proc.withAudioFilter(["atempo=3"]);
           metaName = `yt-dlp-(AudioQualityCustom_superspeed)-${title}.${outputFormat}`;
           break;
         case "surround":
-          ytc.withAudioFilter(["surround"]);
+          proc.withAudioFilter(["surround"]);
           metaName = `yt-dlp-(AudioQualityCustom_surround)-${title}.${outputFormat}`;
           break;
         case "vaporwave":
-          ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
           metaName = `yt-dlp-(AudioQualityCustom_vaporwave)-${title}.${outputFormat}`;
           break;
         case "vibrato":
-          ytc.withAudioFilter(["vibrato=f=6.5"]);
+          proc.withAudioFilter(["vibrato=f=6.5"]);
           metaName = `yt-dlp-(AudioQualityCustom_vibrato)-${title}.${outputFormat}`;
           break;
         default:
-          ytc.withAudioFilter([]);
+          proc.withAudioFilter([]);
           metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
           break;
       }
@@ -204,7 +204,7 @@ export default async function ListAudioQualityCustom(
               callback();
             },
           });
-          ytc.pipe(writeStream, { end: true });
+          proc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
             filename: folderName
@@ -214,10 +214,10 @@ export default async function ListAudioQualityCustom(
           break;
         default:
           await new Promise<void>((resolve, reject) => {
-            ytc.output(path.join(metaFold, metaName));
-            ytc.on("end", () => resolve());
-            ytc.on("error", reject);
-            ytc.run();
+            proc.output(path.join(metaFold, metaName));
+            proc.on("end", () => resolve());
+            proc.on("error", reject);
+            proc.run();
           });
           break;
       }

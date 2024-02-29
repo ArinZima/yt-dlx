@@ -3,7 +3,7 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import ffmpeg from "../../base/ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -50,41 +50,41 @@ export default async function AudioVideoLowest(
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const ytc = fluentffmpeg();
+    const proc = await ffmpeg();
     const AmetaEntry = await lowEntry(metaBody.AudioStore);
     const VmetaEntry = await lowEntry(metaBody.VideoStore);
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    ytc.addInput(VmetaEntry.meta_dl.mediaurl);
-    ytc.addInput(AmetaEntry.meta_dl.mediaurl);
-    ytc.format(outputFormat);
-    ytc.on("start", (command) => {
+    proc.addInput(VmetaEntry.meta_dl.mediaurl);
+    proc.addInput(AmetaEntry.meta_dl.mediaurl);
+    proc.format(outputFormat);
+    proc.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    ytc.on("end", () => {
+    proc.on("end", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    ytc.on("close", () => {
+    proc.on("close", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    ytc.on("progress", (prog) => {
+    proc.on("progress", (prog) => {
       progressBar({
         timemark: prog.timemark,
         percent: prog.percent,
       });
     });
-    ytc.on("error", (error) => {
+    proc.on("error", (error) => {
       return error;
     });
     if (stream) {
@@ -101,7 +101,7 @@ export default async function AudioVideoLowest(
           callback();
         },
       });
-      ytc.pipe(writeStream, { end: true });
+      proc.pipe(writeStream, { end: true });
       return {
         stream: readStream,
         filename: folderName
@@ -110,10 +110,10 @@ export default async function AudioVideoLowest(
       };
     } else {
       await new Promise<void>((resolve, reject) => {
-        ytc.output(path.join(metaFold, metaName));
-        ytc.on("end", () => resolve());
-        ytc.on("error", reject);
-        ytc.run();
+        proc.output(path.join(metaFold, metaName));
+        proc.on("end", () => resolve());
+        proc.on("error", reject);
+        proc.run();
       });
       return true;
     }

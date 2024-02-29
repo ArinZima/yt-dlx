@@ -4,7 +4,7 @@ import web from "../../web";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import ffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -89,29 +89,29 @@ export default async function ListVideoHighest(
         metaBody.VideoStore
       );
       if (metaEntry === undefined) continue;
-      const ytc = fluentffmpeg();
-      ytc.addInput(metaEntry.meta_dl.mediaurl);
-      ytc.format(outputFormat);
-      ytc.on("start", (command) => {
+      const proc = await ffmpeg();
+      proc.addInput(metaEntry.meta_dl.mediaurl);
+      proc.format(outputFormat);
+      proc.on("start", (command) => {
         if (verbose) console.log(command);
         progressBar({
           timemark: undefined,
           percent: undefined,
         });
       });
-      ytc.on("end", () => {
+      proc.on("end", () => {
         progressBar({
           timemark: undefined,
           percent: undefined,
         });
       });
-      ytc.on("close", () => {
+      proc.on("close", () => {
         progressBar({
           timemark: undefined,
           percent: undefined,
         });
       });
-      ytc.on("progress", (prog) => {
+      proc.on("progress", (prog) => {
         progressBar({
           timemark: prog.timemark,
           percent: prog.percent,
@@ -119,33 +119,33 @@ export default async function ListVideoHighest(
       });
       switch (filter) {
         case "grayscale":
-          ytc.withVideoFilter(
+          proc.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
           );
           metaName = `yt-dlp_(VideoHighest-grayscale)_${title}.${outputFormat}`;
           break;
         case "invert":
-          ytc.withVideoFilter("negate");
+          proc.withVideoFilter("negate");
           metaName = `yt-dlp_(VideoHighest-invert)_${title}.${outputFormat}`;
           break;
         case "rotate90":
-          ytc.withVideoFilter("rotate=PI/2");
+          proc.withVideoFilter("rotate=PI/2");
           metaName = `yt-dlp_(VideoHighest-rotate90)_${title}.${outputFormat}`;
           break;
         case "rotate180":
-          ytc.withVideoFilter("rotate=PI");
+          proc.withVideoFilter("rotate=PI");
           metaName = `yt-dlp_(VideoHighest-rotate180)_${title}.${outputFormat}`;
           break;
         case "rotate270":
-          ytc.withVideoFilter("rotate=3*PI/2");
+          proc.withVideoFilter("rotate=3*PI/2");
           metaName = `yt-dlp_(VideoHighest-rotate270)_${title}.${outputFormat}`;
           break;
         case "flipHorizontal":
-          ytc.withVideoFilter("hflip");
+          proc.withVideoFilter("hflip");
           metaName = `yt-dlp_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
           break;
         case "flipVertical":
-          ytc.withVideoFilter("vflip");
+          proc.withVideoFilter("vflip");
           metaName = `yt-dlp_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
           break;
         default:
@@ -166,7 +166,7 @@ export default async function ListVideoHighest(
               callback();
             },
           });
-          ytc.pipe(writeStream, { end: true });
+          proc.pipe(writeStream, { end: true });
           results.push({
             stream: readStream,
             filename: folderName
@@ -176,10 +176,10 @@ export default async function ListVideoHighest(
           break;
         default:
           await new Promise<void>((resolve, reject) => {
-            ytc.output(path.join(metaFold, metaName));
-            ytc.on("end", () => resolve());
-            ytc.on("error", reject);
-            ytc.run();
+            proc.output(path.join(metaFold, metaName));
+            proc.on("end", () => resolve());
+            proc.on("error", reject);
+            proc.run();
           });
           break;
       }

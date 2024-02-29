@@ -21,13 +21,12 @@ export default async function ffmpeg(): Promise<FfmpegCommand> {
         }
       });
       if (bac && bvc) {
-        console.log(colors.green("@ffmpeg:"), "using video codec", bvc);
-        console.log(colors.green("@ffmpeg:"), "using audio codec", bac);
+        console.log(colors.blue("@ffmpeg:"), "using video codec", bvc);
+        console.log(colors.blue("@ffmpeg:"), "using audio codec", bac);
         proc.withVideoCodec(bvc);
         proc.withAudioCodec(bac);
       } else {
-        console.log(colors.yellow("@ffmpeg:"), "no video codec found.");
-        console.log(colors.yellow("@ffmpeg:"), "no audio codec found.");
+        console.log(colors.yellow("@ffmpeg:"), "no video & audio codec found.");
         proc.withVideoCodec("");
         proc.withAudioCodec("");
       }

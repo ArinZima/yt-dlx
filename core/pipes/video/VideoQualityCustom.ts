@@ -3,7 +3,7 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import ffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -76,67 +76,69 @@ export default async function VideoLowest(
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const ytc = fluentffmpeg();
-    ytc.addInput(metaEntry.meta_dl.mediaurl);
-    ytc.format(outputFormat);
+    const proc = await ffmpeg();
+    proc.addInput(metaEntry.meta_dl.mediaurl);
+    proc.format(outputFormat);
     switch (filter) {
       case "grayscale":
-        ytc.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        proc.withVideoFilter(
+          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+        );
         metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        ytc.withVideoFilter("negate");
+        proc.withVideoFilter("negate");
         metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        ytc.withVideoFilter("rotate=PI/2");
+        proc.withVideoFilter("rotate=PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        ytc.withVideoFilter("rotate=PI");
+        proc.withVideoFilter("rotate=PI");
         metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        ytc.withVideoFilter("rotate=3*PI/2");
+        proc.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        ytc.withVideoFilter("hflip");
+        proc.withVideoFilter("hflip");
         metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        ytc.withVideoFilter("vflip");
+        proc.withVideoFilter("vflip");
         metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
         metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
     }
-    ytc.on("start", (command) => {
+    proc.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    ytc.on("end", () => {
+    proc.on("end", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    ytc.on("close", () => {
+    proc.on("close", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    ytc.on("progress", (prog) => {
+    proc.on("progress", (prog) => {
       progressBar({
         timemark: prog.timemark,
         percent: prog.percent,
       });
     });
-    ytc.on("error", (error) => {
+    proc.on("error", (error) => {
       return error;
     });
     switch (stream) {
@@ -154,7 +156,7 @@ export default async function VideoLowest(
             callback();
           },
         });
-        ytc.pipe(writeStream, { end: true });
+        proc.pipe(writeStream, { end: true });
         return {
           stream: readStream,
           filename: folderName
@@ -163,10 +165,10 @@ export default async function VideoLowest(
         };
       default:
         await new Promise<void>((resolve, reject) => {
-          ytc.output(path.join(metaFold, metaName));
-          ytc.on("end", () => resolve());
-          ytc.on("error", reject);
-          ytc.run();
+          proc.output(path.join(metaFold, metaName));
+          proc.on("end", () => resolve());
+          proc.on("error", reject);
+          proc.run();
         });
         return true;
     }
