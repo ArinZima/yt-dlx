@@ -1,5 +1,5 @@
-import { chromium } from "playwright";
 import { createInterface } from "readline";
+import { chromium } from "playwright";
 
 (async () => {
   const rl = createInterface({
@@ -14,7 +14,7 @@ import { createInterface } from "readline";
   const context = await browser.newContext();
   const page = await context.newPage();
   await page.goto("https://duckduckgo.com/");
-  await page.fill("#search_form_input_homepage", encodedSearchQuery);
+  await page.fill("#searchbox_input__bEGm3", encodedSearchQuery);
   await page.keyboard.press("Enter");
   await page.waitForSelector("#links", { timeout: 5000 });
   const searchResults = await page.$$("#links .result__a");

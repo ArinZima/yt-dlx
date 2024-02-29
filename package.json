@@ -76,7 +76,6 @@
     "fluent-ffmpeg": "latest",
     "forever": "latest",
     "minimist": "latest",
-    "playwright": "latest",
     "puppeteer": "latest",
     "readline-sync": "latest",
     "spinnies": "latest",

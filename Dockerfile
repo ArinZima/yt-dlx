@@ -21,6 +21,4 @@ WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
 RUN bun run remake
-RUN npx playwright install
-RUN npx playwright install-deps
-CMD ["node", ".devcontainer/server.mjs"]
+CMD ["bun", "run", "server"]
