@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-var colors29 = require('colors');
 var fs = require('fs');
+var colors29 = require('colors');
 var cheerio = require('cheerio');
 var retry = require('async-retry');
 var spinClient = require('spinnies');
@@ -37,8 +37,8 @@ function _interopNamespace(e) {
   return Object.freeze(n);
 }
 
-var colors29__default = /*#__PURE__*/_interopDefault(colors29);
 var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
+var colors29__default = /*#__PURE__*/_interopDefault(colors29);
 var retry__default = /*#__PURE__*/_interopDefault(retry);
 var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
 var z6__namespace = /*#__PURE__*/_interopNamespace(z6);
@@ -47,137 +47,6 @@ var path2__namespace = /*#__PURE__*/_interopNamespace(path2);
 var fluentffmpeg__default = /*#__PURE__*/_interopDefault(fluentffmpeg);
 var readline__default = /*#__PURE__*/_interopDefault(readline);
 var minimist__default = /*#__PURE__*/_interopDefault(minimist);
-
-function help() {
-  return Promise.resolve(
-    colors29__default.default.bold.white(`
-\u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
-\u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
-\u2503                                            (License: MIT)                                                    \u2503
-\u2503                                         [Owner: ShovitDutta]                                                 \u2503
-\u2503                                       { Web: rebrand.ly/mixly }                                              \u2503
-\u2503                                                                                                              \u2503
-\u2503                               Supports both async/await and promise.then()                                   \u2503
-\u2503                   Full support for CommonJS (CJS), ECMAScript (ESM), and TypeScript (TS)                     \u2503
-\u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503 INSTALLATION  \u2503 \u275D LOCALLY: \u275E                                                                                 \u2503
-\u2503               \u2503   bun add yt-dlx                                                                             \u2503
-\u2503               \u2503   yarn add yt-dlx                                                                            \u2503
-\u2503               \u2503   npm install yt-dlx                                                                         \u2503
-\u2503               \u2503   pnpm install yt-dlx                                                                        \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D GLOBALLY: \u275E                                                                                \u2503
-\u2503               \u2503   yarn global add yt-dlx                                                   (use cli)         \u2503
-\u2503               \u2503   npm install --global yt-dlx                                              (use cli)         \u2503
-\u2503               \u2503   pnpm install --global yt-dlx                                             (use cli)         \u2503
-\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503    FILTERS    \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   bassboost                  echo                                                            \u2503
-\u2503               \u2503   flanger                    nightdlp                                                        \u2503
-\u2503               \u2503   panning                    phaser                                                          \u2503
-\u2503               \u2503   reverse                    slow                                                            \u2503
-\u2503               \u2503   speed                      subboost                                                        \u2503
-\u2503               \u2503   superslow                  superspeed                                                      \u2503
-\u2503               \u2503   surround                   vaporwave                                                       \u2503
-\u2503               \u2503   vibrato                                                                                    \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   grayscale                                                                                  \u2503
-\u2503               \u2503   invert                                                                                     \u2503
-\u2503               \u2503   rotate90                                                                                   \u2503
-\u2503               \u2503   rotate180                                                                                  \u2503
-\u2503               \u2503   rotate270                                                                                  \u2503
-\u2503               \u2503   flipHorizontal                                                                             \u2503
-\u2503               \u2503   flipVertical                                                                               \u2503
-\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503   CLI USAGE   \u2503 \u275D INFO GRABBERS: \u275E                                                                           \u2503
-\u2503               \u2503   yt-dlx version                                                             (alias: v)      \u2503
-\u2503               \u2503   yt-dlx help                                                                (alias: h)      \u2503
-\u2503               \u2503   yt-dlx extract --query="video/url"                                         (alias: e)      \u2503
-\u2503               \u2503   yt-dlx search-yt --query="video/url"                                       (alias: s)      \u2503
-\u2503               \u2503   yt-dlx list-formats --query="video/url"                                    (alias: f)      \u2503 
-\u2503               \u2503   yt-dlx get-video-data --query="video/url"                                  (alias: gvd)    \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   yt-dlx audio-lowest --query="video/url"                                    (alias: al)     \u2503
-\u2503               \u2503   yt-dlx audio-highest --query="video/url"                                   (alias: ah)     \u2503
-\u2503               \u2503   yt-dlx audio-quality-custom --query="video/url" --format="valid-format"    (alias: aqc)    \u2503
-\u2503               \u2503       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500                         \u2503
-\u2503               \u2503   yt-dlx audio-lowest --query="video/url" --filter="valid-filter"            (filter)        \u2503
-\u2503               \u2503   yt-dlx audio-highest --query="video/url" --filter="valid-filter"           (filter)        \u2503
-\u2503               \u2503   yt-dlx audio-quality-custom --query="video/url" --format="valid-format"    ........        \u2503
-\u2503               \u2503                                                   --filter="valid-filter"    (filter)        \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   yt-dlx video-lowest --query="video/url"                                    (alias: vl)     \u2503
-\u2503               \u2503   yt-dlx video-highest --query="video/url"                                   (alias: vh)     \u2503
-\u2503               \u2503   yt-dlx video-quality-custom --query="video/url" --format="valid-format"    (alias: vqc)    \u2503
-\u2503               \u2503       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500                         \u2503
-\u2503               \u2503   yt-dlx video-lowest --query="video/url" --filter="valid-filter"            (filter)        \u2503
-\u2503               \u2503   yt-dlx video-highest --query="video/url" --filter="valid-filter"           (filter)        \u2503
-\u2503               \u2503   yt-dlx video-quality-custom --query="video/url" --format="valid-format"    ........        \u2503
-\u2503               \u2503                                                   --filter="valid-filter"    (filter)        \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D AUDIO + VIDEO MIX: \u275E                                                                       \u2503
-\u2503               \u2503   yt-dlx audio-video-lowest --query="video/url"                              (alias: avl)    \u2503
-\u2503               \u2503   yt-dlx audio-video-highest --query="video/url"                             (alias: avh)    \u2503
-\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503   IMPORTING   \u2503   import ytdlx from "yt-dlx";                                            TypeScript (ts)     \u2503
-\u2503               \u2503   import ytdlx from "yt-dlx";                                            ECMAScript (esm)    \u2503
-\u2503               \u2503   const ytdlx = require("yt-dlx");                                       CommonJS   (cjs)    \u2503
-\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503 INFO GRABBERS \u2503   ytdlx.info.help();                                                                         \u2503
-\u2503               \u2503   ytdlx.info.search({ query: "" });                                                          \u2503
-\u2503               \u2503   ytdlx.info.extract({ query: "" });                                                         \u2503
-\u2503               \u2503   ytdlx.info.list_formats({ query: "" });                                                    \u2503
-\u2503               \u2503   ytdlx.info.get_video_data({ query: "" });                                                  \u2503
-\u2503               \u2503   ytdlx.extract_playlist_videos({ playlistUrls: ["", "", "", ""] });                         \u2503
-\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503  DOWNLOADERS  \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   ytdlx.audio.download.lowest({ query: "", filter: "" });                                    \u2503
-\u2503               \u2503   ytdlx.audio.download.highest({ query: "", filter: "" });                                   \u2503
-\u2503               \u2503   ytdlx.audio.download.custom({ query: "", format: "", filter: "" });                        \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   ytdlx.video.download.lowest({ query: "", filter: "" });                                    \u2503
-\u2503               \u2503   ytdlx.video.download.highest({ query: "", filter: "" });                                   \u2503
-\u2503               \u2503   ytdlx.video.download.custom({ query: "", filter: "" });                                    \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D AUDIO + VIDEO MIX: \u275E                                                                       \u2503
-\u2503               \u2503   ytdlx.audio_video.download.lowest({ query: "" });                                          \u2503
-\u2503               \u2503   ytdlx.audio_video.download.highest({ query: "" });                                         \u2503
-\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503  MEDIA PIPE   \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   ytdlx.audio.pipe.lowest({ query: "", filter: "" });                                        \u2503
-\u2503               \u2503   ytdlx.audio.pipe.highest({ query: "", filter: "" });                                       \u2503
-\u2503               \u2503   ytdlx.audio.pipe.custom({ query: "", format: "", filter: "" });                            \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
-\u2503               \u2503   ytdlx.video.pipe.lowest({ query: "", filter: "" });                                        \u2503
-\u2503               \u2503   ytdlx.video.pipe.highest({ query: "", filter: "" });                                       \u2503
-\u2503               \u2503   ytdlx.video.pipe.custom({ query: "", filter: "" });                                        \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503                                                                                              \u2503
-\u2503               \u2503 \u275D AUDIO + VIDEO MIX: \u275E                                                                       \u2503
-\u2503               \u2503   ytdlx.audio_video.pipe.lowest({ query: "" });                                              \u2503
-\u2503               \u2503   ytdlx.audio_video.pipe.highest({ query: "" });                                             \u2503
-\u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
-\u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
-\u2503                                            (License: MIT)                                                    \u2503
-\u2503                                         [Owner: ShovitDutta]                                                 \u2503
-\u2503                                       { Web: rebrand.ly/mixly }                                              \u2503
-\u2503                                                                                                              \u2503
-\u2503                               Supports both async/await and promise.then()                                   \u2503
-\u2503                   Full support for CommonJS (CJS), ECMAScript (ESM), and TypeScript (TS)                     \u2503
-\u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715`)
-  );
-}
 
 // scripts/web/YouTubeId.ts
 function YouTubeID(videoLink) {
@@ -691,33 +560,135 @@ var web = {
   }
 };
 var web_default = web;
-
-// scripts/pipes/command/search.ts
-async function search({ query }) {
-  try {
-    switch (true) {
-      case (!query || typeof query !== "string"):
-        return {
-          message: "Invalid query parameter",
-          status: 500
-        };
-      default:
-        return await web_default.search.SearchVideos({ query, type: "video" });
-    }
-  } catch (error) {
-    switch (true) {
-      case error instanceof Error:
-        return {
-          message: error.message,
-          status: 500
-        };
-      default:
-        return {
-          message: "Internal server error",
-          status: 500
-        };
-    }
-  }
+function help() {
+  return Promise.resolve(
+    colors29__default.default.bold.white(`
+\u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
+\u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
+\u2503                                            (License: MIT)                                                    \u2503
+\u2503                                         [Owner: ShovitDutta]                                                 \u2503
+\u2503                                       { Web: rebrand.ly/mixly }                                              \u2503
+\u2503                                                                                                              \u2503
+\u2503                               Supports both async/await and promise.then()                                   \u2503
+\u2503                   Full support for CommonJS (CJS), ECMAScript (ESM), and TypeScript (TS)                     \u2503
+\u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503 INSTALLATION  \u2503 \u275D LOCALLY: \u275E                                                                                 \u2503
+\u2503               \u2503   bun add yt-dlx                                                                             \u2503
+\u2503               \u2503   yarn add yt-dlx                                                                            \u2503
+\u2503               \u2503   npm install yt-dlx                                                                         \u2503
+\u2503               \u2503   pnpm install yt-dlx                                                                        \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D GLOBALLY: \u275E                                                                                \u2503
+\u2503               \u2503   yarn global add yt-dlx                                                   (use cli)         \u2503
+\u2503               \u2503   npm install --global yt-dlx                                              (use cli)         \u2503
+\u2503               \u2503   pnpm install --global yt-dlx                                             (use cli)         \u2503
+\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503    FILTERS    \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   bassboost                  echo                                                            \u2503
+\u2503               \u2503   flanger                    nightdlp                                                        \u2503
+\u2503               \u2503   panning                    phaser                                                          \u2503
+\u2503               \u2503   reverse                    slow                                                            \u2503
+\u2503               \u2503   speed                      subboost                                                        \u2503
+\u2503               \u2503   superslow                  superspeed                                                      \u2503
+\u2503               \u2503   surround                   vaporwave                                                       \u2503
+\u2503               \u2503   vibrato                                                                                    \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   grayscale                                                                                  \u2503
+\u2503               \u2503   invert                                                                                     \u2503
+\u2503               \u2503   rotate90                                                                                   \u2503
+\u2503               \u2503   rotate180                                                                                  \u2503
+\u2503               \u2503   rotate270                                                                                  \u2503
+\u2503               \u2503   flipHorizontal                                                                             \u2503
+\u2503               \u2503   flipVertical                                                                               \u2503
+\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503   CLI USAGE   \u2503 \u275D INFO GRABBERS: \u275E                                                                           \u2503
+\u2503               \u2503   yt-dlx version                                                             (alias: v)      \u2503
+\u2503               \u2503   yt-dlx help                                                                (alias: h)      \u2503
+\u2503               \u2503   yt-dlx extract --query="video/url"                                         (alias: e)      \u2503
+\u2503               \u2503   yt-dlx search-yt --query="video/url"                                       (alias: s)      \u2503
+\u2503               \u2503   yt-dlx list-formats --query="video/url"                                    (alias: f)      \u2503 
+\u2503               \u2503   yt-dlx get-video-data --query="video/url"                                  (alias: gvd)    \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   yt-dlx audio-lowest --query="video/url"                                    (alias: al)     \u2503
+\u2503               \u2503   yt-dlx audio-highest --query="video/url"                                   (alias: ah)     \u2503
+\u2503               \u2503   yt-dlx audio-quality-custom --query="video/url" --format="valid-format"    (alias: aqc)    \u2503
+\u2503               \u2503       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500                         \u2503
+\u2503               \u2503   yt-dlx audio-lowest --query="video/url" --filter="valid-filter"            (filter)        \u2503
+\u2503               \u2503   yt-dlx audio-highest --query="video/url" --filter="valid-filter"           (filter)        \u2503
+\u2503               \u2503   yt-dlx audio-quality-custom --query="video/url" --format="valid-format"    ........        \u2503
+\u2503               \u2503                                                   --filter="valid-filter"    (filter)        \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   yt-dlx video-lowest --query="video/url"                                    (alias: vl)     \u2503
+\u2503               \u2503   yt-dlx video-highest --query="video/url"                                   (alias: vh)     \u2503
+\u2503               \u2503   yt-dlx video-quality-custom --query="video/url" --format="valid-format"    (alias: vqc)    \u2503
+\u2503               \u2503       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500                         \u2503
+\u2503               \u2503   yt-dlx video-lowest --query="video/url" --filter="valid-filter"            (filter)        \u2503
+\u2503               \u2503   yt-dlx video-highest --query="video/url" --filter="valid-filter"           (filter)        \u2503
+\u2503               \u2503   yt-dlx video-quality-custom --query="video/url" --format="valid-format"    ........        \u2503
+\u2503               \u2503                                                   --filter="valid-filter"    (filter)        \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D AUDIO + VIDEO MIX: \u275E                                                                       \u2503
+\u2503               \u2503   yt-dlx audio-video-lowest --query="video/url"                              (alias: avl)    \u2503
+\u2503               \u2503   yt-dlx audio-video-highest --query="video/url"                             (alias: avh)    \u2503
+\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503   IMPORTING   \u2503   import ytdlx from "yt-dlx";                                            TypeScript (ts)     \u2503
+\u2503               \u2503   import ytdlx from "yt-dlx";                                            ECMAScript (esm)    \u2503
+\u2503               \u2503   const ytdlx = require("yt-dlx");                                       CommonJS   (cjs)    \u2503
+\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503 INFO GRABBERS \u2503   ytdlx.info.help();                                                                         \u2503
+\u2503               \u2503   ytdlx.info.search({ query: "" });                                                          \u2503
+\u2503               \u2503   ytdlx.info.extract({ query: "" });                                                         \u2503
+\u2503               \u2503   ytdlx.info.list_formats({ query: "" });                                                    \u2503
+\u2503               \u2503   ytdlx.info.get_video_data({ query: "" });                                                  \u2503
+\u2503               \u2503   ytdlx.extract_playlist_videos({ playlistUrls: ["", "", "", ""] });                         \u2503
+\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503  DOWNLOADERS  \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   ytdlx.audio.download.lowest({ query: "", filter: "" });                                    \u2503
+\u2503               \u2503   ytdlx.audio.download.highest({ query: "", filter: "" });                                   \u2503
+\u2503               \u2503   ytdlx.audio.download.custom({ query: "", format: "", filter: "" });                        \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   ytdlx.video.download.lowest({ query: "", filter: "" });                                    \u2503
+\u2503               \u2503   ytdlx.video.download.highest({ query: "", filter: "" });                                   \u2503
+\u2503               \u2503   ytdlx.video.download.custom({ query: "", filter: "" });                                    \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D AUDIO + VIDEO MIX: \u275E                                                                       \u2503
+\u2503               \u2503   ytdlx.audio_video.download.lowest({ query: "" });                                          \u2503
+\u2503               \u2503   ytdlx.audio_video.download.highest({ query: "" });                                         \u2503
+\u2503               \u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503  MEDIA PIPE   \u2503 \u275D AUDIO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   ytdlx.audio.pipe.lowest({ query: "", filter: "" });                                        \u2503
+\u2503               \u2503   ytdlx.audio.pipe.highest({ query: "", filter: "" });                                       \u2503
+\u2503               \u2503   ytdlx.audio.pipe.custom({ query: "", format: "", filter: "" });                            \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D VIDEO ONLY: \u275E                                                                              \u2503
+\u2503               \u2503   ytdlx.video.pipe.lowest({ query: "", filter: "" });                                        \u2503
+\u2503               \u2503   ytdlx.video.pipe.highest({ query: "", filter: "" });                                       \u2503
+\u2503               \u2503   ytdlx.video.pipe.custom({ query: "", filter: "" });                                        \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503                                                                                              \u2503
+\u2503               \u2503 \u275D AUDIO + VIDEO MIX: \u275E                                                                       \u2503
+\u2503               \u2503   ytdlx.audio_video.pipe.lowest({ query: "" });                                              \u2503
+\u2503               \u2503   ytdlx.audio_video.pipe.highest({ query: "" });                                             \u2503
+\u2503\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2503
+\u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
+\u2503                                            (License: MIT)                                                    \u2503
+\u2503                                         [Owner: ShovitDutta]                                                 \u2503
+\u2503                                       { Web: rebrand.ly/mixly }                                              \u2503
+\u2503                                                                                                              \u2503
+\u2503                               Supports both async/await and promise.then()                                   \u2503
+\u2503                   Full support for CommonJS (CJS), ECMAScript (ESM), and TypeScript (TS)                     \u2503
+\u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715`)
+  );
 }
 function sizeFormat(filesize) {
   if (isNaN(filesize) || filesize < 0)
@@ -6016,9 +5987,13 @@ async function ListAudioVideoHighest(input) {
 
 // scripts/index.ts
 var ytdlx = {
+  search: {
+    PlaylistInfo: web_default.search.PlaylistInfo,
+    SearchVideos: web_default.search.SearchVideos,
+    VideoInfo: web_default.search.VideoInfo
+  },
   info: {
     help,
-    search,
     extract,
     list_formats,
     get_playlist,
@@ -6064,7 +6039,6 @@ var proTube = minimist__default.default(process.argv.slice(2), {
     h: "help",
     e: "extract",
     v: "version",
-    s: "search-yt",
     f: "list-formats",
     vl: "video-lowest",
     al: "audio-lowest",
@@ -6100,21 +6074,6 @@ var program = async () => {
         console.error(colors29__default.default.red("error: no query"));
       } else
         scripts_default.info.extract({
-          query: proTube.query
-        }).then((data) => {
-          console.log(data);
-          process.exit();
-        }).catch((error) => {
-          console.error(colors29__default.default.red(error));
-          process.exit();
-        });
-      break;
-    case "search-yt":
-    case "s":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
-      } else
-        scripts_default.info.search({
           query: proTube.query
         }).then((data) => {
           console.log(data);

@@ -10,7 +10,6 @@ const proTube = minimist(process.argv.slice(2), {
     h: "help",
     e: "extract",
     v: "version",
-    s: "search-yt",
     f: "list-formats",
     vl: "video-lowest",
     al: "audio-lowest",
@@ -50,24 +49,6 @@ const program = async () => {
       } else
         ytdlx.info
           .extract({
-            query: proTube.query,
-          })
-          .then((data: any) => {
-            console.log(data);
-            process.exit();
-          })
-          .catch((error: string) => {
-            console.error(colors.red(error));
-            process.exit();
-          });
-      break;
-    case "search-yt":
-    case "s":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors.red("error: no query"));
-      } else
-        ytdlx.info
-          .search({
             query: proTube.query,
           })
           .then((data: any) => {
