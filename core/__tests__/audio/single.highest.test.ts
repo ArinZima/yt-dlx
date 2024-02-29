@@ -15,7 +15,6 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
       folderName: "audio",
       stream: false,
     });
-    console.log(holder);
     switch (true) {
       case holder:
         console.log(colors.bold.green("@pass"));
