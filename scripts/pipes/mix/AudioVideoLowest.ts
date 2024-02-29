@@ -58,8 +58,8 @@ export default async function AudioVideoLowest(
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
-    const AmetaEntry = await lowEntry(metaBody.AudioTube);
-    const VmetaEntry = await lowEntry(metaBody.VideoTube);
+    const AmetaEntry = await lowEntry(metaBody.AudioStore);
+    const VmetaEntry = await lowEntry(metaBody.VideoStore);
     if (AmetaEntry === null || VmetaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",

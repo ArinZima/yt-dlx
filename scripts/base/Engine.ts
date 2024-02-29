@@ -56,42 +56,40 @@ export default async function Engine(
     }
     const result = await promisify(exec)(proLoc);
     const metaTube = await JSON.parse(result.stdout.toString());
-    await metaTube.formats.forEach((ipop: TubeFormat) => {
+    await metaTube.formats.forEach((io: TubeFormat) => {
       const rmval = new Set(["storyboard", "Default"]);
-      if (rmval.has(ipop.format_note) && ipop.filesize === null) return;
+      if (rmval.has(io.format_note) && io.filesize === null) return;
       const reTube: TubeConfig = {
         meta_audio: {
-          samplerate: ipop.asr,
-          channels: ipop.audio_channels,
-          codec: ipop.acodec,
-          extension: ipop.audio_ext,
-          bitrate: ipop.abr,
+          samplerate: io.asr,
+          channels: io.audio_channels,
+          codec: io.acodec,
+          extension: io.audio_ext,
+          bitrate: io.abr,
         },
         meta_video: {
-          height: ipop.height,
-          width: ipop.width,
-          codec: ipop.vcodec,
-          resolution: ipop.resolution,
-          aspectratio: ipop.aspect_ratio,
-          extension: ipop.video_ext,
-          bitrate: ipop.vbr,
+          bitrate: io.vbr,
+          width: io.width,
+          codec: io.vcodec,
+          height: io.height,
+          extension: io.video_ext,
+          resolution: io.resolution,
+          aspectratio: io.aspect_ratio,
         },
         meta_dl: {
-          formatid: ipop.format_id,
-          formatnote: ipop.format_note,
-          originalformat: ipop.format
-            .replace(/[-\s]+/g, "_")
-            .replace(/_/g, "_"),
-          mediaurl: ipop.url,
+          mediaurl: io.url,
+          formatid: io.format_id,
+          formatnote: io.format_note,
+          originalformat: io.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
         },
         meta_info: {
-          filesizebytes: ipop.filesize,
-          filesizeformatted: sizeFormat(ipop.filesize),
-          framespersecond: ipop.fps,
-          totalbitrate: ipop.tbr,
-          qriginalextension: ipop.ext,
-          dynamicrange: ipop.dynamic_range,
-          extensionconatainer: ipop.container,
+          totalbitrate: io.tbr,
+          framespersecond: io.fps,
+          qriginalextension: io.ext,
+          filesizebytes: io.filesize,
+          dynamicrange: io.dynamic_range,
+          extensionconatainer: io.container,
+          filesizeformatted: sizeFormat(io.filesize),
         },
       };
       pushTube.push({
@@ -126,29 +124,29 @@ export default async function Engine(
             reTube.meta_dl.formatnote.includes("low")) &&
             reTube.meta_video.resolution &&
             reTube.meta_video.resolution.includes("audio"):
-            pushTube.push({ Tube: "AudioTube", reTube });
+            pushTube.push({ Tube: "AudioStore", reTube });
             break;
           case reTube.meta_dl.formatnote.includes("HDR"):
-            pushTube.push({ Tube: "HDRVideoTube", reTube });
+            pushTube.push({ Tube: "HDRVideoStore", reTube });
             break;
           default:
-            pushTube.push({ Tube: "VideoTube", reTube });
+            pushTube.push({ Tube: "VideoStore", reTube });
             break;
         }
       }
     });
     return {
-      AudioTube:
+      AudioStore:
         pushTube
-          .filter((item: { Tube: string }) => item.Tube === "AudioTube")
+          .filter((item: { Tube: string }) => item.Tube === "AudioStore")
           .map((item: { reTube: any }) => item.reTube) || null,
-      VideoTube:
+      VideoStore:
         pushTube
-          .filter((item: { Tube: string }) => item.Tube === "VideoTube")
+          .filter((item: { Tube: string }) => item.Tube === "VideoStore")
           .map((item: { reTube: any }) => item.reTube) || null,
-      HDRVideoTube:
+      HDRVideoStore:
         pushTube
-          .filter((item: { Tube: string }) => item.Tube === "HDRVideoTube")
+          .filter((item: { Tube: string }) => item.Tube === "HDRVideoStore")
           .map((item: { reTube: any }) => item.reTube) || null,
       metaTube:
         pushTube
@@ -277,29 +275,29 @@ export default async function Engine(
 // reTube.meta_dl.formatnote.includes("low")) &&
 // reTube.meta_video.resolution &&
 // reTube.meta_video.resolution.includes("audio"):
-// pushTube.push({ Tube: "AudioTube", reTube });
+// pushTube.push({ Tube: "AudioStore", reTube });
 // break;
 // case reTube.meta_dl.formatnote.includes("HDR"):
-// pushTube.push({ Tube: "HDRVideoTube", reTube });
+// pushTube.push({ Tube: "HDRVideoStore", reTube });
 // break;
 // default:
-// pushTube.push({ Tube: "VideoTube", reTube });
+// pushTube.push({ Tube: "VideoStore", reTube });
 // break;
 // }
 // }
 // });
 // return JSON.stringify({
-// AudioTube:
+// AudioStore:
 // pushTube
-// .filter((item: { Tube: string }) => item.Tube === "AudioTube")
+// .filter((item: { Tube: string }) => item.Tube === "AudioStore")
 // .map((item: { reTube: any }) => item.reTube) || null,
-// VideoTube:
+// VideoStore:
 // pushTube
-// .filter((item: { Tube: string }) => item.Tube === "VideoTube")
+// .filter((item: { Tube: string }) => item.Tube === "VideoStore")
 // .map((item: { reTube: any }) => item.reTube) || null,
-// HDRVideoTube:
+// HDRVideoStore:
 // pushTube
-// .filter((item: { Tube: string }) => item.Tube === "HDRVideoTube")
+// .filter((item: { Tube: string }) => item.Tube === "HDRVideoStore")
 // .map((item: { reTube: any }) => item.reTube) || null,
 // metaTube:
 // pushTube

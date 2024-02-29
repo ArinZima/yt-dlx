@@ -57,7 +57,7 @@ export default async function AudioQualityCustom(
         status: 500,
       };
     }
-    const metaBody = metaResp.AudioTube.filter(
+    const metaBody = metaResp.AudioStore.filter(
       (op: { meta_dl: { formatnote: string } }) =>
         op.meta_dl.formatnote === quality
     );

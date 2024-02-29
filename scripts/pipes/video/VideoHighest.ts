@@ -62,7 +62,7 @@ export default async function VideoHighest(
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
 
-    const metaEntry = await bigEntry(metaBody.VideoTube);
+    const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === null) {
       return {
         message: "Unable to get response from YouTube...",

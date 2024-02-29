@@ -86,7 +86,7 @@ export default async function ListVideoLowest(
         ? path.join(process.cwd(), folderName)
         : process.cwd();
       if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-      const metaEntry: TubeConfig | null = await lowEntry(metaBody.VideoTube);
+      const metaEntry: TubeConfig | null = await lowEntry(metaBody.VideoStore);
       if (metaEntry === null) continue;
       const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);

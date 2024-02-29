@@ -82,7 +82,7 @@ export default async function ListAudioQualityCustom(
         query: TubeBody.videoLink,
       });
       if (metaBody === null) continue;
-      const newBody = metaBody.AudioTube.filter(
+      const newBody = metaBody.AudioStore.filter(
         (op: { meta_dl: { formatnote: string } }) =>
           op.meta_dl.formatnote === quality
       );

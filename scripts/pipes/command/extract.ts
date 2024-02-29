@@ -61,9 +61,9 @@ export default async function extract({ query }: { query: string }) {
       return `${count}`;
     }
     const payload = {
-      audio_data: metaBody.AudioTube,
-      video_data: metaBody.VideoTube,
-      hdrvideo_data: metaBody.HDRVideoTube,
+      audio_data: metaBody.AudioStore,
+      video_data: metaBody.VideoStore,
+      hdrvideo_data: metaBody.HDRVideoStore,
       meta_data: {
         id: metaBody.metaTube.id,
         original_url: metaBody.metaTube.original_url,

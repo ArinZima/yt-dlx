@@ -15,23 +15,20 @@ export default function list_formats({
         .parse({ query });
       const EnResp = await Engine(zval);
       if (!EnResp) return reject("Unable to get response from YouTube...");
-      const fprem = (data: any[]) =>
-        data.filter(
-          (out: { meta_dl: { originalformat: string | string[] } }) =>
-            !out.meta_dl.originalformat.includes("Premium")
-        );
+      const metaTube = (data: any[]) =>
+        data.filter((out) => !out.meta_dl.originalformat.includes("Premium"));
       const EnBody = {
-        AudioFormatsData: fprem(EnResp.AudioTube).map((out: any) => [
+        AudioFormatsData: metaTube(EnResp.AudioStore).map((out) => [
           out.meta_dl.originalformat,
           out.meta_info.filesizebytes,
           out.meta_info.filesizeformatted,
         ]),
-        VideoFormatsData: fprem(EnResp.VideoTube).map((out: any) => [
+        VideoFormatsData: metaTube(EnResp.VideoStore).map((out) => [
           out.meta_dl.originalformat,
           out.meta_info.filesizebytes,
           out.meta_info.filesizeformatted,
         ]),
-        HdrVideoFormatsData: fprem(EnResp.HDRVideoTube).map((out: any) => [
+        HdrVideoFormatsData: metaTube(EnResp.HDRVideoStore).map((out) => [
           out.meta_dl.originalformat,
           out.meta_info.filesizebytes,
           out.meta_info.filesizeformatted,

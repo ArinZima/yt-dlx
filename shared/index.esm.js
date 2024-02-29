@@ -746,43 +746,41 @@ async function Engine(query, port, proxy, username, password) {
         }
         const result = await promisify(exec)(proLoc);
         const metaTube = await JSON.parse(result.stdout.toString());
-        await metaTube.formats.forEach((ipop) => {
+        await metaTube.formats.forEach((io) => {
             const rmval = new Set(["storyboard", "Default"]);
-            if (rmval.has(ipop.format_note) && ipop.filesize === null)
+            if (rmval.has(io.format_note) && io.filesize === null)
                 return;
             const reTube = {
                 meta_audio: {
-                    samplerate: ipop.asr,
-                    channels: ipop.audio_channels,
-                    codec: ipop.acodec,
-                    extension: ipop.audio_ext,
-                    bitrate: ipop.abr,
+                    samplerate: io.asr,
+                    channels: io.audio_channels,
+                    codec: io.acodec,
+                    extension: io.audio_ext,
+                    bitrate: io.abr,
                 },
                 meta_video: {
-                    height: ipop.height,
-                    width: ipop.width,
-                    codec: ipop.vcodec,
-                    resolution: ipop.resolution,
-                    aspectratio: ipop.aspect_ratio,
-                    extension: ipop.video_ext,
-                    bitrate: ipop.vbr,
+                    bitrate: io.vbr,
+                    width: io.width,
+                    codec: io.vcodec,
+                    height: io.height,
+                    extension: io.video_ext,
+                    resolution: io.resolution,
+                    aspectratio: io.aspect_ratio,
                 },
                 meta_dl: {
-                    formatid: ipop.format_id,
-                    formatnote: ipop.format_note,
-                    originalformat: ipop.format
-                        .replace(/[-\s]+/g, "_")
-                        .replace(/_/g, "_"),
-                    mediaurl: ipop.url,
+                    mediaurl: io.url,
+                    formatid: io.format_id,
+                    formatnote: io.format_note,
+                    originalformat: io.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
                 },
                 meta_info: {
-                    filesizebytes: ipop.filesize,
-                    filesizeformatted: sizeFormat(ipop.filesize),
-                    framespersecond: ipop.fps,
-                    totalbitrate: ipop.tbr,
-                    qriginalextension: ipop.ext,
-                    dynamicrange: ipop.dynamic_range,
-                    extensionconatainer: ipop.container,
+                    totalbitrate: io.tbr,
+                    framespersecond: io.fps,
+                    qriginalextension: io.ext,
+                    filesizebytes: io.filesize,
+                    dynamicrange: io.dynamic_range,
+                    extensionconatainer: io.container,
+                    filesizeformatted: sizeFormat(io.filesize),
                 },
             };
             pushTube.push({
@@ -817,26 +815,26 @@ async function Engine(query, port, proxy, username, password) {
                         reTube.meta_dl.formatnote.includes("low")) &&
                         reTube.meta_video.resolution &&
                         reTube.meta_video.resolution.includes("audio"):
-                        pushTube.push({ Tube: "AudioTube", reTube });
+                        pushTube.push({ Tube: "AudioStore", reTube });
                         break;
                     case reTube.meta_dl.formatnote.includes("HDR"):
-                        pushTube.push({ Tube: "HDRVideoTube", reTube });
+                        pushTube.push({ Tube: "HDRVideoStore", reTube });
                         break;
                     default:
-                        pushTube.push({ Tube: "VideoTube", reTube });
+                        pushTube.push({ Tube: "VideoStore", reTube });
                         break;
                 }
             }
         });
         return {
-            AudioTube: pushTube
-                .filter((item) => item.Tube === "AudioTube")
+            AudioStore: pushTube
+                .filter((item) => item.Tube === "AudioStore")
                 .map((item) => item.reTube) || null,
-            VideoTube: pushTube
-                .filter((item) => item.Tube === "VideoTube")
+            VideoStore: pushTube
+                .filter((item) => item.Tube === "VideoStore")
                 .map((item) => item.reTube) || null,
-            HDRVideoTube: pushTube
-                .filter((item) => item.Tube === "HDRVideoTube")
+            HDRVideoStore: pushTube
+                .filter((item) => item.Tube === "HDRVideoStore")
                 .map((item) => item.reTube) || null,
             metaTube: pushTube
                 .filter((item) => item.Tube === "metaTube")
@@ -963,29 +961,29 @@ async function Engine(query, port, proxy, username, password) {
 // reTube.meta_dl.formatnote.includes("low")) &&
 // reTube.meta_video.resolution &&
 // reTube.meta_video.resolution.includes("audio"):
-// pushTube.push({ Tube: "AudioTube", reTube });
+// pushTube.push({ Tube: "AudioStore", reTube });
 // break;
 // case reTube.meta_dl.formatnote.includes("HDR"):
-// pushTube.push({ Tube: "HDRVideoTube", reTube });
+// pushTube.push({ Tube: "HDRVideoStore", reTube });
 // break;
 // default:
-// pushTube.push({ Tube: "VideoTube", reTube });
+// pushTube.push({ Tube: "VideoStore", reTube });
 // break;
 // }
 // }
 // });
 // return JSON.stringify({
-// AudioTube:
+// AudioStore:
 // pushTube
-// .filter((item: { Tube: string }) => item.Tube === "AudioTube")
+// .filter((item: { Tube: string }) => item.Tube === "AudioStore")
 // .map((item: { reTube: any }) => item.reTube) || null,
-// VideoTube:
+// VideoStore:
 // pushTube
-// .filter((item: { Tube: string }) => item.Tube === "VideoTube")
+// .filter((item: { Tube: string }) => item.Tube === "VideoStore")
 // .map((item: { reTube: any }) => item.reTube) || null,
-// HDRVideoTube:
+// HDRVideoStore:
 // pushTube
-// .filter((item: { Tube: string }) => item.Tube === "HDRVideoTube")
+// .filter((item: { Tube: string }) => item.Tube === "HDRVideoStore")
 // .map((item: { reTube: any }) => item.reTube) || null,
 // metaTube:
 // pushTube
@@ -1119,9 +1117,9 @@ async function extract({ query }) {
             return `${count}`;
         }
         const payload = {
-            audio_data: metaBody.AudioTube,
-            video_data: metaBody.VideoTube,
-            hdrvideo_data: metaBody.HDRVideoTube,
+            audio_data: metaBody.AudioStore,
+            video_data: metaBody.VideoStore,
+            hdrvideo_data: metaBody.HDRVideoStore,
             meta_data: {
                 id: metaBody.metaTube.id,
                 original_url: metaBody.metaTube.original_url,
@@ -1217,19 +1215,19 @@ function list_formats({ query, }) {
             const EnResp = await Agent(zval);
             if (!EnResp)
                 return reject("Unable to get response from YouTube...");
-            const fprem = (data) => data.filter((out) => !out.meta_dl.originalformat.includes("Premium"));
+            const metaTube = (data) => data.filter((out) => !out.meta_dl.originalformat.includes("Premium"));
             const EnBody = {
-                AudioFormatsData: fprem(EnResp.AudioTube).map((out) => [
+                AudioFormatsData: metaTube(EnResp.AudioStore).map((out) => [
                     out.meta_dl.originalformat,
                     out.meta_info.filesizebytes,
                     out.meta_info.filesizeformatted,
                 ]),
-                VideoFormatsData: fprem(EnResp.VideoTube).map((out) => [
+                VideoFormatsData: metaTube(EnResp.VideoStore).map((out) => [
                     out.meta_dl.originalformat,
                     out.meta_info.filesizebytes,
                     out.meta_info.filesizeformatted,
                 ]),
-                HdrVideoFormatsData: fprem(EnResp.HDRVideoTube).map((out) => [
+                HdrVideoFormatsData: metaTube(EnResp.HDRVideoStore).map((out) => [
                     out.meta_dl.originalformat,
                     out.meta_info.filesizebytes,
                     out.meta_info.filesizeformatted,
@@ -1462,7 +1460,7 @@ async function AudioLowest(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const metaEntry = await lowEntry(metaBody.AudioTube);
+        const metaEntry = await lowEntry(metaBody.AudioStore);
         if (metaEntry === null) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -1687,7 +1685,7 @@ async function AudioHighest(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const metaEntry = await bigEntry(metaBody.AudioTube);
+        const metaEntry = await bigEntry(metaBody.AudioStore);
         if (metaEntry === null) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -1886,7 +1884,7 @@ async function VideoLowest$1(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const metaEntry = await lowEntry(metaBody.VideoTube);
+        const metaEntry = await lowEntry(metaBody.VideoStore);
         if (metaEntry === null) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -2043,7 +2041,7 @@ async function VideoHighest(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const metaEntry = await bigEntry(metaBody.VideoTube);
+        const metaEntry = await bigEntry(metaBody.VideoStore);
         if (metaEntry === null) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -2200,8 +2198,8 @@ async function AudioVideoLowest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const ytc = fluentffmpeg();
-        const AmetaEntry = await lowEntry(metaBody.AudioTube);
-        const VmetaEntry = await lowEntry(metaBody.VideoTube);
+        const AmetaEntry = await lowEntry(metaBody.AudioStore);
+        const VmetaEntry = await lowEntry(metaBody.VideoStore);
         if (AmetaEntry === null || VmetaEntry === null) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -2330,8 +2328,8 @@ async function AudioVideoHighest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const ytc = fluentffmpeg();
-        const AmetaEntry = await bigEntry(metaBody.AudioTube);
-        const VmetaEntry = await bigEntry(metaBody.VideoTube);
+        const AmetaEntry = await bigEntry(metaBody.AudioStore);
+        const VmetaEntry = await bigEntry(metaBody.VideoStore);
         if (AmetaEntry === null || VmetaEntry === null) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -2454,7 +2452,7 @@ async function AudioQualityCustom(input) {
                 status: 500,
             };
         }
-        const metaBody = metaResp.AudioTube.filter((op) => op.meta_dl.formatnote === quality);
+        const metaBody = metaResp.AudioStore.filter((op) => op.meta_dl.formatnote === quality);
         if (!metaBody) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -2648,7 +2646,7 @@ async function VideoLowest(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const metaEntry = await bigEntry(metaBody.VideoTube);
+        const metaEntry = await bigEntry(metaBody.VideoStore);
         if (metaEntry === null) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -2825,7 +2823,7 @@ async function ListVideoLowest(input) {
                 : process.cwd();
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = await lowEntry(metaBody.VideoTube);
+            const metaEntry = await lowEntry(metaBody.VideoStore);
             if (metaEntry === null)
                 continue;
             const ytc = fluentffmpeg();
@@ -2998,7 +2996,7 @@ async function ListVideoHighest(input) {
                 : process.cwd();
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = await bigEntry(metaBody.VideoTube);
+            const metaEntry = await bigEntry(metaBody.VideoStore);
             if (metaEntry === null)
                 continue;
             const ytc = fluentffmpeg();
@@ -3180,7 +3178,7 @@ async function ListVideoQualityCustom(input) {
             });
             if (metaBody === null)
                 continue;
-            const newBody = metaBody.VideoTube.filter((op) => op.meta_dl.formatnote === quality);
+            const newBody = metaBody.VideoStore.filter((op) => op.meta_dl.formatnote === quality);
             if (!newBody || newBody === null)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
@@ -3365,7 +3363,7 @@ async function ListAudioLowest(input) {
                 : process.cwd();
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = await lowEntry(metaBody.AudioTube);
+            const metaEntry = await lowEntry(metaBody.AudioStore);
             if (metaEntry === null)
                 continue;
             const ytc = fluentffmpeg();
@@ -3576,7 +3574,7 @@ async function ListAudioHighest(input) {
                 : process.cwd();
             if (!fs.existsSync(metaFold))
                 fs.mkdirSync(metaFold, { recursive: true });
-            const metaEntry = await bigEntry(metaBody.AudioTube);
+            const metaEntry = await bigEntry(metaBody.AudioStore);
             if (metaEntry === null)
                 continue;
             const ytc = fluentffmpeg();
@@ -3782,7 +3780,7 @@ async function ListAudioQualityCustom(input) {
             });
             if (metaBody === null)
                 continue;
-            const newBody = metaBody.AudioTube.filter((op) => op.meta_dl.formatnote === quality);
+            const newBody = metaBody.AudioStore.filter((op) => op.meta_dl.formatnote === quality);
             if (!newBody || newBody === null)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
@@ -4017,8 +4015,8 @@ async function ListAudioVideoLowest(input) {
                             if (!fs.existsSync(metaFold))
                                 fs.mkdirSync(metaFold, { recursive: true });
                             const ytc = fluentffmpeg();
-                            const AmetaEntry = await lowEntry(metaBody.AudioTube);
-                            const VmetaEntry = await lowEntry(metaBody.VideoTube);
+                            const AmetaEntry = await lowEntry(metaBody.AudioStore);
+                            const VmetaEntry = await lowEntry(metaBody.VideoStore);
                             if (AmetaEntry === null || VmetaEntry === null)
                                 return;
                             ytc.addInput(VmetaEntry.meta_dl.mediaurl);
@@ -4182,8 +4180,8 @@ async function ListAudioVideoHighest(input) {
                             if (!fs.existsSync(metaFold))
                                 fs.mkdirSync(metaFold, { recursive: true });
                             const ytc = fluentffmpeg();
-                            const AmetaEntry = await bigEntry(metaBody.AudioTube);
-                            const VmetaEntry = await bigEntry(metaBody.VideoTube);
+                            const AmetaEntry = await bigEntry(metaBody.AudioStore);
+                            const VmetaEntry = await bigEntry(metaBody.VideoStore);
                             if (AmetaEntry === null || VmetaEntry === null)
                                 return;
                             ytc.addInput(VmetaEntry.meta_dl.mediaurl);

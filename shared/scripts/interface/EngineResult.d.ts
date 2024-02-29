@@ -26,9 +26,9 @@ interface EngineData {
 }
 export default interface EngineResult {
     metaTube: EngineData;
-    AudioTube: TubeConfig[];
-    VideoTube: TubeConfig[];
-    HDRVideoTube: TubeConfig[];
+    AudioStore: TubeConfig[];
+    VideoStore: TubeConfig[];
+    HDRVideoStore: TubeConfig[];
 }
 export {};
 //# sourceMappingURL=EngineResult.d.ts.map

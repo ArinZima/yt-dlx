@@ -109,7 +109,7 @@ export default async function ListVideoQualityCustom(
         query: TubeBody.videoLink,
       });
       if (metaBody === null) continue;
-      const newBody = metaBody.VideoTube.filter(
+      const newBody = metaBody.VideoStore.filter(
         (op: { meta_dl: { formatnote: string } }) =>
           op.meta_dl.formatnote === quality
       );

@@ -113,8 +113,8 @@ export default async function ListAudioVideoLowest(
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
                 const ytc = fluentffmpeg();
-                const AmetaEntry = await lowEntry(metaBody.AudioTube);
-                const VmetaEntry = await lowEntry(metaBody.VideoTube);
+                const AmetaEntry = await lowEntry(metaBody.AudioStore);
+                const VmetaEntry = await lowEntry(metaBody.VideoStore);
                 if (AmetaEntry === null || VmetaEntry === null) return;
                 ytc.addInput(VmetaEntry.meta_dl.mediaurl);
                 ytc.addInput(AmetaEntry.meta_dl.mediaurl);

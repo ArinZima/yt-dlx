@@ -86,7 +86,7 @@ export default async function ListVideoHighest(
         ? path.join(process.cwd(), folderName)
         : process.cwd();
       if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-      const metaEntry: TubeConfig | null = await bigEntry(metaBody.VideoTube);
+      const metaEntry: TubeConfig | null = await bigEntry(metaBody.VideoStore);
       if (metaEntry === null) continue;
       const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
