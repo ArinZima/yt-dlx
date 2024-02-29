@@ -364,7 +364,7 @@ interface ListVideoLowestOC {
     outputFormat?: VideoFormat$4;
     filter?: keyof VideoFilters;
 }
-type ListVideoLowestType = 200 | ErrorResult | StreamResult;
+type ListVideoLowestType = 200 | StreamResult;
 declare function ListVideoLowest(input: ListVideoLowestOC): Promise<ListVideoLowestType[] | any>;
 
 type VideoFormat$3 = "mp4" | "avi" | "mov";
@@ -390,7 +390,7 @@ interface ListVideoQualityCustomOC {
     outputFormat?: VideoFormat$2;
     filter?: keyof VideoFilters;
 }
-type ListVideoQualityCustomType = 200 | ErrorResult | StreamResult;
+type ListVideoQualityCustomType = 200 | StreamResult;
 declare function ListVideoQualityCustom(input: ListVideoQualityCustomOC): Promise<ListVideoQualityCustomType[] | any>;
 
 type AudioFormat$2 = "mp3" | "ogg" | "flac" | "aiff";
@@ -439,7 +439,7 @@ interface ListAudioVideoLowestOC {
     playlistUrls: string[];
     outputFormat?: VideoFormat$1;
 }
-type ListAudioVideoLowestType = 200 | ErrorResult | StreamResult;
+type ListAudioVideoLowestType = 200 | StreamResult;
 declare function ListAudioVideoLowest(input: ListAudioVideoLowestOC): Promise<ListAudioVideoLowestType[]>;
 
 type VideoFormat = "mp4" | "avi" | "mov";
@@ -450,7 +450,7 @@ interface ListAudioVideoHighestOC {
     playlistUrls: string[];
     outputFormat?: VideoFormat;
 }
-type ListAudioVideoHighestType = 200 | ErrorResult | StreamResult;
+type ListAudioVideoHighestType = 200 | StreamResult;
 declare function ListAudioVideoHighest(input: ListAudioVideoHighestOC): Promise<ListAudioVideoHighestType[]>;
 
 declare const ytdlx: {
