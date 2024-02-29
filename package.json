@@ -10,8 +10,8 @@
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
-    "start": "node .devcontainer/startup.mjs",
-    "server": "forever .devcontainer/server.mjs",
+    "start": "bun .devcontainer/startup.mjs",
+    "server": "bun .devcontainer/server.mjs",
     "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "bun run clean && bun run make && bun run build",
     "remake:update": "bun run clean && bun run make && bun install --latest && bun run build",
@@ -66,6 +66,7 @@
     "yt"
   ],
   "dependencies": {
+    "@types/tunnel": "^0.0.7",
     "async-retry": "latest",
     "bun": "latest",
     "chai": "latest",
@@ -73,14 +74,14 @@
     "colors": "latest",
     "crypto": "latest",
     "express": "latest",
+    "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "latest",
-    "forever": "latest",
     "minimist": "latest",
     "puppeteer": "latest",
     "readline-sync": "latest",
     "spinnies": "latest",
     "stream": "latest",
-    "yt-dlx": "latest",
+    "tunnel": "^0.0.6",
     "zod": "latest"
   },
   "devDependencies": {
