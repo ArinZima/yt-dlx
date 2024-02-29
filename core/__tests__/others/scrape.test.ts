@@ -5,10 +5,10 @@ import type {
   VideoInfoType,
   PlaylistInfoType,
 } from "../../web";
-import * as vitest from "vitest";
 import web from "../../web";
+import * as bun from "bun:test";
 
-vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
+bun.test(colors.blue("\n\n@tesing: ") + "using bun", async () => {
   try {
     let metaTube:
       | TypeVideo[]
@@ -46,7 +46,7 @@ vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
   }
 });
 
-vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
+bun.test(colors.blue("\n\n@tesing: ") + "using bun", async () => {
   try {
     let metaTube:
       | TypeVideo[]

@@ -29,8 +29,8 @@ const core = {
   "update:base": "bun install --latest && bun update --latest",
   "update:client": "cd client && bun install --latest && bun update --latest",
   cli: "bun run link && bun run test:cli && bun run unlink",
-  test: "bun run est:vitest && bun run test:cli",
-  "test:vitest": "vitest --config 'vitest.config.mts'",
+  test: "bun run test:bun && bun run test:cli",
+  "test:bun": "bun test --timeout 60000 --bail --watch",
   "test:spec":
     "bun test --timeout 60000 --bail --watch ./core/__tests__/bun.spec.ts",
   "test:cli":
@@ -38,13 +38,18 @@ const core = {
 };
 
 function runScript() {
-  console.log(`${colors.green}@info: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`);
+  console.log(
+    `${colors.green}@info: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`
+  );
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
   Object.keys(core).forEach((script, index) => {
-    console.log(`${colors.green}@script:${colors.reset} ${colors.red}${index}${colors.reset}: ` + script);
+    console.log(
+      `${colors.green}@script:${colors.reset} ${colors.red}${index}${colors.reset}: ` +
+        script
+    );
   });
   rl.question(
     `${colors.green}@info:${colors.reset} enter the ${colors.red}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
@@ -65,7 +70,10 @@ function runScript() {
         });
         childProcess.on("exit", (code) => {
           if (code !== 0) {
-            console.error(`${colors.red}@error:${colors.reset}`, `Exited with code ${code}`);
+            console.error(
+              `${colors.red}@error:${colors.reset}`,
+              `Exited with code ${code}`
+            );
           }
           runScript();
         });
