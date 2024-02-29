@@ -58,7 +58,7 @@ export default async function VideoLowest(
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
 
     const metaEntry = await lowEntry(metaBody.VideoStore);
-    if (metaEntry === null) {
+    if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg();
@@ -135,7 +135,7 @@ export default async function VideoLowest(
             callback();
           },
           final(callback) {
-            readStream.push(null);
+            readStream.push(undefined);
             callback();
           },
         });

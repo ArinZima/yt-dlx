@@ -1,4 +1,6 @@
-export default function YouTubeID(videoLink: string): Promise<string | null> {
+export default function YouTubeID(
+  videoLink: string
+): Promise<string | undefined> {
   return new Promise((resolve, _) => {
     if (/youtu\.?be/.test(videoLink)) {
       var i: number;
@@ -22,6 +24,6 @@ export default function YouTubeID(videoLink: string): Promise<string | null> {
         }
       }
     }
-    resolve(null);
+    resolve(undefined);
   });
 }

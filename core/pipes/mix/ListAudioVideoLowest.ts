@@ -92,7 +92,8 @@ export default async function ListAudioVideoLowest(
                 const ytc = fluentffmpeg();
                 const AmetaEntry = await lowEntry(metaBody.AudioStore);
                 const VmetaEntry = await lowEntry(metaBody.VideoStore);
-                if (AmetaEntry === null || VmetaEntry === null) return;
+                if (AmetaEntry === undefined || VmetaEntry === undefined)
+                  return;
                 ytc.addInput(VmetaEntry.meta_dl.mediaurl);
                 ytc.addInput(AmetaEntry.meta_dl.mediaurl);
                 ytc.format(outputFormat);
@@ -131,7 +132,7 @@ export default async function ListAudioVideoLowest(
                       callback();
                     },
                     final(callback) {
-                      readStream.push(null);
+                      readStream.push(undefined);
                       callback();
                     },
                   });

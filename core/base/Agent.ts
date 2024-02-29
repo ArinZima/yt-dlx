@@ -17,8 +17,8 @@ export default async function Agent({
   query: string;
 }): Promise<EngineResult> {
   try {
-    let videoId: string | null;
-    let respEngine: EngineResult | null = null;
+    let videoId: string | undefined;
+    let respEngine: EngineResult | undefined = undefined;
     let TubeBody:
       | TypeVideo[]
       | TypePlaylist[]
@@ -40,7 +40,7 @@ export default async function Agent({
     }
     console.log(colors.green("@info: ") + `fetching metadata for ${query}`);
     switch (videoId) {
-      case null:
+      case undefined:
         TubeBody = (await core.search.SearchVideos({
           query: query,
           type: "video",
@@ -76,7 +76,7 @@ export default async function Agent({
         respEngine = await Engine(TubeBody.videoLink);
         break;
     }
-    if (respEngine === null) {
+    if (respEngine === undefined) {
       throw new Error(colors.red("@error: ") + "no data returned from server.");
     } else {
       console.log(

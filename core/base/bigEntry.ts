@@ -12,11 +12,11 @@ async function checkUrl(url: string): Promise<boolean> {
 
 export default async function bigEntry(
   metaBody: TubeConfig[]
-): Promise<TubeConfig | null> {
+): Promise<TubeConfig | undefined> {
   switch (true) {
     case !metaBody || metaBody.length === 0:
       console.log(colors.red("@error:"), "sorry no downloadable data found");
-      return null;
+      return undefined;
     default:
       const sortedByFileSize = [...metaBody].sort(
         (a, b) => b.meta_info.filesizebytes - a.meta_info.filesizebytes
@@ -26,6 +26,6 @@ export default async function bigEntry(
         if (mediaurl && (await checkUrl(mediaurl))) return item;
       }
       console.log(colors.red("@error:"), "sorry no downloadable data found");
-      return null;
+      return undefined;
   }
 }

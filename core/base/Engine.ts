@@ -49,7 +49,7 @@ export default async function Engine(query: string): Promise<EngineResult> {
     const metaTube = await JSON.parse(result.stdout.toString());
     await metaTube.formats.forEach((io: TubeFormat) => {
       const rmval = new Set(["storyboard", "Default"]);
-      if (rmval.has(io.format_note) && io.filesize === null) return;
+      if (rmval.has(io.format_note) && io.filesize === undefined) return;
       const reTube: TubeConfig = {
         meta_audio: {
           samplerate: io.asr,
@@ -130,19 +130,19 @@ export default async function Engine(query: string): Promise<EngineResult> {
       AudioStore:
         pushTube
           .filter((item: { Tube: string }) => item.Tube === "AudioStore")
-          .map((item: { reTube: any }) => item.reTube) || null,
+          .map((item: { reTube: any }) => item.reTube) || undefined,
       VideoStore:
         pushTube
           .filter((item: { Tube: string }) => item.Tube === "VideoStore")
-          .map((item: { reTube: any }) => item.reTube) || null,
+          .map((item: { reTube: any }) => item.reTube) || undefined,
       HDRVideoStore:
         pushTube
           .filter((item: { Tube: string }) => item.Tube === "HDRVideoStore")
-          .map((item: { reTube: any }) => item.reTube) || null,
+          .map((item: { reTube: any }) => item.reTube) || undefined,
       metaTube:
         pushTube
           .filter((item: { Tube: string }) => item.Tube === "metaTube")
-          .map((item: { reTube: any }) => item.reTube)[0] || null,
+          .map((item: { reTube: any }) => item.reTube)[0] || undefined,
     };
   } catch (error: any) {
     if (error instanceof Error) {
@@ -198,7 +198,7 @@ export default async function Engine(query: string): Promise<EngineResult> {
 // let pushTube: any[] = [];
 // metaTube.formats.forEach((core: any) => {
 // const rmval = new Set(["storyboard", "Default"]);
-// if (rmval.has(core.format_note) && core.filesize === null) return;
+// if (rmval.has(core.format_note) && core.filesize === undefined) return;
 // const reTube: any = {
 // meta_audio: {
 // bitrate: core.abr,
@@ -281,23 +281,23 @@ export default async function Engine(query: string): Promise<EngineResult> {
 // AudioStore:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "AudioStore")
-// .map((item: { reTube: any }) => item.reTube) || null,
+// .map((item: { reTube: any }) => item.reTube) || undefined,
 // VideoStore:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "VideoStore")
-// .map((item: { reTube: any }) => item.reTube) || null,
+// .map((item: { reTube: any }) => item.reTube) || undefined,
 // HDRVideoStore:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "HDRVideoStore")
-// .map((item: { reTube: any }) => item.reTube) || null,
+// .map((item: { reTube: any }) => item.reTube) || undefined,
 // metaTube:
 // pushTube
 // .filter((item: { Tube: string }) => item.Tube === "metaTube")
-// .map((item: { reTube: any }) => item.reTube)[0] || null,
+// .map((item: { reTube: any }) => item.reTube)[0] || undefined,
 // });
-// } else return null;
+// } else return undefined;
 // } catch (error) {
 // console.error("@error:", error);
-// return null;
+// return undefined;
 // }
 // }

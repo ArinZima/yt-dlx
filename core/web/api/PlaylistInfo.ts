@@ -47,7 +47,7 @@ export default async function PlaylistInfo(
                 input
               ):
                 const resultLink = await YouTubeId(input);
-                if (resultLink !== null) {
+                if (resultLink !== undefined) {
                   query = input;
                   return true;
                 }
@@ -56,7 +56,7 @@ export default async function PlaylistInfo(
                 const resultId = await YouTubeId(
                   `https://www.youtube.com/playlist?list=${input}`
                 );
-                if (resultId !== null) {
+                if (resultId !== undefined) {
                   query = `https://www.youtube.com/playlist?list=${input}`;
                   return true;
                 }

@@ -92,7 +92,8 @@ export default async function ListAudioVideoHighest(
                 const ytc = fluentffmpeg();
                 const AmetaEntry = await bigEntry(metaBody.AudioStore);
                 const VmetaEntry = await bigEntry(metaBody.VideoStore);
-                if (AmetaEntry === null || VmetaEntry === null) return;
+                if (AmetaEntry === undefined || VmetaEntry === undefined)
+                  return;
                 ytc.addInput(VmetaEntry.meta_dl.mediaurl);
                 ytc.addInput(AmetaEntry.meta_dl.mediaurl);
                 ytc.format(outputFormat);
@@ -131,7 +132,7 @@ export default async function ListAudioVideoHighest(
                       callback();
                     },
                     final(callback) {
-                      readStream.push(null);
+                      readStream.push(undefined);
                       callback();
                     },
                   });

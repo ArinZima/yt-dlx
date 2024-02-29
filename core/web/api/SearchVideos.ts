@@ -47,7 +47,7 @@ export default async function SearchVideos(
         .refine(
           async (query) => {
             const result = await YouTubeId(query);
-            return result === null;
+            return result === undefined;
           },
           {
             message: "Query must not be a YouTube video/Playlist link",

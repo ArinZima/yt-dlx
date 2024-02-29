@@ -53,7 +53,7 @@ export default async function AudioVideoLowest(
     const ytc = fluentffmpeg();
     const AmetaEntry = await lowEntry(metaBody.AudioStore);
     const VmetaEntry = await lowEntry(metaBody.VideoStore);
-    if (AmetaEntry === null || VmetaEntry === null) {
+    if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
     ytc.addInput(VmetaEntry.meta_dl.mediaurl);
@@ -97,7 +97,7 @@ export default async function AudioVideoLowest(
           callback();
         },
         final(callback) {
-          readStream.push(null);
+          readStream.push(undefined);
           callback();
         },
       });

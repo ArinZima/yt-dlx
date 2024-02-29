@@ -53,7 +53,7 @@ export default async function ListAudioQualityCustom(
     const uniqueVideoIds = new Set();
     for (const videoLink of playlistUrls) {
       const metaList = await web.search.PlaylistInfo({ query: videoLink });
-      if (metaList === null || !metaList) {
+      if (metaList === undefined || !metaList) {
         throw new Error("Unable to get response from YouTube...");
       }
       const uniqueVideos = metaList.playlistVideos.filter(
@@ -75,12 +75,12 @@ export default async function ListAudioQualityCustom(
       const metaBody = await ytdlx({
         query: TubeBody.videoLink,
       });
-      if (metaBody === null) continue;
+      if (metaBody === undefined) continue;
       const newBody = metaBody.AudioStore.filter(
         (op: { meta_dl: { formatnote: string } }) =>
           op.meta_dl.formatnote === quality
       );
-      if (!newBody || newBody === null) continue;
+      if (!newBody || newBody === undefined) continue;
       const title: string = metaBody.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"
@@ -89,8 +89,8 @@ export default async function ListAudioQualityCustom(
         ? path.join(process.cwd(), folderName)
         : process.cwd();
       if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-      const metaEntry: TubeConfig | null = await bigEntry(newBody);
-      if (metaEntry === null) continue;
+      const metaEntry: TubeConfig | undefined = await bigEntry(newBody);
+      if (metaEntry === undefined) continue;
       const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.addInput(metaBody.metaTube.thumbnail);
@@ -200,7 +200,7 @@ export default async function ListAudioQualityCustom(
               callback();
             },
             final(callback) {
-              readStream.push(null);
+              readStream.push(undefined);
               callback();
             },
           });

@@ -11,7 +11,7 @@
 // query,
 // route,
 // domain,
-// }: grabber): Promise<string | null> {
+// }: grabber): Promise<string | undefined> {
 // const browser: Browser = await chromium.launch({ headless: true });
 // try {
 // const host = `${decodeURIComponent(domain)}/${decodeURIComponent(
@@ -32,11 +32,11 @@
 // if (response) {
 // const json = await response.json();
 // resolve(json);
-// } else resolve(null);
+// } else resolve(undefined);
 // }
 // } catch (error) {
 // console.log(colors.red("@error:"), error);
-// resolve(null);
+// resolve(undefined);
 // }
 // });
 // });
@@ -46,10 +46,10 @@
 // return JSON.stringify(payLoad);
 // } else {
 // await browser.close();
-// return null;
+// return undefined;
 // }
 // } catch (error) {
 // console.log(colors.red("@error:"), error);
-// return null;
+// return undefined;
 // }
 // }

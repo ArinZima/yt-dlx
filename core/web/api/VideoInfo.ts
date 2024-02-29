@@ -38,7 +38,7 @@ export default async function VideoInfo(
                 input
               ):
                 const resultLink = await YouTubeId(input);
-                if (resultLink !== null) {
+                if (resultLink !== undefined) {
                   query = input;
                   return true;
                 }
@@ -47,7 +47,7 @@ export default async function VideoInfo(
                 const resultId = await YouTubeId(
                   `https://www.youtube.com/watch?v=${input}`
                 );
-                if (resultId !== null) {
+                if (resultId !== undefined) {
                   query = `https://www.youtube.com/watch?v=${input}`;
                   return true;
                 }

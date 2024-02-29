@@ -74,7 +74,7 @@ export default async function AudioQualityCustom(
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const ytc = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
-    if (metaEntry === null) {
+    if (metaEntry === undefined) {
       return {
         message: "Unable to get response from YouTube...",
         status: 500,
@@ -176,7 +176,7 @@ export default async function AudioQualityCustom(
           callback();
         },
         final(callback) {
-          readStream.push(null);
+          readStream.push(undefined);
           callback();
         },
       });

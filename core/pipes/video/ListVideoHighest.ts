@@ -51,7 +51,7 @@ export default async function ListVideoHighest(
     const uniqueVideoIds = new Set();
     for (const videoLink of playlistUrls) {
       const metaList = await web.search.PlaylistInfo({ query: videoLink });
-      if (metaList === null || !metaList) {
+      if (metaList === undefined || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
           status: 500,
@@ -76,7 +76,7 @@ export default async function ListVideoHighest(
       const metaBody = await ytdlx({
         query: TubeBody.videoLink,
       });
-      if (metaBody === null) continue;
+      if (metaBody === undefined) continue;
       const title: string = metaBody.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"
@@ -85,8 +85,10 @@ export default async function ListVideoHighest(
         ? path.join(process.cwd(), folderName)
         : process.cwd();
       if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-      const metaEntry: TubeConfig | null = await bigEntry(metaBody.VideoStore);
-      if (metaEntry === null) continue;
+      const metaEntry: TubeConfig | undefined = await bigEntry(
+        metaBody.VideoStore
+      );
+      if (metaEntry === undefined) continue;
       const ytc = fluentffmpeg();
       ytc.addInput(metaEntry.meta_dl.mediaurl);
       ytc.format(outputFormat);
@@ -160,7 +162,7 @@ export default async function ListVideoHighest(
               callback();
             },
             final(callback) {
-              readStream.push(null);
+              readStream.push(undefined);
               callback();
             },
           });
