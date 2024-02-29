@@ -38,21 +38,13 @@ const core = {
 };
 
 function runScript() {
-  console.log(
-    `${colors.green}@info: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`
-  );
+  console.log(`${colors.green}@info: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`);
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
-
   Object.keys(core).forEach((script, index) => {
-    console.log(
-      `${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${
-        colors.reset
-      }`,
-      script
-    );
+    console.log(`${colors.green}@script:${colors.reset} ${colors.red}${index}${colors.reset}: ` + script);
   });
   rl.question(
     `${colors.green}@info:${colors.reset} enter the ${colors.red}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
@@ -73,10 +65,7 @@ function runScript() {
         });
         childProcess.on("exit", (code) => {
           if (code !== 0) {
-            console.error(
-              `${colors.red}@error:${colors.reset}`,
-              `Exited with code ${code}`
-            );
+            console.error(`${colors.red}@error:${colors.reset}`, `Exited with code ${code}`);
           }
           runScript();
         });
