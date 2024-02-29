@@ -42,7 +42,6 @@ export default async function AudioHighest(
       folderName,
       outputFormat = "mp3",
     } = AudioHighestInputSchema.parse(input);
-
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
