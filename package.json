@@ -73,7 +73,6 @@
     "cheerio": "latest",
     "colors": "latest",
     "crypto": "latest",
-    "express": "latest",
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "latest",
     "minimist": "latest",
@@ -85,19 +84,18 @@
     "zod": "latest"
   },
   "devDependencies": {
-    "@types/node-fetch": "latest",
-    "@types/express": "latest",
-    "@types/chai": "latest",
     "@rollup/plugin-json": "latest",
     "@rollup/plugin-typescript": "latest",
     "@types/async": "latest",
     "@types/async-retry": "latest",
     "@types/bun": "latest",
+    "@types/chai": "latest",
     "@types/cheerio": "latest",
     "@types/fluent-ffmpeg": "latest",
     "@types/fs-extra": "latest",
     "@types/minimist": "latest",
     "@types/node": "latest",
+    "@types/node-fetch": "latest",
     "@types/readline-sync": "latest",
     "@types/rollup-plugin-progress": "latest",
     "@types/spinnies": "latest",
@@ -108,7 +106,7 @@
     "rollup-plugin-typescript2": "latest",
     "ts-node": "latest",
     "tsup": "latest",
-    "vitest": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "vitest": "latest"
   }
 }
