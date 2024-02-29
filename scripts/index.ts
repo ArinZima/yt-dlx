@@ -1,5 +1,5 @@
+import web from "./web";
 import help from "./pipes/command/help";
-import search from "./pipes/command/search";
 import extract from "./pipes/command/extract";
 import get_playlist from "./pipes/command/get_playlist";
 import list_formats from "./pipes/command/list_formats";
@@ -25,9 +25,13 @@ import ListAudioVideoLowest from "./pipes/mix/ListAudioVideoLowest";
 import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 
 const ytdlx = {
+  search: {
+    PlaylistInfo: web.search.PlaylistInfo,
+    SearchVideos: web.search.SearchVideos,
+    VideoInfo: web.search.VideoInfo,
+  },
   info: {
     help,
-    search,
     extract,
     list_formats,
     get_playlist,
