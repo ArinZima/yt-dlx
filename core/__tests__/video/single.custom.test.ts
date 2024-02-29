@@ -17,11 +17,8 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
       stream: false,
     });
     switch (true) {
-      case "status" in holder:
-        console.log(
-          colors.bold.green("@pass:"),
-          `with status ${holder.status}`
-        );
+      case holder:
+        console.log(colors.bold.green("@pass"));
         await fsx.remove("video");
         break;
       default:
@@ -39,11 +36,8 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
       stream: false,
     });
     switch (true) {
-      case "status" in holder:
-        console.log(
-          colors.bold.green("@pass:"),
-          `with status ${holder.status}`
-        );
+      case holder:
+        console.log(colors.bold.green("@pass"));
         await fsx.remove("video");
         break;
       default:
