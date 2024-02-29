@@ -3,11 +3,11 @@ import type {
   TypePlaylist,
   VideoInfoType,
   PlaylistInfoType,
-} from "../web/ytdlx_web";
+} from "../ytdlx_web";
 import ytxc from "./ytxc";
 import colors from "colors";
 import YouTubeID from "../web/YouTubeId";
-import ytdlx_web from "../web/ytdlx_web";
+import ytdlx_web from "../ytdlx_web";
 import { version } from "../../package.json";
 
 export default async function Engine({

@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import core from "../../";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
@@ -6,7 +7,6 @@ import ytdlx from "../../base/agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
-import ytdlx_web from "../../web/ytdlx_web";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
 import type ErrorResult from "../../interface/ErrorResult";
@@ -51,7 +51,7 @@ export default async function ListAudioLowest(
     let results: ListAudioLowestType[] = [];
     const uniqueVideoIds = new Set();
     for (const videoLink of playlistUrls) {
-      const metaList = await ytdlx_web.PlaylistInfo({ query: videoLink });
+      const metaList = await core.search.PlaylistInfo({ query: videoLink });
       if (metaList === null || !metaList) {
         return {
           message: "Unable to get response from YouTube...",
@@ -70,7 +70,7 @@ export default async function ListAudioLowest(
       parseList.length
     );
     for (const i of parseList) {
-      const TubeBody = await ytdlx_web.VideoInfo({
+      const TubeBody = await core.search.VideoInfo({
         query: i.videoLink,
       });
       if (TubeBody === undefined) continue;

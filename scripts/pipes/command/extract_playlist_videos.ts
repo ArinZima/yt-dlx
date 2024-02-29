@@ -1,7 +1,7 @@
+import core from "../../";
 import * as z from "zod";
 import colors from "colors";
 import Engine from "../../base/agent";
-import ytdlx_web from "../../web/ytdlx_web";
 
 interface extract_playlist_videosOC {
   playlistUrls: string[];
@@ -23,7 +23,7 @@ export default async function extract_playlist_videos({
         );
         continue;
       }
-      const resp = await ytdlx_web.PlaylistInfo({
+      const resp = await core.search.PlaylistInfo({
         query: ispUrl[1],
       });
       if (resp === undefined) {

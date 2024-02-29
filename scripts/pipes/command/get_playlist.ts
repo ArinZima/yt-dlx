@@ -1,6 +1,6 @@
 import * as z from "zod";
+import core from "../../";
 import colors from "colors";
-import ytdlx_web from "../../web/ytdlx_web";
 
 interface get_playlistOC {
   playlistUrls: string[];
@@ -30,7 +30,7 @@ export default async function get_playlist({
         );
         continue;
       }
-      const resp = await ytdlx_web.PlaylistInfo({
+      const resp = await core.search.PlaylistInfo({
         query: ispUrl[1],
       });
       if (resp === undefined) {
@@ -45,7 +45,7 @@ export default async function get_playlist({
         try {
           const videoLink = resp.playlistVideos[i]?.videoLink;
           if (videoLink === undefined) continue;
-          const metaTube = await ytdlx_web.VideoInfo({ query: videoLink });
+          const metaTube = await core.search.VideoInfo({ query: videoLink });
           if (metaTube === undefined) continue;
           console.log(
             colors.bold.green("INFO:"),

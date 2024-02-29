@@ -4,9 +4,9 @@ import type {
   TypePlaylist,
   VideoInfoType,
   PlaylistInfoType,
-} from "../../web/ytdlx_web";
+} from "../../ytdlx_web";
 import * as vitest from "vitest";
-import core from "../../web/ytdlx_web";
+import core from "../../ytdlx_web";
 
 vitest.test(colors.blue("\n\n@tesing: ") + "using vitest", async () => {
   try {
