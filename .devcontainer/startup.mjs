@@ -40,7 +40,7 @@ const scripts = {
 
 function runScript() {
   console.log(
-    `${colors.green}@yt-dlp: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`
+    `${colors.green}@info: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`
   );
   const rl = readline.createInterface({
     input: process.stdin,
