@@ -73,7 +73,6 @@ export default async function extract({ query }: { query: string }) {
         like_count: metaBody.metaTube.like_count,
         view_count_formatted: viewCountFormatted,
         like_count_formatted: likeCountFormatted,
-        full_title: metaBody.metaTube.Fulltitle,
         uploader: metaBody.metaTube.uploader,
         uploader_id: metaBody.metaTube.uploader_id,
         uploader_url: metaBody.metaTube.uploader_url,

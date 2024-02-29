@@ -1,0 +1,1 @@
+{"version":3,"file":"EngineResult.d.ts","sourceRoot":"","sources":["../../../scripts/interface/EngineResult.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,UAAU,MAAM,cAAc,CAAC;AAC3C,OAAO,KAAK,UAAU,MAAM,cAAc,CAAC;AAE3C,MAAM,CAAC,OAAO,WAAW,YAAY;IACnC,QAAQ,EAAE,UAAU,CAAC;IACrB,SAAS,EAAE,UAAU,EAAE,CAAC;IACxB,SAAS,EAAE,UAAU,EAAE,CAAC;IACxB,YAAY,EAAE,UAAU,EAAE,CAAC;CAC5B"}
