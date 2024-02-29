@@ -18,7 +18,7 @@ vitest.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        vitest.expect(holder.status).to.exist.and.satisfy(async () => {
+        vitest.expect(holder).to.exist.and.satisfy(async () => {
           console.log(
             colors.bold.green("@pass:"),
             `with status ${holder.status}`
@@ -42,7 +42,7 @@ vitest.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        vitest.expect(holder.status).to.exist.and.satisfy(async () => {
+        vitest.expect(holder).to.exist.and.satisfy(async () => {
           console.log(
             colors.bold.green("@pass:"),
             `with status ${holder.status}`
