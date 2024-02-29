@@ -50,10 +50,7 @@ export default async function ListAudioLowest(
     for (const videoLink of playlistUrls) {
       const metaList = await web.search.PlaylistInfo({ query: videoLink });
       if (metaList === null || !metaList) {
-        return {
-          message: "Unable to get response from YouTube...",
-          status: 500,
-        };
+        throw new Error("Unable to get response from YouTube...");
       }
       const uniqueVideos = metaList.playlistVideos.filter(
         (video) => !uniqueVideoIds.has(video.videoId)
@@ -219,28 +216,14 @@ export default async function ListAudioLowest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return [
-        {
-          message:
-            "Validation error: " +
-            error.errors.map((e) => e.message).join(", "),
-          status: 500,
-        },
-      ];
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return [
-        {
-          message: error.message,
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return [
-        {
-          message: "Internal server error",
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

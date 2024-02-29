@@ -9,7 +9,6 @@ import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
@@ -22,7 +21,7 @@ interface ListVideoLowestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type ListVideoLowestType = 200 | ErrorResult | StreamResult;
+type ListVideoLowestType = 200 | StreamResult;
 
 const ListVideoLowestInputSchema = z.object({
   filter: z.string().optional(),
@@ -185,28 +184,14 @@ export default async function ListVideoLowest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return [
-        {
-          message:
-            "Validation error: " +
-            error.errors.map((e) => e.message).join(", "),
-          status: 500,
-        },
-      ];
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return [
-        {
-          message: error.message,
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return [
-        {
-          message: "Internal server error",
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

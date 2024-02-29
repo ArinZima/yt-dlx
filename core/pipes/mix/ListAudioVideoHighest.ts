@@ -9,7 +9,6 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 
 type VideoFormat = "mp4" | "avi" | "mov";
@@ -33,7 +32,7 @@ interface ListAudioVideoHighestOC {
   playlistUrls: string[];
   outputFormat?: VideoFormat;
 }
-type ListAudioVideoHighestType = 200 | ErrorResult | StreamResult;
+type ListAudioVideoHighestType = 200 | StreamResult;
 const ListAudioVideoHighestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -55,40 +54,21 @@ export default async function ListAudioVideoHighest(
     } = ListAudioVideoHighestInputSchema.parse(input);
     switch (true) {
       case playlistUrls.length === 0:
-        return [
-          {
-            message: "playlistUrls parameter cannot be empty",
-            status: 500,
-          },
-        ];
+        throw new Error("playlistUrls parameter cannot be empty");
       case !Array.isArray(playlistUrls):
-        return [
-          {
-            message: "playlistUrls parameter must be an array",
-            status: 500,
-          },
-        ];
+        throw new Error("playlistUrls parameter must be an array");
       case !playlistUrls.every(
         (url) => typeof url === "string" && url.trim().length > 0
       ):
-        return [
-          {
-            message:
-              "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings.",
-            status: 500,
-          },
-        ];
+        throw new Error(
+          "Invalid playlistUrls[] parameter. Expecting a non-empty array of strings."
+        );
       default:
         const videos = await get_playlist({
           playlistUrls,
         });
         if (!videos) {
-          return [
-            {
-              message: "Unable to get response from YouTube...",
-              status: 500,
-            },
-          ];
+          throw new Error("Unable to get response from YouTube..");
         } else {
           const results: ListAudioVideoHighestType[] = [];
           await async.eachSeries(
@@ -172,10 +152,7 @@ export default async function ListAudioVideoHighest(
                   });
                 }
               } catch (error) {
-                results.push({
-                  status: 500,
-                  message: colors.bold.red("ERROR: ") + video.title,
-                });
+                results.push(200);
               }
             }
           );
@@ -184,28 +161,14 @@ export default async function ListAudioVideoHighest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return [
-        {
-          message:
-            "Validation error: " +
-            error.errors.map((e) => e.message).join(", "),
-          status: 500,
-        },
-      ];
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return [
-        {
-          message: error.message,
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return [
-        {
-          message: "Internal server error",
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }

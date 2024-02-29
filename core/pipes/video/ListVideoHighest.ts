@@ -185,28 +185,14 @@ export default async function ListVideoHighest(
     }
   } catch (error) {
     if (error instanceof ZodError) {
-      return [
-        {
-          message:
-            "Validation error: " +
-            error.errors.map((e) => e.message).join(", "),
-          status: 500,
-        },
-      ];
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return [
-        {
-          message: error.message,
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      return [
-        {
-          message: "Internal server error",
-          status: 500,
-        },
-      ];
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
 }
