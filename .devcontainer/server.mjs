@@ -1,4 +1,5 @@
 import { execSync } from "child_process";
+import nfetch from "node-fetch";
 import express from "express";
 import colors from "colors";
 
@@ -8,10 +9,14 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-app.get("/ip", (req, res) => {
-  const ip = req.socket.remoteAddress;
-  console.log("Server IP Address:", ip);
-  res.send(ip);
+app.get("/pip", async (req, res) => {
+  try {
+    const response = await nfetch("http://ipinfo.io/ip");
+    const pip = await response.text();
+    res.status(200).json({ pip });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 (async () => {
@@ -24,7 +29,7 @@ app.get("/ip", (req, res) => {
       execSync("bun remove yt-dlx", { stdio: "inherit" });
       execSync("bun add yt-dlx@latest", { stdio: "inherit" });
       counter++;
-      await sleep(8000);
+      await sleep(2000);
     } catch (error) {
       console.error(colors.red("@error:"), error.message);
       process.exit(1);

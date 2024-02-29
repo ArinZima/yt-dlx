@@ -11,6 +11,7 @@
   },
   "scripts": {
     "start": "node .devcontainer/startup.mjs",
+    "server": "forever .devcontainer/server.mjs",
     "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
     "remake": "bun run clean && bun run make && bun run build",
     "remake:update": "bun run clean && bun run make && bun install --latest && bun run build",
@@ -73,6 +74,7 @@
     "crypto": "latest",
     "express": "latest",
     "fluent-ffmpeg": "latest",
+    "forever": "latest",
     "minimist": "latest",
     "puppeteer": "latest",
     "readline-sync": "latest",
@@ -82,6 +84,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/node-fetch": "latest",
     "@types/express": "latest",
     "@types/chai": "latest",
     "@rollup/plugin-json": "latest",
