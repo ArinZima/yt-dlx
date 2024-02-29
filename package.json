@@ -66,7 +66,6 @@
     "yt"
   ],
   "dependencies": {
-    "@types/tunnel": "^0.0.7",
     "async-retry": "latest",
     "bun": "latest",
     "chai": "latest",
@@ -80,7 +79,6 @@
     "readline-sync": "latest",
     "spinnies": "latest",
     "stream": "latest",
-    "tunnel": "^0.0.6",
     "zod": "latest"
   },
   "devDependencies": {
