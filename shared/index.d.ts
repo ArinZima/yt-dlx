@@ -4,8 +4,29 @@
  */
 import { Readable } from 'stream';
 
-declare function help(): Promise<string>;
+interface InputYouTube$1 {
+    query: string;
+    screenshot?: boolean;
+}
+interface VideoInfoType {
+    views: string;
+    title: string;
+    author: string;
+    videoId: string;
+    uploadOn: string;
+    videoLink: string;
+    thumbnailUrls: string[];
+}
+declare function VideoInfo(input: InputYouTube$1): Promise<VideoInfoType | undefined>;
 
+interface IpOp {
+    query: string;
+    screenshot?: boolean;
+    type: keyof {
+        video: "video";
+        playlist: "playlist";
+    };
+}
 interface TypePlaylist {
     playlistId: string;
     playlistLink: string;
@@ -25,13 +46,32 @@ interface TypeVideo {
     authorUrl: string | undefined;
     description: string | undefined;
 }
+declare function SearchVideos(input: IpOp): Promise<TypeVideo[] | TypePlaylist[] | undefined>;
 
-declare function search({ query }: {
+interface InputYouTube {
     query: string;
-}): Promise<TypeVideo[] | TypePlaylist[] | {
-    message: string;
-    status: number;
-} | undefined>;
+    screenshot?: boolean;
+}
+interface PlaylistVideos {
+    ago: string;
+    videoLink: string;
+    title: string;
+    views: string;
+    author: string;
+    videoId: string;
+    authorUrl: string;
+    thumbnailUrls: string[];
+}
+interface PlaylistInfoType {
+    playlistViews: number;
+    playlistTitle: string;
+    playlistVideoCount: number;
+    playlistDescription: string;
+    playlistVideos: PlaylistVideos[];
+}
+declare function PlaylistInfo(input: InputYouTube): Promise<PlaylistInfoType | undefined>;
+
+declare function help(): Promise<string>;
 
 interface TubeConfig {
     meta_audio: {
@@ -419,9 +459,13 @@ type ListAudioVideoHighestType = SuccessResult | ErrorResult | StreamResult;
 declare function ListAudioVideoHighest(input: ListAudioVideoHighestOC): Promise<ListAudioVideoHighestType[]>;
 
 declare const ytdlx: {
+    search: {
+        PlaylistInfo: typeof PlaylistInfo;
+        SearchVideos: typeof SearchVideos;
+        VideoInfo: typeof VideoInfo;
+    };
     info: {
         help: typeof help;
-        search: typeof search;
         extract: typeof extract;
         list_formats: typeof list_formats;
         get_playlist: typeof get_playlist;

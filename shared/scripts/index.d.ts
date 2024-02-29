@@ -1,5 +1,4 @@
 import help from "./pipes/command/help";
-import search from "./pipes/command/search";
 import extract from "./pipes/command/extract";
 import get_playlist from "./pipes/command/get_playlist";
 import list_formats from "./pipes/command/list_formats";
@@ -22,9 +21,13 @@ import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
 import ListAudioVideoLowest from "./pipes/mix/ListAudioVideoLowest";
 import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 declare const ytdlx: {
+    search: {
+        PlaylistInfo: typeof import("./web/api/PlaylistInfo").default;
+        SearchVideos: typeof import("./web/api/SearchVideos").default;
+        VideoInfo: typeof import("./web/api/VideoInfo").default;
+    };
     info: {
         help: typeof help;
-        search: typeof search;
         extract: typeof extract;
         list_formats: typeof list_formats;
         get_playlist: typeof get_playlist;
