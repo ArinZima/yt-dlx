@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "2.0.8",
+  "version": "3.0.0",
   "types": "shared/index.d.ts",
   "main": "shared/index.cjs.js",
   "module": "shared/index.esm.js",
@@ -78,6 +78,7 @@
     "readline-sync": "latest",
     "spinnies": "latest",
     "stream": "latest",
+    "yt-dlx": "latest",
     "zod": "latest"
   },
   "devDependencies": {
