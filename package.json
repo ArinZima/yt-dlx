@@ -71,7 +71,6 @@
     "cheerio": "latest",
     "colors": "latest",
     "crypto": "latest",
-    "dotenv": "latest",
     "express": "latest",
     "fluent-ffmpeg": "latest",
     "minimist": "latest",
@@ -79,9 +78,7 @@
     "readline-sync": "latest",
     "spinnies": "latest",
     "stream": "latest",
-    "vitest": "latest",
     "yt-dlx": "latest",
-    "yt-search": "latest",
     "zod": "latest"
   },
   "devDependencies": {
@@ -106,6 +103,7 @@
     "rollup-plugin-typescript2": "latest",
     "ts-node": "latest",
     "tsup": "latest",
+    "vitest": "latest",
     "typescript": "latest"
   }
 }

@@ -1318,10 +1318,7 @@ async function AudioLowest(input) {
     } = AudioLowestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     let metaName = "";
     const title = metaBody.metaTube.title.replace(
@@ -1333,10 +1330,7 @@ async function AudioLowest(input) {
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.AudioStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg__default.default();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -1468,20 +1462,13 @@ async function AudioLowest(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -1531,10 +1518,7 @@ async function AudioHighest(input) {
     } = AudioHighestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     let metaName = "";
     const title = metaBody.metaTube.title.replace(
@@ -1546,10 +1530,7 @@ async function AudioHighest(input) {
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg__default.default();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -1681,20 +1662,13 @@ async function AudioHighest(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -1718,10 +1692,7 @@ async function VideoLowest(input) {
     } = VideoLowestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     let metaName = "";
     const title = metaBody.metaTube.title.replace(
@@ -1733,10 +1704,7 @@ async function VideoLowest(input) {
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.VideoStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg__default.default();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -1831,20 +1799,13 @@ async function VideoLowest(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -1868,10 +1829,7 @@ async function VideoHighest(input) {
     } = VideoHighestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const title = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -1883,10 +1841,7 @@ async function VideoHighest(input) {
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg__default.default();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -1981,20 +1936,13 @@ async function VideoHighest(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2016,10 +1964,7 @@ async function AudioVideoLowest(input) {
     } = AudioVideoLowestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const title = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -2033,10 +1978,7 @@ async function AudioVideoLowest(input) {
     const AmetaEntry = await lowEntry(metaBody.AudioStore);
     const VmetaEntry = await lowEntry(metaBody.VideoStore);
     if (AmetaEntry === null || VmetaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     ytc.addInput(VmetaEntry.meta_dl.mediaurl);
     ytc.addInput(AmetaEntry.meta_dl.mediaurl);
@@ -2098,20 +2040,13 @@ async function AudioVideoLowest(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2133,10 +2068,7 @@ async function AudioVideoHighest(input) {
     } = AudioVideoHighestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const title = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -2150,10 +2082,7 @@ async function AudioVideoHighest(input) {
     const AmetaEntry = await bigEntry(metaBody.AudioStore);
     const VmetaEntry = await bigEntry(metaBody.VideoStore);
     if (AmetaEntry === null || VmetaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     ytc.addInput(VmetaEntry.meta_dl.mediaurl);
     ytc.addInput(AmetaEntry.meta_dl.mediaurl);
@@ -2215,20 +2144,13 @@ async function AudioVideoHighest(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2400,20 +2322,13 @@ async function AudioQualityCustom(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2437,10 +2352,7 @@ async function VideoLowest2(input) {
     } = VideoLowestInputSchema2.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     let metaName = "";
     const title = metaBody.metaTube.title.replace(
@@ -2452,10 +2364,7 @@ async function VideoLowest2(input) {
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === null) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const ytc = fluentffmpeg__default.default();
     ytc.addInput(metaEntry.meta_dl.mediaurl);
@@ -2550,20 +2459,13 @@ async function VideoLowest2(input) {
     }
   } catch (error) {
     if (error instanceof z6.ZodError) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", "),
-        status: 500
-      };
+      throw new Error(
+        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+      );
     } else if (error instanceof Error) {
-      return {
-        message: colors29__default.default.red("@error: ") + error.message,
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + error.message);
     } else {
-      return {
-        message: colors29__default.default.red("@error: ") + "internal server error",
-        status: 500
-      };
+      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
     }
   }
 }
