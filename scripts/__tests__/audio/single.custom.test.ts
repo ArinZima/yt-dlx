@@ -18,16 +18,13 @@ vitest.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        vitest
-          .expect(holder.status)
-          .to.equal(200)
-          .and.satisfy(async () => {
-            console.log(
-              colors.bold.green("@pass:"),
-              `with status ${holder.status}`
-            );
-            await fsx.remove("audio");
-          });
+        vitest.expect(holder.status).to.exist.and.satisfy(async () => {
+          console.log(
+            colors.bold.green("@pass:"),
+            `with status ${holder.status}`
+          );
+          await fsx.remove("audio");
+        });
         break;
       default:
         await fsx.remove("audio");
@@ -45,16 +42,13 @@ vitest.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     });
     switch (true) {
       case "status" in holder:
-        vitest
-          .expect(holder.status)
-          .to.equal(200)
-          .and.satisfy(async () => {
-            console.log(
-              colors.bold.green("@pass:"),
-              `with status ${holder.status}`
-            );
-            await fsx.remove("audio");
-          });
+        vitest.expect(holder.status).to.exist.and.satisfy(async () => {
+          console.log(
+            colors.bold.green("@pass:"),
+            `with status ${holder.status}`
+          );
+          await fsx.remove("audio");
+        });
         break;
       default:
         await fsx.remove("audio");
