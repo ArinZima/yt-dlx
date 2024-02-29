@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-    <img src="https://i.postimg.cc/sXx2CgB7/yt-dlx-removebg.png" alt="yt-dlx Logo" style="max-width: 200%; height: 200;">
+    <img src="https://i.postimg.cc/13BjP8sW/yt-dlx.png" alt="yt-dlx Logo" style="max-width: 200%; height: 200;">
 </div>
 
 # YT-DLX: Elevate Your Video Downloading & Streaming Experience 🚀
