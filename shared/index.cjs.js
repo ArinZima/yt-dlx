@@ -1586,19 +1586,10 @@ async function AudioLowest(input) {
                 ytc
                     .output(path__namespace.join(metaFold, metaName))
                     .on("error", reject)
-                    .on("end", () => {
-                    resolve();
-                    return {
-                        status: 200,
-                        message: "process ended...",
-                    };
-                })
+                    .on("end", () => resolve())
                     .run();
             });
-            return {
-                status: 200,
-                message: "process ended...",
-            };
+            return 200;
         }
     }
     catch (error) {
@@ -1811,19 +1802,10 @@ async function AudioHighest(input) {
                 ytc
                     .output(path__namespace.join(metaFold, metaName))
                     .on("error", reject)
-                    .on("end", () => {
-                    resolve();
-                    return {
-                        status: 200,
-                        message: "process ended...",
-                    };
-                })
+                    .on("end", () => resolve())
                     .run();
             });
-            return {
-                status: 200,
-                message: "process ended...",
-            };
+            return 200;
         }
     }
     catch (error) {
@@ -1972,15 +1954,10 @@ async function VideoLowest$1(input) {
                     ytc
                         .output(path__namespace.join(metaFold, metaName))
                         .on("error", reject)
-                        .on("end", () => {
-                        resolve();
-                    })
+                        .on("end", () => resolve())
                         .run();
                 });
-                return {
-                    message: "process ended...",
-                    status: 200,
-                };
+                return 200;
         }
     }
     catch (error) {
@@ -2129,15 +2106,10 @@ async function VideoHighest(input) {
                     ytc
                         .output(path__namespace.join(metaFold, metaName))
                         .on("error", reject)
-                        .on("end", () => {
-                        resolve();
-                    })
+                        .on("end", () => resolve())
                         .run();
                 });
-                return {
-                    message: "process ended...",
-                    status: 200,
-                };
+                return 200;
         }
     }
     catch (error) {
@@ -2255,19 +2227,10 @@ async function AudioVideoLowest(input) {
                 ytc
                     .output(path__namespace.join(metaFold, metaName))
                     .on("error", reject)
-                    .on("end", () => {
-                    resolve();
-                    return {
-                        status: 200,
-                        message: "process ended...",
-                    };
-                })
+                    .on("end", () => resolve())
                     .run();
             });
-            return {
-                status: 200,
-                message: "process ended...",
-            };
+            return 200;
         }
     }
     catch (error) {
@@ -2385,19 +2348,10 @@ async function AudioVideoHighest(input) {
                 ytc
                     .output(path__namespace.join(metaFold, metaName))
                     .on("error", reject)
-                    .on("end", () => {
-                    resolve();
-                    return {
-                        status: 200,
-                        message: "process ended...",
-                    };
-                })
+                    .on("end", () => resolve())
                     .run();
             });
-            return {
-                status: 200,
-                message: "process ended...",
-            };
+            return 200;
         }
     }
     catch (error) {
@@ -2577,15 +2531,10 @@ async function AudioQualityCustom(input) {
                 ytc
                     .output(path__namespace.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`))
                     .on("error", reject)
-                    .on("end", () => {
-                    resolve();
-                })
+                    .on("end", () => resolve())
                     .run();
             });
-            return {
-                message: "process ended...",
-                status: 200,
-            };
+            return 200;
         }
     }
     catch (error) {
@@ -2734,15 +2683,10 @@ async function VideoLowest(input) {
                     ytc
                         .output(path__namespace.join(metaFold, metaName))
                         .on("error", reject)
-                        .on("end", () => {
-                        resolve();
-                    })
+                        .on("end", () => resolve())
                         .run();
                 });
-                return {
-                    message: "process ended...",
-                    status: 200,
-                };
+                return 200;
         }
     }
     catch (error) {

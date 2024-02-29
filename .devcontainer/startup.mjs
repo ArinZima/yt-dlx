@@ -31,8 +31,9 @@ const scripts = {
     "cd frontend && bun install --latest && bun update --latest",
   cli: "bun run link && bun run test:cli && bun run unlink",
   test: "bun run test:bun && bun run test:cli",
-  spec: "bun test --timeout 60000 --bail --watch",
   "test:vitest": "vitest --config 'vitest.config.mts'",
+  "test:spec":
+    "bun test --timeout 60000 --bail --watch ./scripts/__tests__/bun.spec.ts",
   "test:cli":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
 };
