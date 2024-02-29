@@ -163,11 +163,10 @@ export default async function VideoLowest(
         };
       default:
         await new Promise<void>((resolve, reject) => {
-          ytc
-            .output(path.join(metaFold, metaName))
-            .on("error", reject)
-            .on("end", () => resolve())
-            .run();
+          ytc.output(path.join(metaFold, metaName));
+          ytc.on("end", () => resolve());
+          ytc.on("error", reject);
+          ytc.run();
         });
         return true;
     }

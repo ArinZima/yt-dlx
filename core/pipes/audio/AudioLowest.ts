@@ -42,7 +42,6 @@ export default async function AudioLowest(
       folderName,
       outputFormat = "mp3",
     } = AudioLowestInputSchema.parse(input);
-
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -184,11 +183,10 @@ export default async function AudioLowest(
       };
     } else {
       await new Promise<void>((resolve, reject) => {
-        ytc
-          .output(path.join(metaFold, metaName))
-          .on("error", reject)
-          .on("end", () => resolve())
-          .run();
+        ytc.output(path.join(metaFold, metaName));
+        ytc.on("end", () => resolve());
+        ytc.on("error", reject);
+        ytc.run();
       });
       return true;
     }

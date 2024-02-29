@@ -207,11 +207,10 @@ export default async function ListAudioHighest(
           break;
         default:
           await new Promise<void>((resolve, reject) => {
-            ytc
-              .output(path.join(metaFold, metaName))
-              .on("end", () => resolve())
-              .on("error", reject)
-              .run();
+            ytc.output(path.join(metaFold, metaName));
+            ytc.on("end", () => resolve());
+            ytc.on("error", reject);
+            ytc.run();
           });
           break;
       }

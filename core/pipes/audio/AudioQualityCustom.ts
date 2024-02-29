@@ -46,7 +46,6 @@ export default async function AudioQualityCustom(
       folderName,
       outputFormat = "mp3",
     } = AudioQualityCustomInputSchema.parse(input);
-
     const metaResp = await ytdlx({ query });
     if (!metaResp) {
       return {
@@ -64,6 +63,7 @@ export default async function AudioQualityCustom(
         status: 500,
       };
     }
+    let metaName: string = "";
     const title: string = metaResp.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "-"
@@ -91,51 +91,67 @@ export default async function AudioQualityCustom(
     switch (filter) {
       case "bassboost":
         ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "echo":
         ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "flanger":
         ytc.withAudioFilter(["flanger"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "nightcore":
         ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "panning":
         ytc.withAudioFilter(["apulsator=hz=0.08"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "phaser":
         ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "reverse":
         ytc.withAudioFilter(["areverse"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "slow":
         ytc.withAudioFilter(["atempo=0.8"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "speed":
         ytc.withAudioFilter(["atempo=2"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "subboost":
         ytc.withAudioFilter(["asubboost"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "superslow":
         ytc.withAudioFilter(["atempo=0.5"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "superspeed":
         ytc.withAudioFilter(["atempo=3"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "surround":
         ytc.withAudioFilter(["surround"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "vaporwave":
         ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "vibrato":
         ytc.withAudioFilter(["vibrato=f=6.5"]);
+        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       default:
         ytc.withAudioFilter([]);
+        metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
         break;
     }
     ytc.on("start", (command) => {
@@ -184,18 +200,15 @@ export default async function AudioQualityCustom(
       return {
         stream: readStream,
         filename: folderName
-          ? path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
-          : `yt-dlp-(${quality})-${title}.${outputFormat}`,
+          ? path.join(metaFold, metaName.replace("-.", "."))
+          : metaName.replace("-.", "."),
       };
     } else {
       await new Promise<void>((resolve, reject) => {
-        ytc
-          .output(
-            path.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
-          )
-          .on("error", reject)
-          .on("end", () => resolve())
-          .run();
+        ytc.output(path.join(metaFold, metaName));
+        ytc.on("end", () => resolve());
+        ytc.on("error", reject);
+        ytc.run();
       });
       return true;
     }
