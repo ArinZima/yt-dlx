@@ -78,6 +78,10 @@ export default [
       "tsup",
       "typescript",
     ],
+    onwarn: function (warning) {
+      if (warning.code === "UNUSED_EXTERNAL_IMPORT") return;
+      console.warn(warning.message);
+    },
   },
   {
     plugins: [dts(), progress()],
