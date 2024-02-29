@@ -3,17 +3,27 @@ import colors from "colors";
 import * as path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
-import sizeFormat from "./sizeFormat";
 import type TubeConfig from "../interface/TubeConfig";
 import type EngineData from "../interface/EngineData";
 
+function sizeFormat(filesize: number) {
+  if (isNaN(filesize) || filesize < 0) return filesize;
+  const bytesPerMegabyte = 1024 * 1024;
+  const bytesPerGigabyte = bytesPerMegabyte * 1024;
+  const bytesPerTerabyte = bytesPerGigabyte * 1024;
+  if (filesize < bytesPerMegabyte) return filesize + " B";
+  else if (filesize < bytesPerGigabyte) {
+    return (filesize / bytesPerMegabyte).toFixed(2) + " MB";
+  } else if (filesize < bytesPerTerabyte) {
+    return (filesize / bytesPerGigabyte).toFixed(2) + " GB";
+  } else return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
+}
 interface EngineResult {
   metaTube: EngineData;
   AudioTube: TubeConfig[];
   VideoTube: TubeConfig[];
   HDRVideoTube: TubeConfig[];
 }
-
 export default async function Engine(
   query: string,
   port?: number,
