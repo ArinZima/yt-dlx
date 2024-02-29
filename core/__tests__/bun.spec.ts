@@ -9,11 +9,11 @@ bun.test(colors.blue("\n\n@tesing: ") + "Quick-Tests()", async () => {
   try {
     const metaTube: any = await AudioVideoHighest({
       query: "sQEgklEwhSo",
-      outputFormat: "mp4",
+      folderName: ".temp",
       verbose: false,
       stream: true,
     });
-    const outputPath = path.join(__dirname, metaTube.filename);
+    const outputPath = path.join(metaTube.filename);
     const writeStream = fs.createWriteStream(outputPath);
     await metaTube.stream.pipe(writeStream);
     metaTube.stream.on("end", () => {

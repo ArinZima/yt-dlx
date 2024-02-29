@@ -1940,7 +1940,7 @@ var AudioVideoLowestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
-  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
+  outputFormat: z.enum(["webm", "avi", "mov"]).optional()
 });
 async function AudioVideoLowest(input) {
   try {
@@ -1949,7 +1949,7 @@ async function AudioVideoLowest(input) {
       stream,
       verbose,
       folderName,
-      outputFormat = "mp4"
+      outputFormat = "webm"
     } = AudioVideoLowestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
@@ -2047,7 +2047,7 @@ var AudioVideoHighestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
-  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
+  outputFormat: z.enum(["webm", "avi", "mov"]).optional()
 });
 async function AudioVideoHighest(input) {
   try {
@@ -2056,7 +2056,7 @@ async function AudioVideoHighest(input) {
       stream,
       verbose,
       folderName,
-      outputFormat = "mp4"
+      outputFormat = "webm"
     } = AudioVideoHighestInputSchema.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
@@ -5462,7 +5462,7 @@ var ListAudioVideoLowestInputSchema = z.object({
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
   playlistUrls: z.array(z.string().min(1)),
-  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
+  outputFormat: z.enum(["webm", "avi", "mov"]).optional()
 });
 async function ListAudioVideoLowest(input) {
   try {
@@ -5471,7 +5471,7 @@ async function ListAudioVideoLowest(input) {
       verbose,
       folderName,
       playlistUrls,
-      outputFormat = "mp4"
+      outputFormat = "webm"
     } = ListAudioVideoLowestInputSchema.parse(input);
     switch (true) {
       case playlistUrls.length === 0:
@@ -5595,7 +5595,7 @@ var ListAudioVideoHighestInputSchema = z.object({
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
   playlistUrls: z.array(z.string().min(1)),
-  outputFormat: z.enum(["mp4", "avi", "mov"]).optional()
+  outputFormat: z.enum(["webm", "avi", "mov"]).optional()
 });
 async function ListAudioVideoHighest(input) {
   try {
@@ -5604,7 +5604,7 @@ async function ListAudioVideoHighest(input) {
       verbose,
       folderName,
       playlistUrls,
-      outputFormat = "mp4"
+      outputFormat = "webm"
     } = ListAudioVideoHighestInputSchema.parse(input);
     switch (true) {
       case playlistUrls.length === 0:
