@@ -47,8 +47,9 @@ function runScript() {
   });
   Object.keys(core).forEach((script, index) => {
     console.log(
-      `${colors.green}@script:${colors.reset} ${colors.red}${index}${colors.reset}: ` +
-        script
+      `${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${
+        colors.reset
+      }: ` + script
     );
   });
   rl.question(
