@@ -31,5 +31,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["scripts/**/*.ts"],
-  "exclude": ["node_modules", "frontend", "scrape"]
+  "exclude": ["node_modules", "frontend"]
 }
