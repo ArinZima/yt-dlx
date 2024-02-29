@@ -11,7 +11,7 @@ import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
 import type StreamResult from "../../interface/StreamResult";
 
-type VideoFormat = "mp4" | "avi" | "mov";
+type VideoFormat = "webm" | "avi" | "mov";
 interface metaVideo {
   title: string;
   description: string;
@@ -38,7 +38,7 @@ const ListAudioVideoHighestInputSchema = z.object({
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
   playlistUrls: z.array(z.string().min(1)),
-  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+  outputFormat: z.enum(["webm", "avi", "mov"]).optional(),
 });
 
 export default async function ListAudioVideoHighest(
@@ -50,7 +50,7 @@ export default async function ListAudioVideoHighest(
       verbose,
       folderName,
       playlistUrls,
-      outputFormat = "mp4",
+      outputFormat = "webm",
     } = ListAudioVideoHighestInputSchema.parse(input);
     switch (true) {
       case playlistUrls.length === 0:

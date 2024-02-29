@@ -9,7 +9,7 @@ import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
 
-type VideoFormat = "mp4" | "avi" | "mov";
+type VideoFormat = "webm" | "avi" | "mov";
 interface AudioVideoHighestOC {
   query: string;
   stream?: boolean;
@@ -23,7 +23,7 @@ const AudioVideoHighestInputSchema = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
-  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
+  outputFormat: z.enum(["webm", "avi", "mov"]).optional(),
 });
 
 export default async function AudioVideoHighest(
@@ -35,7 +35,7 @@ export default async function AudioVideoHighest(
       stream,
       verbose,
       folderName,
-      outputFormat = "mp4",
+      outputFormat = "webm",
     } = AudioVideoHighestInputSchema.parse(input);
 
     const metaBody = await ytdlx({ query });
