@@ -1,4 +1,3 @@
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
@@ -10,7 +9,7 @@ interface ListAudioHighestOC {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 }
-type ListAudioHighestType = 200 | ErrorResult | StreamResult;
+type ListAudioHighestType = 200 | StreamResult;
 export default function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioHighest.d.ts.map

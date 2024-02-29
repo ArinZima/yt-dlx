@@ -220,11 +220,6 @@ interface extract_playlist_videosOC {
 }
 declare function extract_playlist_videos({ playlistUrls, }: extract_playlist_videosOC): Promise<any>;
 
-interface ErrorResult {
-    message: string;
-    status: 500;
-}
-
 interface StreamResult {
     stream: Readable;
     filename: string;
@@ -257,7 +252,7 @@ type AudioLowestOC = {
     outputFormat?: AudioFormat$5;
     filter?: keyof AudioFilters;
 };
-type AudioLowestType = Promise<200 | ErrorResult | StreamResult>;
+type AudioLowestType = Promise<200 | StreamResult>;
 declare function AudioLowest(input: AudioLowestOC): AudioLowestType;
 
 type AudioFormat$4 = "mp3" | "ogg" | "flac" | "aiff";
@@ -269,7 +264,7 @@ type AudioHighestOC = {
     outputFormat?: AudioFormat$4;
     filter?: keyof AudioFilters;
 };
-type AudioHighestType = Promise<200 | ErrorResult | StreamResult>;
+type AudioHighestType = Promise<200 | StreamResult>;
 declare function AudioHighest(input: AudioHighestOC): AudioHighestType;
 
 interface VideoFilters {
@@ -291,8 +286,13 @@ interface VideoLowestOC$1 {
     outputFormat?: VideoFormat$9;
     filter?: keyof VideoFilters;
 }
-type VideoLowestType$1 = Promise<200 | ErrorResult | StreamResult>;
+type VideoLowestType$1 = Promise<200 | StreamResult>;
 declare function VideoLowest$1(input: VideoLowestOC$1): VideoLowestType$1;
+
+interface ErrorResult {
+    message: string;
+    status: 500;
+}
 
 type VideoFormat$8 = "mp4" | "avi" | "mov";
 interface VideoHighestOC {
@@ -314,7 +314,7 @@ interface AudioVideoLowestOC {
     folderName?: string;
     outputFormat?: VideoFormat$7;
 }
-type AudioVideoLowestType = Promise<200 | ErrorResult | StreamResult>;
+type AudioVideoLowestType = Promise<200 | StreamResult>;
 declare function AudioVideoLowest(input: AudioVideoLowestOC): AudioVideoLowestType;
 
 type VideoFormat$6 = "mp4" | "avi" | "mov";
@@ -325,7 +325,7 @@ interface AudioVideoHighestOC {
     folderName?: string;
     outputFormat?: VideoFormat$6;
 }
-type AudioVideoHighest = Promise<200 | ErrorResult | StreamResult>;
+type AudioVideoHighest = Promise<200 | StreamResult>;
 declare function AudioVideoHighest(input: AudioVideoHighestOC): AudioVideoHighest;
 
 type AudioFormat$3 = "mp3" | "ogg" | "flac" | "aiff";
@@ -352,7 +352,7 @@ interface VideoLowestOC {
     outputFormat?: VideoFormat$5;
     filter?: keyof VideoFilters;
 }
-type VideoLowestType = Promise<200 | ErrorResult | StreamResult>;
+type VideoLowestType = Promise<200 | StreamResult>;
 declare function VideoLowest(input: VideoLowestOC): VideoLowestType;
 
 type VideoFormat$4 = "mp4" | "avi" | "mov";
@@ -402,7 +402,7 @@ interface ListAudioLowestOC {
     outputFormat?: AudioFormat$2;
     filter?: keyof AudioFilters;
 }
-type ListAudioLowestType = 200 | ErrorResult | StreamResult;
+type ListAudioLowestType = 200 | StreamResult;
 declare function ListAudioLowest(input: ListAudioLowestOC): Promise<ListAudioLowestType[] | any>;
 
 type AudioFormat$1 = "mp3" | "ogg" | "flac" | "aiff";
@@ -414,7 +414,7 @@ interface ListAudioHighestOC {
     outputFormat?: AudioFormat$1;
     filter?: keyof AudioFilters;
 }
-type ListAudioHighestType = 200 | ErrorResult | StreamResult;
+type ListAudioHighestType = 200 | StreamResult;
 declare function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[] | any>;
 
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
@@ -428,7 +428,7 @@ interface ListAudioQualityCustomOC {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 }
-type ListAudioQualityCustomType = 200 | ErrorResult | StreamResult;
+type ListAudioQualityCustomType = 200 | StreamResult;
 declare function ListAudioQualityCustom(input: ListAudioQualityCustomOC): Promise<ListAudioQualityCustomType[] | any>;
 
 type VideoFormat$1 = "mp4" | "avi" | "mov";

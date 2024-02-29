@@ -1,4 +1,3 @@
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
@@ -10,7 +9,7 @@ interface ListAudioLowestOC {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 }
-type ListAudioLowestType = 200 | ErrorResult | StreamResult;
+type ListAudioLowestType = 200 | StreamResult;
 export default function ListAudioLowest(input: ListAudioLowestOC): Promise<ListAudioLowestType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioLowest.d.ts.map
