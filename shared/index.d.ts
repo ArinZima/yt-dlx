@@ -209,8 +209,8 @@ interface AudioFilters {
 }
 
 interface SuccessResult {
-    status: 200;
     message: string;
+    status: 200;
 }
 
 type AudioFormat$5 = "mp3" | "ogg" | "flac" | "aiff";
