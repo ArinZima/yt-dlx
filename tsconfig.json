@@ -30,6 +30,6 @@
     "strictPropertyInitialization": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["scripts/**/*.ts"],
+  "include": ["core/**/*.ts"],
   "exclude": ["node_modules", "frontend"]
 }

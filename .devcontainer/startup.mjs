@@ -8,28 +8,34 @@ const colors = {
   green: "\x1b[32m",
 };
 
-const scripts = {
-  "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
-  "remake": "bun run clean && bun run make && bun run build",
-  "remake:update": "bun run clean && bun run make && bun install --latest && bun run build",
-  "upload": "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
-  "clean": "bun run clean:base && bun run clean:frontend",
+const core = {
+  setup: "chmod +x ./linux-setup.sh && ./linux-setup.sh",
+  remake: "bun run clean && bun run make && bun run build",
+  "remake:update":
+    "bun run clean && bun run make && bun install --latest && bun run build",
+  upload:
+    "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
+  clean: "bun run clean:base && bun run clean:frontend",
   "clean:base": "rm -rf node_modules .temp shared bun.lockb",
   "clean:frontend": "cd frontend && rm -rf node_modules .next bun.lockb",
-  "make": "bun run make:base && bun run make:frontend",
+  make: "bun run make:base && bun run make:frontend",
   "make:base": "bun install",
   "make:frontend": "cd frontend && bun install",
-  "build": "bun run build:base && bun run build:frontend",
-  "build:base": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
+  build: "bun run build:base && bun run build:frontend",
+  "build:base":
+    "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
   "build:frontend": "cd frontend && bun run build",
-  "update": "bun run make && bun run update:base && bun run update:frontend",
+  update: "bun run make && bun run update:base && bun run update:frontend",
   "update:base": "bun install --latest && bun update --latest",
-  "update:frontend": "cd frontend && bun install --latest && bun update --latest",
-  "cli": "bun run link && bun run test:cli && bun run unlink",
-  "test": "bun run est:vitest && bun run test:cli",
+  "update:frontend":
+    "cd frontend && bun install --latest && bun update --latest",
+  cli: "bun run link && bun run test:cli && bun run unlink",
+  test: "bun run est:vitest && bun run test:cli",
   "test:vitest": "vitest --config 'vitest.config.mts'",
-  "test:spec": "bun test --timeout 60000 --bail --watch ./scripts/__tests__/bun.spec.ts",
-  "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
+  "test:spec":
+    "bun test --timeout 60000 --bail --watch ./core/__tests__/bun.spec.ts",
+  "test:cli":
+    "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
 };
 
 function runScript() {
@@ -41,7 +47,7 @@ function runScript() {
     output: process.stdout,
   });
 
-  Object.keys(scripts).forEach((script, index) => {
+  Object.keys(core).forEach((script, index) => {
     console.log(
       `${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${
         colors.reset
@@ -54,10 +60,10 @@ function runScript() {
     (answer) => {
       console.log(colors.reset);
       const scriptIndex = parseInt(answer) - 1;
-      const scriptKeys = Object.keys(scripts);
+      const scriptKeys = Object.keys(core);
       if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
         const scriptName = scriptKeys[scriptIndex];
-        const command = scripts[scriptName];
+        const command = core[scriptName];
         console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
         const childProcess = spawn(command, {
           shell: true,

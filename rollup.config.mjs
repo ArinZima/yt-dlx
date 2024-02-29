@@ -9,7 +9,7 @@ const banner = `/**
 
 export default [
   {
-    input: "scripts/index.ts",
+    input: "core/index.ts",
     output: [
       {
         file: "shared/index.esm.js",
@@ -85,7 +85,7 @@ export default [
   },
   {
     plugins: [dts(), progress()],
-    input: "scripts/index.ts",
+    input: "core/index.ts",
     output: [
       {
         file: "shared/index.d.ts",

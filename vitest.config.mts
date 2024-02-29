@@ -6,6 +6,6 @@ export default defineConfig({
     maxConcurrency: 1,
     testTimeout: 60000,
     exclude: ["node_modules"],
-    include: ["scripts/__tests__/**/*.test.ts"],
+    include: ["core/__tests__/**/*.test.ts"],
   },
 });
