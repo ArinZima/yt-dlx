@@ -11,7 +11,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytdlx.audio.single.custom({
-      query: "vuiHFaNCpYvMigWq",
+      query: "sQEgklEwhSo",
       outputFormat: "ogg",
       quality: "medium",
       folderName: "audio",
@@ -73,7 +73,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
     console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.custom()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytdlx.audio.single.custom({
-      query: "vuiHFaNCpYvMigWq",
+      query: "sQEgklEwhSo",
       outputFormat: "flac",
       quality: "medium",
       folderName: "audio",

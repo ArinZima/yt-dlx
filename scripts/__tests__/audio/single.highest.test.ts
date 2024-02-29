@@ -11,7 +11,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
     console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.highest()");
     console.log(colors.bold.yellow("@info:"), "stream: false");
     holder = await ytdlx.audio.single.highest({
-      query: "vuiHFaNCpYvMigWq",
+      query: "sQEgklEwhSo",
       outputFormat: "ogg",
       folderName: "audio",
       stream: false,
@@ -71,7 +71,7 @@ bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
     console.log(colors.bold.yellow("@test:"), "ytdlx.audio.single.highest()");
     console.log(colors.bold.yellow("@info:"), "stream: true");
     holder = await ytdlx.audio.single.highest({
-      query: "vuiHFaNCpYvMigWq",
+      query: "sQEgklEwhSo",
       outputFormat: "flac",
       folderName: "audio",
       stream: true,
