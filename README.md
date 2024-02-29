@@ -1,73 +1,39 @@
-<div style="text-align: center;">
-    <img src="https://i.postimg.cc/sXx2CgB7/yt-dlx-removebg.png" alt="yt-dlx Logo">
-</div>
+# YT-DLX: Elevate Your Video Downloading & Streaming Experience 🚀
 
-# yt-dlx: elevate your video downloading & streaming experience
+![yt-dlx Logo](https://i.postimg.cc/sXx2CgB7/yt-dlx-removebg.png)
 
 [![npm version](https://img.shields.io/npm/v/yt-dlx.svg)](https://www.npmjs.com/package/yt-dlx)
 ![license](https://img.shields.io/npm/l/yt-dlx.svg)
 
-## overview
+## Overview 🌟
 
-yt-dlx is a powerful video downloading tool designed to enhance your media experience. with a combination of features inspired by python-yt-dlp, python-youtube-dl, puppeteer & playwright, yt-dlx offers a comprehensive solution for effortlessly downloading audio and video content from various sources.
+yt-dlx is a powerful video downloading tool designed to enhance your media experience. It provides a comprehensive solution for effortlessly downloading audio and video content from various sources, offering a combination of features inspired by python-yt-dlp, python-youtube-dl, Puppeteer, and Playwright.
 
-## key features
+## Key Features 🔑
 
-- **effortless downloads**: streamline your audio/video downloads with yt-dlx's intuitive command-line interface.
-- **feature-rich package**: benefit from a rich set of functionalities inherited from popular tools like youtube-dl and python yt-dlp.
-- **continuous evolution**: stay up-to-date with state-of-the-art functionalities and enhancements to elevate your media experience.
+- **Effortless Downloads**: Streamline your audio/video downloads with yt-dlx's intuitive command-line interface.
+- **Feature-rich Package**: Benefit from a rich set of functionalities inherited from popular tools like youtube-dl and python yt-dlp.
+- **Continuous Evolution**: Stay up-to-date with state-of-the-art functionalities and enhancements to elevate your media experience.
 
-## installation
+## Installation 💻
 
-to install yt-dlx, simply use any package manager you like:
+You can install yt-dlx using any package manager of your choice:
 
-- bun add yt-dlx
-- yarn add yt-dlx
-- pnpm add yt-dlx
-- npm install yt-dlx
-
-## usage
-
-using yt-dlx is very verbosed. Here are all the functions provided by yt-dlx
-
-```ts
-import ytdlx from "yt-dlx";
-
-// Downloading Only Audio.
-await ytdlx.audio.single.highest({
-  query: "",
-});
-await ytdlx.audio.single.lowest({
-  query: "",
-});
-await ytdlx.audio.single.custom({
-  query: "",
-});
+```bash
+bun add yt-dlx
+yarn add yt-dlx
+pnpm add yt-dlx
+npm install yt-dlx
 ```
 
-```ts
-// Downloading Only Video.
-await ytdlx.video.single.highest({
-  query: "",
-});
-await ytdlx.video.single.lowest({
-  query: "",
-});
-await ytdlx.video.single.custom({
-  query: "",
-});
-```
+## Usage 🚀
 
-```ts
-// Downloading mix Audio + Video.
-await ytdlx.audio_video.single.highest({
-  query: "",
-});
-await ytdlx.audio_video.single.lowest({
-  query: "",
-});
-```
+Using yt-dlx is straightforward. Refer to the [documentation](https://rebrand.ly/mixly#yt-dlx) for detailed usage instructions. You can also use it online in [mixly](https://rebrand.ly/mixly).
 
-## get involved
+## Contribute 🤝
 
-we welcome contributions and feedback! if you encounter any issues or have suggestions for improvements, please [open an issue](https://github.com/...) or [submit a pull request](https://github.com/...).
+Contributions to yt-dlx are welcome! Check out the [GitHub repository](https://github.com/yt-dlx/yt-dlx) to get started.
+
+## License 📝
+
+yt-dlx is licensed under the [MIT license](https://github.com/yt-dlx/yt-dlx/blob/main/LICENSE).
