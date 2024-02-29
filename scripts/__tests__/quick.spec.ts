@@ -1,6 +1,6 @@
 console.clear();
 import colors from "colors";
-import Agent from "../base/agent";
+import Agent from "../base/Agent";
 
 (async () => {
   try {

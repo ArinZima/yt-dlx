@@ -3,7 +3,7 @@ import colors from "colors";
 import web from "../../web";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytdlx from "../../base/agent";
+import ytdlx from "../../base/Agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";

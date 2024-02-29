@@ -1,4 +1,4 @@
-import Engine from "../../base/agent";
+import Engine from "../../base/Agent";
 
 export default async function extract({ query }: { query: string }) {
   try {

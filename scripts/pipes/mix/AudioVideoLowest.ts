@@ -2,7 +2,7 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytdlx from "../../base/agent";
+import ytdlx from "../../base/Agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
