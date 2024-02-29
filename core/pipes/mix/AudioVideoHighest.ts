@@ -8,14 +8,12 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
-
-type VideoFormat = "mp4" | "avi" | "mov";
 interface AudioVideoHighestOC {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  outputFormat?: VideoFormat;
+  outputFormat?: keyof "mp4" | "avi" | "mov";
 }
 type AudioVideoHighest = Promise<200 | StreamResult>;
 const AudioVideoHighestInputSchema = z.object({

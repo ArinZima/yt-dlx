@@ -8,31 +8,34 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
-import type VideoFilters from "../../interface/VideoFilters";
-
-type VideoFormat = "mp4" | "avi" | "mov";
-type VideoQualities =
-  | "144p"
-  | "240p"
-  | "360p"
-  | "480p"
-  | "720p"
-  | "1080p"
-  | "1440p"
-  | "2160p"
-  | "2880p"
-  | "4320p"
-  | "5760p"
-  | "8640p"
-  | "12000p";
 interface VideoLowestOC {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  quality: VideoQualities;
-  outputFormat?: VideoFormat;
-  filter?: keyof VideoFilters;
+  quality:
+    | keyof "144p"
+    | "240p"
+    | "360p"
+    | "480p"
+    | "720p"
+    | "1080p"
+    | "1440p"
+    | "2160p"
+    | "2880p"
+    | "4320p"
+    | "5760p"
+    | "8640p"
+    | "12000p";
+  outputFormat?: keyof "mp4" | "avi" | "mov";
+  filter?:
+    | keyof "grayscale"
+    | "invert"
+    | "rotate90"
+    | "rotate180"
+    | "rotate270"
+    | "flipHorizontal"
+    | "flipVertical";
 }
 const VideoLowestInputSchema = z.object({
   query: z.string().min(1),

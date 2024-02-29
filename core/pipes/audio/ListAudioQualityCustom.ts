@@ -10,18 +10,30 @@ import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
 import type StreamResult from "../../interface/StreamResult";
-import type AudioFilters from "../../interface/AudioFilters";
 
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-type AudioQualities = "high" | "medium" | "low" | "ultralow";
 interface ListAudioQualityCustomOC {
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
   playlistUrls: string[];
-  quality: AudioQualities;
-  outputFormat?: AudioFormat;
-  filter?: keyof AudioFilters;
+  filter?:
+    | keyof "bassboost"
+    | "echo"
+    | "flanger"
+    | "nightcore"
+    | "panning"
+    | "phaser"
+    | "reverse"
+    | "slow"
+    | "speed"
+    | "subboost"
+    | "superslow"
+    | "superspeed"
+    | "surround"
+    | "vaporwave"
+    | "vibrato";
+  outputFormat?: keyof "mp3" | "ogg" | "flac" | "aiff";
+  quality: keyof "high" | "medium" | "low" | "ultralow";
 }
 type ListAudioQualityCustomType = 200 | StreamResult;
 const ListAudioQualityCustomInputSchema = z.object({

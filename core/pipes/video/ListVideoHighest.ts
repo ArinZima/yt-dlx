@@ -11,16 +11,20 @@ import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
 import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
-import type VideoFilters from "../../interface/VideoFilters";
-
-type VideoFormat = "mp4" | "avi" | "mov";
 interface ListVideoHighestOC {
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
   playlistUrls: string[];
-  outputFormat?: VideoFormat;
-  filter?: keyof VideoFilters;
+  outputFormat?: keyof "mp4" | "avi" | "mov";
+  filter?:
+    | keyof "grayscale"
+    | "invert"
+    | "rotate90"
+    | "rotate180"
+    | "rotate270"
+    | "flipHorizontal"
+    | "flipVertical";
 }
 type ListVideoHighestType = 200 | ErrorResult | StreamResult;
 const ListVideoHighestInputSchema = z.object({

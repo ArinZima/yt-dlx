@@ -8,14 +8,12 @@ import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
-
-type VideoFormat = "mp4" | "avi" | "mov";
 interface AudioVideoLowestOC {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  outputFormat?: VideoFormat;
+  outputFormat?: keyof "mp4" | "avi" | "mov";
 }
 type AudioVideoLowestType = Promise<200 | StreamResult>;
 const AudioVideoLowestInputSchema = z.object({
