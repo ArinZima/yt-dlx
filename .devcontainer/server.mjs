@@ -18,7 +18,7 @@ function sleep(ms) {
       execSync("bun add yt-dlx@latest", { stdio: "inherit" });
       execSync("rm -rf node_modules bun.lockb", { stdio: "inherit" });
       counter++;
-      await sleep(2000);
+      await sleep(8000);
     } catch (error) {
       console.error(colors.red("@error:"), error.message);
       process.exit(1);
