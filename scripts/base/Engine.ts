@@ -4,6 +4,7 @@ import * as path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
 import type TubeConfig from "../interface/TubeConfig";
+import type TubeFormat from "../interface/TubeFormat";
 import type EngineResult from "../interface/EngineResult";
 
 function sizeFormat(filesize: number) {
@@ -55,7 +56,7 @@ export default async function Engine(
     }
     const result = await promisify(exec)(proLoc);
     const metaTube = await JSON.parse(result.stdout.toString());
-    await metaTube.formats.forEach((ipop: any) => {
+    await metaTube.formats.forEach((ipop: TubeFormat) => {
       const rmval = new Set(["storyboard", "Default"]);
       if (rmval.has(ipop.format_note) && ipop.filesize === null) return;
       const reTube: TubeConfig = {
