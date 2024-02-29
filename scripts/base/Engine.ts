@@ -1,4 +1,5 @@
-import path from "path";
+import * as fs from "fs";
+import * as path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
 import sizeFormat from "./sizeFormat";
@@ -20,13 +21,29 @@ export default async function Engine(
   password?: string
 ): Promise<EngineResult> {
   let pushTube: any[] = [];
-  let proLoc = path.join(__dirname, "..", "..", "util", "Engine");
-  if (proxy && port && username && password) {
-    proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
+  let proLoc: string = "";
+  let maxTries: number = 6;
+  let currentDir: string = __dirname;
+  while (maxTries > 0) {
+    const enginePath = path.join(currentDir, "util", "Engine");
+    if (fs.existsSync(enginePath)) {
+      proLoc = enginePath;
+      break;
+    } else {
+      currentDir = path.join(currentDir, "..");
+      maxTries--;
+    }
   }
-  proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
-  proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
-  proLoc += ` '${query}'`;
+  if (proLoc !== "") {
+    if (proxy && port && username && password) {
+      proLoc += ` --proxy 'http://${username}:${password}@${proxy}:${port}'`;
+    }
+    proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
+    proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
+    proLoc += ` '${query}'`;
+  } else {
+    console.error("Could not find the Engine file.");
+  }
   const result = await promisify(exec)(proLoc);
   const metaTube = await JSON.parse(result.stdout.toString());
   await metaTube.formats.forEach((ipop: any) => {
@@ -57,7 +74,7 @@ export default async function Engine(
       },
       meta_info: {
         filesizebytes: ipop.filesize,
-        filesizeformatted: sizeFormat(ipop.filesize).toString(),
+        filesizeformatted: sizeFormat(ipop.filesize),
         framespersecond: ipop.fps,
         totalbitrate: ipop.tbr,
         qriginalextension: ipop.ext,
