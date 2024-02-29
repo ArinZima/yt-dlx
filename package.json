@@ -1,0 +1,109 @@
+{
+  "name": "yt-dlx",
+  "version": "2.0.8",
+  "types": "shared/index.d.ts",
+  "main": "shared/index.cjs.js",
+  "module": "shared/index.esm.js",
+  "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
+  "bin": {
+    "yt": "shared/cli/main.js",
+    "yt-dlx": "shared/cli/main.js"
+  },
+  "scripts": {
+    "start": "node .devcontainer/startup.mjs",
+    "setup": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
+    "remake": "bun run clean && bun run make && bun run build",
+    "remake:update": "bun run clean && bun run make && bun install --latest && bun run build",
+    "upload": "bun run test && bun run cli && bun run remake && npm pkg fix && bun run publish --access=public && bun run update",
+    "clean": "bun run clean:base && bun run clean:client",
+    "clean:base": "rm -rf node_modules .temp shared bun.lockb",
+    "clean:client": "cd client && rm -rf node_modules .next bun.lockb",
+    "make": "bun run make:base && bun run make:client",
+    "make:base": "bun install",
+    "make:client": "cd client && bun install",
+    "build": "bun run build:base && bun run build:client",
+    "build:base": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
+    "build:client": "cd client && bun run build",
+    "update": "bun run make && bun run update:base && bun run update:client",
+    "update:base": "bun install --latest && bun update --latest",
+    "update:client": "cd client && bun install --latest && bun update --latest",
+    "cli": "bun run link && bun run test:cli && bun run unlink",
+    "test": "bun run test:bun && bun run test:cli",
+    "test:bun": "bun test --timeout 60000 --bail --watch",
+    "test:spec": "bun test --timeout 60000 --bail --watch ./core/__tests__/bun.spec.ts",
+    "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'"
+  },
+  "files": [
+    "util",
+    "shared",
+    "LICENSE",
+    "README.md",
+    "yt-dlx.png",
+    "package.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "author": {
+    "name": "yt-dlx"
+  },
+  "licenses": [
+    {
+      "type": "AGPL-3.0",
+      "url": "https://opensource.org/licenses/AGPL-3.0"
+    }
+  ],
+  "homepage": "https://rebrand.ly/mixly",
+  "repository": {
+    "type": "git",
+    "url": "https://mixly-yt-dlx.koyeb.app/pkg"
+  },
+  "keywords": [
+    "yt-dlx",
+    "ytdlp",
+    "cli",
+    "yt"
+  ],
+  "dependencies": {
+    "async-retry": "latest",
+    "bun": "latest",
+    "chai": "latest",
+    "cheerio": "latest",
+    "colors": "latest",
+    "crypto": "latest",
+    "express": "latest",
+    "fluent-ffmpeg": "latest",
+    "minimist": "latest",
+    "puppeteer": "latest",
+    "readline-sync": "latest",
+    "spinnies": "latest",
+    "stream": "latest",
+    "yt-dlx": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/chai": "latest",
+    "@rollup/plugin-json": "latest",
+    "@rollup/plugin-typescript": "latest",
+    "@types/async": "latest",
+    "@types/async-retry": "latest",
+    "@types/bun": "latest",
+    "@types/cheerio": "latest",
+    "@types/fluent-ffmpeg": "latest",
+    "@types/fs-extra": "latest",
+    "@types/minimist": "latest",
+    "@types/node": "latest",
+    "@types/readline-sync": "latest",
+    "@types/rollup-plugin-progress": "latest",
+    "@types/spinnies": "latest",
+    "@types/yt-search": "latest",
+    "rollup": "latest",
+    "rollup-plugin-dts": "latest",
+    "rollup-plugin-progress": "latest",
+    "rollup-plugin-typescript2": "latest",
+    "ts-node": "latest",
+    "tsup": "latest",
+    "vitest": "latest",
+    "typescript": "latest"
+  }
+}
