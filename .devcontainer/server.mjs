@@ -26,8 +26,8 @@ app.get("/pip", async (req, res) => {
       console.clear();
       console.log(colors.green("@info:"), "re-installing yt-dlx");
       console.log(colors.green("@info:"), `iteration ${counter}`);
-      execSync("bun remove yt-dlx", { stdio: "inherit" });
       execSync("bun add yt-dlx@latest", { stdio: "inherit" });
+      execSync("bun remove yt-dlx", { stdio: "inherit" });
       counter++;
       await sleep(2000);
     } catch (error) {
