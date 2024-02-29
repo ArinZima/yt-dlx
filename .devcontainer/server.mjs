@@ -39,5 +39,6 @@ app.get("/pip", async (req, res) => {
 
 const port = process.env.PORT || 8080;
 app.listen(port, async () => {
-  console.log(colors.bold.green("@express:"), port);
+  const response = await nfetch("http://ipinfo.io/ip");
+  console.log(colors.bold.green("@express: ") + (await response.text()));
 });
