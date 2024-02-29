@@ -11,7 +11,7 @@ interface ListVideoQualityCustomOC {
     outputFormat?: VideoFormat;
     filter?: keyof VideoFilters;
 }
-type ListVideoQualityCustomType = 200 | StreamResult;
+type ListVideoQualityCustomType = true | StreamResult;
 export default function ListVideoQualityCustom(input: ListVideoQualityCustomOC): Promise<ListVideoQualityCustomType[] | any>;
 export {};
 //# sourceMappingURL=ListVideoQualityCustom.d.ts.map

@@ -11,7 +11,7 @@ interface ListAudioQualityCustomOC {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 }
-type ListAudioQualityCustomType = 200 | StreamResult;
+type ListAudioQualityCustomType = true | StreamResult;
 export default function ListAudioQualityCustom(input: ListAudioQualityCustomOC): Promise<ListAudioQualityCustomType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioQualityCustom.d.ts.map

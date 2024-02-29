@@ -10,7 +10,7 @@ interface VideoHighestOC {
     outputFormat?: VideoFormat;
     filter?: keyof VideoFilters;
 }
-type VideoHighestType = Promise<200 | ErrorResult | StreamResult>;
+type VideoHighestType = Promise<true | ErrorResult | StreamResult>;
 export default function VideoHighest(input: VideoHighestOC): VideoHighestType;
 export {};
 //# sourceMappingURL=VideoHighest.d.ts.map

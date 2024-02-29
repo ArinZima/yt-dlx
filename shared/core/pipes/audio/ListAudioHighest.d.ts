@@ -9,7 +9,7 @@ interface ListAudioHighestOC {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 }
-type ListAudioHighestType = 200 | StreamResult;
+type ListAudioHighestType = true | StreamResult;
 export default function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioHighest.d.ts.map

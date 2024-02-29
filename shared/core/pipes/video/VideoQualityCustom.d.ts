@@ -11,7 +11,7 @@ interface VideoLowestOC {
     outputFormat?: VideoFormat;
     filter?: keyof VideoFilters;
 }
-type VideoLowestType = Promise<200 | StreamResult>;
+type VideoLowestType = Promise<true | StreamResult>;
 export default function VideoLowest(input: VideoLowestOC): VideoLowestType;
 export {};
 //# sourceMappingURL=VideoQualityCustom.d.ts.map

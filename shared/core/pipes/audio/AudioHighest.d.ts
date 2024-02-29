@@ -9,7 +9,7 @@ type AudioHighestOC = {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 };
-type AudioHighestType = Promise<200 | StreamResult>;
+type AudioHighestType = Promise<true | StreamResult>;
 export default function AudioHighest(input: AudioHighestOC): AudioHighestType;
 export {};
 //# sourceMappingURL=AudioHighest.d.ts.map

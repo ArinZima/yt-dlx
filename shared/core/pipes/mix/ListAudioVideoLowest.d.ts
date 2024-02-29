@@ -7,7 +7,7 @@ interface ListAudioVideoLowestOC {
     playlistUrls: string[];
     outputFormat?: VideoFormat;
 }
-type ListAudioVideoLowestType = 200 | StreamResult;
+type ListAudioVideoLowestType = true | StreamResult;
 export default function ListAudioVideoLowest(input: ListAudioVideoLowestOC): Promise<ListAudioVideoLowestType[]>;
 export {};
 //# sourceMappingURL=ListAudioVideoLowest.d.ts.map

@@ -7,7 +7,7 @@ interface AudioVideoHighestOC {
     folderName?: string;
     outputFormat?: VideoFormat;
 }
-type AudioVideoHighest = Promise<200 | StreamResult>;
+type AudioVideoHighest = Promise<true | StreamResult>;
 export default function AudioVideoHighest(input: AudioVideoHighestOC): AudioVideoHighest;
 export {};
 //# sourceMappingURL=AudioVideoHighest.d.ts.map

@@ -987,7 +987,7 @@ async function Engine(query) {
 // }
 // }
 
-var version = "2.0.4";
+var version = "2.0.6";
 
 async function Agent({ query, }) {
     try {
@@ -1406,6 +1406,8 @@ const progressBar = (prog) => {
     if (prog.timemark === undefined)
         return;
     let color = colors.green;
+    if (prog.percent >= 98)
+        prog.percent = 100;
     readline.cursorTo(process.stdout, 0);
     const width = Math.floor(process.stdout.columns / 3);
     const scomp = Math.round((width * prog.percent) / 100);
@@ -1577,13 +1579,12 @@ async function AudioLowest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc
-                    .output(path__namespace.join(metaFold, metaName))
-                    .on("error", reject)
-                    .on("end", () => resolve())
-                    .run();
+                ytc.output(path__namespace.join(metaFold, metaName));
+                ytc.on("end", () => resolve());
+                ytc.on("error", reject);
+                ytc.run();
             });
-            return 200;
+            return true;
         }
     }
     catch (error) {
@@ -1778,13 +1779,12 @@ async function AudioHighest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc
-                    .output(path__namespace.join(metaFold, metaName))
-                    .on("error", reject)
-                    .on("end", () => resolve())
-                    .run();
+                ytc.output(path__namespace.join(metaFold, metaName));
+                ytc.on("end", () => resolve());
+                ytc.on("error", reject);
+                ytc.run();
             });
-            return 200;
+            return true;
         }
     }
     catch (error) {
@@ -1915,13 +1915,12 @@ async function VideoLowest$1(input) {
                 };
             default:
                 await new Promise((resolve, reject) => {
-                    ytc
-                        .output(path__namespace.join(metaFold, metaName))
-                        .on("error", reject)
-                        .on("end", () => resolve())
-                        .run();
+                    ytc.output(path__namespace.join(metaFold, metaName));
+                    ytc.on("end", () => resolve());
+                    ytc.on("error", reject);
+                    ytc.run();
                 });
-                return 200;
+                return true;
         }
     }
     catch (error) {
@@ -2052,13 +2051,12 @@ async function VideoHighest(input) {
                 };
             default:
                 await new Promise((resolve, reject) => {
-                    ytc
-                        .output(path__namespace.join(metaFold, metaName))
-                        .on("error", reject)
-                        .on("end", () => resolve())
-                        .run();
+                    ytc.output(path__namespace.join(metaFold, metaName));
+                    ytc.on("end", () => resolve());
+                    ytc.on("error", reject);
+                    ytc.run();
                 });
-                return 200;
+                return true;
         }
     }
     catch (error) {
@@ -2158,13 +2156,12 @@ async function AudioVideoLowest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc
-                    .output(path__namespace.join(metaFold, metaName))
-                    .on("error", reject)
-                    .on("end", () => resolve())
-                    .run();
+                ytc.output(path__namespace.join(metaFold, metaName));
+                ytc.on("end", () => resolve());
+                ytc.on("error", reject);
+                ytc.run();
             });
-            return 200;
+            return true;
         }
     }
     catch (error) {
@@ -2264,13 +2261,12 @@ async function AudioVideoHighest(input) {
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc
-                    .output(path__namespace.join(metaFold, metaName))
-                    .on("error", reject)
-                    .on("end", () => resolve())
-                    .run();
+                ytc.output(path__namespace.join(metaFold, metaName));
+                ytc.on("end", () => resolve());
+                ytc.on("error", reject);
+                ytc.run();
             });
-            return 200;
+            return true;
         }
     }
     catch (error) {
@@ -2313,6 +2309,7 @@ async function AudioQualityCustom(input) {
                 status: 500,
             };
         }
+        let metaName = "";
         const title = metaResp.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
         const metaFold = folderName
             ? path__namespace.join(process.cwd(), folderName)
@@ -2338,51 +2335,67 @@ async function AudioQualityCustom(input) {
         switch (filter) {
             case "bassboost":
                 ytc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "echo":
                 ytc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "flanger":
                 ytc.withAudioFilter(["flanger"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "nightcore":
                 ytc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "panning":
                 ytc.withAudioFilter(["apulsator=hz=0.08"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "phaser":
                 ytc.withAudioFilter(["aphaser=in_gain=0.4"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "reverse":
                 ytc.withAudioFilter(["areverse"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "slow":
                 ytc.withAudioFilter(["atempo=0.8"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "speed":
                 ytc.withAudioFilter(["atempo=2"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "subboost":
                 ytc.withAudioFilter(["asubboost"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "superslow":
                 ytc.withAudioFilter(["atempo=0.5"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "superspeed":
                 ytc.withAudioFilter(["atempo=3"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "surround":
                 ytc.withAudioFilter(["surround"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "vaporwave":
                 ytc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             case "vibrato":
                 ytc.withAudioFilter(["vibrato=f=6.5"]);
+                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
                 break;
             default:
                 ytc.withAudioFilter([]);
+                metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
                 break;
         }
         ytc.on("start", (command) => {
@@ -2432,19 +2445,18 @@ async function AudioQualityCustom(input) {
             return {
                 stream: readStream,
                 filename: folderName
-                    ? path__namespace.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`)
-                    : `yt-dlp-(${quality})-${title}.${outputFormat}`,
+                    ? path__namespace.join(metaFold, metaName.replace("-.", "."))
+                    : metaName.replace("-.", "."),
             };
         }
         else {
             await new Promise((resolve, reject) => {
-                ytc
-                    .output(path__namespace.join(metaFold, `yt-dlp-(${quality})-${title}.${outputFormat}`))
-                    .on("error", reject)
-                    .on("end", () => resolve())
-                    .run();
+                ytc.output(path__namespace.join(metaFold, metaName));
+                ytc.on("end", () => resolve());
+                ytc.on("error", reject);
+                ytc.run();
             });
-            return 200;
+            return true;
         }
     }
     catch (error) {
@@ -2575,13 +2587,12 @@ async function VideoLowest(input) {
                 };
             default:
                 await new Promise((resolve, reject) => {
-                    ytc
-                        .output(path__namespace.join(metaFold, metaName))
-                        .on("error", reject)
-                        .on("end", () => resolve())
-                        .run();
+                    ytc.output(path__namespace.join(metaFold, metaName));
+                    ytc.on("end", () => resolve());
+                    ytc.on("error", reject);
+                    ytc.run();
                 });
-                return 200;
+                return true;
         }
     }
     catch (error) {
@@ -2732,11 +2743,10 @@ async function ListVideoLowest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc
-                            .output(path__namespace.join(metaFold, metaName))
-                            .on("end", () => resolve())
-                            .on("error", reject)
-                            .run();
+                        ytc.output(path__namespace.join(metaFold, metaName));
+                        ytc.on("end", () => resolve());
+                        ytc.on("error", reject);
+                        ytc.run();
                     });
                     break;
             }
@@ -2890,11 +2900,10 @@ async function ListVideoHighest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc
-                            .output(path__namespace.join(metaFold, metaName))
-                            .on("end", () => resolve())
-                            .on("error", reject)
-                            .run();
+                        ytc.output(path__namespace.join(metaFold, metaName));
+                        ytc.on("end", () => resolve());
+                        ytc.on("error", reject);
+                        ytc.run();
                     });
                     break;
             }
@@ -3069,11 +3078,10 @@ async function ListVideoQualityCustom(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc
-                            .output(path__namespace.join(metaFold, metaName))
-                            .on("end", () => resolve())
-                            .on("error", reject)
-                            .run();
+                        ytc.output(path__namespace.join(metaFold, metaName));
+                        ytc.on("end", () => resolve());
+                        ytc.on("error", reject);
+                        ytc.run();
                     });
                     break;
             }
@@ -3262,11 +3270,10 @@ async function ListAudioLowest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc
-                            .output(path__namespace.join(metaFold, metaName))
-                            .on("end", () => resolve())
-                            .on("error", reject)
-                            .run();
+                        ytc.output(path__namespace.join(metaFold, metaName));
+                        ytc.on("end", () => resolve());
+                        ytc.on("error", reject);
+                        ytc.run();
                     });
                     break;
             }
@@ -3455,11 +3462,10 @@ async function ListAudioHighest(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc
-                            .output(path__namespace.join(metaFold, metaName))
-                            .on("end", () => resolve())
-                            .on("error", reject)
-                            .run();
+                        ytc.output(path__namespace.join(metaFold, metaName));
+                        ytc.on("end", () => resolve());
+                        ytc.on("error", reject);
+                        ytc.run();
                     });
                     break;
             }
@@ -3652,11 +3658,10 @@ async function ListAudioQualityCustom(input) {
                     break;
                 default:
                     await new Promise((resolve, reject) => {
-                        ytc
-                            .output(path__namespace.join(metaFold, metaName))
-                            .on("end", () => resolve())
-                            .on("error", reject)
-                            .run();
+                        ytc.output(path__namespace.join(metaFold, metaName));
+                        ytc.on("end", () => resolve());
+                        ytc.on("error", reject);
+                        ytc.run();
                     });
                     break;
             }
@@ -3773,16 +3778,15 @@ async function ListAudioVideoLowest(input) {
                             }
                             else {
                                 await new Promise((resolve, reject) => {
-                                    ytc
-                                        .output(path__namespace.join(metaFold, metaName))
-                                        .on("end", () => resolve())
-                                        .on("error", reject)
-                                        .run();
+                                    ytc.output(path__namespace.join(metaFold, metaName));
+                                    ytc.on("end", () => resolve());
+                                    ytc.on("error", reject);
+                                    ytc.run();
                                 });
                             }
                         }
                         catch (error) {
-                            results.push(200);
+                            results.push(true);
                         }
                     });
                     return results;
@@ -3900,16 +3904,15 @@ async function ListAudioVideoHighest(input) {
                             }
                             else {
                                 await new Promise((resolve, reject) => {
-                                    ytc
-                                        .output(path__namespace.join(metaFold, metaName))
-                                        .on("end", () => resolve())
-                                        .on("error", reject)
-                                        .run();
+                                    ytc.output(path__namespace.join(metaFold, metaName));
+                                    ytc.on("end", () => resolve());
+                                    ytc.on("error", reject);
+                                    ytc.run();
                                 });
                             }
                         }
                         catch (error) {
-                            results.push(200);
+                            results.push(true);
                         }
                     });
                     return results;

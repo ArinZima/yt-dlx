@@ -9,7 +9,7 @@ interface ListAudioLowestOC {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 }
-type ListAudioLowestType = 200 | StreamResult;
+type ListAudioLowestType = true | StreamResult;
 export default function ListAudioLowest(input: ListAudioLowestOC): Promise<ListAudioLowestType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioLowest.d.ts.map

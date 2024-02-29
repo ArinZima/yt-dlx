@@ -9,7 +9,7 @@ type AudioLowestOC = {
     outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
 };
-type AudioLowestType = Promise<200 | StreamResult>;
+type AudioLowestType = Promise<true | StreamResult>;
 export default function AudioLowest(input: AudioLowestOC): AudioLowestType;
 export {};
 //# sourceMappingURL=AudioLowest.d.ts.map

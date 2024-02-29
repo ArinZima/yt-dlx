@@ -7,7 +7,7 @@ interface ListAudioVideoHighestOC {
     playlistUrls: string[];
     outputFormat?: VideoFormat;
 }
-type ListAudioVideoHighestType = 200 | StreamResult;
+type ListAudioVideoHighestType = true | StreamResult;
 export default function ListAudioVideoHighest(input: ListAudioVideoHighestOC): Promise<ListAudioVideoHighestType[]>;
 export {};
 //# sourceMappingURL=ListAudioVideoHighest.d.ts.map
