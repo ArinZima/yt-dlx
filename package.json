@@ -84,7 +84,6 @@
     "zod": "latest"
   },
   "devDependencies": {
-    "@types/node-cron": "latest",
     "@rollup/plugin-json": "latest",
     "@rollup/plugin-typescript": "latest",
     "@types/async": "latest",
@@ -96,6 +95,7 @@
     "@types/fs-extra": "latest",
     "@types/minimist": "latest",
     "@types/node": "latest",
+    "@types/node-cron": "latest",
     "@types/node-fetch": "latest",
     "@types/readline-sync": "latest",
     "@types/rollup-plugin-progress": "latest",
@@ -107,7 +107,6 @@
     "rollup-plugin-typescript2": "latest",
     "ts-node": "latest",
     "tsup": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "typescript": "latest"
   }
 }
