@@ -78,11 +78,6 @@ function runScript() {
     }${os.hostname()}${colors.reset}`
   );
   console.log(
-    `${colors.green}@system:${colors.reset} platform: ${
-      colors.red
-    }${os.platform()}${colors.reset}`
-  );
-  console.log(
     `${colors.green}@system:${colors.reset} release: ${
       colors.red
     }${os.release()}${colors.reset}`
