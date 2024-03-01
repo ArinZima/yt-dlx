@@ -52,19 +52,21 @@ export default async function AudioVideoHighest(
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
-    const AmetaEntry = await bigEntry(metaBody.AudioStore);
-    const VmetaEntry = await bigEntry(metaBody.VideoStore);
+    const [AmetaEntry, VmetaEntry] = await Promise.all([
+      bigEntry(metaBody.AudioStore),
+      bigEntry(metaBody.VideoStore),
+    ]);
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
     proc.addInput(VmetaEntry.AVDownload.mediaurl);
     proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.addOutputOption("-spatial-aq", "1");
-    proc.addOutputOption("-preset", "slow");
-    proc.addOutputOption("-level:v", "4.2");
-    proc.addOutputOption("-rc", "vbr_hq");
-    proc.addOutputOption("-b:v", "10M");
-    proc.addOutputOption("-shortest");
+    proc.addOption("-spatial-aq", "1");
+    proc.addOption("-preset", "slow");
+    proc.addOption("-level:v", "4.2");
+    proc.addOption("-rc", "vbr_hq");
+    proc.addOption("-b:v", "10M");
+    proc.addOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
       if (verbose) console.log(command);
