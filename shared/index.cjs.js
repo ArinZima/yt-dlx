@@ -987,7 +987,7 @@ async function Engine(query) {
 // }
 // }
 
-var version = "3.0.3";
+var version = "3.0.6";
 
 async function Agent({ query, }) {
     try {
