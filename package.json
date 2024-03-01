@@ -13,7 +13,7 @@
     "start": "node ./.devcontainer/startup.mjs",
     "rerun": "bun ./.devcontainer/server.mjs & bun ./.devcontainer/rerun.mjs",
     "remake": "bun run clean && bun run make && bun install --latest && bun run build",
-    "upload": "bun run test && bun run cli && bun run build && npm pkg fix && npm publish --access=public && bun run update",
+    "upload": "bun run build && bun run test && npm pkg fix && npm publish --access=public && bun run update",
     "clean": "bun run clean:base && bun run clean:client",
     "clean:base": "rm -rf node_modules .temp shared bun.lockb",
     "clean:client": "cd client && rm -rf node_modules .next bun.lockb",
