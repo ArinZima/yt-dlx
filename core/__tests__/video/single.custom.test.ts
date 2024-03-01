@@ -6,7 +6,7 @@ import * as async from "async";
 let holder: any;
 
 async.series([
-  async function () {
+  async () => {
     try {
       holder = await ytdlx.video.single.custom({
         folderName: ".temp/video",
@@ -22,7 +22,7 @@ async.series([
     }
   },
   // =========================[BREAK-TEST]=========================
-  async function () {
+  async () => {
     try {
       holder = await ytdlx.video.single.custom({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
@@ -39,7 +39,7 @@ async.series([
     }
   },
   // =========================[BREAK-TEST]=========================
-  async function () {
+  async () => {
     try {
       holder = await ytdlx.video.single.custom({
         folderName: ".temp/video",
@@ -66,7 +66,7 @@ async.series([
     }
   },
   // =========================[BREAK-TEST]=========================
-  async function () {
+  async () => {
     try {
       holder = await ytdlx.video.single.custom({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
