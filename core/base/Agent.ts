@@ -42,7 +42,6 @@ export default async function Agent({
       default:
         videoId = await YouTubeID(query);
     }
-    console.log(colors.green("@info: ") + `fetching metadata for ${query}`);
     switch (videoId) {
       case undefined:
         TubeBody = (await core.search.SearchVideos({
