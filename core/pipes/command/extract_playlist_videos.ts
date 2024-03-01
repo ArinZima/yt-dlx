@@ -14,6 +14,7 @@ export default async function extract_playlist_videos({
 }): Promise<EngineResult[]> {
   try {
     const metaTubeArr: EngineResult[] = [];
+    let counter = 0; // Counter variable
     await async.eachSeries(playlistUrls, async (listLink) => {
       const query: string | undefined = await YouTubeID(listLink);
       if (query === undefined) {
@@ -47,6 +48,12 @@ export default async function extract_playlist_videos({
               query: vid.videoLink,
             });
             metaTubeArr.push(metaTube);
+            counter++;
+            console.log(
+              colors.green("@info:"),
+              "added",
+              counter + "/" + resp.playlistVideoCount
+            );
           });
         }
       }
