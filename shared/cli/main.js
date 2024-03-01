@@ -823,7 +823,7 @@ async function Engine(query) {
 }
 
 // package.json
-var version = "3.0.0";
+var version = "3.0.3";
 
 // core/base/Agent.ts
 async function Agent({

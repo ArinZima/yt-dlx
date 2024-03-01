@@ -3,7 +3,7 @@
 var child_process = require('child_process');
 
 // package.json
-var version = "3.0.0";
+var version = "3.0.3";
 child_process.exec("npm show yt-dlx version", (_error, stdout) => {
   let logger = "";
   const latestVersion = stdout.trim();
