@@ -1,42 +1,57 @@
-console.clear();
-import path from "path";
-import fs from "fs-extra";
+import * as fs from "fs";
 import colors from "colors";
-import * as bun from "bun:test";
+import * as path from "path";
+import * as async from "async";
+import AudioVideoLowest from "../pipes/mix/AudioVideoLowest";
 import AudioVideoHighest from "../pipes/mix/AudioVideoHighest";
 
-bun.test(colors.blue("\n\n@tesing: ") + "Quick-Tests()", async () => {
-  try {
-    const metaTube: any = await AudioVideoHighest({
-      query: "sQEgklEwhSo",
-      folderName: ".temp",
-      verbose: false,
-      stream: false,
-    });
-    console.log(metaTube);
-  } catch (error: any) {
-    console.error(colors.red("@error:"), error.message);
+async.series(
+  {
+    first: async () => {
+      try {
+        let metaTube: any = await AudioVideoLowest({
+          query: "PRATEEK KUHAD - MULAQAT (OFFICIAL MUSIC VIDEO)",
+          folderName: ".temp",
+          verbose: false,
+          stream: false,
+        });
+        console.log(colors.green("@info:"), metaTube);
+        return metaTube;
+      } catch (error: any) {
+        throw new Error(colors.red("@error:"), error.message);
+      }
+    },
+    second: async () => {
+      try {
+        let metaTube: any = await AudioVideoHighest({
+          query: "pRLOXUlIUG0",
+          folderName: ".temp",
+          verbose: false,
+          stream: true,
+        });
+        console.log(colors.green("@info:"), metaTube.filename);
+        return metaTube;
+      } catch (error: any) {
+        throw new Error(colors.red("@error:"), error.message);
+      }
+    },
+    getAndsave: async ({ second }: any) => {
+      try {
+        const outputPath = path.join(second.filename);
+        const writeStream = fs.createWriteStream(outputPath);
+        second.stream.on("end", () => {
+          console.log(colors.green("@info:"), "download completed");
+        });
+        second.stream.on("error", (error: any) => {
+          console.error(colors.red("@error:"), error.message);
+        });
+        second.stream.pipe(writeStream);
+      } catch (error: any) {
+        throw new Error(colors.red("@error:"), error.message);
+      }
+    },
+  },
+  (error) => {
+    if (error) console.error(colors.red("@error:"), error.message);
   }
-});
-
-bun.test(colors.blue("\n\n@tesing: ") + "Quick-Tests()", async () => {
-  try {
-    const metaTube: any = await AudioVideoHighest({
-      query: "sQEgklEwhSo",
-      folderName: ".temp",
-      verbose: false,
-      stream: true,
-    });
-    const outputPath = path.join(metaTube.filename);
-    const writeStream = fs.createWriteStream(outputPath);
-    await metaTube.stream.pipe(writeStream);
-    metaTube.stream.on("end", () => {
-      console.log(colors.green("@info:"), "Download completed");
-    });
-    metaTube.stream.on("error", (error: any) => {
-      console.error(colors.red("@error:"), error.message);
-    });
-  } catch (error: any) {
-    console.error(colors.red("@error:"), error.message);
-  }
-});
+);

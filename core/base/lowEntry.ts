@@ -8,7 +8,17 @@ export default async function lowEntry(
     console.log(colors.red("@error:"), "sorry no downloadable data found");
     return undefined;
   }
-  const sortedByFileSize = [...metaBody].sort(
+  const validEntries = metaBody.filter(
+    (entry) =>
+      entry.meta_info.filesizebytes !== null &&
+      entry.meta_info.filesizebytes !== undefined &&
+      !isNaN(entry.meta_info.filesizebytes)
+  );
+  if (validEntries.length === 0) {
+    console.log(colors.red("@error:"), "sorry no downloadable data found");
+    return undefined;
+  }
+  const sortedByFileSize = [...validEntries].sort(
     (a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes
   );
   return sortedByFileSize[0];

@@ -52,11 +52,11 @@ export default async function Engine(query: string): Promise<EngineResult> {
       if (rmval.has(io.format_note) && io.filesize === undefined) return;
       const reTube: TubeConfig = {
         meta_audio: {
-          samplerate: io.asr,
-          channels: io.audio_channels,
-          codec: io.acodec,
-          extension: io.audio_ext,
           bitrate: io.abr,
+          codec: io.acodec,
+          samplerate: io.asr,
+          extension: io.audio_ext,
+          channels: io.audio_channels,
         },
         meta_video: {
           bitrate: io.vbr,
