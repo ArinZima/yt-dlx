@@ -3,7 +3,7 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import ffmpeg from "../../base/ffmpeg";
+import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -61,7 +61,7 @@ export default async function VideoLowest(
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = await ffmpeg();
+    const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
     switch (filter) {

@@ -4,7 +4,7 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import ffmpeg from "../../base/ffmpeg";
+import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -89,7 +89,7 @@ export default async function ListAudioVideoHighest(
                   : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
-                const proc = await ffmpeg();
+                const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
                 const AmetaEntry = await bigEntry(metaBody.AudioStore);
                 const VmetaEntry = await bigEntry(metaBody.VideoStore);
                 if (AmetaEntry === undefined || VmetaEntry === undefined)

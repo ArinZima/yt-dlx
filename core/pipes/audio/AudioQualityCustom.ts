@@ -3,7 +3,7 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import ffmpeg from "../../base/ffmpeg";
+import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -72,7 +72,7 @@ export default async function AudioQualityCustom(
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const proc = await ffmpeg();
+    const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === undefined) {
       return {

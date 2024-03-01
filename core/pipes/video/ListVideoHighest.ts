@@ -4,7 +4,7 @@ import web from "../../web";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import ffmpeg from "../../base/ffmpeg";
+import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -89,7 +89,7 @@ export default async function ListVideoHighest(
         metaBody.VideoStore
       );
       if (metaEntry === undefined) continue;
-      const proc = await ffmpeg();
+      const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.format(outputFormat);
       proc.on("start", (command) => {

@@ -4,7 +4,7 @@ import web from "../../web";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import ffmpeg from "../../base/ffmpeg";
+import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
@@ -84,7 +84,7 @@ export default async function ListAudioLowest(
         metaBody.AudioStore
       );
       if (metaEntry === undefined) continue;
-      const proc = await ffmpeg();
+      const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.addInput(metaBody.metaTube.thumbnail);
       proc.addOutputOption("-map", "1:0");
