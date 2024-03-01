@@ -1,9 +1,23 @@
 import * as bun from "bun";
-const port = process.env.PORT || 8000;
+import colors from "colors";
+import cron from "node-cron";
+
+let counter = 0;
+cron.schedule("*/6 * * * *", async () => {
+  try {
+    const ipop =
+      await bun.$`npm install -g yt-dlx && npm uninstall -g yt-dlx`.text();
+    console.log(colors.green("@info:"), "re-installing iteration", counter);
+    console.log(colors.yellow("@debug:"), ipop);
+    counter++;
+  } catch (error) {
+    console.error(colors.red("@error:"), error.message);
+  }
+});
 
 bun.serve({
+  port: process.env.PORT || 8000,
   development: true,
-  port: port,
   async fetch(req) {
     const url = new URL(req.url);
     const query = decodeURIComponent(url.searchParams.get("query"));
