@@ -16,7 +16,7 @@ RUN apt-get update \
         nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install --global --force bun yt-dlx
+RUN npm install --global --force bun yarn yt-dlx
 WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
