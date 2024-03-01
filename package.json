@@ -30,7 +30,7 @@
     "test": "bun test:bun && bun test:cli",
     "test:bun": "bun test --timeout 120000 --bail --watch",
     "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
-    "test:spec": "tsup --config 'tsup.config.ts' './core/__tests__/bun.spec.ts' --outDir '.temp' --clean && node .temp/bun.spec.js"
+    "test:spec": "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js"
   },
   "files": [
     "util",
