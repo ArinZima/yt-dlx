@@ -12,15 +12,6 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-interface ListAudioHighestOC {
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  playlistUrls: string[];
-  outputFormat?: AudioFormat;
-  filter?: keyof AudioFilters;
-}
 type ListAudioHighestType = true | StreamResult;
 const ListAudioHighestZod = z.object({
   stream: z.boolean().optional(),
@@ -30,10 +21,14 @@ const ListAudioHighestZod = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
   filter: z.string().optional(),
 });
-
-export default async function ListAudioHighest(
-  input: ListAudioHighestOC
-): Promise<ListAudioHighestType[] | any> {
+export default async function ListAudioHighest(input: {
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  playlistUrls: string[];
+  filter?: keyof AudioFilters;
+  outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+}): Promise<ListAudioHighestType[] | any> {
   try {
     const {
       filter,

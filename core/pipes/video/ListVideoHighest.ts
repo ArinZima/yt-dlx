@@ -13,17 +13,7 @@ import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type VideoFormat = "mp4" | "avi" | "mov";
-interface ListVideoHighestOC {
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  playlistUrls: string[];
-  outputFormat?: VideoFormat;
-  filter?: keyof VideoFilters;
-}
 type ListVideoHighestType = true | ErrorResult | StreamResult;
-
 const ListVideoHighestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -32,10 +22,14 @@ const ListVideoHighestZod = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
-
-export default async function ListVideoHighest(
-  input: ListVideoHighestOC
-): Promise<ListVideoHighestType[] | any> {
+export default async function ListVideoHighest(input: {
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  playlistUrls: string[];
+  filter?: keyof VideoFilters;
+  outputFormat?: "mp4" | "avi" | "mov";
+}): Promise<ListVideoHighestType[] | any> {
   try {
     const {
       filter,

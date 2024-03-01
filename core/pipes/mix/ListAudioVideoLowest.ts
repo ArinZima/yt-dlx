@@ -11,7 +11,6 @@ import progressBar from "../../base/progressBar";
 import get_playlist from "../command/get_playlist";
 import type StreamResult from "../../interface/StreamResult";
 
-type VideoFormat = "webm" | "avi" | "mov";
 interface metaVideo {
   title: string;
   description: string;
@@ -25,13 +24,6 @@ interface metaVideo {
   authorName: string;
   authorUrl: string;
 }
-interface ListAudioVideoLowestOC {
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  playlistUrls: string[];
-  outputFormat?: VideoFormat;
-}
 type ListAudioVideoLowestType = true | StreamResult;
 const ListAudioVideoLowestZod = z.object({
   stream: z.boolean().optional(),
@@ -40,10 +32,13 @@ const ListAudioVideoLowestZod = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["webm", "avi", "mov"]).optional(),
 });
-
-export default async function ListAudioVideoLowest(
-  input: ListAudioVideoLowestOC
-): Promise<ListAudioVideoLowestType[]> {
+export default async function ListAudioVideoLowest(input: {
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  playlistUrls: string[];
+  outputFormat?: "webm" | "avi" | "mov";
+}): Promise<ListAudioVideoLowestType[]> {
   try {
     const {
       stream,

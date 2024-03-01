@@ -10,16 +10,6 @@ import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-type AudioLowestOC = {
-  query: string;
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  outputFormat?: AudioFormat;
-  filter?: keyof AudioFilters;
-};
-
 const AudioLowestZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -28,10 +18,14 @@ const AudioLowestZod = z.object({
   folderName: z.string().optional(),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
-
-export default async function AudioLowest(
-  input: AudioLowestOC
-): Promise<true | StreamResult> {
+export default async function AudioLowest(input: {
+  query: string;
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  filter?: keyof AudioFilters;
+  outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+}): Promise<true | StreamResult> {
   try {
     const {
       query,

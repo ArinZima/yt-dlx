@@ -11,18 +11,7 @@ import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-type AudioQualities = "high" | "medium" | "low" | "ultralow";
-interface AudioQualityCustomOC {
-  query: string;
-  stream?: boolean;
-  folderName?: string;
-  quality: AudioQualities;
-  outputFormat?: AudioFormat;
-  filter?: keyof AudioFilters;
-}
 type AudioQualityCustomType = Promise<true | ErrorResult | StreamResult>;
-
 const AudioQualityCustomZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -32,10 +21,14 @@ const AudioQualityCustomZod = z.object({
   quality: z.enum(["high", "medium", "low", "ultralow"]),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
-
-export default async function AudioQualityCustom(
-  input: AudioQualityCustomOC
-): AudioQualityCustomType {
+export default async function AudioQualityCustom(input: {
+  query: string;
+  stream?: boolean;
+  folderName?: string;
+  quality: "high" | "medium" | "low" | "ultralow";
+  outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+  filter?: keyof AudioFilters;
+}): AudioQualityCustomType {
   try {
     const {
       query,

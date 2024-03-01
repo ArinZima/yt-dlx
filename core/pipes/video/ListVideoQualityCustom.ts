@@ -12,32 +12,7 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type VideoFormat = "mp4" | "avi" | "mov";
-type VideoQualities =
-  | "144p"
-  | "240p"
-  | "360p"
-  | "480p"
-  | "720p"
-  | "1080p"
-  | "1440p"
-  | "2160p"
-  | "2880p"
-  | "4320p"
-  | "5760p"
-  | "8640p"
-  | "12000p";
-interface ListVideoQualityCustomOC {
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  playlistUrls: string[];
-  quality: VideoQualities;
-  outputFormat?: VideoFormat;
-  filter?: keyof VideoFilters;
-}
 type ListVideoQualityCustomType = true | StreamResult;
-
 const ListVideoQualityCustomZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -62,9 +37,28 @@ const ListVideoQualityCustomZod = z.object({
   filter: z.string().optional(),
 });
 
-export default async function ListVideoQualityCustom(
-  input: ListVideoQualityCustomOC
-): Promise<ListVideoQualityCustomType[] | any> {
+export default async function ListVideoQualityCustom(input: {
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  playlistUrls: string[];
+  filter?: keyof VideoFilters;
+  quality:
+    | "144p"
+    | "240p"
+    | "360p"
+    | "480p"
+    | "720p"
+    | "1080p"
+    | "1440p"
+    | "2160p"
+    | "2880p"
+    | "4320p"
+    | "5760p"
+    | "8640p"
+    | "12000p";
+  outputFormat?: "mp4" | "avi" | "mov";
+}): Promise<ListVideoQualityCustomType[] | any> {
   try {
     const {
       filter,

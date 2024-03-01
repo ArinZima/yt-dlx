@@ -12,15 +12,6 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-interface ListAudioLowestOC {
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  playlistUrls: string[];
-  outputFormat?: AudioFormat;
-  filter?: keyof AudioFilters;
-}
 type ListAudioLowestType = true | StreamResult;
 const ListAudioLowestZod = z.object({
   stream: z.boolean().optional(),
@@ -30,10 +21,14 @@ const ListAudioLowestZod = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
   filter: z.string().optional(),
 });
-
-export default async function ListAudioLowest(
-  input: ListAudioLowestOC
-): Promise<ListAudioLowestType[] | any> {
+export default async function ListAudioLowest(input: {
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  playlistUrls: string[];
+  filter?: keyof AudioFilters;
+  outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+}): Promise<ListAudioLowestType[] | any> {
   try {
     const {
       filter,

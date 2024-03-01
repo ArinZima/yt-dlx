@@ -12,17 +12,7 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type VideoFormat = "mp4" | "avi" | "mov";
-interface ListVideoLowestOC {
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  playlistUrls: string[];
-  outputFormat?: VideoFormat;
-  filter?: keyof VideoFilters;
-}
 type ListVideoLowestType = true | StreamResult;
-
 const ListVideoLowestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -31,10 +21,14 @@ const ListVideoLowestZod = z.object({
   playlistUrls: z.array(z.string().min(1)),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
-
-export default async function ListVideoLowest(
-  input: ListVideoLowestOC
-): Promise<ListVideoLowestType[] | any> {
+export default async function ListVideoLowest(input: {
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  playlistUrls: string[];
+  filter?: keyof VideoFilters;
+  outputFormat?: "mp4" | "avi" | "mov";
+}): Promise<ListVideoLowestType[] | any> {
   try {
     const {
       filter,

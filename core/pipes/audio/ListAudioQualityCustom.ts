@@ -12,17 +12,6 @@ import type TubeConfig from "../../interface/TubeConfig";
 import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-type AudioQualities = "high" | "medium" | "low" | "ultralow";
-interface ListAudioQualityCustomOC {
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  playlistUrls: string[];
-  quality: AudioQualities;
-  outputFormat?: AudioFormat;
-  filter?: keyof AudioFilters;
-}
 type ListAudioQualityCustomType = true | StreamResult;
 const ListAudioQualityCustomZod = z.object({
   filter: z.string().optional(),
@@ -33,10 +22,15 @@ const ListAudioQualityCustomZod = z.object({
   quality: z.enum(["high", "medium", "low", "ultralow"]),
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
-
-export default async function ListAudioQualityCustom(
-  input: ListAudioQualityCustomOC
-): Promise<ListAudioQualityCustomType[] | any> {
+export default async function ListAudioQualityCustom(input: {
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  playlistUrls: string[];
+  filter?: keyof AudioFilters;
+  outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+  quality: "high" | "medium" | "low" | "ultralow";
+}): Promise<ListAudioQualityCustomType[] | any> {
   try {
     const {
       filter,

@@ -10,15 +10,6 @@ import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type VideoFormat = "mp4" | "avi" | "mov";
-interface VideoHighestOC {
-  query: string;
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  outputFormat?: VideoFormat;
-  filter?: keyof VideoFilters;
-}
 const VideoHighestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -27,10 +18,14 @@ const VideoHighestZod = z.object({
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
   filter: z.string().optional(),
 });
-
-export default async function VideoHighest(
-  input: VideoHighestOC
-): Promise<true | StreamResult> {
+export default async function VideoHighest(input: {
+  query: string;
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  filter?: keyof VideoFilters;
+  outputFormat?: "mp4" | "avi" | "mov";
+}): Promise<true | StreamResult> {
   try {
     const {
       query,

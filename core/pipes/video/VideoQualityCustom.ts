@@ -10,30 +10,6 @@ import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type VideoFormat = "mp4" | "avi" | "mov";
-type VideoQualities =
-  | "144p"
-  | "240p"
-  | "360p"
-  | "480p"
-  | "720p"
-  | "1080p"
-  | "1440p"
-  | "2160p"
-  | "2880p"
-  | "4320p"
-  | "5760p"
-  | "8640p"
-  | "12000p";
-interface VideoLowestOC {
-  query: string;
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  quality: VideoQualities;
-  outputFormat?: VideoFormat;
-  filter?: keyof VideoFilters;
-}
 const VideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -42,10 +18,28 @@ const VideoLowestZod = z.object({
   filter: z.string().optional(),
   outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
-
-export default async function VideoLowest(
-  input: VideoLowestOC
-): Promise<true | StreamResult> {
+export default async function VideoLowest(input: {
+  query: string;
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  filter?: keyof VideoFilters;
+  quality:
+    | "144p"
+    | "240p"
+    | "360p"
+    | "480p"
+    | "720p"
+    | "1080p"
+    | "1440p"
+    | "2160p"
+    | "2880p"
+    | "4320p"
+    | "5760p"
+    | "8640p"
+    | "12000p";
+  outputFormat?: "mp4" | "avi" | "mov";
+}): Promise<true | StreamResult> {
   try {
     const {
       query,

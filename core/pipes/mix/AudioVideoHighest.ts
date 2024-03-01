@@ -9,14 +9,6 @@ import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type StreamResult from "../../interface/StreamResult";
 
-type VideoFormat = "webm" | "avi" | "mov";
-interface AudioVideoHighestOC {
-  query: string;
-  stream?: boolean;
-  verbose?: boolean;
-  folderName?: string;
-  outputFormat?: VideoFormat;
-}
 const AudioVideoHighestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -24,10 +16,13 @@ const AudioVideoHighestZod = z.object({
   folderName: z.string().optional(),
   outputFormat: z.enum(["webm", "avi", "mov"]).optional(),
 });
-
-export default async function AudioVideoHighest(
-  input: AudioVideoHighestOC
-): Promise<true | StreamResult> {
+export default async function AudioVideoHighest(input: {
+  query: string;
+  stream?: boolean;
+  verbose?: boolean;
+  folderName?: string;
+  outputFormat?: "webm" | "avi" | "mov";
+}): Promise<true | StreamResult> {
   try {
     const {
       query,
