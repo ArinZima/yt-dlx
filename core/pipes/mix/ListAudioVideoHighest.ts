@@ -33,7 +33,7 @@ interface ListAudioVideoHighestOC {
   outputFormat?: VideoFormat;
 }
 type ListAudioVideoHighestType = true | StreamResult;
-const ListAudioVideoHighestInputSchema = z.object({
+const ListAudioVideoHighestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -51,7 +51,7 @@ export default async function ListAudioVideoHighest(
       folderName,
       playlistUrls,
       outputFormat = "webm",
-    } = ListAudioVideoHighestInputSchema.parse(input);
+    } = ListAudioVideoHighestZod.parse(input);
     switch (true) {
       case playlistUrls.length === 0:
         throw new Error("playlistUrls parameter cannot be empty");

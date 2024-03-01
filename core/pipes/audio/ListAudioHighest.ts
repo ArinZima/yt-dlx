@@ -22,7 +22,7 @@ interface ListAudioHighestOC {
   filter?: keyof AudioFilters;
 }
 type ListAudioHighestType = true | StreamResult;
-const ListAudioHighestInputSchema = z.object({
+const ListAudioHighestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -42,7 +42,7 @@ export default async function ListAudioHighest(
       folderName,
       playlistUrls,
       outputFormat = "mp3",
-    } = ListAudioHighestInputSchema.parse(input);
+    } = ListAudioHighestZod.parse(input);
     let parseList = [];
     let metaName: string = "";
     let results: ListAudioHighestType[] = [];

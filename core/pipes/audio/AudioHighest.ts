@@ -20,7 +20,7 @@ type AudioHighestOC = {
   filter?: keyof AudioFilters;
 };
 
-const AudioHighestInputSchema = z.object({
+const AudioHighestZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -40,7 +40,7 @@ export default async function AudioHighest(
       verbose,
       folderName,
       outputFormat = "mp3",
-    } = AudioHighestInputSchema.parse(input);
+    } = AudioHighestZod.parse(input);
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {

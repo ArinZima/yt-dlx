@@ -19,7 +19,7 @@ interface VideoHighestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-const VideoHighestInputSchema = z.object({
+const VideoHighestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -39,7 +39,7 @@ export default async function VideoHighest(
       folderName,
       outputFormat = "mp4",
       filter,
-    } = VideoHighestInputSchema.parse(input);
+    } = VideoHighestZod.parse(input);
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {

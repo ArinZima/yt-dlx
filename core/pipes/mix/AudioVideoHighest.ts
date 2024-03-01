@@ -17,7 +17,7 @@ interface AudioVideoHighestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-const AudioVideoHighestInputSchema = z.object({
+const AudioVideoHighestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -35,7 +35,7 @@ export default async function AudioVideoHighest(
       verbose,
       folderName,
       outputFormat = "webm",
-    } = AudioVideoHighestInputSchema.parse(input);
+    } = AudioVideoHighestZod.parse(input);
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {

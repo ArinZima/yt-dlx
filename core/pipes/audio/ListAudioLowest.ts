@@ -22,7 +22,7 @@ interface ListAudioLowestOC {
   filter?: keyof AudioFilters;
 }
 type ListAudioLowestType = true | StreamResult;
-const ListAudioLowestInputSchema = z.object({
+const ListAudioLowestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -42,7 +42,7 @@ export default async function ListAudioLowest(
       folderName,
       playlistUrls,
       outputFormat = "mp3",
-    } = ListAudioLowestInputSchema.parse(input);
+    } = ListAudioLowestZod.parse(input);
     let parseList = [];
     let metaName: string = "";
     let results: ListAudioLowestType[] = [];

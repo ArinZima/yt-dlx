@@ -20,7 +20,7 @@ type AudioLowestOC = {
   filter?: keyof AudioFilters;
 };
 
-const AudioLowestInputSchema = z.object({
+const AudioLowestZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -40,7 +40,7 @@ export default async function AudioLowest(
       verbose,
       folderName,
       outputFormat = "mp3",
-    } = AudioLowestInputSchema.parse(input);
+    } = AudioLowestZod.parse(input);
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");

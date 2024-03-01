@@ -24,7 +24,7 @@ interface ListVideoHighestOC {
 }
 type ListVideoHighestType = true | ErrorResult | StreamResult;
 
-const ListVideoHighestInputSchema = z.object({
+const ListVideoHighestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -44,7 +44,7 @@ export default async function ListVideoHighest(
       folderName,
       playlistUrls,
       outputFormat = "mp4",
-    } = ListVideoHighestInputSchema.parse(input);
+    } = ListVideoHighestZod.parse(input);
     let parseList = [];
     let metaName: string = "";
     let results: ListVideoHighestType[] = [];

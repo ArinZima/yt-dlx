@@ -33,7 +33,7 @@ interface ListAudioVideoLowestOC {
   outputFormat?: VideoFormat;
 }
 type ListAudioVideoLowestType = true | StreamResult;
-const ListAudioVideoLowestInputSchema = z.object({
+const ListAudioVideoLowestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -51,7 +51,7 @@ export default async function ListAudioVideoLowest(
       folderName,
       playlistUrls,
       outputFormat = "webm",
-    } = ListAudioVideoLowestInputSchema.parse(input);
+    } = ListAudioVideoLowestZod.parse(input);
     switch (true) {
       case playlistUrls.length === 0:
         throw new Error("playlistUrls parameter cannot be empty");

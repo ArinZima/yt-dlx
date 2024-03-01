@@ -17,7 +17,7 @@ interface AudioVideoLowestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-const AudioVideoLowestInputSchema = z.object({
+const AudioVideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -35,7 +35,7 @@ export default async function AudioVideoLowest(
       verbose,
       folderName,
       outputFormat = "webm",
-    } = AudioVideoLowestInputSchema.parse(input);
+    } = AudioVideoLowestZod.parse(input);
     const metaBody = await ytdlx({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");

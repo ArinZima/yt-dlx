@@ -38,7 +38,7 @@ interface ListVideoQualityCustomOC {
 }
 type ListVideoQualityCustomType = true | StreamResult;
 
-const ListVideoQualityCustomInputSchema = z.object({
+const ListVideoQualityCustomZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -74,7 +74,7 @@ export default async function ListVideoQualityCustom(
       folderName,
       playlistUrls,
       outputFormat = "mp4",
-    } = ListVideoQualityCustomInputSchema.parse(input);
+    } = ListVideoQualityCustomZod.parse(input);
     let parseList = [];
     let metaName: string = "";
     let results: ListVideoQualityCustomType[] = [];

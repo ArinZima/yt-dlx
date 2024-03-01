@@ -23,7 +23,7 @@ interface AudioQualityCustomOC {
 }
 type AudioQualityCustomType = Promise<true | ErrorResult | StreamResult>;
 
-const AudioQualityCustomInputSchema = z.object({
+const AudioQualityCustomZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -45,7 +45,7 @@ export default async function AudioQualityCustom(
       quality,
       folderName,
       outputFormat = "mp3",
-    } = AudioQualityCustomInputSchema.parse(input);
+    } = AudioQualityCustomZod.parse(input);
     const metaResp = await ytdlx({ query });
     if (!metaResp) {
       return {

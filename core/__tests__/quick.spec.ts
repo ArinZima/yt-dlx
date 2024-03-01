@@ -1,37 +1,44 @@
-// console.clear();
-// import * as fs from "fs";
-// import colors from "colors";
-// import * as path from "path";
-// import * as async from "async";
-// import AudioVideoLowest from "../pipes/mix/AudioVideoLowest";
+console.clear();
+import * as fs from "fs";
+import colors from "colors";
+import * as async from "async";
+import AudioVideoLowest from "../pipes/mix/AudioVideoLowest";
 
-// async.series({
-// runTestDDL: async () => {
-// let metaTube: any = await AudioVideoLowest({
-// query: "sQEgklEwhSo",
-// folderName: ".temp",
-// verbose: false,
-// stream: false,
-// });
-// console.log(colors.green("@info:"), metaTube);
-// return metaTube;
-// },
-// runTestSDL: async () => {
-// let metaTube: any = await AudioVideoLowest({
-// query: "sQEgklEwhSo",
-// folderName: ".temp",
-// verbose: false,
-// stream: true,
-// });
-// const outputPath = path.join(metaTube.filename);
-// const writeStream = fs.createWriteStream(outputPath);
-// console.log(colors.green("@info:"), metaTube.filename);
-// metaTube.stream.on("end", () => {
-// console.log(colors.green("@info:"), "download completed");
-// });
-// metaTube.stream.on("error", (error: any) => {
-// console.error(colors.red("@error:"), error.message);
-// });
-// metaTube.stream.pipe(writeStream);
-// },
-// });
+async.series([
+  async () => {
+    try {
+      await AudioVideoLowest({
+        query: "sQEgklEwhSo",
+        folderName: ".temp",
+        verbose: false,
+        stream: false,
+      });
+      console.log(colors.green("@pass:"), true);
+    } catch (error: any) {
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  async () => {
+    try {
+      let holder: any = await AudioVideoLowest({
+        query: "sQEgklEwhSo",
+        folderName: ".temp",
+        verbose: false,
+        stream: true,
+      });
+      const writeStream = fs.createWriteStream(holder.filename);
+      writeStream.on("open", () => {
+        console.log(colors.bold.green("@info:"), "writestream opened.");
+      });
+      writeStream.on("error", (err) => {
+        console.error(colors.bold.red("@error:"), "writestream", err.message);
+      });
+      writeStream.on("finish", () => {
+        console.log(colors.bold.green("@pass:"), "filename", holder.filename);
+      });
+      holder.stream.pipe(writeStream);
+    } catch (error: any) {
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+]);

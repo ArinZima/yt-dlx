@@ -19,7 +19,7 @@ interface VideoLowestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-const VideoLowestInputSchema = z.object({
+const VideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -39,7 +39,7 @@ export default async function VideoLowest(
       verbose,
       folderName,
       outputFormat = "mp4",
-    } = VideoLowestInputSchema.parse(input);
+    } = VideoLowestZod.parse(input);
 
     const metaBody = await ytdlx({ query });
     if (!metaBody) {

@@ -23,7 +23,7 @@ interface ListVideoLowestOC {
 }
 type ListVideoLowestType = true | StreamResult;
 
-const ListVideoLowestInputSchema = z.object({
+const ListVideoLowestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -43,7 +43,7 @@ export default async function ListVideoLowest(
       folderName,
       playlistUrls,
       outputFormat = "mp4",
-    } = ListVideoLowestInputSchema.parse(input);
+    } = ListVideoLowestZod.parse(input);
     let parseList = [];
     let metaName: string = "";
     let results: ListVideoLowestType[] = [];

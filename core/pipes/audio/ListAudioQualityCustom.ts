@@ -24,7 +24,7 @@ interface ListAudioQualityCustomOC {
   filter?: keyof AudioFilters;
 }
 type ListAudioQualityCustomType = true | StreamResult;
-const ListAudioQualityCustomInputSchema = z.object({
+const ListAudioQualityCustomZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -46,7 +46,7 @@ export default async function ListAudioQualityCustom(
       folderName,
       playlistUrls,
       outputFormat = "mp3",
-    } = ListAudioQualityCustomInputSchema.parse(input);
+    } = ListAudioQualityCustomZod.parse(input);
     let parseList = [];
     let metaName: string = "";
     let results: ListAudioQualityCustomType[] = [];
