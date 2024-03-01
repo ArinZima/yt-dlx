@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import ytdlx from "../..";
-import fsx from "fs-extra";
 import colors from "colors";
 import * as async from "async";
 
@@ -14,16 +13,9 @@ async.series([
         outputFormat: "ogg",
         stream: false,
       });
-      if (holder) {
-        console.log(colors.bold.green("@pass:"), holder);
-        await fsx.remove(".temp/audio");
-        return holder;
-      } else {
-        await fsx.remove(".temp/audio");
-        throw new Error(colors.bold.red("@error:"), holder);
-      }
+      if (holder) console.log(colors.bold.green("@pass:"), holder);
+      else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
-      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
@@ -37,16 +29,9 @@ async.series([
         filter: "nightcore",
         stream: false,
       });
-      if (holder) {
-        console.log(colors.bold.green("@pass:"), holder);
-        await fsx.remove(".temp/audio");
-        return holder;
-      } else {
-        await fsx.remove(".temp/audio");
-        throw new Error(colors.bold.red("@error:"), holder);
-      }
+      if (holder) console.log(colors.bold.green("@pass:"), holder);
+      else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
-      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
@@ -60,16 +45,19 @@ async.series([
         stream: true,
       });
       if (holder.stream && holder.filename) {
-        holder.stream.pipe(fs.createWriteStream(holder.filename));
-        console.log(colors.bold.green("@pass:"), holder.filename);
-        await fsx.remove(".temp/audio");
-        return holder;
-      } else {
-        await fsx.remove(".temp/audio");
-        throw new Error(colors.bold.red("@error:"), holder);
-      }
+        const writeStream = fs.createWriteStream(holder.filename);
+        writeStream.on("open", () => {
+          console.log(colors.bold.green("@info:"), "writestream opened.");
+        });
+        writeStream.on("error", (err) => {
+          console.error(colors.bold.red("@error:"), "writestream", err.message);
+        });
+        writeStream.on("finish", () => {
+          console.log(colors.bold.green("@pass:"), "filename", holder.filename);
+        });
+        holder.stream.pipe(writeStream);
+      } else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
-      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
@@ -84,16 +72,19 @@ async.series([
         stream: true,
       });
       if (holder.stream && holder.filename) {
-        holder.stream.pipe(fs.createWriteStream(holder.filename));
-        console.log(colors.bold.green("@pass:"), holder.filename);
-        await fsx.remove(".temp/audio");
-        return holder;
-      } else {
-        await fsx.remove(".temp/audio");
-        throw new Error(colors.bold.red("@error:"), holder);
-      }
+        const writeStream = fs.createWriteStream(holder.filename);
+        writeStream.on("open", () => {
+          console.log(colors.bold.green("@info:"), "writestream opened.");
+        });
+        writeStream.on("error", (err) => {
+          console.error(colors.bold.red("@error:"), "writestream", err.message);
+        });
+        writeStream.on("finish", () => {
+          console.log(colors.bold.green("@pass:"), "filename", holder.filename);
+        });
+        holder.stream.pipe(writeStream);
+      } else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
-      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },

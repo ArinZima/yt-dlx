@@ -1,96 +1,90 @@
-// import * as fs from "fs";
-// import ytdlx from "../..";
-// import fsx from "fs-extra";
-// import colors from "colors";
-// import * as bun from "bun:test";
-// // =======================================================[PASS-TEST]=======================================================
-// bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
-// try {
-// let holder: any;
-// console.log(
-// colors.bold.yellow("@test:"),
-// "ytdlx.audio_video.single.highest()"
-// );
-// console.log(colors.bold.yellow("@info:"), "stream: false");
-// holder = await ytdlx.audio_video.single.highest({
-// query: "sQEgklEwhSo",
-// outputFormat: "avi",
-// folderName: "audio_video",
-// stream: false,
-// });
-// if (holder) {
-// console.log(colors.bold.green("@pass:"), holder);
-// await fsx.remove("audio_video");
-// } else {
-// await fsx.remove("audio_video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// console.log(
-// colors.bold.yellow("@test:"),
-// "ytdlx.audio_video.single.highest()"
-// );
-// console.log(colors.bold.yellow("@info:"), "stream: false");
-// holder = await ytdlx.audio_video.single.highest({
-// query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
-// outputFormat: "mov",
-// folderName: "audio_video",
-// stream: false,
-// });
-// if (holder) {
-// console.log(colors.bold.green("@pass:"), holder);
-// await fsx.remove("audio_video");
-// } else {
-// await fsx.remove("audio_video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// } catch (error) {
-// await fsx.remove("audio_video");
-// throw (colors.bold.red("@error:"), error);
-// }
-// });
-// // =======================================================[PASS-TEST]=======================================================
-// bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
-// try {
-// let holder: any;
-// console.log(
-// colors.bold.yellow("@test:"),
-// "ytdlx.audio_video.single.highest()"
-// );
-// console.log(colors.bold.yellow("@info:"), "stream: true");
-// holder = await ytdlx.audio_video.single.highest({
-// query: "sQEgklEwhSo",
-// outputFormat: "webm",
-// folderName: "audio_video",
-// stream: true,
-// });
-// if (holder.stream && holder.filename) {
-// console.log(colors.bold.green("@pass:"), holder.filename);
-// await fsx.remove("audio_video");
-// } else {
-// await fsx.remove("audio_video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// console.log(
-// colors.bold.yellow("@test:"),
-// "ytdlx.audio_video.single.highest()"
-// );
-// console.log(colors.bold.yellow("@info:"), "stream: true");
-// holder = await ytdlx.audio_video.single.highest({
-// query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
-// outputFormat: "webm",
-// folderName: "audio_video",
-// stream: true,
-// });
-// if (holder.stream && holder.filename) {
-// holder.stream.pipe(fs.createWriteStream(holder.filename));
-// console.log(colors.bold.green("@pass:"), holder.filename);
-// await fsx.remove("audio_video");
-// } else {
-// await fsx.remove("audio_video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// } catch (error) {
-// await fsx.remove("audio_video");
-// throw (colors.bold.red("@error:"), error);
-// }
-// });
+import * as fs from "fs";
+import ytdlx from "../..";
+import colors from "colors";
+import * as async from "async";
+
+let holder: any;
+async.series([
+  async function () {
+    try {
+      holder = await ytdlx.audio_video.single.highest({
+        folderName: "audio_video",
+        query: "sQEgklEwhSo",
+        outputFormat: "avi",
+        stream: false,
+      });
+      if (holder) console.log(colors.bold.green("@pass:"), holder);
+      else throw new Error(colors.bold.red("@error:"), holder);
+    } catch (error: any) {
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  // =========================[BREAK-TEST]=========================
+  async function () {
+    try {
+      holder = await ytdlx.audio_video.single.highest({
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        folderName: "audio_video",
+        outputFormat: "mov",
+        stream: false,
+      });
+      if (holder) console.log(colors.bold.green("@pass:"), holder);
+      else throw new Error(colors.bold.red("@error:"), holder);
+    } catch (error: any) {
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  // =========================[BREAK-TEST]=========================
+  async function () {
+    try {
+      holder = await ytdlx.audio_video.single.highest({
+        folderName: "audio_video",
+        query: "sQEgklEwhSo",
+        outputFormat: "webm",
+        stream: true,
+      });
+      if (holder.stream && holder.filename) {
+        const writeStream = fs.createWriteStream(holder.filename);
+        writeStream.on("open", () => {
+          console.log(colors.bold.green("@info:"), "writestream opened.");
+        });
+        writeStream.on("error", (err) => {
+          console.error(colors.bold.red("@error:"), "writestream", err.message);
+        });
+        writeStream.on("finish", () => {
+          console.log(colors.bold.green("@pass:"), "filename", holder.filename);
+        });
+        holder.stream.pipe(writeStream);
+      } else throw new Error(colors.bold.red("@error:"), holder);
+    } catch (error: any) {
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  // =========================[BREAK-TEST]=========================
+  async function () {
+    try {
+      holder = await ytdlx.audio_video.single.highest({
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        folderName: "audio_video",
+        outputFormat: "webm",
+        stream: true,
+      });
+      if (holder.stream && holder.filename) {
+        const writeStream = fs.createWriteStream(holder.filename);
+        writeStream.on("open", () => {
+          console.log(colors.bold.green("@info:"), "writestream opened.");
+        });
+        writeStream.on("error", (err) => {
+          console.error(colors.bold.red("@error:"), "writestream", err.message);
+        });
+        writeStream.on("finish", () => {
+          console.log(colors.bold.green("@pass:"), "filename", holder.filename);
+        });
+        holder.stream.pipe(writeStream);
+      } else throw new Error(colors.bold.red("@error:"), holder);
+    } catch (error: any) {
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  // =========================[BREAK-TEST]=========================
+]);
