@@ -5,37 +5,30 @@ import { execSync } from "child_process";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
 export default async function ffmpeg(): Promise<FfmpegCommand> {
-  try {
-    return new Promise(async (resolve) => {
-      let proc: FfmpegCommand = fluentffmpeg();
-      try {
-        const ffmpegPath = execSync("which ffmpeg").toString().trim();
-        const ffprobePath = execSync("which ffprobe").toString().trim();
-        if (fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath)) {
-          proc.setFfprobePath(ffprobePath);
-          proc.setFfmpegPath(ffmpegPath);
-        } else {
-          throw new Error(
-            colors.red("@error: ") +
-              "could not find the ffmpeg & ffprobe files."
-          );
-        }
-      } catch (error) {
+  return new Promise(async (resolve) => {
+    let proc: FfmpegCommand = fluentffmpeg();
+    try {
+      const ffprobePath = execSync("which ffprobe").toString().trim();
+      const ffmpegPath = execSync("which ffmpeg").toString().trim();
+      console.log(colors.green("@ffprobePath:"), ffprobePath);
+      console.log(colors.green("@ffmpegPath:"), ffmpegPath);
+      if (fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath)) {
+        proc.setFfprobePath(ffprobePath);
+        proc.setFfmpegPath(ffmpegPath);
+      } else {
         throw new Error(
-          colors.red("@error: ") +
-            "An error occurred while locating ffmpeg & ffprobe executables."
+          colors.red("@error: ") + "could not find the ffmpeg & ffprobe files."
         );
       }
-      proc.addInputOption("-threads", "0");
-      resolve(proc);
-    });
-  } catch (error: any) {
-    if (error instanceof Error) {
-      throw new Error(colors.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors.red("@error: ") + "internal server error");
+    } catch (error) {
+      throw new Error(
+        colors.red("@error: ") +
+          "An error occurred while locating ffmpeg & ffprobe executables."
+      );
     }
-  }
+    proc.addOption("-threads", "0");
+    resolve(proc);
+  });
 }
 
 /**

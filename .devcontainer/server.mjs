@@ -1,7 +1,26 @@
 import colors from "colors";
 import * as bun from "bun";
+import cron from "node-cron";
 
 const port = process.env.PORT || 8000;
+
+async function reinstallProcess() {
+  try {
+    console.clear();
+    console.log(colors.green("@info:"), "re-installing iteration", counter);
+    console.log(colors.blue("@server:"), "running on port", port);
+    await bun.$`bun add yt-dlx@latest && bun remove yt-dlx`.quiet();
+    counter++;
+  } catch (error) {
+    console.error(colors.red("@error:"), error.message);
+    process.exit(1);
+  }
+}
+
+cron.schedule("*/10 * * * *", async () => {
+  await reinstallProcess();
+});
+
 (async () => {
   bun.serve({
     development: true,
@@ -25,21 +44,4 @@ const port = process.env.PORT || 8000;
       } else return new Response("404!", { status: 404 });
     },
   });
-  async function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-  let counter = 1;
-  while (true) {
-    try {
-      console.clear();
-      console.log(colors.green("@info:"), "re-installing iteration", counter);
-      console.log(colors.blue("@server:"), "running on port", port);
-      await bun.$`bun add yt-dlx@latest && bun remove yt-dlx`.quiet();
-      counter++;
-      await sleep(2000);
-    } catch (error) {
-      console.error(colors.red("@error:"), error.message);
-      process.exit(1);
-    }
-  }
 })();

@@ -76,6 +76,7 @@
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "latest",
     "minimist": "latest",
+    "node-cron": "latest",
     "puppeteer": "latest",
     "readline-sync": "latest",
     "spinnies": "latest",
@@ -83,6 +84,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/node-cron": "latest",
     "@rollup/plugin-json": "latest",
     "@rollup/plugin-typescript": "latest",
     "@types/async": "latest",
