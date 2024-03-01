@@ -13,10 +13,6 @@ import AudioVideoHighest from "./pipes/mix/AudioVideoHighest";
 import AudioQualityCustom from "./pipes/audio/AudioQualityCustom";
 import VideoQualityCustom from "./pipes/video/VideoQualityCustom";
 
-import ListAudioLowest from "./pipes/audio/ListAudioLowest";
-import ListAudioHighest from "./pipes/audio/ListAudioHighest";
-import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
-
 const ytdlx = {
   search: {
     PlaylistInfo: web.search.PlaylistInfo,
@@ -30,31 +26,18 @@ const ytdlx = {
     extract_playlist_videos,
   },
   audio: {
-    single: {
-      lowest: AudioLowest,
-      highest: AudioHighest,
-      custom: AudioQualityCustom,
-    },
-    playlist: {
-      lowest: ListAudioLowest,
-      highest: ListAudioHighest,
-      custom: ListAudioQualityCustom,
-    },
+    lowest: AudioLowest,
+    highest: AudioHighest,
+    custom: AudioQualityCustom,
   },
   video: {
-    single: {
-      lowest: VideoLowest,
-      highest: VideoHighest,
-      custom: VideoQualityCustom,
-    },
-    playlist: {},
+    lowest: VideoLowest,
+    highest: VideoHighest,
+    custom: VideoQualityCustom,
   },
   audio_video: {
-    single: {
-      lowest: AudioVideoLowest,
-      highest: AudioVideoHighest,
-    },
-    playlist: {},
+    lowest: AudioVideoLowest,
+    highest: AudioVideoHighest,
   },
 };
 
