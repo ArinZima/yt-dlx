@@ -58,6 +58,18 @@ export default async function AudioVideoLowest(
     }
     proc.addInput(VmetaEntry.AVDownload.mediaurl);
     proc.addInput(AmetaEntry.AVDownload.mediaurl);
+    proc.complexFilter([
+      {
+        filter: "amix",
+        options: {
+          inputs: "0:1",
+          duration: "longest",
+        },
+        inputs: ["0:a", "1:v"],
+        outputs: "a",
+      },
+    ]);
+    proc.addOutputOptions(["-map", "[a]"]);
     proc.format(outputFormat);
     proc.on("start", (command) => {
       if (verbose) console.log(command);
