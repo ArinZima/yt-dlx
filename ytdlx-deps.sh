@@ -30,10 +30,10 @@ else
     use_sudo=false
 fi
 
-if [ -x "$(command -v apt)" ]; then
+if [ -x "$(command -v apt-get)" ]; then
     log_info "Detected Debian-based system"
-    run_command "apt update" "Failed to update APT repositories"
-    run_command "apt install -y ffmpeg opus-tools" "Failed to install ffmpeg opus-tools in debian"
+    run_command "apt-get update" "Failed to update APT repositories"
+    run_command "apt-get install -y ffmpeg opus-tools" "Failed to install ffmpeg opus-tools in debian"
     run_command "rm -rf /var/lib/apt/lists/*" "Failed to clean cache"
 elif [ -x "$(command -v pacman)" ]; then
     log_info "Detected Arch-based system"
