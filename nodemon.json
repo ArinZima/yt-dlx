@@ -1,5 +1,0 @@
-{
-  "watch": [".devcontainer/start.mjs"],
-  "exec": "node",
-  "ext": "mjs"
-}

@@ -10,7 +10,7 @@
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
-    "start": "nodemon -c nodemon.json",
+    "start": "node ./.devcontainer/start.mjs",
     "remake": "bun clean && bun make && bun run update && bun run build",
     "rerun": "bun ./.devcontainer/server.mjs & bun ./.devcontainer/rerun.mjs",
     "upload": "bun remake && bun run test && npm pkg fix && npm publish --access=public && bun update",
@@ -76,7 +76,6 @@
     "fluent-ffmpeg": "latest",
     "minimist": "latest",
     "node-cron": "latest",
-    "nodemon": "latest",
     "puppeteer": "latest",
     "readline-sync": "latest",
     "spinnies": "latest",
