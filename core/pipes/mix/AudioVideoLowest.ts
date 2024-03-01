@@ -58,7 +58,6 @@ export default async function AudioVideoLowest(
     }
     proc.input(VmetaEntry.AVDownload.mediaurl);
     proc.input(AmetaEntry.AVDownload.mediaurl);
-    proc.addOutputOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
       if (verbose) console.log(command);
