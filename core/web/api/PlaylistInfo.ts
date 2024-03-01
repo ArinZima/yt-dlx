@@ -13,11 +13,11 @@ export interface InputYouTube {
 }
 export interface PlaylistVideos {
   ago: string;
-  videoLink: string;
   title: string;
   views: string;
   author: string;
   videoId: string;
+  videoLink: string;
   authorUrl: string;
   thumbnailUrls: string[];
 }
