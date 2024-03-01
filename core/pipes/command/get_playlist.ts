@@ -1,6 +1,6 @@
-import * as z from "zod";
 import colors from "colors";
 import web from "../../web";
+import { ZodError } from "zod";
 
 interface get_playlistOC {
   playlistUrls: string[];
@@ -64,6 +64,13 @@ export default async function get_playlist({
     }
     return proTubeArr;
   } catch (error) {
-    return error instanceof z.ZodError ? error.errors : error;
+    if (error instanceof ZodError) {
+      throw new Error(
+        colors.red("@error: ") +
+          error.errors.map((error) => error.message).join(", ")
+      );
+    } else if (error instanceof Error) {
+      throw new Error(colors.red("@error: ") + error.message);
+    } else throw new Error(colors.red("@error: ") + "internal server error");
   }
 }

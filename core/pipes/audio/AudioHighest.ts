@@ -40,9 +40,7 @@ export default async function AudioHighest(input: {
     } = AudioHighestZod.parse(input);
 
     const metaBody = await ytdlx({ query });
-    if (!metaBody) {
-      throw new Error("Unable to get response from YouTube...");
-    }
+    if (!metaBody) throw new Error("Unable to get response from YouTube...");
     let metaName: string = "";
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
@@ -194,8 +192,6 @@ export default async function AudioHighest(input: {
       );
     } else if (error instanceof Error) {
       throw new Error(colors.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors.red("@error: ") + "internal server error");
-    }
+    } else throw new Error(colors.red("@error: ") + "internal server error");
   }
 }

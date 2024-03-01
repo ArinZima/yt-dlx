@@ -188,8 +188,6 @@ export default async function ListVideoHighest(input: {
       );
     } else if (error instanceof Error) {
       throw new Error(colors.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors.red("@error: ") + "internal server error");
-    }
+    } else throw new Error(colors.red("@error: ") + "internal server error");
   }
 }
