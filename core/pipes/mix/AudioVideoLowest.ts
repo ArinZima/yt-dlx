@@ -60,11 +60,6 @@ export default async function AudioVideoLowest(
     }
     proc.addInput(VmetaEntry.AVDownload.mediaurl);
     proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.addOutputOption("-spatial-aq", "1");
-    proc.addOutputOption("-preset", "slow");
-    proc.addOutputOption("-level:v", "4.2");
-    proc.addOutputOption("-rc", "vbr_hq");
-    proc.addOutputOption("-b:v", "10M");
     proc.addOutputOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
