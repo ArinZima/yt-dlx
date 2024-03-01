@@ -12,13 +12,13 @@ export default async function get_playlist_info({
 }): Promise<PlaylistInfoType[]> {
   try {
     const proTubeArr: PlaylistInfoType[] = [];
-    await async.eachSeries(playlistUrls, async (videoLink) => {
-      const query: string | undefined = await YouTubeID(videoLink);
+    await async.eachSeries(playlistUrls, async (listLink) => {
+      const query: string | undefined = await YouTubeID(listLink);
       if (query === undefined) {
         console.error(
           colors.bold.red("@error: "),
           "invalid youtube playlist url:",
-          videoLink
+          listLink
         );
         return;
       }
@@ -32,9 +32,20 @@ export default async function get_playlist_info({
           query
         );
         return;
+      } else {
+        console.log(
+          colors.green("@info:"),
+          "total videos in playlist",
+          colors.green(listLink),
+          resp.playlistVideoCount
+        );
+        proTubeArr.push(resp);
       }
-      proTubeArr.push(resp);
     });
+    console.log(
+      colors.green("@info:"),
+      "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
     return proTubeArr;
   } catch (error) {
     if (error instanceof ZodError) {

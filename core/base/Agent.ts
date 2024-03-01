@@ -17,10 +17,6 @@ export default async function Agent({
   query: string;
 }): Promise<EngineResult> {
   try {
-    console.log(
-      colors.green("@info:"),
-      "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
     let videoId: string | undefined;
     let respEngine: EngineResult | undefined = undefined;
     let TubeBody:

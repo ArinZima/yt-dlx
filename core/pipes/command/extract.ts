@@ -1,3 +1,4 @@
+import colors from "colors";
 import ytdlx from "../../base/Agent";
 
 export default async function extract({ query }: { query: string }) {
@@ -98,6 +99,10 @@ export default async function extract({ query }: { query: string }) {
         ),
       },
     };
+    console.log(
+      colors.green("@info:"),
+      "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
     return payload;
   } catch (error: any) {
     return {

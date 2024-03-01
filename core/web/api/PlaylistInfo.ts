@@ -107,8 +107,6 @@ export default async function PlaylistInfo(
       )
         .text()
         .trim();
-      const videoCountText: any = $("yt-formatted-string.byline-item").text();
-      const playlistVideoCount = parseInt(videoCountText.match(/\d+/)[0]);
       const viewsText: any = $("yt-formatted-string.byline-item").eq(1).text();
       const playlistViews = parseInt(
         viewsText.replace(/,/g, "").match(/\d+/)[0]
@@ -161,7 +159,7 @@ export default async function PlaylistInfo(
       return {
         playlistVideos: metaTube,
         playlistDescription: playlistDescription.trim(),
-        playlistVideoCount,
+        playlistVideoCount: metaTube.length,
         playlistViews,
         playlistTitle,
       };

@@ -1,4 +1,5 @@
 import * as z from "zod";
+import colors from "colors";
 import ytdlx from "../../base/Agent";
 
 export default function list_formats({
@@ -37,6 +38,10 @@ export default function list_formats({
         ]),
       };
       resolve(EnBody);
+      console.log(
+        colors.green("@info:"),
+        "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+      );
     } catch (error) {
       reject(error instanceof z.ZodError ? error.errors : error);
     }

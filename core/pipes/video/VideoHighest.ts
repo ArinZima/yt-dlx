@@ -151,6 +151,10 @@ export default async function VideoHighest(input: {
           proc.run();
         });
     }
+    console.log(
+      colors.green("@info:"),
+      "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
