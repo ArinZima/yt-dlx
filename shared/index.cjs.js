@@ -741,14 +741,14 @@ async function Engine(query) {
             if (rmval.has(io.format_note) && io.filesize === undefined)
                 return;
             const reTube = {
-                meta_audio: {
-                    samplerate: io.asr,
-                    channels: io.audio_channels,
-                    codec: io.acodec,
-                    extension: io.audio_ext,
+                Audio: {
                     bitrate: io.abr,
+                    codec: io.acodec,
+                    samplerate: io.asr,
+                    extension: io.audio_ext,
+                    channels: io.audio_channels,
                 },
-                meta_video: {
+                Video: {
                     bitrate: io.vbr,
                     width: io.width,
                     codec: io.vcodec,
@@ -757,13 +757,13 @@ async function Engine(query) {
                     resolution: io.resolution,
                     aspectratio: io.aspect_ratio,
                 },
-                meta_dl: {
+                AVDownload: {
                     mediaurl: io.url,
                     formatid: io.format_id,
                     formatnote: io.format_note,
                     originalformat: io.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
                 },
-                meta_info: {
+                AVInfo: {
                     totalbitrate: io.tbr,
                     framespersecond: io.fps,
                     qriginalextension: io.ext,
@@ -797,17 +797,17 @@ async function Engine(query) {
                     duration_string: metaTube.duration_string,
                 },
             });
-            if (reTube.meta_dl.formatnote) {
+            if (reTube.AVDownload.formatnote) {
                 switch (true) {
-                    case (reTube.meta_dl.formatnote.includes("ultralow") ||
-                        reTube.meta_dl.formatnote.includes("medium") ||
-                        reTube.meta_dl.formatnote.includes("high") ||
-                        reTube.meta_dl.formatnote.includes("low")) &&
-                        reTube.meta_video.resolution &&
-                        reTube.meta_video.resolution.includes("audio"):
+                    case (reTube.AVDownload.formatnote.includes("ultralow") ||
+                        reTube.AVDownload.formatnote.includes("medium") ||
+                        reTube.AVDownload.formatnote.includes("high") ||
+                        reTube.AVDownload.formatnote.includes("low")) &&
+                        reTube.Video.resolution &&
+                        reTube.Video.resolution.includes("audio"):
                         pushTube.push({ Tube: "AudioStore", reTube });
                         break;
-                    case reTube.meta_dl.formatnote.includes("HDR"):
+                    case reTube.AVDownload.formatnote.includes("HDR"):
                         pushTube.push({ Tube: "HDRVideoStore", reTube });
                         break;
                     default:
@@ -885,14 +885,14 @@ async function Engine(query) {
 // const rmval = new Set(["storyboard", "Default"]);
 // if (rmval.has(core.format_note) && core.filesize === undefined) return;
 // const reTube: any = {
-// meta_audio: {
+// Audio: {
 // bitrate: core.abr,
 // codec: core.acodec,
 // samplerate: core.asr,
 // extension: core.audio_ext,
 // channels: core.audio_channels,
 // },
-// meta_video: {
+// Video: {
 // bitrate: core.vbr,
 // width: core.width,
 // codec: core.vcodec,
@@ -901,7 +901,7 @@ async function Engine(query) {
 // resolution: core.resolution,
 // aspectratio: core.aspect_ratio,
 // },
-// meta_dl: {
+// AVDownload: {
 // mediaurl: core.url,
 // originalformat: core.format
 // .replace(/[-\s]+/g, "_")
@@ -909,7 +909,7 @@ async function Engine(query) {
 // formatid: core.format_id,
 // formatnote: core.format_note,
 // },
-// meta_info: {
+// AVInfo: {
 // framespersecond: core.fps,
 // totalbitrate: core.tbr,
 // qriginalextension: core.ext,
@@ -943,17 +943,17 @@ async function Engine(query) {
 // duration_string: metaTube.duration_string,
 // },
 // });
-// if (reTube.meta_dl.formatnote) {
+// if (reTube.AVDownload.formatnote) {
 // switch (true) {
-// case (reTube.meta_dl.formatnote.includes("ultralow") ||
-// reTube.meta_dl.formatnote.includes("medium") ||
-// reTube.meta_dl.formatnote.includes("high") ||
-// reTube.meta_dl.formatnote.includes("low")) &&
-// reTube.meta_video.resolution &&
-// reTube.meta_video.resolution.includes("audio"):
+// case (reTube.AVDownload.formatnote.includes("ultralow") ||
+// reTube.AVDownload.formatnote.includes("medium") ||
+// reTube.AVDownload.formatnote.includes("high") ||
+// reTube.AVDownload.formatnote.includes("low")) &&
+// reTube.Video.resolution &&
+// reTube.Video.resolution.includes("audio"):
 // pushTube.push({ Tube: "AudioStore", reTube });
 // break;
-// case reTube.meta_dl.formatnote.includes("HDR"):
+// case reTube.AVDownload.formatnote.includes("HDR"):
 // pushTube.push({ Tube: "HDRVideoStore", reTube });
 // break;
 // default:
@@ -991,6 +991,7 @@ var version = "3.0.0";
 
 async function Agent({ query, }) {
     try {
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
         let videoId;
         let respEngine = undefined;
         let TubeBody;
@@ -1006,7 +1007,6 @@ async function Agent({ query, }) {
             default:
                 videoId = await YouTubeID(query);
         }
-        console.log(colors.green("@info: ") + `fetching metadata for ${query}`);
         switch (videoId) {
             case undefined:
                 TubeBody = (await web.search.SearchVideos({
@@ -1039,10 +1039,8 @@ async function Agent({ query, }) {
         if (respEngine === undefined) {
             throw new Error(colors.red("@error: ") + "no data returned from server.");
         }
-        else {
-            console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
+        else
             return respEngine;
-        }
     }
     catch (error) {
         if (error instanceof Error) {
@@ -1205,22 +1203,22 @@ function list_formats({ query, }) {
             const EnResp = await Agent(zval);
             if (!EnResp)
                 return reject("Unable to get response from YouTube...");
-            const metaTube = (data) => data.filter((out) => !out.meta_dl.originalformat.includes("Premium"));
+            const metaTube = (data) => data.filter((out) => !out.AVDownload.originalformat.includes("Premium"));
             const EnBody = {
                 AudioFormatsData: metaTube(EnResp.AudioStore).map((out) => [
-                    out.meta_dl.originalformat,
-                    out.meta_info.filesizebytes,
-                    out.meta_info.filesizeformatted,
+                    out.AVDownload.originalformat,
+                    out.AVInfo.filesizebytes,
+                    out.AVInfo.filesizeformatted,
                 ]),
                 VideoFormatsData: metaTube(EnResp.VideoStore).map((out) => [
-                    out.meta_dl.originalformat,
-                    out.meta_info.filesizebytes,
-                    out.meta_info.filesizeformatted,
+                    out.AVDownload.originalformat,
+                    out.AVInfo.filesizebytes,
+                    out.AVInfo.filesizeformatted,
                 ]),
                 HdrVideoFormatsData: metaTube(EnResp.HDRVideoStore).map((out) => [
-                    out.meta_dl.originalformat,
-                    out.meta_info.filesizebytes,
-                    out.meta_info.filesizeformatted,
+                    out.AVDownload.originalformat,
+                    out.AVInfo.filesizebytes,
+                    out.AVInfo.filesizeformatted,
                 ]),
             };
             resolve(EnBody);
@@ -1380,8 +1378,7 @@ async function ffmpeg() {
         try {
             const ffprobePath = child_process.execSync("which ffprobe").toString().trim();
             const ffmpegPath = child_process.execSync("which ffmpeg").toString().trim();
-            console.log(colors.green("@ffprobePath:"), ffprobePath);
-            console.log(colors.green("@ffmpegPath:"), ffmpegPath);
+            console.log(colors.green("@ffprobePath:"), ffprobePath, "|", colors.green("@ffmpegPath:"), ffmpegPath);
             if (fs__namespace.existsSync(ffmpegPath) && fs__namespace.existsSync(ffprobePath)) {
                 proc.setFfprobePath(ffprobePath);
                 proc.setFfmpegPath(ffmpegPath);
@@ -1438,7 +1435,14 @@ async function lowEntry(metaBody) {
         console.log(colors.red("@error:"), "sorry no downloadable data found");
         return undefined;
     }
-    const sortedByFileSize = [...metaBody].sort((a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes);
+    const validEntries = metaBody.filter((entry) => entry.AVInfo.filesizebytes !== null &&
+        entry.AVInfo.filesizebytes !== undefined &&
+        !isNaN(entry.AVInfo.filesizebytes));
+    if (validEntries.length === 0) {
+        console.log(colors.red("@error:"), "sorry no downloadable data found");
+        return undefined;
+    }
+    const sortedByFileSize = [...validEntries].sort((a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes);
     return sortedByFileSize[0];
 }
 
@@ -1496,7 +1500,7 @@ async function AudioLowest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const proc = await ffmpeg();
-        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaEntry.AVDownload.mediaurl);
         proc.addInput(metaBody.metaTube.thumbnail);
         proc.addOutputOption("-map", "1:0");
         proc.addOutputOption("-map", "0:a:0");
@@ -1648,7 +1652,14 @@ async function bigEntry(metaBody) {
         console.log(colors.red("@error:"), "sorry no downloadable data found");
         return undefined;
     }
-    const sortedByFileSize = [...metaBody].sort((a, b) => b.meta_info.filesizebytes - a.meta_info.filesizebytes);
+    const validEntries = metaBody.filter((entry) => entry.AVInfo.filesizebytes !== null &&
+        entry.AVInfo.filesizebytes !== undefined &&
+        !isNaN(entry.AVInfo.filesizebytes));
+    if (validEntries.length === 0) {
+        console.log(colors.red("@error:"), "sorry no downloadable data found");
+        return undefined;
+    }
+    const sortedByFileSize = [...validEntries].sort((a, b) => b.AVInfo.filesizebytes - a.AVInfo.filesizebytes);
     return sortedByFileSize[0];
 }
 
@@ -1679,7 +1690,7 @@ async function AudioHighest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const proc = await ffmpeg();
-        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaEntry.AVDownload.mediaurl);
         proc.addInput(metaBody.metaTube.thumbnail);
         proc.addOutputOption("-map", "1:0");
         proc.addOutputOption("-map", "0:a:0");
@@ -1853,7 +1864,7 @@ async function VideoLowest$1(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const proc = await ffmpeg();
-        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaEntry.AVDownload.mediaurl);
         proc.format(outputFormat);
         switch (filter) {
             case "grayscale":
@@ -1989,7 +2000,7 @@ async function VideoHighest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const proc = await ffmpeg();
-        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaEntry.AVDownload.mediaurl);
         proc.format(outputFormat);
         switch (filter) {
             case "grayscale":
@@ -2125,8 +2136,8 @@ async function AudioVideoLowest(input) {
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        proc.addInput(VmetaEntry.meta_dl.mediaurl);
-        proc.addInput(AmetaEntry.meta_dl.mediaurl);
+        proc.addInput(VmetaEntry.AVDownload.mediaurl);
+        proc.addInput(AmetaEntry.AVDownload.mediaurl);
         proc.format(outputFormat);
         proc.on("start", (command) => {
             if (verbose)
@@ -2230,8 +2241,8 @@ async function AudioVideoHighest(input) {
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        proc.addInput(VmetaEntry.meta_dl.mediaurl);
-        proc.addInput(AmetaEntry.meta_dl.mediaurl);
+        proc.addInput(VmetaEntry.AVDownload.mediaurl);
+        proc.addInput(AmetaEntry.AVDownload.mediaurl);
         proc.format(outputFormat);
         proc.on("start", (command) => {
             if (verbose)
@@ -2327,7 +2338,7 @@ async function AudioQualityCustom(input) {
                 status: 500,
             };
         }
-        const metaBody = metaResp.AudioStore.filter((op) => op.meta_dl.formatnote === quality);
+        const metaBody = metaResp.AudioStore.filter((op) => op.AVDownload.formatnote === quality);
         if (!metaBody) {
             return {
                 message: "Unable to get response from YouTube...",
@@ -2349,13 +2360,11 @@ async function AudioQualityCustom(input) {
                 status: 500,
             };
         }
-        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaEntry.AVDownload.mediaurl);
         proc.addInput(metaResp.metaTube.thumbnail);
         proc.addOutputOption("-map", "1:0");
         proc.addOutputOption("-map", "0:a:0");
         proc.addOutputOption("-id3v2_version", "3");
-        proc.withAudioBitrate(metaEntry.meta_audio.bitrate);
-        proc.withAudioChannels(metaEntry.meta_audio.channels);
         proc.format(outputFormat);
         switch (filter) {
             case "bassboost":
@@ -2525,7 +2534,7 @@ async function VideoLowest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const proc = await ffmpeg();
-        proc.addInput(metaEntry.meta_dl.mediaurl);
+        proc.addInput(metaEntry.AVDownload.mediaurl);
         proc.format(outputFormat);
         switch (filter) {
             case "grayscale":
@@ -2683,7 +2692,7 @@ async function ListVideoLowest(input) {
             if (metaEntry === undefined)
                 continue;
             const proc = await ffmpeg();
-            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaEntry.AVDownload.mediaurl);
             proc.format(outputFormat);
             proc.on("start", (command) => {
                 if (verbose)
@@ -2840,7 +2849,7 @@ async function ListVideoHighest(input) {
             if (metaEntry === undefined)
                 continue;
             const proc = await ffmpeg();
-            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaEntry.AVDownload.mediaurl);
             proc.format(outputFormat);
             proc.on("start", (command) => {
                 if (verbose)
@@ -3002,7 +3011,7 @@ async function ListVideoQualityCustom(input) {
             });
             if (metaBody === undefined)
                 continue;
-            const newBody = metaBody.VideoStore.filter((op) => op.meta_dl.formatnote === quality);
+            const newBody = metaBody.VideoStore.filter((op) => op.AVDownload.formatnote === quality);
             if (!newBody || newBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
@@ -3015,7 +3024,7 @@ async function ListVideoQualityCustom(input) {
             if (metaEntry === undefined)
                 continue;
             const proc = await ffmpeg();
-            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaEntry.AVDownload.mediaurl);
             proc.format(outputFormat);
             proc.on("start", (command) => {
                 if (verbose)
@@ -3172,7 +3181,7 @@ async function ListAudioLowest(input) {
             if (metaEntry === undefined)
                 continue;
             const proc = await ffmpeg();
-            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaEntry.AVDownload.mediaurl);
             proc.addInput(metaBody.metaTube.thumbnail);
             proc.addOutputOption("-map", "1:0");
             proc.addOutputOption("-map", "0:a:0");
@@ -3364,7 +3373,7 @@ async function ListAudioHighest(input) {
             if (metaEntry === undefined)
                 continue;
             const proc = await ffmpeg();
-            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaEntry.AVDownload.mediaurl);
             proc.addInput(metaBody.metaTube.thumbnail);
             proc.addOutputOption("-map", "1:0");
             proc.addOutputOption("-map", "0:a:0");
@@ -3547,7 +3556,7 @@ async function ListAudioQualityCustom(input) {
             });
             if (metaBody === undefined)
                 continue;
-            const newBody = metaBody.AudioStore.filter((op) => op.meta_dl.formatnote === quality);
+            const newBody = metaBody.AudioStore.filter((op) => op.AVDownload.formatnote === quality);
             if (!newBody || newBody === undefined)
                 continue;
             const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
@@ -3560,7 +3569,7 @@ async function ListAudioQualityCustom(input) {
             if (metaEntry === undefined)
                 continue;
             const proc = await ffmpeg();
-            proc.addInput(metaEntry.meta_dl.mediaurl);
+            proc.addInput(metaEntry.AVDownload.mediaurl);
             proc.addInput(metaBody.metaTube.thumbnail);
             proc.addOutputOption("-map", "1:0");
             proc.addOutputOption("-map", "0:a:0");
@@ -3750,8 +3759,8 @@ async function ListAudioVideoLowest(input) {
                             const VmetaEntry = await lowEntry(metaBody.VideoStore);
                             if (AmetaEntry === undefined || VmetaEntry === undefined)
                                 return;
-                            proc.addInput(VmetaEntry.meta_dl.mediaurl);
-                            proc.addInput(AmetaEntry.meta_dl.mediaurl);
+                            proc.addInput(VmetaEntry.AVDownload.mediaurl);
+                            proc.addInput(AmetaEntry.AVDownload.mediaurl);
                             proc.format(outputFormat);
                             proc.on("start", (command) => {
                                 if (verbose)
@@ -3876,8 +3885,8 @@ async function ListAudioVideoHighest(input) {
                             const VmetaEntry = await bigEntry(metaBody.VideoStore);
                             if (AmetaEntry === undefined || VmetaEntry === undefined)
                                 return;
-                            proc.addInput(VmetaEntry.meta_dl.mediaurl);
-                            proc.addInput(AmetaEntry.meta_dl.mediaurl);
+                            proc.addInput(VmetaEntry.AVDownload.mediaurl);
+                            proc.addInput(AmetaEntry.AVDownload.mediaurl);
                             proc.format(outputFormat);
                             proc.on("start", (command) => {
                                 if (verbose)

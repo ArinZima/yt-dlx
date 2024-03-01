@@ -74,14 +74,14 @@ declare function PlaylistInfo(input: InputYouTube): Promise<PlaylistInfoType | u
 declare function help(): Promise<string>;
 
 interface TubeConfig {
-    meta_audio: {
+    Audio: {
         codec: string;
         bitrate: number;
         channels: number;
         extension: string;
         samplerate: number;
     };
-    meta_video: {
+    Video: {
         width: number;
         codec: string;
         height: number;
@@ -90,13 +90,13 @@ interface TubeConfig {
         resolution: string;
         aspectratio: number;
     };
-    meta_dl: {
+    AVDownload: {
         mediaurl: string;
         formatid: string;
         formatnote: string;
         originalformat: string;
     };
-    meta_info: {
+    AVInfo: {
         dynamicrange: string;
         totalbitrate: number;
         filesizebytes: number;

@@ -1,1 +1,1 @@
-{"version":3,"file":"bigEntry.d.ts","sourceRoot":"","sources":["../../../core/base/bigEntry.ts"],"names":[],"mappings":"AACA,OAAO,KAAK,UAAU,MAAM,yBAAyB,CAAC;AAEtD,wBAA8B,QAAQ,CACpC,QAAQ,EAAE,UAAU,EAAE,GACrB,OAAO,CAAC,UAAU,GAAG,SAAS,CAAC,CASjC"}
+{"version":3,"file":"bigEntry.d.ts","sourceRoot":"","sources":["../../../core/base/bigEntry.ts"],"names":[],"mappings":"AACA,OAAO,KAAK,UAAU,MAAM,yBAAyB,CAAC;AAEtD,wBAA8B,QAAQ,CACpC,QAAQ,EAAE,UAAU,EAAE,GACrB,OAAO,CAAC,UAAU,GAAG,SAAS,CAAC,CAmBjC"}
