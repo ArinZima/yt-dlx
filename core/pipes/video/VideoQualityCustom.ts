@@ -77,7 +77,7 @@ export default async function VideoLowest(
       throw new Error("Unable to get response from YouTube...");
     }
     const proc = await ffmpeg();
-    proc.addInput(metaEntry.meta_dl.mediaurl);
+    proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
     switch (filter) {
       case "grayscale":

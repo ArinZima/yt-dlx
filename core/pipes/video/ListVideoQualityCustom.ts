@@ -108,8 +108,8 @@ export default async function ListVideoQualityCustom(
       });
       if (metaBody === undefined) continue;
       const newBody = metaBody.VideoStore.filter(
-        (op: { meta_dl: { formatnote: string } }) =>
-          op.meta_dl.formatnote === quality
+        (op: { AVDownload: { formatnote: string } }) =>
+          op.AVDownload.formatnote === quality
       );
       if (!newBody || newBody === undefined) continue;
       const title: string = metaBody.metaTube.title.replace(
@@ -123,7 +123,7 @@ export default async function ListVideoQualityCustom(
       const metaEntry: TubeConfig | undefined = await bigEntry(newBody);
       if (metaEntry === undefined) continue;
       const proc = await ffmpeg();
-      proc.addInput(metaEntry.meta_dl.mediaurl);
+      proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.format(outputFormat);
       proc.on("start", (command) => {
         if (verbose) console.log(command);

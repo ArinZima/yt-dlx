@@ -10,16 +10,16 @@ export default async function lowEntry(
   }
   const validEntries = metaBody.filter(
     (entry) =>
-      entry.meta_info.filesizebytes !== null &&
-      entry.meta_info.filesizebytes !== undefined &&
-      !isNaN(entry.meta_info.filesizebytes)
+      entry.AVInfo.filesizebytes !== null &&
+      entry.AVInfo.filesizebytes !== undefined &&
+      !isNaN(entry.AVInfo.filesizebytes)
   );
   if (validEntries.length === 0) {
     console.log(colors.red("@error:"), "sorry no downloadable data found");
     return undefined;
   }
   const sortedByFileSize = [...validEntries].sort(
-    (a, b) => a.meta_info.filesizebytes - b.meta_info.filesizebytes
+    (a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes
   );
   return sortedByFileSize[0];
 }

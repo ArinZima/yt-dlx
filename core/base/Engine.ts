@@ -67,13 +67,13 @@ export default async function Engine(query: string): Promise<EngineResult> {
           resolution: io.resolution,
           aspectratio: io.aspect_ratio,
         },
-        meta_dl: {
+        AVDownload: {
           mediaurl: io.url,
           formatid: io.format_id,
           formatnote: io.format_note,
           originalformat: io.format.replace(/[-\s]+/g, "_").replace(/_/g, "_"),
         },
-        meta_info: {
+        AVInfo: {
           totalbitrate: io.tbr,
           framespersecond: io.fps,
           qriginalextension: io.ext,
@@ -107,17 +107,17 @@ export default async function Engine(query: string): Promise<EngineResult> {
           duration_string: metaTube.duration_string,
         },
       });
-      if (reTube.meta_dl.formatnote) {
+      if (reTube.AVDownload.formatnote) {
         switch (true) {
-          case (reTube.meta_dl.formatnote.includes("ultralow") ||
-            reTube.meta_dl.formatnote.includes("medium") ||
-            reTube.meta_dl.formatnote.includes("high") ||
-            reTube.meta_dl.formatnote.includes("low")) &&
+          case (reTube.AVDownload.formatnote.includes("ultralow") ||
+            reTube.AVDownload.formatnote.includes("medium") ||
+            reTube.AVDownload.formatnote.includes("high") ||
+            reTube.AVDownload.formatnote.includes("low")) &&
             reTube.Video.resolution &&
             reTube.Video.resolution.includes("audio"):
             pushTube.push({ Tube: "AudioStore", reTube });
             break;
-          case reTube.meta_dl.formatnote.includes("HDR"):
+          case reTube.AVDownload.formatnote.includes("HDR"):
             pushTube.push({ Tube: "HDRVideoStore", reTube });
             break;
           default:
@@ -216,7 +216,7 @@ export default async function Engine(query: string): Promise<EngineResult> {
 // resolution: core.resolution,
 // aspectratio: core.aspect_ratio,
 // },
-// meta_dl: {
+// AVDownload: {
 // mediaurl: core.url,
 // originalformat: core.format
 // .replace(/[-\s]+/g, "_")
@@ -224,7 +224,7 @@ export default async function Engine(query: string): Promise<EngineResult> {
 // formatid: core.format_id,
 // formatnote: core.format_note,
 // },
-// meta_info: {
+// AVInfo: {
 // framespersecond: core.fps,
 // totalbitrate: core.tbr,
 // qriginalextension: core.ext,
@@ -258,17 +258,17 @@ export default async function Engine(query: string): Promise<EngineResult> {
 // duration_string: metaTube.duration_string,
 // },
 // });
-// if (reTube.meta_dl.formatnote) {
+// if (reTube.AVDownload.formatnote) {
 // switch (true) {
-// case (reTube.meta_dl.formatnote.includes("ultralow") ||
-// reTube.meta_dl.formatnote.includes("medium") ||
-// reTube.meta_dl.formatnote.includes("high") ||
-// reTube.meta_dl.formatnote.includes("low")) &&
+// case (reTube.AVDownload.formatnote.includes("ultralow") ||
+// reTube.AVDownload.formatnote.includes("medium") ||
+// reTube.AVDownload.formatnote.includes("high") ||
+// reTube.AVDownload.formatnote.includes("low")) &&
 // reTube.Video.resolution &&
 // reTube.Video.resolution.includes("audio"):
 // pushTube.push({ Tube: "AudioStore", reTube });
 // break;
-// case reTube.meta_dl.formatnote.includes("HDR"):
+// case reTube.AVDownload.formatnote.includes("HDR"):
 // pushTube.push({ Tube: "HDRVideoStore", reTube });
 // break;
 // default:

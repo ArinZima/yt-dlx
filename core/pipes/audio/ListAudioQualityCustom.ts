@@ -77,8 +77,8 @@ export default async function ListAudioQualityCustom(
       });
       if (metaBody === undefined) continue;
       const newBody = metaBody.AudioStore.filter(
-        (op: { meta_dl: { formatnote: string } }) =>
-          op.meta_dl.formatnote === quality
+        (op: { AVDownload: { formatnote: string } }) =>
+          op.AVDownload.formatnote === quality
       );
       if (!newBody || newBody === undefined) continue;
       const title: string = metaBody.metaTube.title.replace(
@@ -92,7 +92,7 @@ export default async function ListAudioQualityCustom(
       const metaEntry: TubeConfig | undefined = await bigEntry(newBody);
       if (metaEntry === undefined) continue;
       const proc = await ffmpeg();
-      proc.addInput(metaEntry.meta_dl.mediaurl);
+      proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.addInput(metaBody.metaTube.thumbnail);
       proc.addOutputOption("-map", "1:0");
       proc.addOutputOption("-map", "0:a:0");

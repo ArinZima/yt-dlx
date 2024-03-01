@@ -94,8 +94,8 @@ export default async function ListAudioVideoLowest(
                 const VmetaEntry = await lowEntry(metaBody.VideoStore);
                 if (AmetaEntry === undefined || VmetaEntry === undefined)
                   return;
-                proc.addInput(VmetaEntry.meta_dl.mediaurl);
-                proc.addInput(AmetaEntry.meta_dl.mediaurl);
+                proc.addInput(VmetaEntry.AVDownload.mediaurl);
+                proc.addInput(AmetaEntry.AVDownload.mediaurl);
                 proc.format(outputFormat);
                 proc.on("start", (command) => {
                   if (verbose) console.log(command);

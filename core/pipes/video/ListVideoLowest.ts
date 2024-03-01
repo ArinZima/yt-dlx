@@ -89,7 +89,7 @@ export default async function ListVideoLowest(
       );
       if (metaEntry === undefined) continue;
       const proc = await ffmpeg();
-      proc.addInput(metaEntry.meta_dl.mediaurl);
+      proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.format(outputFormat);
       proc.on("start", (command) => {
         if (verbose) console.log(command);

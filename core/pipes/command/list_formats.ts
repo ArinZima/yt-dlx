@@ -16,22 +16,24 @@ export default function list_formats({
       const EnResp = await Engine(zval);
       if (!EnResp) return reject("Unable to get response from YouTube...");
       const metaTube = (data: any[]) =>
-        data.filter((out) => !out.meta_dl.originalformat.includes("Premium"));
+        data.filter(
+          (out) => !out.AVDownload.originalformat.includes("Premium")
+        );
       const EnBody = {
         AudioFormatsData: metaTube(EnResp.AudioStore).map((out) => [
-          out.meta_dl.originalformat,
-          out.meta_info.filesizebytes,
-          out.meta_info.filesizeformatted,
+          out.AVDownload.originalformat,
+          out.AVInfo.filesizebytes,
+          out.AVInfo.filesizeformatted,
         ]),
         VideoFormatsData: metaTube(EnResp.VideoStore).map((out) => [
-          out.meta_dl.originalformat,
-          out.meta_info.filesizebytes,
-          out.meta_info.filesizeformatted,
+          out.AVDownload.originalformat,
+          out.AVInfo.filesizebytes,
+          out.AVInfo.filesizeformatted,
         ]),
         HdrVideoFormatsData: metaTube(EnResp.HDRVideoStore).map((out) => [
-          out.meta_dl.originalformat,
-          out.meta_info.filesizebytes,
-          out.meta_info.filesizeformatted,
+          out.AVDownload.originalformat,
+          out.AVInfo.filesizebytes,
+          out.AVInfo.filesizeformatted,
         ]),
       };
       resolve(EnBody);

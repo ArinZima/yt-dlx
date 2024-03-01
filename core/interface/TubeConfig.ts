@@ -15,13 +15,13 @@ export default interface TubeConfig {
     resolution: string;
     aspectratio: number;
   };
-  meta_dl: {
+  AVDownload: {
     mediaurl: string;
     formatid: string;
     formatnote: string;
     originalformat: string;
   };
-  meta_info: {
+  AVInfo: {
     dynamicrange: string;
     totalbitrate: number;
     filesizebytes: number;

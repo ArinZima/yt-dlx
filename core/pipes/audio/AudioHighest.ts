@@ -61,7 +61,7 @@ export default async function AudioHighest(
       throw new Error("Unable to get response from YouTube...");
     }
     const proc = await ffmpeg();
-    proc.addInput(metaEntry.meta_dl.mediaurl);
+    proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.addInput(metaBody.metaTube.thumbnail);
     proc.addOutputOption("-map", "1:0");
     proc.addOutputOption("-map", "0:a:0");

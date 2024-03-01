@@ -57,8 +57,8 @@ export default async function AudioVideoHighest(
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(VmetaEntry.meta_dl.mediaurl);
-    proc.addInput(AmetaEntry.meta_dl.mediaurl);
+    proc.addInput(VmetaEntry.AVDownload.mediaurl);
+    proc.addInput(AmetaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
     proc.on("start", (command) => {
       if (verbose) console.log(command);

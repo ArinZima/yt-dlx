@@ -54,8 +54,8 @@ export default async function AudioQualityCustom(
       };
     }
     const metaBody = metaResp.AudioStore.filter(
-      (op: { meta_dl: { formatnote: string } }) =>
-        op.meta_dl.formatnote === quality
+      (op: { AVDownload: { formatnote: string } }) =>
+        op.AVDownload.formatnote === quality
     );
     if (!metaBody) {
       return {
@@ -80,7 +80,7 @@ export default async function AudioQualityCustom(
         status: 500,
       };
     }
-    proc.addInput(metaEntry.meta_dl.mediaurl);
+    proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.addInput(metaResp.metaTube.thumbnail);
     proc.addOutputOption("-map", "1:0");
     proc.addOutputOption("-map", "0:a:0");
