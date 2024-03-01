@@ -5,13 +5,8 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import lowEntry from "../../base/lowEntry";
-import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 
-interface StreamResult {
-  stream: Readable;
-  filename: string;
-}
 const AudioVideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -25,7 +20,10 @@ export default async function AudioVideoLowest(input: {
   verbose?: boolean;
   folderName?: string;
   outputFormat?: "webm" | "avi" | "mov";
-}): Promise<void | StreamResult> {
+}): Promise<void | {
+  fileName: string;
+  stream: fluentffmpeg.FfprobeStreamDisposition;
+}> {
   try {
     const {
       query,
@@ -86,23 +84,9 @@ export default async function AudioVideoLowest(input: {
       return error;
     });
     if (stream) {
-      const readStream = new Readable({
-        read() {},
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(undefined);
-          callback();
-        },
-      });
-      proc.pipe(writeStream, { end: true });
       return {
-        stream: readStream,
-        filename: folderName
+        stream: proc,
+        fileName: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };

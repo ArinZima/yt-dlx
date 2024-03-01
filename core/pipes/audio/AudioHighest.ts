@@ -5,14 +5,9 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
-import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type AudioFilters from "../../interface/AudioFilters";
 
-interface StreamResult {
-  stream: Readable;
-  filename: string;
-}
 const AudioHighestZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -28,7 +23,10 @@ export default async function AudioHighest(input: {
   folderName?: string;
   filter?: keyof AudioFilters;
   outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-}): Promise<void | StreamResult> {
+}): Promise<void | {
+  fileName: string;
+  stream: fluentffmpeg.FfprobeStreamDisposition;
+}> {
   try {
     const {
       query,
@@ -38,7 +36,6 @@ export default async function AudioHighest(input: {
       folderName,
       outputFormat = "mp3",
     } = AudioHighestZod.parse(input);
-
     const metaBody = await ytdlx({ query });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     let metaName: string = "";
@@ -156,23 +153,9 @@ export default async function AudioHighest(input: {
         break;
     }
     if (stream) {
-      const readStream = new Readable({
-        read() {},
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(undefined);
-          callback();
-        },
-      });
-      proc.pipe(writeStream, { end: true });
       return {
-        stream: readStream,
-        filename: folderName
+        stream: proc,
+        fileName: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };

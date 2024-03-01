@@ -5,14 +5,9 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
-import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type AudioFilters from "../../interface/AudioFilters";
 
-interface StreamResult {
-  stream: Readable;
-  filename: string;
-}
 const AudioQualityCustomZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -29,7 +24,10 @@ export default async function AudioQualityCustom(input: {
   quality: "high" | "medium" | "low" | "ultralow";
   outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
   filter?: keyof AudioFilters;
-}): Promise<void | StreamResult> {
+}): Promise<void | {
+  fileName: string;
+  stream: fluentffmpeg.FfprobeStreamDisposition;
+}> {
   try {
     const {
       query,
@@ -164,23 +162,9 @@ export default async function AudioQualityCustom(input: {
       return error;
     });
     if (stream) {
-      const readStream = new Readable({
-        read() {},
-      });
-      const writeStream = new Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(undefined);
-          callback();
-        },
-      });
-      proc.pipe(writeStream, { end: true });
       return {
-        stream: readStream,
-        filename: folderName
+        stream: proc,
+        fileName: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };

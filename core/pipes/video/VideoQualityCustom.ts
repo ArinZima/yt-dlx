@@ -5,14 +5,9 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
-import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type VideoFilters from "../../interface/VideoFilters";
 
-interface StreamResult {
-  stream: Readable;
-  filename: string;
-}
 const VideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -42,7 +37,10 @@ export default async function VideoLowest(input: {
     | "8640p"
     | "12000p";
   outputFormat?: "mp4" | "avi" | "mov";
-}): Promise<void | StreamResult> {
+}): Promise<void | {
+  fileName: string;
+  stream: fluentffmpeg.FfprobeStreamDisposition;
+}> {
   try {
     const {
       query,
@@ -134,35 +132,20 @@ export default async function VideoLowest(input: {
     proc.on("error", (error) => {
       return error;
     });
-    switch (stream) {
-      case true:
-        const readStream = new Readable({
-          read() {},
-        });
-        const writeStream = new Writable({
-          write(chunk, _encoding, callback) {
-            readStream.push(chunk);
-            callback();
-          },
-          final(callback) {
-            readStream.push(undefined);
-            callback();
-          },
-        });
-        proc.pipe(writeStream, { end: true });
-        return {
-          stream: readStream,
-          filename: folderName
-            ? path.join(metaFold, metaName.replace("-.", "."))
-            : metaName.replace("-.", "."),
-        };
-      default:
-        await new Promise<void>((resolve, reject) => {
-          proc.output(path.join(metaFold, metaName));
-          proc.on("end", () => resolve());
-          proc.on("error", reject);
-          proc.run();
-        });
+    if (stream) {
+      return {
+        stream: proc,
+        fileName: folderName
+          ? path.join(metaFold, metaName.replace("-.", "."))
+          : metaName.replace("-.", "."),
+      };
+    } else {
+      await new Promise<void>((resolve, reject) => {
+        proc.output(path.join(metaFold, metaName));
+        proc.on("end", () => resolve());
+        proc.on("error", reject);
+        proc.run();
+      });
     }
     console.log(
       colors.green("@info:"),
