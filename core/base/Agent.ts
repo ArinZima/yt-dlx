@@ -24,7 +24,7 @@ export default async function Agent({
       | TypePlaylist[]
       | VideoInfoType
       | PlaylistInfoType;
-    console.log(colors.green("@info: ") + `using yt-dlx version ${version}`);
+    console.log(colors.green("@info:"), `using yt-dlx version ${version}`);
     switch (true) {
       case !query || query.trim() === "":
         throw new Error(colors.red("@error: ") + "'query' is required.");
@@ -50,8 +50,9 @@ export default async function Agent({
           );
         } else if (TubeBody[0]) {
           console.log(
-            colors.green("@info: ") +
-              `preparing payload for ${TubeBody[0].title}`
+            colors.green("@info:"),
+            `preparing payload for`,
+            colors.green(TubeBody[0].title as string)
           );
           respEngine = await Engine(TubeBody[0].videoLink);
         } else {
@@ -70,7 +71,9 @@ export default async function Agent({
           );
         }
         console.log(
-          colors.green("@info: ") + `preparing payload for ${TubeBody.title}`
+          colors.green("@info:"),
+          `preparing payload for`,
+          colors.green(TubeBody.title)
         );
         respEngine = await Engine(TubeBody.videoLink);
         break;
