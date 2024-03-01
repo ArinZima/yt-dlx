@@ -15,7 +15,6 @@ const proTube = minimist(process.argv.slice(2), {
     al: "audio-lowest",
     vh: "video_highest",
     ah: "audio-highest",
-    vi: "get-video-data",
     avl: "audio-video-lowest",
     avh: "audio-video-highest",
     aqc: "audio-quality-custom",
@@ -67,24 +66,6 @@ const program = async () => {
       } else
         ytdlx.info
           .list_formats({
-            query: proTube.query,
-          })
-          .then((data: any) => {
-            console.log(data);
-            process.exit();
-          })
-          .catch((error: string) => {
-            console.error(colors.red(error));
-            process.exit();
-          });
-      break;
-    case "get-video-data":
-    case "vi":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors.red("error: no query"));
-      } else
-        ytdlx.info
-          .get_video_data({
             query: proTube.query,
           })
           .then((data: any) => {

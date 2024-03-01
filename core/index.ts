@@ -1,9 +1,7 @@
 import web from "./web";
 import help from "./pipes/command/help";
 import extract from "./pipes/command/extract";
-import get_playlist from "./pipes/command/get_playlist";
 import list_formats from "./pipes/command/list_formats";
-import get_video_data from "./pipes/command/get_video_data";
 import extract_playlist_videos from "./pipes/command/extract_playlist_videos";
 
 import AudioLowest from "./pipes/audio/AudioLowest";
@@ -34,8 +32,6 @@ const ytdlx = {
     help,
     extract,
     list_formats,
-    get_playlist,
-    get_video_data,
     extract_playlist_videos,
   },
   audio: {
