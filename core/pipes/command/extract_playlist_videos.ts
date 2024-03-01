@@ -39,7 +39,7 @@ export default async function extract_playlist_videos({
           console.log(
             colors.green("@info:"),
             "total videos in playlist",
-            colors.green(listLink),
+            colors.green(resp.playlistTitle),
             resp.playlistVideoCount
           );
           await async.eachSeries(resp.playlistVideos, async (vid) => {

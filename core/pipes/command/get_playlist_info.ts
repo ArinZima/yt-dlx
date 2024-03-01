@@ -36,7 +36,7 @@ export default async function get_playlist_info({
         console.log(
           colors.green("@info:"),
           "total videos in playlist",
-          colors.green(listLink),
+          colors.green(resp.playlistTitle),
           resp.playlistVideoCount
         );
         proTubeArr.push(resp);
