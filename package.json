@@ -11,8 +11,8 @@
   },
   "scripts": {
     "start": "node ./.devcontainer/start.mjs",
-    "remake": "bun clean && bun make && bun run update && bun run build",
     "rerun": "bun ./.devcontainer/server.mjs & bun ./.devcontainer/rerun.mjs",
+    "remake": "bun clean && bun make && bun run update && bun run build",
     "upload": "bun remake && bun run test && npm pkg fix && npm publish --access=public && bun update",
     "clean": "bun clean:base && bun clean:client",
     "clean:base": "rm -rf node_modules .temp shared bun.lockb",
