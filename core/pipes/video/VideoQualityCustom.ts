@@ -34,8 +34,6 @@ interface VideoLowestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type VideoLowestType = Promise<true | StreamResult>;
-
 const VideoLowestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -47,7 +45,7 @@ const VideoLowestInputSchema = z.object({
 
 export default async function VideoLowest(
   input: VideoLowestOC
-): VideoLowestType {
+): Promise<true | StreamResult> {
   try {
     const {
       query,

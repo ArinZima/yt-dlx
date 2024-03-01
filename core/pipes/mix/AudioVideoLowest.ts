@@ -17,7 +17,6 @@ interface AudioVideoLowestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-type AudioVideoLowestType = Promise<true | StreamResult>;
 const AudioVideoLowestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -28,7 +27,7 @@ const AudioVideoLowestInputSchema = z.object({
 
 export default async function AudioVideoLowest(
   input: AudioVideoLowestOC
-): AudioVideoLowestType {
+): Promise<true | StreamResult> {
   try {
     const {
       query,

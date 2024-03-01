@@ -29,10 +29,9 @@ const AudioHighestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 
-type AudioHighestType = Promise<true | StreamResult>;
 export default async function AudioHighest(
   input: AudioHighestOC
-): AudioHighestType {
+): Promise<true | StreamResult> {
   try {
     const {
       query,

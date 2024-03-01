@@ -17,7 +17,6 @@ interface AudioVideoHighestOC {
   folderName?: string;
   outputFormat?: VideoFormat;
 }
-type AudioVideoHighest = Promise<true | StreamResult>;
 const AudioVideoHighestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -28,7 +27,7 @@ const AudioVideoHighestInputSchema = z.object({
 
 export default async function AudioVideoHighest(
   input: AudioVideoHighestOC
-): AudioVideoHighest {
+): Promise<true | StreamResult> {
   try {
     const {
       query,

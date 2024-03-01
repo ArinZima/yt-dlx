@@ -29,10 +29,9 @@ const AudioLowestInputSchema = z.object({
   outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 
-type AudioLowestType = Promise<true | StreamResult>;
 export default async function AudioLowest(
   input: AudioLowestOC
-): AudioLowestType {
+): Promise<true | StreamResult> {
   try {
     const {
       query,

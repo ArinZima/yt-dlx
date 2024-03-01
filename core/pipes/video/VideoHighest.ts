@@ -7,7 +7,6 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type ErrorResult from "../../interface/ErrorResult";
 import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
@@ -20,8 +19,6 @@ interface VideoHighestOC {
   outputFormat?: VideoFormat;
   filter?: keyof VideoFilters;
 }
-type VideoHighestType = Promise<true | ErrorResult | StreamResult>;
-
 const VideoHighestInputSchema = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -33,7 +30,7 @@ const VideoHighestInputSchema = z.object({
 
 export default async function VideoHighest(
   input: VideoHighestOC
-): VideoHighestType {
+): Promise<true | StreamResult> {
   try {
     const {
       query,
