@@ -4,7 +4,6 @@ import colors from "colors";
 import * as path from "path";
 import * as async from "async";
 import AudioVideoLowest from "../pipes/mix/AudioVideoLowest";
-import AudioVideoHighest from "../pipes/mix/AudioVideoHighest";
 
 async.series(
   {
@@ -24,7 +23,7 @@ async.series(
     },
     second: async () => {
       try {
-        let metaTube: any = await AudioVideoHighest({
+        let metaTube: any = await AudioVideoLowest({
           query: "sQEgklEwhSo",
           folderName: ".temp",
           verbose: false,
