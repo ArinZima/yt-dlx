@@ -4,7 +4,7 @@ import * as path3 from 'path';
 import path3__default from 'path';
 import * as fs from 'fs';
 import fs__default from 'fs';
-import colors30 from 'colors';
+import colors29 from 'colors';
 import { load } from 'cheerio';
 import retry from 'async-retry';
 import spinClient from 'spinnies';
@@ -13,7 +13,7 @@ import { z, ZodError } from 'zod';
 import { randomUUID } from 'crypto';
 import puppeteer from 'puppeteer';
 import { promisify } from 'util';
-import { execSync, exec } from 'child_process';
+import { exec } from 'child_process';
 import fluentffmpeg from 'fluent-ffmpeg';
 import { Readable, Writable } from 'stream';
 import readline from 'readline';
@@ -82,9 +82,9 @@ async function crawler() {
       await browser.close();
     switch (true) {
       case error instanceof Error:
-        throw new Error(colors30.red("@error: ") + error.message);
+        throw new Error(colors29.red("@error: ") + error.message);
       default:
-        throw new Error(colors30.red("@error: ") + "internal server error");
+        throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -122,7 +122,7 @@ async function SearchVideos(input) {
     let TubeResp;
     let snapshot;
     spinnies.add(spin, {
-      text: colors30.green("@scrape: ") + "booting chromium..."
+      text: colors29.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
@@ -133,7 +133,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors30.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors29.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -141,7 +141,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
-              text: colors30.yellow("@scrape: ") + "took snapshot..."
+              text: colors29.yellow("@scrape: ") + "took snapshot..."
             });
           }
           content = await page.content();
@@ -180,7 +180,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors30.green("@info: ") + colors30.white("scrapping done")
+            text: colors29.green("@info: ") + colors29.white("scrapping done")
           });
           if (page)
             await page.close();
@@ -197,7 +197,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors30.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors29.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -205,7 +205,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
-              text: colors30.yellow("@scrape: ") + "took snapshot..."
+              text: colors29.yellow("@scrape: ") + "took snapshot..."
             });
           }
           const content2 = await page.content();
@@ -224,7 +224,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors30.green("@info: ") + colors30.white("scrapping done")
+            text: colors29.green("@info: ") + colors29.white("scrapping done")
           });
           if (page)
             await page.close();
@@ -235,7 +235,7 @@ async function SearchVideos(input) {
         return TubeResp;
       default:
         spinnies.fail(spin, {
-          text: colors30.red("@error: ") + colors30.white("wrong filter type provided.")
+          text: colors29.red("@error: ") + colors29.white("wrong filter type provided.")
         });
         if (page)
           await page.close();
@@ -251,12 +251,12 @@ async function SearchVideos(input) {
     switch (true) {
       case error instanceof ZodError:
         throw new Error(
-          colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+          colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
         );
       case error instanceof Error:
-        throw new Error(colors30.red("@error: ") + error.message);
+        throw new Error(colors29.red("@error: ") + error.message);
       default:
-        throw new Error(colors30.red("@error: ") + "internal server error");
+        throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -308,14 +308,14 @@ async function PlaylistInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors30.green("@scrape: ") + "booting chromium..."
+        text: colors29.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors30.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors29.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -323,7 +323,7 @@ async function PlaylistInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors30.yellow("@scrape: ") + "took snapshot..."
+          text: colors29.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const content = await page.content();
@@ -366,7 +366,7 @@ async function PlaylistInfo(input) {
         });
       });
       spinnies.succeed(spin, {
-        text: colors30.green("@info: ") + colors30.white("scrapping done")
+        text: colors29.green("@info: ") + colors29.white("scrapping done")
       });
       await page.close();
       await browser.close();
@@ -441,14 +441,14 @@ async function VideoInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors30.green("@scrape: ") + "booting chromium..."
+        text: colors29.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors30.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors29.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -456,7 +456,7 @@ async function VideoInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors30.yellow("@scrape: ") + "took snapshot..."
+          text: colors29.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const videoId = await YouTubeID(query);
@@ -503,7 +503,7 @@ async function VideoInfo(input) {
         videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
       spinnies.succeed(spin, {
-        text: colors30.green("@info: ") + colors30.white("scrapping done")
+        text: colors29.green("@info: ") + colors29.white("scrapping done")
       });
       await page.close();
       await browser.close();
@@ -537,7 +537,7 @@ var web = {
 var web_default = web;
 function help() {
   return Promise.resolve(
-    colors30.bold.white(`
+    colors29.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -702,7 +702,7 @@ async function Engine(query) {
       proLoc += ` '${query}'`;
     } else {
       throw new Error(
-        colors30.red("@error: ") + "could not find the engine file."
+        colors29.red("@error: ") + "could not find the engine file."
       );
     }
     const result = await promisify(exec)(proLoc);
@@ -790,9 +790,9 @@ async function Engine(query) {
     };
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -806,19 +806,19 @@ async function Agent({
 }) {
   try {
     console.log(
-      colors30.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
     );
     let videoId;
     let respEngine = void 0;
     let TubeBody;
-    console.log(colors30.green("@info: ") + `using yt-dlx version ${version}`);
+    console.log(colors29.green("@info: ") + `using yt-dlx version ${version}`);
     switch (true) {
       case (!query || query.trim() === ""):
-        throw new Error(colors30.red("@error: ") + "'query' is required.");
+        throw new Error(colors29.red("@error: ") + "'query' is required.");
       case (/https/i.test(query) && /list/i.test(query)):
         throw new Error(
-          colors30.red("@error: ") + "use extract_playlist_videos()."
+          colors29.red("@error: ") + "use extract_playlist_videos()."
         );
       case (/https/i.test(query) && !/list/i.test(query)):
         videoId = await YouTubeID(query);
@@ -834,16 +834,16 @@ async function Agent({
         });
         if (!TubeBody || TubeBody.length === 0) {
           throw new Error(
-            colors30.red("@error: ") + "no data returned from server."
+            colors29.red("@error: ") + "no data returned from server."
           );
         } else if (TubeBody[0]) {
           console.log(
-            colors30.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
+            colors29.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
           );
           respEngine = await Engine(TubeBody[0].videoLink);
         } else {
           throw new Error(
-            colors30.red("@error: ") + "no data returned from server."
+            colors29.red("@error: ") + "no data returned from server."
           );
         }
         break;
@@ -853,24 +853,24 @@ async function Agent({
         });
         if (!TubeBody) {
           throw new Error(
-            colors30.red("@error: ") + "no data returned from server."
+            colors29.red("@error: ") + "no data returned from server."
           );
         }
         console.log(
-          colors30.green("@info: ") + `preparing payload for ${TubeBody.title}`
+          colors29.green("@info: ") + `preparing payload for ${TubeBody.title}`
         );
         respEngine = await Engine(TubeBody.videoLink);
         break;
     }
     if (respEngine === void 0) {
-      throw new Error(colors30.red("@error: ") + "no data returned from server.");
+      throw new Error(colors29.red("@error: ") + "no data returned from server.");
     } else
       return respEngine;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -987,7 +987,7 @@ async function get_playlist({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors30.bold.red("@error: "),
+          colors29.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -998,7 +998,7 @@ async function get_playlist({
       });
       if (resp === void 0) {
         console.error(
-          colors30.bold.red("@error: "),
+          colors29.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -1013,18 +1013,18 @@ async function get_playlist({
           if (metaTube === void 0)
             continue;
           console.log(
-            colors30.bold.green("INFO:"),
-            colors30.bold.green("<("),
+            colors29.bold.green("INFO:"),
+            colors29.bold.green("<("),
             metaTube.title,
-            colors30.bold.green("by"),
+            colors29.bold.green("by"),
             metaTube.author,
-            colors30.bold.green(")>")
+            colors29.bold.green(")>")
           );
           if (preTube.has(metaTube.videoId))
             continue;
           proTubeArr.push({ ...metaTube });
         } catch (error) {
-          console.error(colors30.bold.red("@error: "), error);
+          console.error(colors29.bold.red("@error: "), error);
         }
       }
     }
@@ -1184,7 +1184,7 @@ async function extract_playlist_videos({
       const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
       if (!ispUrl) {
         console.error(
-          colors30.bold.red("@error: "),
+          colors29.bold.red("@error: "),
           "Invalid YouTube Playlist URL:",
           videoLink
         );
@@ -1195,7 +1195,7 @@ async function extract_playlist_videos({
       });
       if (resp === void 0) {
         console.error(
-          colors30.bold.red("@error: "),
+          colors29.bold.red("@error: "),
           "Invalid Data Found For:",
           ispUrl[1]
         );
@@ -1215,7 +1215,7 @@ async function extract_playlist_videos({
             proTubeArr.push(data);
           processedVideoIds.add(videoId);
         } catch (error) {
-          console.error(colors30.bold.red("@error: "), error);
+          console.error(colors29.bold.red("@error: "), error);
         }
       }
     }
@@ -1224,50 +1224,16 @@ async function extract_playlist_videos({
     return error instanceof z6.ZodError ? error.errors : error;
   }
 }
-async function ffmpeg() {
-  return new Promise(async (resolve) => {
-    let proc = fluentffmpeg();
-    proc.addOption("-spatial-aq", "1");
-    proc.addOption("-preset", "slow");
-    proc.addOption("-level:v", "4.2");
-    proc.addOption("-threads", "0");
-    try {
-      const ffprobePath = execSync("which ffprobe").toString().trim();
-      const ffmpegPath = execSync("which ffmpeg").toString().trim();
-      console.log(
-        colors30.green("@ffprobePath:"),
-        ffprobePath,
-        "|",
-        colors30.green("@ffmpegPath:"),
-        ffmpegPath
-      );
-      if (fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath)) {
-        proc.setFfprobePath(ffprobePath);
-        proc.setFfmpegPath(ffmpegPath);
-      } else {
-        throw new Error(
-          colors30.red("@error: ") + "could not find the ffmpeg & ffprobe files."
-        );
-      }
-    } catch (error) {
-      throw new Error(
-        colors30.red("@error: ") + "An error occurred while locating ffmpeg & ffprobe executables."
-      );
-    }
-    proc.addOption("-threads", "0");
-    resolve(proc);
-  });
-}
 async function lowEntry(metaBody) {
   if (!metaBody || metaBody.length === 0) {
-    console.log(colors30.red("@error:"), "sorry no downloadable data found");
+    console.log(colors29.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const validEntries = metaBody.filter(
     (entry) => entry.AVInfo.filesizebytes !== null && entry.AVInfo.filesizebytes !== void 0 && !isNaN(entry.AVInfo.filesizebytes)
   );
   if (validEntries.length === 0) {
-    console.log(colors30.red("@error:"), "sorry no downloadable data found");
+    console.log(colors29.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const sortedByFileSize = [...validEntries].sort(
@@ -1280,16 +1246,16 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  let color = colors30.green;
+  let color = colors29.green;
   if (prog.percent >= 98)
     prog.percent = 100;
   readline.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
   if (prog.percent < 20)
-    color = colors30.red;
+    color = colors29.red;
   else if (prog.percent < 80)
-    color = colors30.yellow;
+    color = colors29.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
@@ -1334,7 +1300,7 @@ async function AudioLowest(input) {
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.addInput(metaBody.metaTube.thumbnail);
     proc.addOutputOption("-map", "1:0");
@@ -1468,25 +1434,25 @@ async function AudioLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
 async function bigEntry(metaBody) {
   if (!metaBody || metaBody.length === 0) {
-    console.log(colors30.red("@error:"), "sorry no downloadable data found");
+    console.log(colors29.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const validEntries = metaBody.filter(
     (entry) => entry.AVInfo.filesizebytes !== null && entry.AVInfo.filesizebytes !== void 0 && !isNaN(entry.AVInfo.filesizebytes)
   );
   if (validEntries.length === 0) {
-    console.log(colors30.red("@error:"), "sorry no downloadable data found");
+    console.log(colors29.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const sortedByFileSize = [...validEntries].sort(
@@ -1528,7 +1494,7 @@ async function AudioHighest(input) {
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.addInput(metaBody.metaTube.thumbnail);
     proc.addOutputOption("-map", "1:0");
@@ -1662,12 +1628,12 @@ async function AudioHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -1705,7 +1671,7 @@ async function VideoLowest(input) {
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
     switch (filter2) {
@@ -1804,12 +1770,12 @@ async function VideoLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -1847,7 +1813,7 @@ async function VideoHighest(input) {
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
     switch (filter2) {
@@ -1946,12 +1912,12 @@ async function VideoHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -1983,14 +1949,19 @@ async function AudioVideoLowest(input) {
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     const AmetaEntry = await lowEntry(metaBody.AudioStore);
     const VmetaEntry = await lowEntry(metaBody.VideoStore);
     if (AmetaEntry === void 0 || VmetaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.input(VmetaEntry.AVDownload.mediaurl);
-    proc.input(AmetaEntry.AVDownload.mediaurl);
+    proc.addInput(VmetaEntry.AVDownload.mediaurl);
+    proc.addInput(AmetaEntry.AVDownload.mediaurl);
+    proc.addOutputOption("-spatial-aq", "1");
+    proc.addOutputOption("-preset", "slow");
+    proc.addOutputOption("-level:v", "4.2");
+    proc.addOutputOption("-rc", "vbr_hq");
+    proc.addOutputOption("-b:v", "10M");
     proc.addOutputOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
@@ -2054,12 +2025,12 @@ async function AudioVideoLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2091,14 +2062,19 @@ async function AudioVideoHighest(input) {
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     const AmetaEntry = await bigEntry(metaBody.AudioStore);
     const VmetaEntry = await bigEntry(metaBody.VideoStore);
     if (AmetaEntry === void 0 || VmetaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.input(VmetaEntry.AVDownload.mediaurl);
-    proc.input(AmetaEntry.AVDownload.mediaurl);
+    proc.addInput(VmetaEntry.AVDownload.mediaurl);
+    proc.addInput(AmetaEntry.AVDownload.mediaurl);
+    proc.addOutputOption("-spatial-aq", "1");
+    proc.addOutputOption("-preset", "slow");
+    proc.addOutputOption("-level:v", "4.2");
+    proc.addOutputOption("-rc", "vbr_hq");
+    proc.addOutputOption("-b:v", "10M");
     proc.addOutputOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
@@ -2162,12 +2138,12 @@ async function AudioVideoHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2215,7 +2191,7 @@ async function AudioQualityCustom(input) {
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
     if (!fs.existsSync(metaFold))
       fs.mkdirSync(metaFold, { recursive: true });
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === void 0) {
       return {
@@ -2356,12 +2332,12 @@ async function AudioQualityCustom(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2399,7 +2375,7 @@ async function VideoLowest2(input) {
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = await ffmpeg();
+    const proc = fluentffmpeg();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
     switch (filter2) {
@@ -2498,12 +2474,12 @@ async function VideoLowest2(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2544,7 +2520,7 @@ async function ListVideoLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors30.bold.green("INFO:"),
+      colors29.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2571,7 +2547,7 @@ async function ListVideoLowest(input) {
       );
       if (metaEntry === void 0)
         continue;
-      const proc = await ffmpeg();
+      const proc = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.format(outputFormat);
       proc.on("start", (command) => {
@@ -2669,12 +2645,12 @@ async function ListVideoLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2715,7 +2691,7 @@ async function ListVideoHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors30.bold.green("INFO:"),
+      colors29.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2742,7 +2718,7 @@ async function ListVideoHighest(input) {
       );
       if (metaEntry === void 0)
         continue;
-      const proc = await ffmpeg();
+      const proc = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.format(outputFormat);
       proc.on("start", (command) => {
@@ -2840,12 +2816,12 @@ async function ListVideoHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -2902,7 +2878,7 @@ async function ListVideoQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors30.bold.green("INFO:"),
+      colors29.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -2932,7 +2908,7 @@ async function ListVideoQualityCustom(input) {
       const metaEntry = await bigEntry(newBody);
       if (metaEntry === void 0)
         continue;
-      const proc = await ffmpeg();
+      const proc = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.format(outputFormat);
       proc.on("start", (command) => {
@@ -3031,12 +3007,12 @@ async function ListVideoQualityCustom(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -3074,7 +3050,7 @@ async function ListAudioLowest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors30.bold.green("INFO:"),
+      colors29.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3101,7 +3077,7 @@ async function ListAudioLowest(input) {
       );
       if (metaEntry === void 0)
         continue;
-      const proc = await ffmpeg();
+      const proc = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.addInput(metaBody.metaTube.thumbnail);
       proc.addOutputOption("-map", "1:0");
@@ -3235,12 +3211,12 @@ async function ListAudioLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -3278,7 +3254,7 @@ async function ListAudioHighest(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors30.bold.green("INFO:"),
+      colors29.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3305,7 +3281,7 @@ async function ListAudioHighest(input) {
       );
       if (metaEntry === void 0)
         continue;
-      const proc = await ffmpeg();
+      const proc = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.addInput(metaBody.metaTube.thumbnail);
       proc.addOutputOption("-map", "1:0");
@@ -3439,12 +3415,12 @@ async function ListAudioHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -3484,7 +3460,7 @@ async function ListAudioQualityCustom(input) {
       uniqueVideos.forEach((video) => uniqueVideoIds.add(video.videoId));
     }
     console.log(
-      colors30.bold.green("INFO:"),
+      colors29.bold.green("INFO:"),
       "\u{1F381}Total Unique Videos:",
       parseList.length
     );
@@ -3514,7 +3490,7 @@ async function ListAudioQualityCustom(input) {
       const metaEntry = await bigEntry(newBody);
       if (metaEntry === void 0)
         continue;
-      const proc = await ffmpeg();
+      const proc = fluentffmpeg();
       proc.addInput(metaEntry.AVDownload.mediaurl);
       proc.addInput(metaBody.metaTube.thumbnail);
       proc.addOutputOption("-map", "1:0");
@@ -3648,12 +3624,12 @@ async function ListAudioQualityCustom(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -5530,7 +5506,7 @@ async function ListAudioVideoLowest(input) {
                 const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
-                const proc = await ffmpeg();
+                const proc = fluentffmpeg();
                 const AmetaEntry = await lowEntry(metaBody.AudioStore);
                 const VmetaEntry = await lowEntry(metaBody.VideoStore);
                 if (AmetaEntry === void 0 || VmetaEntry === void 0)
@@ -5603,12 +5579,12 @@ async function ListAudioVideoLowest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -5663,7 +5639,7 @@ async function ListAudioVideoHighest(input) {
                 const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
                 if (!fs.existsSync(metaFold))
                   fs.mkdirSync(metaFold, { recursive: true });
-                const proc = await ffmpeg();
+                const proc = fluentffmpeg();
                 const AmetaEntry = await bigEntry(metaBody.AudioStore);
                 const VmetaEntry = await bigEntry(metaBody.VideoStore);
                 if (AmetaEntry === void 0 || VmetaEntry === void 0)
@@ -5736,12 +5712,12 @@ async function ListAudioVideoHighest(input) {
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors30.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors30.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else {
-      throw new Error(colors30.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -5817,7 +5793,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors30.green("Installed Version: yt-dlx@" + version));
+      console.error(colors29.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -5825,14 +5801,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors30.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.info.extract({
           query: proTube.query
@@ -5840,14 +5816,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.info.list_formats({
           query: proTube.query
@@ -5855,14 +5831,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "get-video-data":
     case "vi":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.info.get_video_data({
           query: proTube.query
@@ -5870,14 +5846,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.audio.single.highest({
           query: proTube.query
@@ -5885,14 +5861,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.audio.single.lowest({
           query: proTube.query
@@ -5900,14 +5876,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.video.single.highest({
           query: proTube.query
@@ -5915,14 +5891,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.video.single.lowest({
           query: proTube.query
@@ -5930,14 +5906,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.audio_video.single.highest({
           query: proTube.query
@@ -5945,14 +5921,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default.audio_video.single.lowest({
           query: proTube.query
@@ -5960,17 +5936,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors30.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors30.red("error: no format"));
+        console.error(colors29.red("error: no format"));
       }
       core_default.audio.single.custom({
         query: proTube.query,
@@ -5979,17 +5955,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors30.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors30.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors30.red("error: no format"));
+        console.error(colors29.red("error: no format"));
       }
       core_default.video.single.custom({
         query: proTube.query,
@@ -5998,7 +5974,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors30.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
@@ -6007,7 +5983,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors30.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
@@ -6018,7 +5994,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors30.red(error));
+    console.error(colors29.red(error));
     process.exit();
   });
 } else
