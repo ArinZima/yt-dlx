@@ -2,7 +2,7 @@
 'use strict';
 
 var fs = require('fs');
-var colors20 = require('colors');
+var colors22 = require('colors');
 var cheerio = require('cheerio');
 var retry = require('async-retry');
 var spinClient = require('spinnies');
@@ -13,7 +13,6 @@ var path2 = require('path');
 var util = require('util');
 var child_process = require('child_process');
 var fluentffmpeg = require('fluent-ffmpeg');
-var stream = require('stream');
 var readline = require('readline');
 var minimist = require('minimist');
 
@@ -38,7 +37,7 @@ function _interopNamespace(e) {
 }
 
 var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
-var colors20__default = /*#__PURE__*/_interopDefault(colors20);
+var colors22__default = /*#__PURE__*/_interopDefault(colors22);
 var retry__default = /*#__PURE__*/_interopDefault(retry);
 var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
 var z4__namespace = /*#__PURE__*/_interopNamespace(z4);
@@ -107,9 +106,9 @@ async function crawler() {
       await browser.close();
     switch (true) {
       case error instanceof Error:
-        throw new Error(colors20__default.default.red("@error: ") + error.message);
+        throw new Error(colors22__default.default.red("@error: ") + error.message);
       default:
-        throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+        throw new Error(colors22__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -147,7 +146,7 @@ async function SearchVideos(input) {
     let TubeResp;
     let snapshot;
     spinnies.add(spin, {
-      text: colors20__default.default.green("@scrape: ") + "booting chromium..."
+      text: colors22__default.default.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
@@ -158,7 +157,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors22__default.default.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -166,7 +165,7 @@ async function SearchVideos(input) {
             });
             fs__namespace.default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
-              text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+              text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
             });
           }
           content = await page.content();
@@ -205,7 +204,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+            text: colors22__default.default.green("@info: ") + colors22__default.default.white("scrapping done for ") + query
           });
           if (page)
             await page.close();
@@ -222,7 +221,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors22__default.default.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -230,7 +229,7 @@ async function SearchVideos(input) {
             });
             fs__namespace.default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
-              text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+              text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
             });
           }
           const content2 = await page.content();
@@ -249,7 +248,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+            text: colors22__default.default.green("@info: ") + colors22__default.default.white("scrapping done for ") + query
           });
           if (page)
             await page.close();
@@ -260,7 +259,7 @@ async function SearchVideos(input) {
         return TubeResp;
       default:
         spinnies.fail(spin, {
-          text: colors20__default.default.red("@error: ") + colors20__default.default.white("wrong filter type provided.")
+          text: colors22__default.default.red("@error: ") + colors22__default.default.white("wrong filter type provided.")
         });
         if (page)
           await page.close();
@@ -276,12 +275,12 @@ async function SearchVideos(input) {
     switch (true) {
       case error instanceof z4.ZodError:
         throw new Error(
-          colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+          colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
         );
       case error instanceof Error:
-        throw new Error(colors20__default.default.red("@error: ") + error.message);
+        throw new Error(colors22__default.default.red("@error: ") + error.message);
       default:
-        throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+        throw new Error(colors22__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -333,14 +332,14 @@ async function PlaylistInfo(input) {
     let snapshot;
     TubeResp = await retry__default.default(async () => {
       spinnies.add(spin, {
-        text: colors20__default.default.green("@scrape: ") + "booting chromium..."
+        text: colors22__default.default.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors22__default.default.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -348,7 +347,7 @@ async function PlaylistInfo(input) {
         });
         fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+          text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const content = await page.content();
@@ -356,8 +355,6 @@ async function PlaylistInfo(input) {
       const playlistTitle = $(
         "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
       ).text().trim();
-      const videoCountText = $("yt-formatted-string.byline-item").text();
-      const playlistVideoCount = parseInt(videoCountText.match(/\d+/)[0]);
       const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
       const playlistViews = parseInt(
         viewsText.replace(/,/g, "").match(/\d+/)[0]
@@ -391,14 +388,14 @@ async function PlaylistInfo(input) {
         });
       });
       spinnies.succeed(spin, {
-        text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+        text: colors22__default.default.green("@info: ") + colors22__default.default.white("scrapping done for ") + query
       });
       await page.close();
       await browser.close();
       return {
         playlistVideos: metaTube,
         playlistDescription: playlistDescription.trim(),
-        playlistVideoCount,
+        playlistVideoCount: metaTube.length,
         playlistViews,
         playlistTitle
       };
@@ -466,14 +463,14 @@ async function VideoInfo(input) {
     let snapshot;
     TubeResp = await retry__default.default(async () => {
       spinnies.add(spin, {
-        text: colors20__default.default.green("@scrape: ") + "booting chromium..."
+        text: colors22__default.default.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors20__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors22__default.default.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -481,7 +478,7 @@ async function VideoInfo(input) {
         });
         fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors20__default.default.yellow("@scrape: ") + "took snapshot..."
+          text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const videoId = await YouTubeID(query);
@@ -528,7 +525,7 @@ async function VideoInfo(input) {
         videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
       spinnies.succeed(spin, {
-        text: colors20__default.default.green("@info: ") + colors20__default.default.white("scrapping done")
+        text: colors22__default.default.green("@info: ") + colors22__default.default.white("scrapping done for ") + query
       });
       await page.close();
       await browser.close();
@@ -562,7 +559,7 @@ var web = {
 var web_default = web;
 function help() {
   return Promise.resolve(
-    colors20__default.default.bold.white(`
+    colors22__default.default.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -727,7 +724,7 @@ async function Engine(query) {
       proLoc += ` '${query}'`;
     } else {
       throw new Error(
-        colors20__default.default.red("@error: ") + "could not find the engine file."
+        colors22__default.default.red("@error: ") + "could not find the engine file."
       );
     }
     const result = await util.promisify(child_process.exec)(proLoc);
@@ -815,9 +812,9 @@ async function Engine(query) {
     };
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else {
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -830,20 +827,16 @@ async function Agent({
   query
 }) {
   try {
-    console.log(
-      colors20__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
     let videoId;
     let respEngine = void 0;
     let TubeBody;
-    console.log(colors20__default.default.green("@info: ") + `using yt-dlx version ${version}`);
+    console.log(colors22__default.default.green("@info:"), `using yt-dlx version ${version}`);
     switch (true) {
       case (!query || query.trim() === ""):
-        throw new Error(colors20__default.default.red("@error: ") + "'query' is required.");
+        throw new Error(colors22__default.default.red("@error: ") + "'query' is required.");
       case (/https/i.test(query) && /list/i.test(query)):
         throw new Error(
-          colors20__default.default.red("@error: ") + "use extract_playlist_videos()."
+          colors22__default.default.red("@error: ") + "use extract_playlist_videos()."
         );
       case (/https/i.test(query) && !/list/i.test(query)):
         videoId = await YouTubeID(query);
@@ -859,16 +852,18 @@ async function Agent({
         });
         if (!TubeBody || TubeBody.length === 0) {
           throw new Error(
-            colors20__default.default.red("@error: ") + "no data returned from server."
+            colors22__default.default.red("@error: ") + "no data returned from server."
           );
         } else if (TubeBody[0]) {
           console.log(
-            colors20__default.default.green("@info: ") + `preparing payload for ${TubeBody[0].title}`
+            colors22__default.default.green("@info:"),
+            `preparing payload for`,
+            colors22__default.default.green(TubeBody[0].title)
           );
           respEngine = await Engine(TubeBody[0].videoLink);
         } else {
           throw new Error(
-            colors20__default.default.red("@error: ") + "no data returned from server."
+            colors22__default.default.red("@error: ") + "no data returned from server."
           );
         }
         break;
@@ -878,24 +873,26 @@ async function Agent({
         });
         if (!TubeBody) {
           throw new Error(
-            colors20__default.default.red("@error: ") + "no data returned from server."
+            colors22__default.default.red("@error: ") + "no data returned from server."
           );
         }
         console.log(
-          colors20__default.default.green("@info: ") + `preparing payload for ${TubeBody.title}`
+          colors22__default.default.green("@info:"),
+          `preparing payload for`,
+          colors22__default.default.green(TubeBody.title)
         );
         respEngine = await Engine(TubeBody.videoLink);
         break;
     }
     if (respEngine === void 0) {
-      throw new Error(colors20__default.default.red("@error: ") + "no data returned from server.");
+      throw new Error(colors22__default.default.red("@error: ") + "no data returned from server.");
     } else
       return respEngine;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else {
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -994,6 +991,10 @@ async function extract({ query }) {
         )
       }
     };
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
     return payload;
   } catch (error) {
     return {
@@ -1005,14 +1006,14 @@ async function extract({ query }) {
 function list_formats({
   query
 }) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve, reject2) => {
     try {
       const zval = z4__namespace.object({
         query: z4__namespace.string().min(1)
       }).parse({ query });
       const EnResp = await Agent(zval);
       if (!EnResp)
-        return reject("Unable to get response from YouTube...");
+        return reject2("Unable to get response from YouTube...");
       const metaTube = (data) => data.filter(
         (out) => !out.AVDownload.originalformat.includes("Premium")
       );
@@ -1034,78 +1035,817 @@ function list_formats({
         ])
       };
       resolve(EnBody);
+      console.log(
+        colors22__default.default.green("@info:"),
+        "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+      );
     } catch (error) {
-      reject(error instanceof z4__namespace.ZodError ? error.errors : error);
+      reject2(error instanceof z4__namespace.ZodError ? error.errors : error);
     }
   });
 }
+
+// node_modules/async/dist/async.mjs
+function initialParams(fn) {
+  return function(...args) {
+    var callback = args.pop();
+    return fn.call(this, args, callback);
+  };
+}
+var hasQueueMicrotask = typeof queueMicrotask === "function" && queueMicrotask;
+var hasSetImmediate = typeof setImmediate === "function" && setImmediate;
+var hasNextTick = typeof process === "object" && typeof process.nextTick === "function";
+function fallback(fn) {
+  setTimeout(fn, 0);
+}
+function wrap(defer) {
+  return (fn, ...args) => defer(() => fn(...args));
+}
+var _defer$1;
+if (hasQueueMicrotask) {
+  _defer$1 = queueMicrotask;
+} else if (hasSetImmediate) {
+  _defer$1 = setImmediate;
+} else if (hasNextTick) {
+  _defer$1 = process.nextTick;
+} else {
+  _defer$1 = fallback;
+}
+var setImmediate$1 = wrap(_defer$1);
+function asyncify(func) {
+  if (isAsync(func)) {
+    return function(...args) {
+      const callback = args.pop();
+      const promise = func.apply(this, args);
+      return handlePromise(promise, callback);
+    };
+  }
+  return initialParams(function(args, callback) {
+    var result;
+    try {
+      result = func.apply(this, args);
+    } catch (e) {
+      return callback(e);
+    }
+    if (result && typeof result.then === "function") {
+      return handlePromise(result, callback);
+    } else {
+      callback(null, result);
+    }
+  });
+}
+function handlePromise(promise, callback) {
+  return promise.then((value) => {
+    invokeCallback(callback, null, value);
+  }, (err) => {
+    invokeCallback(callback, err && (err instanceof Error || err.message) ? err : new Error(err));
+  });
+}
+function invokeCallback(callback, error, value) {
+  try {
+    callback(error, value);
+  } catch (err) {
+    setImmediate$1((e) => {
+      throw e;
+    }, err);
+  }
+}
+function isAsync(fn) {
+  return fn[Symbol.toStringTag] === "AsyncFunction";
+}
+function isAsyncGenerator(fn) {
+  return fn[Symbol.toStringTag] === "AsyncGenerator";
+}
+function isAsyncIterable(obj) {
+  return typeof obj[Symbol.asyncIterator] === "function";
+}
+function wrapAsync(asyncFn) {
+  if (typeof asyncFn !== "function")
+    throw new Error("expected a function");
+  return isAsync(asyncFn) ? asyncify(asyncFn) : asyncFn;
+}
+function awaitify(asyncFn, arity) {
+  if (!arity)
+    arity = asyncFn.length;
+  if (!arity)
+    throw new Error("arity is undefined");
+  function awaitable(...args) {
+    if (typeof args[arity - 1] === "function") {
+      return asyncFn.apply(this, args);
+    }
+    return new Promise((resolve, reject2) => {
+      args[arity - 1] = (err, ...cbArgs) => {
+        if (err)
+          return reject2(err);
+        resolve(cbArgs.length > 1 ? cbArgs : cbArgs[0]);
+      };
+      asyncFn.apply(this, args);
+    });
+  }
+  return awaitable;
+}
+function _asyncMap(eachfn, arr, iteratee, callback) {
+  arr = arr || [];
+  var results = [];
+  var counter = 0;
+  var _iteratee = wrapAsync(iteratee);
+  return eachfn(arr, (value, _, iterCb) => {
+    var index = counter++;
+    _iteratee(value, (err, v) => {
+      results[index] = v;
+      iterCb(err);
+    });
+  }, (err) => {
+    callback(err, results);
+  });
+}
+function isArrayLike(value) {
+  return value && typeof value.length === "number" && value.length >= 0 && value.length % 1 === 0;
+}
+var breakLoop = {};
+var breakLoop$1 = breakLoop;
+function once(fn) {
+  function wrapper(...args) {
+    if (fn === null)
+      return;
+    var callFn = fn;
+    fn = null;
+    callFn.apply(this, args);
+  }
+  Object.assign(wrapper, fn);
+  return wrapper;
+}
+function getIterator(coll) {
+  return coll[Symbol.iterator] && coll[Symbol.iterator]();
+}
+function createArrayIterator(coll) {
+  var i = -1;
+  var len = coll.length;
+  return function next() {
+    return ++i < len ? { value: coll[i], key: i } : null;
+  };
+}
+function createES2015Iterator(iterator) {
+  var i = -1;
+  return function next() {
+    var item = iterator.next();
+    if (item.done)
+      return null;
+    i++;
+    return { value: item.value, key: i };
+  };
+}
+function createObjectIterator(obj) {
+  var okeys = obj ? Object.keys(obj) : [];
+  var i = -1;
+  var len = okeys.length;
+  return function next() {
+    var key = okeys[++i];
+    if (key === "__proto__") {
+      return next();
+    }
+    return i < len ? { value: obj[key], key } : null;
+  };
+}
+function createIterator(coll) {
+  if (isArrayLike(coll)) {
+    return createArrayIterator(coll);
+  }
+  var iterator = getIterator(coll);
+  return iterator ? createES2015Iterator(iterator) : createObjectIterator(coll);
+}
+function onlyOnce(fn) {
+  return function(...args) {
+    if (fn === null)
+      throw new Error("Callback was already called.");
+    var callFn = fn;
+    fn = null;
+    callFn.apply(this, args);
+  };
+}
+function asyncEachOfLimit(generator, limit, iteratee, callback) {
+  let done = false;
+  let canceled = false;
+  let awaiting = false;
+  let running = 0;
+  let idx = 0;
+  function replenish() {
+    if (running >= limit || awaiting || done)
+      return;
+    awaiting = true;
+    generator.next().then(({ value, done: iterDone }) => {
+      if (canceled || done)
+        return;
+      awaiting = false;
+      if (iterDone) {
+        done = true;
+        if (running <= 0) {
+          callback(null);
+        }
+        return;
+      }
+      running++;
+      iteratee(value, idx, iterateeCallback);
+      idx++;
+      replenish();
+    }).catch(handleError);
+  }
+  function iterateeCallback(err, result) {
+    running -= 1;
+    if (canceled)
+      return;
+    if (err)
+      return handleError(err);
+    if (err === false) {
+      done = true;
+      canceled = true;
+      return;
+    }
+    if (result === breakLoop$1 || done && running <= 0) {
+      done = true;
+      return callback(null);
+    }
+    replenish();
+  }
+  function handleError(err) {
+    if (canceled)
+      return;
+    awaiting = false;
+    done = true;
+    callback(err);
+  }
+  replenish();
+}
+var eachOfLimit$2 = (limit) => {
+  return (obj, iteratee, callback) => {
+    callback = once(callback);
+    if (limit <= 0) {
+      throw new RangeError("concurrency limit cannot be less than 1");
+    }
+    if (!obj) {
+      return callback(null);
+    }
+    if (isAsyncGenerator(obj)) {
+      return asyncEachOfLimit(obj, limit, iteratee, callback);
+    }
+    if (isAsyncIterable(obj)) {
+      return asyncEachOfLimit(obj[Symbol.asyncIterator](), limit, iteratee, callback);
+    }
+    var nextElem = createIterator(obj);
+    var done = false;
+    var canceled = false;
+    var running = 0;
+    var looping = false;
+    function iterateeCallback(err, value) {
+      if (canceled)
+        return;
+      running -= 1;
+      if (err) {
+        done = true;
+        callback(err);
+      } else if (err === false) {
+        done = true;
+        canceled = true;
+      } else if (value === breakLoop$1 || done && running <= 0) {
+        done = true;
+        return callback(null);
+      } else if (!looping) {
+        replenish();
+      }
+    }
+    function replenish() {
+      looping = true;
+      while (running < limit && !done) {
+        var elem = nextElem();
+        if (elem === null) {
+          done = true;
+          if (running <= 0) {
+            callback(null);
+          }
+          return;
+        }
+        running += 1;
+        iteratee(elem.value, elem.key, onlyOnce(iterateeCallback));
+      }
+      looping = false;
+    }
+    replenish();
+  };
+};
+function eachOfLimit(coll, limit, iteratee, callback) {
+  return eachOfLimit$2(limit)(coll, wrapAsync(iteratee), callback);
+}
+var eachOfLimit$1 = awaitify(eachOfLimit, 4);
+function eachOfArrayLike(coll, iteratee, callback) {
+  callback = once(callback);
+  var index = 0, completed = 0, { length } = coll, canceled = false;
+  if (length === 0) {
+    callback(null);
+  }
+  function iteratorCallback(err, value) {
+    if (err === false) {
+      canceled = true;
+    }
+    if (canceled === true)
+      return;
+    if (err) {
+      callback(err);
+    } else if (++completed === length || value === breakLoop$1) {
+      callback(null);
+    }
+  }
+  for (; index < length; index++) {
+    iteratee(coll[index], index, onlyOnce(iteratorCallback));
+  }
+}
+function eachOfGeneric(coll, iteratee, callback) {
+  return eachOfLimit$1(coll, Infinity, iteratee, callback);
+}
+function eachOf(coll, iteratee, callback) {
+  var eachOfImplementation = isArrayLike(coll) ? eachOfArrayLike : eachOfGeneric;
+  return eachOfImplementation(coll, wrapAsync(iteratee), callback);
+}
+var eachOf$1 = awaitify(eachOf, 3);
+function map(coll, iteratee, callback) {
+  return _asyncMap(eachOf$1, coll, iteratee, callback);
+}
+var map$1 = awaitify(map, 3);
+function eachOfSeries(coll, iteratee, callback) {
+  return eachOfLimit$1(coll, 1, iteratee, callback);
+}
+var eachOfSeries$1 = awaitify(eachOfSeries, 3);
+function mapSeries(coll, iteratee, callback) {
+  return _asyncMap(eachOfSeries$1, coll, iteratee, callback);
+}
+awaitify(mapSeries, 3);
+function reduce(coll, memo, iteratee, callback) {
+  callback = once(callback);
+  var _iteratee = wrapAsync(iteratee);
+  return eachOfSeries$1(coll, (x, i, iterCb) => {
+    _iteratee(memo, x, (err, v) => {
+      memo = v;
+      iterCb(err);
+    });
+  }, (err) => callback(err, memo));
+}
+awaitify(reduce, 4);
+function mapLimit(coll, limit, iteratee, callback) {
+  return _asyncMap(eachOfLimit$2(limit), coll, iteratee, callback);
+}
+var mapLimit$1 = awaitify(mapLimit, 4);
+function concatLimit(coll, limit, iteratee, callback) {
+  var _iteratee = wrapAsync(iteratee);
+  return mapLimit$1(coll, limit, (val, iterCb) => {
+    _iteratee(val, (err, ...args) => {
+      if (err)
+        return iterCb(err);
+      return iterCb(err, args);
+    });
+  }, (err, mapResults) => {
+    var result = [];
+    for (var i = 0; i < mapResults.length; i++) {
+      if (mapResults[i]) {
+        result = result.concat(...mapResults[i]);
+      }
+    }
+    return callback(err, result);
+  });
+}
+var concatLimit$1 = awaitify(concatLimit, 4);
+function concat(coll, iteratee, callback) {
+  return concatLimit$1(coll, Infinity, iteratee, callback);
+}
+awaitify(concat, 3);
+function concatSeries(coll, iteratee, callback) {
+  return concatLimit$1(coll, 1, iteratee, callback);
+}
+awaitify(concatSeries, 3);
+function _createTester(check, getResult) {
+  return (eachfn, arr, _iteratee, cb) => {
+    var testPassed = false;
+    var testResult;
+    const iteratee = wrapAsync(_iteratee);
+    eachfn(arr, (value, _, callback) => {
+      iteratee(value, (err, result) => {
+        if (err || err === false)
+          return callback(err);
+        if (check(result) && !testResult) {
+          testPassed = true;
+          testResult = getResult(true, value);
+          return callback(null, breakLoop$1);
+        }
+        callback();
+      });
+    }, (err) => {
+      if (err)
+        return cb(err);
+      cb(null, testPassed ? testResult : getResult(false));
+    });
+  };
+}
+function detect(coll, iteratee, callback) {
+  return _createTester((bool) => bool, (res, item) => item)(eachOf$1, coll, iteratee, callback);
+}
+awaitify(detect, 3);
+function detectLimit(coll, limit, iteratee, callback) {
+  return _createTester((bool) => bool, (res, item) => item)(eachOfLimit$2(limit), coll, iteratee, callback);
+}
+awaitify(detectLimit, 4);
+function detectSeries(coll, iteratee, callback) {
+  return _createTester((bool) => bool, (res, item) => item)(eachOfLimit$2(1), coll, iteratee, callback);
+}
+awaitify(detectSeries, 3);
+function doWhilst(iteratee, test, callback) {
+  callback = onlyOnce(callback);
+  var _fn = wrapAsync(iteratee);
+  var _test = wrapAsync(test);
+  var results;
+  function next(err, ...args) {
+    if (err)
+      return callback(err);
+    if (err === false)
+      return;
+    results = args;
+    _test(...args, check);
+  }
+  function check(err, truth) {
+    if (err)
+      return callback(err);
+    if (err === false)
+      return;
+    if (!truth)
+      return callback(null, ...results);
+    _fn(next);
+  }
+  return check(null, true);
+}
+awaitify(doWhilst, 3);
+function _withoutIndex(iteratee) {
+  return (value, index, callback) => iteratee(value, callback);
+}
+function eachLimit$2(coll, iteratee, callback) {
+  return eachOf$1(coll, _withoutIndex(wrapAsync(iteratee)), callback);
+}
+awaitify(eachLimit$2, 3);
+function eachLimit(coll, limit, iteratee, callback) {
+  return eachOfLimit$2(limit)(coll, _withoutIndex(wrapAsync(iteratee)), callback);
+}
+var eachLimit$1 = awaitify(eachLimit, 4);
+function eachSeries(coll, iteratee, callback) {
+  return eachLimit$1(coll, 1, iteratee, callback);
+}
+var eachSeries$1 = awaitify(eachSeries, 3);
+function ensureAsync(fn) {
+  if (isAsync(fn))
+    return fn;
+  return function(...args) {
+    var callback = args.pop();
+    var sync = true;
+    args.push((...innerArgs) => {
+      if (sync) {
+        setImmediate$1(() => callback(...innerArgs));
+      } else {
+        callback(...innerArgs);
+      }
+    });
+    fn.apply(this, args);
+    sync = false;
+  };
+}
+function every(coll, iteratee, callback) {
+  return _createTester((bool) => !bool, (res) => !res)(eachOf$1, coll, iteratee, callback);
+}
+awaitify(every, 3);
+function everyLimit(coll, limit, iteratee, callback) {
+  return _createTester((bool) => !bool, (res) => !res)(eachOfLimit$2(limit), coll, iteratee, callback);
+}
+awaitify(everyLimit, 4);
+function everySeries(coll, iteratee, callback) {
+  return _createTester((bool) => !bool, (res) => !res)(eachOfSeries$1, coll, iteratee, callback);
+}
+awaitify(everySeries, 3);
+function filterArray(eachfn, arr, iteratee, callback) {
+  var truthValues = new Array(arr.length);
+  eachfn(arr, (x, index, iterCb) => {
+    iteratee(x, (err, v) => {
+      truthValues[index] = !!v;
+      iterCb(err);
+    });
+  }, (err) => {
+    if (err)
+      return callback(err);
+    var results = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (truthValues[i])
+        results.push(arr[i]);
+    }
+    callback(null, results);
+  });
+}
+function filterGeneric(eachfn, coll, iteratee, callback) {
+  var results = [];
+  eachfn(coll, (x, index, iterCb) => {
+    iteratee(x, (err, v) => {
+      if (err)
+        return iterCb(err);
+      if (v) {
+        results.push({ index, value: x });
+      }
+      iterCb(err);
+    });
+  }, (err) => {
+    if (err)
+      return callback(err);
+    callback(null, results.sort((a, b) => a.index - b.index).map((v) => v.value));
+  });
+}
+function _filter(eachfn, coll, iteratee, callback) {
+  var filter2 = isArrayLike(coll) ? filterArray : filterGeneric;
+  return filter2(eachfn, coll, wrapAsync(iteratee), callback);
+}
+function filter(coll, iteratee, callback) {
+  return _filter(eachOf$1, coll, iteratee, callback);
+}
+awaitify(filter, 3);
+function filterLimit(coll, limit, iteratee, callback) {
+  return _filter(eachOfLimit$2(limit), coll, iteratee, callback);
+}
+awaitify(filterLimit, 4);
+function filterSeries(coll, iteratee, callback) {
+  return _filter(eachOfSeries$1, coll, iteratee, callback);
+}
+awaitify(filterSeries, 3);
+function forever(fn, errback) {
+  var done = onlyOnce(errback);
+  var task = wrapAsync(ensureAsync(fn));
+  function next(err) {
+    if (err)
+      return done(err);
+    if (err === false)
+      return;
+    task(next);
+  }
+  return next();
+}
+awaitify(forever, 2);
+function groupByLimit(coll, limit, iteratee, callback) {
+  var _iteratee = wrapAsync(iteratee);
+  return mapLimit$1(coll, limit, (val, iterCb) => {
+    _iteratee(val, (err, key) => {
+      if (err)
+        return iterCb(err);
+      return iterCb(err, { key, val });
+    });
+  }, (err, mapResults) => {
+    var result = {};
+    var { hasOwnProperty } = Object.prototype;
+    for (var i = 0; i < mapResults.length; i++) {
+      if (mapResults[i]) {
+        var { key } = mapResults[i];
+        var { val } = mapResults[i];
+        if (hasOwnProperty.call(result, key)) {
+          result[key].push(val);
+        } else {
+          result[key] = [val];
+        }
+      }
+    }
+    return callback(err, result);
+  });
+}
+awaitify(groupByLimit, 4);
+function mapValuesLimit(obj, limit, iteratee, callback) {
+  callback = once(callback);
+  var newObj = {};
+  var _iteratee = wrapAsync(iteratee);
+  return eachOfLimit$2(limit)(obj, (val, key, next) => {
+    _iteratee(val, key, (err, result) => {
+      if (err)
+        return next(err);
+      newObj[key] = result;
+      next(err);
+    });
+  }, (err) => callback(err, newObj));
+}
+awaitify(mapValuesLimit, 4);
+if (hasNextTick) {
+  process.nextTick;
+} else if (hasSetImmediate) {
+  setImmediate;
+} else ;
+awaitify((eachfn, tasks, callback) => {
+  var results = isArrayLike(tasks) ? [] : {};
+  eachfn(tasks, (task, key, taskCb) => {
+    wrapAsync(task)((err, ...result) => {
+      if (result.length < 2) {
+        [result] = result;
+      }
+      results[key] = result;
+      taskCb(err);
+    });
+  }, (err) => callback(err, results));
+}, 3);
+function race(tasks, callback) {
+  callback = once(callback);
+  if (!Array.isArray(tasks))
+    return callback(new TypeError("First argument to race must be an array of functions"));
+  if (!tasks.length)
+    return callback();
+  for (var i = 0, l = tasks.length; i < l; i++) {
+    wrapAsync(tasks[i])(callback);
+  }
+}
+awaitify(race, 2);
+function reject$2(eachfn, arr, _iteratee, callback) {
+  const iteratee = wrapAsync(_iteratee);
+  return _filter(eachfn, arr, (value, cb) => {
+    iteratee(value, (err, v) => {
+      cb(err, !v);
+    });
+  }, callback);
+}
+function reject(coll, iteratee, callback) {
+  return reject$2(eachOf$1, coll, iteratee, callback);
+}
+awaitify(reject, 3);
+function rejectLimit(coll, limit, iteratee, callback) {
+  return reject$2(eachOfLimit$2(limit), coll, iteratee, callback);
+}
+awaitify(rejectLimit, 4);
+function rejectSeries(coll, iteratee, callback) {
+  return reject$2(eachOfSeries$1, coll, iteratee, callback);
+}
+awaitify(rejectSeries, 3);
+function some(coll, iteratee, callback) {
+  return _createTester(Boolean, (res) => res)(eachOf$1, coll, iteratee, callback);
+}
+awaitify(some, 3);
+function someLimit(coll, limit, iteratee, callback) {
+  return _createTester(Boolean, (res) => res)(eachOfLimit$2(limit), coll, iteratee, callback);
+}
+awaitify(someLimit, 4);
+function someSeries(coll, iteratee, callback) {
+  return _createTester(Boolean, (res) => res)(eachOfSeries$1, coll, iteratee, callback);
+}
+awaitify(someSeries, 3);
+function sortBy(coll, iteratee, callback) {
+  var _iteratee = wrapAsync(iteratee);
+  return map$1(coll, (x, iterCb) => {
+    _iteratee(x, (err, criteria) => {
+      if (err)
+        return iterCb(err);
+      iterCb(err, { value: x, criteria });
+    });
+  }, (err, results) => {
+    if (err)
+      return callback(err);
+    callback(null, results.sort(comparator).map((v) => v.value));
+  });
+  function comparator(left, right) {
+    var a = left.criteria, b = right.criteria;
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
+}
+awaitify(sortBy, 3);
+function tryEach(tasks, callback) {
+  var error = null;
+  var result;
+  return eachSeries$1(tasks, (task, taskCb) => {
+    wrapAsync(task)((err, ...args) => {
+      if (err === false)
+        return taskCb(err);
+      if (args.length < 2) {
+        [result] = args;
+      } else {
+        result = args;
+      }
+      error = err;
+      taskCb(err ? null : {});
+    });
+  }, () => callback(error, result));
+}
+awaitify(tryEach);
+function whilst(test, iteratee, callback) {
+  callback = onlyOnce(callback);
+  var _fn = wrapAsync(iteratee);
+  var _test = wrapAsync(test);
+  var results = [];
+  function next(err, ...rest) {
+    if (err)
+      return callback(err);
+    results = rest;
+    if (err === false)
+      return;
+    _test(check);
+  }
+  function check(err, truth) {
+    if (err)
+      return callback(err);
+    if (err === false)
+      return;
+    if (!truth)
+      return callback(null, ...results);
+    _fn(next);
+  }
+  return _test(check);
+}
+awaitify(whilst, 3);
+function waterfall(tasks, callback) {
+  callback = once(callback);
+  if (!Array.isArray(tasks))
+    return callback(new Error("First argument to waterfall must be an array of functions"));
+  if (!tasks.length)
+    return callback();
+  var taskIndex = 0;
+  function nextTask(args) {
+    var task = wrapAsync(tasks[taskIndex++]);
+    task(...args, onlyOnce(next));
+  }
+  function next(err, ...args) {
+    if (err === false)
+      return;
+    if (err || taskIndex === tasks.length) {
+      return callback(err, ...args);
+    }
+    nextTask(args);
+  }
+  nextTask([]);
+}
+awaitify(waterfall);
 async function extract_playlist_videos({
   playlistUrls
 }) {
   try {
-    const proTubeArr = [];
-    const processedVideoIds = /* @__PURE__ */ new Set();
-    for (const videoLink of playlistUrls) {
-      const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
-      if (!ispUrl) {
+    let counter = 0;
+    const metaTubeArr = [];
+    await eachSeries$1(playlistUrls, async (listLink) => {
+      const query = await YouTubeID(listLink);
+      if (query === void 0) {
         console.error(
-          colors20__default.default.bold.red("@error: "),
-          "Invalid YouTube Playlist URL:",
-          videoLink
+          colors22__default.default.bold.red("@error: "),
+          "invalid youtube playlist url:",
+          listLink
         );
-        continue;
-      }
-      const resp = await web_default.search.PlaylistInfo({
-        query: ispUrl[1]
-      });
-      if (resp === void 0) {
-        console.error(
-          colors20__default.default.bold.red("@error: "),
-          "Invalid Data Found For:",
-          ispUrl[1]
-        );
-        continue;
-      }
-      for (let i = 0; i < resp.playlistVideos.length; i++) {
-        try {
-          const videoId = resp.playlistVideos[i]?.videoId;
-          if (videoId === void 0)
-            continue;
-          if (processedVideoIds.has(videoId))
-            continue;
-          const data = await Agent({ query: videoId });
-          if (data instanceof Array)
-            proTubeArr.push(...data);
-          else
-            proTubeArr.push(data);
-          processedVideoIds.add(videoId);
-        } catch (error) {
-          console.error(colors20__default.default.bold.red("@error: "), error);
+        return;
+      } else {
+        const resp = await web_default.search.PlaylistInfo({
+          query
+        });
+        if (resp === void 0) {
+          console.error(
+            colors22__default.default.bold.red("@error: "),
+            "unable to get response from youtube for",
+            query
+          );
+          return;
+        } else {
+          console.log(
+            colors22__default.default.green("@info:"),
+            "total videos in playlist",
+            colors22__default.default.green(resp.playlistTitle),
+            resp.playlistVideoCount
+          );
+          await eachSeries$1(resp.playlistVideos, async (vid) => {
+            const metaTube = await Agent({
+              query: vid.videoLink
+            });
+            counter++;
+            console.log(
+              colors22__default.default.green("@info:"),
+              "added",
+              counter + "/" + resp.playlistVideoCount
+            );
+            metaTubeArr.push(metaTube);
+          });
         }
       }
-    }
-    return proTubeArr;
+    });
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
+    return metaTubeArr;
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 async function lowEntry(metaBody) {
   if (!metaBody || metaBody.length === 0) {
-    console.log(colors20__default.default.red("@error:"), "sorry no downloadable data found");
+    console.log(colors22__default.default.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const validEntries = metaBody.filter(
     (entry) => entry.AVInfo.filesizebytes !== null && entry.AVInfo.filesizebytes !== void 0 && !isNaN(entry.AVInfo.filesizebytes)
   );
   if (validEntries.length === 0) {
-    console.log(colors20__default.default.red("@error:"), "sorry no downloadable data found");
+    console.log(colors22__default.default.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const sortedByFileSize = [...validEntries].sort(
@@ -1118,16 +1858,16 @@ var progressBar = (prog) => {
     return;
   if (prog.timemark === void 0)
     return;
-  let color = colors20__default.default.green;
+  let color = colors22__default.default.green;
   if (prog.percent >= 98)
     prog.percent = 100;
   readline__default.default.cursorTo(process.stdout, 0);
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round(width * prog.percent / 100);
   if (prog.percent < 20)
-    color = colors20__default.default.red;
+    color = colors22__default.default.red;
   else if (prog.percent < 80)
-    color = colors20__default.default.yellow;
+    color = colors22__default.default.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("@timemark: ") + prog.timemark
@@ -1150,8 +1890,8 @@ async function AudioLowest(input) {
   try {
     const {
       query,
-      filter,
-      stream: stream$1,
+      filter: filter2,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp3"
@@ -1207,7 +1947,7 @@ async function AudioLowest(input) {
     proc.on("error", (error) => {
       return error;
     });
-    switch (filter) {
+    switch (filter2) {
       case "bassboost":
         proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         metaName = `yt-dlp-(AudioLowest_bassboost)-${title}.${outputFormat}`;
@@ -1273,55 +2013,44 @@ async function AudioLowest(input) {
         metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
         break;
     }
-    if (stream$1) {
-      const readStream = new stream.Readable({
-        read() {
-        }
-      });
-      const writeStream = new stream.Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(void 0);
-          callback();
-        }
-      });
-      proc.pipe(writeStream, { end: true });
+    if (stream) {
       return {
-        stream: readStream,
-        filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject2) => {
         proc.output(path2__namespace.join(metaFold, metaName));
         proc.on("end", () => resolve());
-        proc.on("error", reject);
+        proc.on("error", reject2);
         proc.run();
       });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 async function bigEntry(metaBody) {
   if (!metaBody || metaBody.length === 0) {
-    console.log(colors20__default.default.red("@error:"), "sorry no downloadable data found");
+    console.log(colors22__default.default.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const validEntries = metaBody.filter(
     (entry) => entry.AVInfo.filesizebytes !== null && entry.AVInfo.filesizebytes !== void 0 && !isNaN(entry.AVInfo.filesizebytes)
   );
   if (validEntries.length === 0) {
-    console.log(colors20__default.default.red("@error:"), "sorry no downloadable data found");
+    console.log(colors22__default.default.red("@error:"), "sorry no downloadable data found");
     return void 0;
   }
   const sortedByFileSize = [...validEntries].sort(
@@ -1329,6 +2058,8 @@ async function bigEntry(metaBody) {
   );
   return sortedByFileSize[0];
 }
+
+// core/pipes/audio/AudioHighest.ts
 var AudioHighestZod = z4.z.object({
   query: z4.z.string().min(1),
   filter: z4.z.string().optional(),
@@ -1341,8 +2072,8 @@ async function AudioHighest(input) {
   try {
     const {
       query,
-      filter,
-      stream: stream$1,
+      filter: filter2,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp3"
@@ -1398,7 +2129,7 @@ async function AudioHighest(input) {
     proc.on("error", (error) => {
       return error;
     });
-    switch (filter) {
+    switch (filter2) {
       case "bassboost":
         proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         metaName = `yt-dlp-(AudioHighest_bassboost)-${title}.${outputFormat}`;
@@ -1464,43 +2195,32 @@ async function AudioHighest(input) {
         metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
         break;
     }
-    if (stream$1) {
-      const readStream = new stream.Readable({
-        read() {
-        }
-      });
-      const writeStream = new stream.Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(void 0);
-          callback();
-        }
-      });
-      proc.pipe(writeStream, { end: true });
+    if (stream) {
       return {
-        stream: readStream,
-        filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject2) => {
         proc.output(path2__namespace.join(metaFold, metaName));
         proc.on("end", () => resolve());
-        proc.on("error", reject);
+        proc.on("error", reject2);
         proc.run();
       });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 var VideoLowestZod = z4.z.object({
@@ -1515,8 +2235,8 @@ async function VideoLowest(input) {
   try {
     const {
       query,
-      filter,
-      stream: stream$1,
+      filter: filter2,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4"
@@ -1539,7 +2259,7 @@ async function VideoLowest(input) {
     const proc = fluentffmpeg__default.default();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
-    switch (filter) {
+    switch (filter2) {
       case "grayscale":
         proc.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
@@ -1602,44 +2322,32 @@ async function VideoLowest(input) {
     proc.on("error", (error) => {
       return error;
     });
-    switch (stream$1) {
-      case true:
-        const readStream = new stream.Readable({
-          read() {
-          }
-        });
-        const writeStream = new stream.Writable({
-          write(chunk, _encoding, callback) {
-            readStream.push(chunk);
-            callback();
-          },
-          final(callback) {
-            readStream.push(void 0);
-            callback();
-          }
-        });
-        proc.pipe(writeStream, { end: true });
-        return {
-          stream: readStream,
-          filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
-        };
-      default:
-        await new Promise((resolve, reject) => {
-          proc.output(path2__namespace.join(metaFold, metaName));
-          proc.on("end", () => resolve());
-          proc.on("error", reject);
-          proc.run();
-        });
+    if (stream) {
+      return {
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        proc.output(path2__namespace.join(metaFold, metaName));
+        proc.on("end", () => resolve());
+        proc.on("error", reject2);
+        proc.run();
+      });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 var VideoHighestZod = z4.z.object({
@@ -1654,11 +2362,11 @@ async function VideoHighest(input) {
   try {
     const {
       query,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4",
-      filter
+      filter: filter2
     } = VideoHighestZod.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody)
@@ -1678,7 +2386,7 @@ async function VideoHighest(input) {
     const proc = fluentffmpeg__default.default();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
-    switch (filter) {
+    switch (filter2) {
       case "grayscale":
         proc.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
@@ -1741,44 +2449,32 @@ async function VideoHighest(input) {
     proc.on("error", (error) => {
       return error;
     });
-    switch (stream$1) {
-      case true:
-        const readStream = new stream.Readable({
-          read() {
-          }
-        });
-        const writeStream = new stream.Writable({
-          write(chunk, _encoding, callback) {
-            readStream.push(chunk);
-            callback();
-          },
-          final(callback) {
-            readStream.push(void 0);
-            callback();
-          }
-        });
-        proc.pipe(writeStream, { end: true });
-        return {
-          stream: readStream,
-          filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
-        };
-      default:
-        await new Promise((resolve, reject) => {
-          proc.output(path2__namespace.join(metaFold, metaName));
-          proc.on("end", () => resolve());
-          proc.on("error", reject);
-          proc.run();
-        });
+    if (stream) {
+      return {
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        proc.output(path2__namespace.join(metaFold, metaName));
+        proc.on("end", () => resolve());
+        proc.on("error", reject2);
+        proc.run();
+      });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 var AudioVideoLowestZod = z4.z.object({
@@ -1792,7 +2488,7 @@ async function AudioVideoLowest(input) {
   try {
     const {
       query,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "webm"
@@ -1849,43 +2545,32 @@ async function AudioVideoLowest(input) {
     proc.on("error", (error) => {
       return error;
     });
-    if (stream$1) {
-      const readStream = new stream.Readable({
-        read() {
-        }
-      });
-      const writeStream = new stream.Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(void 0);
-          callback();
-        }
-      });
-      proc.pipe(writeStream, { end: true });
+    if (stream) {
       return {
-        stream: readStream,
-        filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject2) => {
         proc.output(path2__namespace.join(metaFold, metaName));
         proc.on("end", () => resolve());
-        proc.on("error", reject);
+        proc.on("error", reject2);
         proc.run();
       });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 var AudioVideoHighestZod = z4.z.object({
@@ -1899,7 +2584,7 @@ async function AudioVideoHighest(input) {
   try {
     const {
       query,
-      stream: stream$1,
+      stream,
       verbose,
       folderName,
       outputFormat = "webm"
@@ -1956,43 +2641,32 @@ async function AudioVideoHighest(input) {
     proc.on("error", (error) => {
       return error;
     });
-    if (stream$1) {
-      const readStream = new stream.Readable({
-        read() {
-        }
-      });
-      const writeStream = new stream.Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(void 0);
-          callback();
-        }
-      });
-      proc.pipe(writeStream, { end: true });
+    if (stream) {
       return {
-        stream: readStream,
-        filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject2) => {
         proc.output(path2__namespace.join(metaFold, metaName));
         proc.on("end", () => resolve());
-        proc.on("error", reject);
+        proc.on("error", reject2);
         proc.run();
       });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 var AudioQualityCustomZod = z4.z.object({
@@ -2008,8 +2682,8 @@ async function AudioQualityCustom(input) {
   try {
     const {
       query,
-      filter,
-      stream: stream$1,
+      filter: filter2,
+      stream,
       verbose,
       quality,
       folderName,
@@ -2043,7 +2717,7 @@ async function AudioQualityCustom(input) {
     proc.addOutputOption("-map", "0:a:0");
     proc.addOutputOption("-id3v2_version", "3");
     proc.format(outputFormat);
-    switch (filter) {
+    switch (filter2) {
       case "bassboost":
         proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
@@ -2138,43 +2812,32 @@ async function AudioQualityCustom(input) {
     proc.on("error", (error) => {
       return error;
     });
-    if (stream$1) {
-      const readStream = new stream.Readable({
-        read() {
-        }
-      });
-      const writeStream = new stream.Writable({
-        write(chunk, _encoding, callback) {
-          readStream.push(chunk);
-          callback();
-        },
-        final(callback) {
-          readStream.push(void 0);
-          callback();
-        }
-      });
-      proc.pipe(writeStream, { end: true });
+    if (stream) {
       return {
-        stream: readStream,
-        filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject2) => {
         proc.output(path2__namespace.join(metaFold, metaName));
         proc.on("end", () => resolve());
-        proc.on("error", reject);
+        proc.on("error", reject2);
         proc.run();
       });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 var VideoLowestZod2 = z4.z.object({
@@ -2189,8 +2852,8 @@ async function VideoLowest2(input) {
   try {
     const {
       query,
-      filter,
-      stream: stream$1,
+      filter: filter2,
+      stream,
       verbose,
       folderName,
       outputFormat = "mp4"
@@ -2213,7 +2876,7 @@ async function VideoLowest2(input) {
     const proc = fluentffmpeg__default.default();
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.format(outputFormat);
-    switch (filter) {
+    switch (filter2) {
       case "grayscale":
         proc.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
@@ -2276,44 +2939,32 @@ async function VideoLowest2(input) {
     proc.on("error", (error) => {
       return error;
     });
-    switch (stream$1) {
-      case true:
-        const readStream = new stream.Readable({
-          read() {
-          }
-        });
-        const writeStream = new stream.Writable({
-          write(chunk, _encoding, callback) {
-            readStream.push(chunk);
-            callback();
-          },
-          final(callback) {
-            readStream.push(void 0);
-            callback();
-          }
-        });
-        proc.pipe(writeStream, { end: true });
-        return {
-          stream: readStream,
-          filename: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
-        };
-      default:
-        await new Promise((resolve, reject) => {
-          proc.output(path2__namespace.join(metaFold, metaName));
-          proc.on("end", () => resolve());
-          proc.on("error", reject);
-          proc.run();
-        });
+    if (stream) {
+      return {
+        stream: proc,
+        fileName: folderName ? path2__namespace.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        proc.output(path2__namespace.join(metaFold, metaName));
+        proc.on("end", () => resolve());
+        proc.on("error", reject2);
+        proc.run();
+      });
     }
+    console.log(
+      colors22__default.default.green("@info:"),
+      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors20__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors22__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors20__default.default.red("@error: ") + error.message);
+      throw new Error(colors22__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors20__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
 
@@ -2368,7 +3019,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors20__default.default.green("Installed Version: yt-dlx@" + version));
+      console.error(colors22__default.default.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -2376,14 +3027,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20__default.default.red(error));
+        console.error(colors22__default.default.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.info.extract({
           query: proTube.query
@@ -2391,14 +3042,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.info.list_formats({
           query: proTube.query
@@ -2406,14 +3057,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.audio.highest({
           query: proTube.query
@@ -2421,14 +3072,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.audio.lowest({
           query: proTube.query
@@ -2436,14 +3087,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.video.highest({
           query: proTube.query
@@ -2451,14 +3102,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.video.lowest({
           query: proTube.query
@@ -2466,14 +3117,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.audio_video.highest({
           query: proTube.query
@@ -2481,14 +3132,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       } else
         core_default.audio_video.lowest({
           query: proTube.query
@@ -2496,17 +3147,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors20__default.default.red(error));
+          console.error(colors22__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors20__default.default.red("error: no format"));
+        console.error(colors22__default.default.red("error: no format"));
       }
       core_default.audio.custom({
         query: proTube.query,
@@ -2515,17 +3166,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20__default.default.red(error));
+        console.error(colors22__default.default.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors20__default.default.red("error: no query"));
+        console.error(colors22__default.default.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors20__default.default.red("error: no format"));
+        console.error(colors22__default.default.red("error: no format"));
       }
       core_default.video.custom({
         query: proTube.query,
@@ -2534,7 +3185,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20__default.default.red(error));
+        console.error(colors22__default.default.red(error));
         process.exit();
       });
       break;
@@ -2543,7 +3194,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors20__default.default.red(error));
+        console.error(colors22__default.default.red(error));
         process.exit();
       });
       break;
@@ -2554,7 +3205,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors20__default.default.red(error));
+    console.error(colors22__default.default.red(error));
     process.exit();
   });
 } else

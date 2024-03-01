@@ -2,7 +2,7 @@
  * ========================================[ 📢YOUTUBE DOWNLOADER YT-DLX <( YT-DLX )/>📹 ]================================
  * ===========================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]===================================
  */
-import { Readable } from 'stream';
+import fluentffmpeg from 'fluent-ffmpeg';
 
 interface InputYouTube$1 {
     query: string;
@@ -54,11 +54,11 @@ interface InputYouTube {
 }
 interface PlaylistVideos {
     ago: string;
-    videoLink: string;
     title: string;
     views: string;
     author: string;
     videoId: string;
+    videoLink: string;
     authorUrl: string;
     thumbnailUrls: string[];
 }
@@ -163,10 +163,41 @@ declare function list_formats({ query, }: {
     query: string;
 }): Promise<any>;
 
-interface extract_playlist_videosOC {
-    playlistUrls: string[];
+interface EngineData {
+    id: string;
+    title: string;
+    channel: string;
+    uploader: string;
+    duration: number;
+    thumbnail: string;
+    age_limit: number;
+    channel_id: string;
+    categories: string[];
+    display_id: string;
+    view_count: number;
+    like_count: number;
+    description: string;
+    channel_url: string;
+    webpage_url: string;
+    live_status: string;
+    upload_date: string;
+    uploader_id: string;
+    original_url: string;
+    uploader_url: string;
+    comment_count: number;
+    duration_string: string;
+    channel_follower_count: number;
 }
-declare function extract_playlist_videos({ playlistUrls, }: extract_playlist_videosOC): Promise<any>;
+interface EngineResult {
+    metaTube: EngineData;
+    AudioStore: TubeConfig[];
+    VideoStore: TubeConfig[];
+    HDRVideoStore: TubeConfig[];
+}
+
+declare function extract_playlist_videos({ playlistUrls, }: {
+    playlistUrls: string[];
+}): Promise<EngineResult[]>;
 
 interface AudioFilters {
     bassboost: string;
@@ -186,10 +217,6 @@ interface AudioFilters {
     vibrato: string;
 }
 
-interface StreamResult$7 {
-    stream: Readable;
-    filename: string;
-}
 declare function AudioLowest(input: {
     query: string;
     stream?: boolean;
@@ -197,12 +224,11 @@ declare function AudioLowest(input: {
     folderName?: string;
     filter?: keyof AudioFilters;
     outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-}): Promise<void | StreamResult$7>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
-interface StreamResult$6 {
-    stream: Readable;
-    filename: string;
-}
 declare function AudioHighest(input: {
     query: string;
     stream?: boolean;
@@ -210,7 +236,10 @@ declare function AudioHighest(input: {
     folderName?: string;
     filter?: keyof AudioFilters;
     outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-}): Promise<void | StreamResult$6>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
 interface VideoFilters {
     grayscale: string;
@@ -222,10 +251,6 @@ interface VideoFilters {
     flipVertical: string;
 }
 
-interface StreamResult$5 {
-    stream: Readable;
-    filename: string;
-}
 declare function VideoLowest$1(input: {
     query: string;
     stream?: boolean;
@@ -233,12 +258,11 @@ declare function VideoLowest$1(input: {
     folderName?: string;
     filter?: keyof VideoFilters;
     outputFormat?: "mp4" | "avi" | "mov";
-}): Promise<void | StreamResult$5>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
-interface StreamResult$4 {
-    stream: Readable;
-    filename: string;
-}
 declare function VideoHighest(input: {
     query: string;
     stream?: boolean;
@@ -246,36 +270,33 @@ declare function VideoHighest(input: {
     folderName?: string;
     filter?: keyof VideoFilters;
     outputFormat?: "mp4" | "avi" | "mov";
-}): Promise<void | StreamResult$4>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
-interface StreamResult$3 {
-    stream: Readable;
-    filename: string;
-}
 declare function AudioVideoLowest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
     outputFormat?: "webm" | "avi" | "mov";
-}): Promise<void | StreamResult$3>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
-interface StreamResult$2 {
-    stream: Readable;
-    filename: string;
-}
 declare function AudioVideoHighest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
     outputFormat?: "webm" | "avi" | "mov";
-}): Promise<void | StreamResult$2>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
-interface StreamResult$1 {
-    stream: Readable;
-    filename: string;
-}
 declare function AudioQualityCustom(input: {
     query: string;
     stream?: boolean;
@@ -283,12 +304,11 @@ declare function AudioQualityCustom(input: {
     quality: "high" | "medium" | "low" | "ultralow";
     outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
     filter?: keyof AudioFilters;
-}): Promise<void | StreamResult$1>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
-interface StreamResult {
-    stream: Readable;
-    filename: string;
-}
 declare function VideoLowest(input: {
     query: string;
     stream?: boolean;
@@ -297,7 +317,10 @@ declare function VideoLowest(input: {
     filter?: keyof VideoFilters;
     quality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
     outputFormat?: "mp4" | "avi" | "mov";
-}): Promise<void | StreamResult>;
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 
 declare const ytdlx: {
     search: {

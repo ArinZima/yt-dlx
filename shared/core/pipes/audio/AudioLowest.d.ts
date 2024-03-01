@@ -1,10 +1,5 @@
-/// <reference types="node" />
-import { Readable } from "stream";
+import fluentffmpeg from "fluent-ffmpeg";
 import type AudioFilters from "../../interface/AudioFilters";
-interface StreamResult {
-    stream: Readable;
-    filename: string;
-}
 export default function AudioLowest(input: {
     query: string;
     stream?: boolean;
@@ -12,6 +7,8 @@ export default function AudioLowest(input: {
     folderName?: string;
     filter?: keyof AudioFilters;
     outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-}): Promise<void | StreamResult>;
-export {};
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 //# sourceMappingURL=AudioLowest.d.ts.map

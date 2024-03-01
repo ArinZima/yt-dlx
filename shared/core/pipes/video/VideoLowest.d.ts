@@ -1,10 +1,5 @@
-/// <reference types="node" />
-import { Readable } from "stream";
+import fluentffmpeg from "fluent-ffmpeg";
 import type VideoFilters from "../../interface/VideoFilters";
-interface StreamResult {
-    stream: Readable;
-    filename: string;
-}
 export default function VideoLowest(input: {
     query: string;
     stream?: boolean;
@@ -12,6 +7,8 @@ export default function VideoLowest(input: {
     folderName?: string;
     filter?: keyof VideoFilters;
     outputFormat?: "mp4" | "avi" | "mov";
-}): Promise<void | StreamResult>;
-export {};
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 //# sourceMappingURL=VideoLowest.d.ts.map

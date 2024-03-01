@@ -1,18 +1,14 @@
-/// <reference types="node" />
-import { Readable } from "stream";
+import fluentffmpeg from "fluent-ffmpeg";
 import type AudioFilters from "../interface/AudioFilters";
-interface StreamResult {
-    stream: Readable;
-    filename: string;
-}
-type ListAudioHighestType = void | StreamResult;
-export default function ListAudioHighest(input: {
+export default function AudioHighest(input: {
+    query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    playlistUrls: string[];
     filter?: keyof AudioFilters;
     outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-}): Promise<ListAudioHighestType[] | any>;
-export {};
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 //# sourceMappingURL=quick.spec.d.ts.map

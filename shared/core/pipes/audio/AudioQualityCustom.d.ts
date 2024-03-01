@@ -1,10 +1,5 @@
-/// <reference types="node" />
-import { Readable } from "stream";
+import fluentffmpeg from "fluent-ffmpeg";
 import type AudioFilters from "../../interface/AudioFilters";
-interface StreamResult {
-    stream: Readable;
-    filename: string;
-}
 export default function AudioQualityCustom(input: {
     query: string;
     stream?: boolean;
@@ -12,6 +7,8 @@ export default function AudioQualityCustom(input: {
     quality: "high" | "medium" | "low" | "ultralow";
     outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
     filter?: keyof AudioFilters;
-}): Promise<void | StreamResult>;
-export {};
+}): Promise<void | {
+    fileName: string;
+    stream: fluentffmpeg.FfprobeStreamDisposition;
+}>;
 //# sourceMappingURL=AudioQualityCustom.d.ts.map

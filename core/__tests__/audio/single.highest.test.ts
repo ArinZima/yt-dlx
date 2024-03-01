@@ -45,17 +45,18 @@ async.series([
         stream: true,
       });
       if (holder.stream && holder.filename) {
-        const writeStream = fs.createWriteStream(holder.filename);
-        writeStream.on("open", () => {
-          console.log(colors.bold.green("@info:"), "writestream opened.");
-        });
-        writeStream.on("error", (err) => {
-          console.error(colors.bold.red("@error:"), "writestream", err.message);
-        });
-        writeStream.on("finish", () => {
-          console.log(colors.bold.green("@pass:"), "filename", holder.filename);
-        });
-        holder.stream.pipe(writeStream);
+        await holder.stream
+          .pipe(fs.createWriteStream(holder.filename))
+          .on("open", () => {
+            console.log(colors.bold.green("@info:"), "writestream opened.");
+          })
+          .on("finish", () => {
+            console.log(
+              colors.bold.green("@pass:"),
+              "filename",
+              holder.filename
+            );
+          });
       } else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
@@ -72,17 +73,18 @@ async.series([
         stream: true,
       });
       if (holder.stream && holder.filename) {
-        const writeStream = fs.createWriteStream(holder.filename);
-        writeStream.on("open", () => {
-          console.log(colors.bold.green("@info:"), "writestream opened.");
-        });
-        writeStream.on("error", (err) => {
-          console.error(colors.bold.red("@error:"), "writestream", err.message);
-        });
-        writeStream.on("finish", () => {
-          console.log(colors.bold.green("@pass:"), "filename", holder.filename);
-        });
-        holder.stream.pipe(writeStream);
+        await holder.stream
+          .pipe(fs.createWriteStream(holder.filename))
+          .on("open", () => {
+            console.log(colors.bold.green("@info:"), "writestream opened.");
+          })
+          .on("finish", () => {
+            console.log(
+              colors.bold.green("@pass:"),
+              "filename",
+              holder.filename
+            );
+          });
       } else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);

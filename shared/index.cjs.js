@@ -15,8 +15,8 @@ var puppeteer = require('puppeteer');
 var path = require('path');
 var util = require('util');
 var child_process = require('child_process');
+var async = require('async');
 var fluentffmpeg = require('fluent-ffmpeg');
-var stream = require('stream');
 var readline = require('readline');
 
 function _interopNamespaceDefault(e) {
@@ -39,6 +39,7 @@ function _interopNamespaceDefault(e) {
 var fs__namespace = /*#__PURE__*/_interopNamespaceDefault(fs);
 var z__namespace = /*#__PURE__*/_interopNamespaceDefault(z);
 var path__namespace = /*#__PURE__*/_interopNamespaceDefault(path);
+var async__namespace = /*#__PURE__*/_interopNamespaceDefault(async);
 
 function YouTubeID(videoLink) {
     return new Promise((resolve, _) => {
@@ -193,7 +194,9 @@ async function SearchVideos(input) {
                         });
                     });
                     spinnies.succeed(spin, {
-                        text: colors.green("@info: ") + colors.white("scrapping done"),
+                        text: colors.green("@info: ") +
+                            colors.white("scrapping done for ") +
+                            query,
                     });
                     if (page)
                         await page.close();
@@ -258,7 +261,9 @@ async function SearchVideos(input) {
                         });
                     });
                     spinnies.succeed(spin, {
-                        text: colors.green("@info: ") + colors.white("scrapping done"),
+                        text: colors.green("@info: ") +
+                            colors.white("scrapping done for ") +
+                            query,
                     });
                     if (page)
                         await page.close();
@@ -363,8 +368,6 @@ async function PlaylistInfo(input) {
             const playlistTitle = $("yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string")
                 .text()
                 .trim();
-            const videoCountText = $("yt-formatted-string.byline-item").text();
-            const playlistVideoCount = parseInt(videoCountText.match(/\d+/)[0]);
             const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
             const playlistViews = parseInt(viewsText.replace(/,/g, "").match(/\d+/)[0]);
             let playlistDescription = $("span#plain-snippet-text").text();
@@ -405,14 +408,14 @@ async function PlaylistInfo(input) {
                 });
             });
             spinnies.succeed(spin, {
-                text: colors.green("@info: ") + colors.white("scrapping done"),
+                text: colors.green("@info: ") + colors.white("scrapping done for ") + query,
             });
             await page.close();
             await browser.close();
             return {
                 playlistVideos: metaTube,
                 playlistDescription: playlistDescription.trim(),
-                playlistVideoCount,
+                playlistVideoCount: metaTube.length,
                 playlistViews,
                 playlistTitle,
             };
@@ -530,7 +533,7 @@ async function VideoInfo(input) {
                 videoLink: "https://www.youtube.com/watch?v=" + videoId,
             };
             spinnies.succeed(spin, {
-                text: colors.green("@info: ") + colors.white("scrapping done"),
+                text: colors.green("@info: ") + colors.white("scrapping done for ") + query,
             });
             await page.close();
             await browser.close();
@@ -990,11 +993,10 @@ var version = "3.0.6";
 
 async function Agent({ query, }) {
     try {
-        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
         let videoId;
         let respEngine = undefined;
         let TubeBody;
-        console.log(colors.green("@info: ") + `using yt-dlx version ${version}`);
+        console.log(colors.green("@info:"), `using yt-dlx version ${version}`);
         switch (true) {
             case !query || query.trim() === "":
                 throw new Error(colors.red("@error: ") + "'query' is required.");
@@ -1016,8 +1018,7 @@ async function Agent({ query, }) {
                     throw new Error(colors.red("@error: ") + "no data returned from server.");
                 }
                 else if (TubeBody[0]) {
-                    console.log(colors.green("@info: ") +
-                        `preparing payload for ${TubeBody[0].title}`);
+                    console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody[0].title));
                     respEngine = await Engine(TubeBody[0].videoLink);
                 }
                 else {
@@ -1031,7 +1032,7 @@ async function Agent({ query, }) {
                 if (!TubeBody) {
                     throw new Error(colors.red("@error: ") + "no data returned from server.");
                 }
-                console.log(colors.green("@info: ") + `preparing payload for ${TubeBody.title}`);
+                console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody.title));
                 respEngine = await Engine(TubeBody.videoLink);
                 break;
         }
@@ -1139,6 +1140,7 @@ async function extract({ query }) {
                 channel_follower_count_formatted: formatCount(metaBody.metaTube.channel_follower_count),
             },
         };
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
         return payload;
     }
     catch (error) {
@@ -1179,6 +1181,7 @@ function list_formats({ query, }) {
                 ]),
             };
             resolve(EnBody);
+            console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
         }
         catch (error) {
             reject(error instanceof z__namespace.ZodError ? error.errors : error);
@@ -1188,41 +1191,37 @@ function list_formats({ query, }) {
 
 async function extract_playlist_videos({ playlistUrls, }) {
     try {
-        const proTubeArr = [];
-        const processedVideoIds = new Set();
-        for (const videoLink of playlistUrls) {
-            const ispUrl = videoLink.match(/list=([a-zA-Z0-9_-]+)/);
-            if (!ispUrl) {
-                console.error(colors.bold.red("@error: "), "Invalid YouTube Playlist URL:", videoLink);
-                continue;
+        let counter = 0;
+        const metaTubeArr = [];
+        await async__namespace.eachSeries(playlistUrls, async (listLink) => {
+            const query = await YouTubeID(listLink);
+            if (query === undefined) {
+                console.error(colors.bold.red("@error: "), "invalid youtube playlist url:", listLink);
+                return;
             }
-            const resp = await web.search.PlaylistInfo({
-                query: ispUrl[1],
-            });
-            if (resp === undefined) {
-                console.error(colors.bold.red("@error: "), "Invalid Data Found For:", ispUrl[1]);
-                continue;
-            }
-            for (let i = 0; i < resp.playlistVideos.length; i++) {
-                try {
-                    const videoId = resp.playlistVideos[i]?.videoId;
-                    if (videoId === undefined)
-                        continue;
-                    if (processedVideoIds.has(videoId))
-                        continue;
-                    const data = await Agent({ query: videoId });
-                    if (data instanceof Array)
-                        proTubeArr.push(...data);
-                    else
-                        proTubeArr.push(data);
-                    processedVideoIds.add(videoId);
+            else {
+                const resp = await web.search.PlaylistInfo({
+                    query,
+                });
+                if (resp === undefined) {
+                    console.error(colors.bold.red("@error: "), "unable to get response from youtube for", query);
+                    return;
                 }
-                catch (error) {
-                    console.error(colors.bold.red("@error: "), error);
+                else {
+                    console.log(colors.green("@info:"), "total videos in playlist", colors.green(resp.playlistTitle), resp.playlistVideoCount);
+                    await async__namespace.eachSeries(resp.playlistVideos, async (vid) => {
+                        const metaTube = await Agent({
+                            query: vid.videoLink,
+                        });
+                        counter++;
+                        console.log(colors.green("@info:"), "added", counter + "/" + resp.playlistVideoCount);
+                        metaTubeArr.push(metaTube);
+                    });
                 }
             }
-        }
-        return proTubeArr;
+        });
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
+        return metaTubeArr;
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -1290,7 +1289,7 @@ const AudioLowestZod = z.z.object({
 });
 async function AudioLowest(input) {
     try {
-        const { query, filter, stream: stream$1, verbose, folderName, outputFormat = "mp3", } = AudioLowestZod.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioLowestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1407,24 +1406,10 @@ async function AudioLowest(input) {
                 metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
                 break;
         }
-        if (stream$1) {
-            const readStream = new stream.Readable({
-                read() { },
-            });
-            const writeStream = new stream.Writable({
-                write(chunk, _encoding, callback) {
-                    readStream.push(chunk);
-                    callback();
-                },
-                final(callback) {
-                    readStream.push(undefined);
-                    callback();
-                },
-            });
-            proc.pipe(writeStream, { end: true });
+        if (stream) {
             return {
-                stream: readStream,
-                filename: folderName
+                stream: proc,
+                fileName: folderName
                     ? path__namespace.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1437,6 +1422,7 @@ async function AudioLowest(input) {
                 proc.run();
             });
         }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -1477,7 +1463,7 @@ const AudioHighestZod = z.z.object({
 });
 async function AudioHighest(input) {
     try {
-        const { query, filter, stream: stream$1, verbose, folderName, outputFormat = "mp3", } = AudioHighestZod.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioHighestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1594,24 +1580,10 @@ async function AudioHighest(input) {
                 metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
                 break;
         }
-        if (stream$1) {
-            const readStream = new stream.Readable({
-                read() { },
-            });
-            const writeStream = new stream.Writable({
-                write(chunk, _encoding, callback) {
-                    readStream.push(chunk);
-                    callback();
-                },
-                final(callback) {
-                    readStream.push(undefined);
-                    callback();
-                },
-            });
-            proc.pipe(writeStream, { end: true });
+        if (stream) {
             return {
-                stream: readStream,
-                filename: folderName
+                stream: proc,
+                fileName: folderName
                     ? path__namespace.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1624,6 +1596,7 @@ async function AudioHighest(input) {
                 proc.run();
             });
         }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -1648,7 +1621,7 @@ const VideoLowestZod$1 = z.z.object({
 });
 async function VideoLowest$1(input) {
     try {
-        const { query, filter, stream: stream$1, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod$1.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod$1.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1727,36 +1700,23 @@ async function VideoLowest$1(input) {
         proc.on("error", (error) => {
             return error;
         });
-        switch (stream$1) {
-            case true:
-                const readStream = new stream.Readable({
-                    read() { },
-                });
-                const writeStream = new stream.Writable({
-                    write(chunk, _encoding, callback) {
-                        readStream.push(chunk);
-                        callback();
-                    },
-                    final(callback) {
-                        readStream.push(undefined);
-                        callback();
-                    },
-                });
-                proc.pipe(writeStream, { end: true });
-                return {
-                    stream: readStream,
-                    filename: folderName
-                        ? path__namespace.join(metaFold, metaName.replace("-.", "."))
-                        : metaName.replace("-.", "."),
-                };
-            default:
-                await new Promise((resolve, reject) => {
-                    proc.output(path__namespace.join(metaFold, metaName));
-                    proc.on("end", () => resolve());
-                    proc.on("error", reject);
-                    proc.run();
-                });
+        if (stream) {
+            return {
+                stream: proc,
+                fileName: folderName
+                    ? path__namespace.join(metaFold, metaName.replace("-.", "."))
+                    : metaName.replace("-.", "."),
+            };
         }
+        else {
+            await new Promise((resolve, reject) => {
+                proc.output(path__namespace.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
+            });
+        }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -1781,7 +1741,7 @@ const VideoHighestZod = z.z.object({
 });
 async function VideoHighest(input) {
     try {
-        const { query, stream: stream$1, verbose, folderName, outputFormat = "mp4", filter, } = VideoHighestZod.parse(input);
+        const { query, stream, verbose, folderName, outputFormat = "mp4", filter, } = VideoHighestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1860,36 +1820,23 @@ async function VideoHighest(input) {
         proc.on("error", (error) => {
             return error;
         });
-        switch (stream$1) {
-            case true:
-                const readStream = new stream.Readable({
-                    read() { },
-                });
-                const writeStream = new stream.Writable({
-                    write(chunk, _encoding, callback) {
-                        readStream.push(chunk);
-                        callback();
-                    },
-                    final(callback) {
-                        readStream.push(undefined);
-                        callback();
-                    },
-                });
-                proc.pipe(writeStream, { end: true });
-                return {
-                    stream: readStream,
-                    filename: folderName
-                        ? path__namespace.join(metaFold, metaName.replace("-.", "."))
-                        : metaName.replace("-.", "."),
-                };
-            default:
-                await new Promise((resolve, reject) => {
-                    proc.output(path__namespace.join(metaFold, metaName));
-                    proc.on("end", () => resolve());
-                    proc.on("error", reject);
-                    proc.run();
-                });
+        if (stream) {
+            return {
+                stream: proc,
+                fileName: folderName
+                    ? path__namespace.join(metaFold, metaName.replace("-.", "."))
+                    : metaName.replace("-.", "."),
+            };
         }
+        else {
+            await new Promise((resolve, reject) => {
+                proc.output(path__namespace.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
+            });
+        }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -1913,7 +1860,7 @@ const AudioVideoLowestZod = z.z.object({
 });
 async function AudioVideoLowest(input) {
     try {
-        const { query, stream: stream$1, verbose, folderName, outputFormat = "webm", } = AudioVideoLowestZod.parse(input);
+        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoLowestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1965,24 +1912,10 @@ async function AudioVideoLowest(input) {
         proc.on("error", (error) => {
             return error;
         });
-        if (stream$1) {
-            const readStream = new stream.Readable({
-                read() { },
-            });
-            const writeStream = new stream.Writable({
-                write(chunk, _encoding, callback) {
-                    readStream.push(chunk);
-                    callback();
-                },
-                final(callback) {
-                    readStream.push(undefined);
-                    callback();
-                },
-            });
-            proc.pipe(writeStream, { end: true });
+        if (stream) {
             return {
-                stream: readStream,
-                filename: folderName
+                stream: proc,
+                fileName: folderName
                     ? path__namespace.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1995,6 +1928,7 @@ async function AudioVideoLowest(input) {
                 proc.run();
             });
         }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -2018,7 +1952,7 @@ const AudioVideoHighestZod = z.z.object({
 });
 async function AudioVideoHighest(input) {
     try {
-        const { query, stream: stream$1, verbose, folderName, outputFormat = "webm", } = AudioVideoHighestZod.parse(input);
+        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoHighestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -2070,24 +2004,10 @@ async function AudioVideoHighest(input) {
         proc.on("error", (error) => {
             return error;
         });
-        if (stream$1) {
-            const readStream = new stream.Readable({
-                read() { },
-            });
-            const writeStream = new stream.Writable({
-                write(chunk, _encoding, callback) {
-                    readStream.push(chunk);
-                    callback();
-                },
-                final(callback) {
-                    readStream.push(undefined);
-                    callback();
-                },
-            });
-            proc.pipe(writeStream, { end: true });
+        if (stream) {
             return {
-                stream: readStream,
-                filename: folderName
+                stream: proc,
+                fileName: folderName
                     ? path__namespace.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -2100,6 +2020,7 @@ async function AudioVideoHighest(input) {
                 proc.run();
             });
         }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -2125,7 +2046,7 @@ const AudioQualityCustomZod = z.z.object({
 });
 async function AudioQualityCustom(input) {
     try {
-        const { query, filter, stream: stream$1, verbose, quality, folderName, outputFormat = "mp3", } = AudioQualityCustomZod.parse(input);
+        const { query, filter, stream, verbose, quality, folderName, outputFormat = "mp3", } = AudioQualityCustomZod.parse(input);
         const metaResp = await Agent({ query });
         if (!metaResp) {
             throw new Error("Unable to get response from YouTube...");
@@ -2246,24 +2167,10 @@ async function AudioQualityCustom(input) {
         proc.on("error", (error) => {
             return error;
         });
-        if (stream$1) {
-            const readStream = new stream.Readable({
-                read() { },
-            });
-            const writeStream = new stream.Writable({
-                write(chunk, _encoding, callback) {
-                    readStream.push(chunk);
-                    callback();
-                },
-                final(callback) {
-                    readStream.push(undefined);
-                    callback();
-                },
-            });
-            proc.pipe(writeStream, { end: true });
+        if (stream) {
             return {
-                stream: readStream,
-                filename: folderName
+                stream: proc,
+                fileName: folderName
                     ? path__namespace.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -2276,6 +2183,7 @@ async function AudioQualityCustom(input) {
                 proc.run();
             });
         }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -2300,7 +2208,7 @@ const VideoLowestZod = z.z.object({
 });
 async function VideoLowest(input) {
     try {
-        const { query, filter, stream: stream$1, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -2379,36 +2287,23 @@ async function VideoLowest(input) {
         proc.on("error", (error) => {
             return error;
         });
-        switch (stream$1) {
-            case true:
-                const readStream = new stream.Readable({
-                    read() { },
-                });
-                const writeStream = new stream.Writable({
-                    write(chunk, _encoding, callback) {
-                        readStream.push(chunk);
-                        callback();
-                    },
-                    final(callback) {
-                        readStream.push(undefined);
-                        callback();
-                    },
-                });
-                proc.pipe(writeStream, { end: true });
-                return {
-                    stream: readStream,
-                    filename: folderName
-                        ? path__namespace.join(metaFold, metaName.replace("-.", "."))
-                        : metaName.replace("-.", "."),
-                };
-            default:
-                await new Promise((resolve, reject) => {
-                    proc.output(path__namespace.join(metaFold, metaName));
-                    proc.on("end", () => resolve());
-                    proc.on("error", reject);
-                    proc.run();
-                });
+        if (stream) {
+            return {
+                stream: proc,
+                fileName: folderName
+                    ? path__namespace.join(metaFold, metaName.replace("-.", "."))
+                    : metaName.replace("-.", "."),
+            };
         }
+        else {
+            await new Promise((resolve, reject) => {
+                proc.output(path__namespace.join(metaFold, metaName));
+                proc.on("end", () => resolve());
+                proc.on("error", reject);
+                proc.run();
+            });
+        }
+        console.log(colors.green("@info:"), "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx");
     }
     catch (error) {
         if (error instanceof z.ZodError) {
