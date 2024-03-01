@@ -1,11 +1,12 @@
 console.clear();
+import os from "os";
 import readline from "readline";
 import { spawn } from "child_process";
 
 const colors = {
-  red: "\x1b[31m",
   reset: "\x1b[0m",
-  green: "\x1b[32m",
+  red: "\x1b[1;31m",
+  green: "\x1b[1;32m",
 };
 
 const core = {
@@ -34,11 +35,58 @@ const core = {
   "test:spec":
     "tsup --config 'tsup.config.ts' './core/__tests__/bun.spec.ts' --outDir '.temp' --clean && node .temp/bun.spec.js",
 };
-
+function formatBytes(bytes) {
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 Byte";
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+  return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+}
 function runScript() {
+  console.log(`${colors.red}=================================${colors.reset}`);
   console.log(
-    `${colors.green}@info: ${colors.red}welcome to the yt-dlp dev-startup kit${colors.reset}`
+    `${colors.green}@system:${colors.reset} welcome to the ${colors.red}yt-dlp${colors.reset} dev-startup kit`
   );
+  console.log(
+    `${colors.green}@system:${colors.reset} os type: ${colors.red}${os.type()}${
+      colors.reset
+    }`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} cpu architecture: ${
+      colors.red
+    }${os.arch()}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} total memory: ${
+      colors.red
+    }${formatBytes(os.totalmem())}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} free memory: ${
+      colors.red
+    }${formatBytes(os.freemem())}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} home directory: ${
+      colors.red
+    }${os.homedir()}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} hostname: ${
+      colors.red
+    }${os.hostname()}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} platform: ${
+      colors.red
+    }${os.platform()}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} release: ${
+      colors.red
+    }${os.release()}${colors.reset}`
+  );
+  console.log(`${colors.red}=================================${colors.reset}`);
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -50,6 +98,7 @@ function runScript() {
       }: ` + script
     );
   });
+  console.log(`${colors.red}=================================${colors.reset}`);
   rl.question(
     `${colors.green}@info:${colors.reset} enter the ${colors.red}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
     (answer) => {
