@@ -10,7 +10,7 @@ async.series(
     first: async () => {
       try {
         let metaTube: any = await AudioVideoLowest({
-          query: "PRATEEK KUHAD - MULAQAT (OFFICIAL MUSIC VIDEO)",
+          query: "sQEgklEwhSo",
           folderName: ".temp",
           verbose: false,
           stream: false,
