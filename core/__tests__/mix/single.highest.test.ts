@@ -7,7 +7,7 @@ let holder: any;
 async.series([
   async () => {
     try {
-      holder = await ytdlx.audio_video.single.highest({
+      holder = await ytdlx.audio_video.highest({
         folderName: "audio_video",
         query: "sQEgklEwhSo",
         outputFormat: "avi",
@@ -22,7 +22,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.audio_video.single.highest({
+      holder = await ytdlx.audio_video.highest({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         folderName: "audio_video",
         outputFormat: "mov",
@@ -37,7 +37,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.audio_video.single.highest({
+      holder = await ytdlx.audio_video.highest({
         folderName: "audio_video",
         query: "sQEgklEwhSo",
         outputFormat: "webm",
@@ -63,7 +63,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.audio_video.single.highest({
+      holder = await ytdlx.audio_video.highest({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         folderName: "audio_video",
         outputFormat: "webm",

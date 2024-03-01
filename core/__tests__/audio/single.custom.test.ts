@@ -7,7 +7,7 @@ let holder: any;
 async.series([
   async () => {
     try {
-      holder = await ytdlx.audio.single.custom({
+      holder = await ytdlx.audio.custom({
         folderName: ".temp/audio",
         query: "sQEgklEwhSo",
         outputFormat: "ogg",
@@ -23,7 +23,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.audio.single.custom({
+      holder = await ytdlx.audio.custom({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         folderName: ".temp/audio",
         outputFormat: "mp3",
@@ -40,7 +40,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.audio.single.custom({
+      holder = await ytdlx.audio.custom({
         folderName: ".temp/audio",
         outputFormat: "flac",
         query: "sQEgklEwhSo",
@@ -67,7 +67,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.audio.single.custom({
+      holder = await ytdlx.audio.custom({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         folderName: ".temp/audio",
         outputFormat: "aiff",

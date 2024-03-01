@@ -8,7 +8,7 @@ let holder: any;
 async.series([
   async () => {
     try {
-      holder = await ytdlx.video.single.custom({
+      holder = await ytdlx.video.custom({
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
         outputFormat: "mp4",
@@ -24,7 +24,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.video.single.custom({
+      holder = await ytdlx.video.custom({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         folderName: ".temp/video",
         outputFormat: "mov",
@@ -41,7 +41,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.video.single.custom({
+      holder = await ytdlx.video.custom({
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
         outputFormat: "avi",
@@ -68,7 +68,7 @@ async.series([
   // =========================[BREAK-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.video.single.custom({
+      holder = await ytdlx.video.custom({
         query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         folderName: ".temp/video",
         outputFormat: "mp4",
