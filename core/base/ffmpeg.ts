@@ -10,8 +10,13 @@ export default async function ffmpeg(): Promise<FfmpegCommand> {
     try {
       const ffprobePath = execSync("which ffprobe").toString().trim();
       const ffmpegPath = execSync("which ffmpeg").toString().trim();
-      console.log(colors.green("@ffprobePath:"), ffprobePath);
-      console.log(colors.green("@ffmpegPath:"), ffmpegPath);
+      console.log(
+        colors.green("@ffprobePath:"),
+        ffprobePath,
+        "|",
+        colors.green("@ffmpegPath:"),
+        ffmpegPath
+      );
       if (fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath)) {
         proc.setFfprobePath(ffprobePath);
         proc.setFfmpegPath(ffmpegPath);

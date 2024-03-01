@@ -29,23 +29,16 @@ async.series(
           verbose: false,
           stream: true,
         });
-        console.log(colors.green("@info:"), metaTube.filename);
-        return metaTube;
-      } catch (error: any) {
-        throw new Error(colors.red("@error:"), error.message);
-      }
-    },
-    getAndsave: async ({ second }: any) => {
-      try {
-        const outputPath = path.join(second.filename);
+        const outputPath = path.join(metaTube.filename);
         const writeStream = fs.createWriteStream(outputPath);
-        second.stream.on("end", () => {
+        console.log(colors.green("@info:"), metaTube.filename);
+        metaTube.stream.on("end", () => {
           console.log(colors.green("@info:"), "download completed");
         });
-        second.stream.on("error", (error: any) => {
+        metaTube.stream.on("error", (error: any) => {
           console.error(colors.red("@error:"), error.message);
         });
-        second.stream.pipe(writeStream);
+        metaTube.stream.pipe(writeStream);
       } catch (error: any) {
         throw new Error(colors.red("@error:"), error.message);
       }

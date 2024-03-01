@@ -32,7 +32,7 @@ const core = {
   test: "bun run test:bun && bun run test:cli",
   "test:bun": "bun test --timeout 60000 --bail --watch",
   "test:spec":
-    "tsup './core/__tests__/bun.spec.ts' --outDir '.temp' --clean && node .temp/bun.spec.js",
+    "tsup --config 'tsup.config.ts' './core/__tests__/bun.spec.ts' --outDir '.temp' --clean && node .temp/bun.spec.js",
   "test:cli":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
 };
