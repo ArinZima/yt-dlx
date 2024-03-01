@@ -10,8 +10,7 @@
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
-    "start": "bun ./.devcontainer/startup.mjs",
-    "install:deps": "chmod +x ./linux-setup.sh && ./linux-setup.sh",
+    "start": "node ./.devcontainer/startup.mjs",
     "rerun": "bun ./.devcontainer/server.mjs & bun ./.devcontainer/rerun.mjs",
     "remake": "bun run clean && bun run make && bun install --latest && bun run build",
     "upload": "bun run test && bun run cli && bun run build && npm pkg fix && npm publish --access=public && bun run update",
