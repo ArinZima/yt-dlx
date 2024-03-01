@@ -51,14 +51,14 @@ export default async function Engine(query: string): Promise<EngineResult> {
       const rmval = new Set(["storyboard", "Default"]);
       if (rmval.has(io.format_note) && io.filesize === undefined) return;
       const reTube: TubeConfig = {
-        meta_audio: {
+        Audio: {
           bitrate: io.abr,
           codec: io.acodec,
           samplerate: io.asr,
           extension: io.audio_ext,
           channels: io.audio_channels,
         },
-        meta_video: {
+        Video: {
           bitrate: io.vbr,
           width: io.width,
           codec: io.vcodec,
@@ -113,8 +113,8 @@ export default async function Engine(query: string): Promise<EngineResult> {
             reTube.meta_dl.formatnote.includes("medium") ||
             reTube.meta_dl.formatnote.includes("high") ||
             reTube.meta_dl.formatnote.includes("low")) &&
-            reTube.meta_video.resolution &&
-            reTube.meta_video.resolution.includes("audio"):
+            reTube.Video.resolution &&
+            reTube.Video.resolution.includes("audio"):
             pushTube.push({ Tube: "AudioStore", reTube });
             break;
           case reTube.meta_dl.formatnote.includes("HDR"):
@@ -200,14 +200,14 @@ export default async function Engine(query: string): Promise<EngineResult> {
 // const rmval = new Set(["storyboard", "Default"]);
 // if (rmval.has(core.format_note) && core.filesize === undefined) return;
 // const reTube: any = {
-// meta_audio: {
+// Audio: {
 // bitrate: core.abr,
 // codec: core.acodec,
 // samplerate: core.asr,
 // extension: core.audio_ext,
 // channels: core.audio_channels,
 // },
-// meta_video: {
+// Video: {
 // bitrate: core.vbr,
 // width: core.width,
 // codec: core.vcodec,
@@ -264,8 +264,8 @@ export default async function Engine(query: string): Promise<EngineResult> {
 // reTube.meta_dl.formatnote.includes("medium") ||
 // reTube.meta_dl.formatnote.includes("high") ||
 // reTube.meta_dl.formatnote.includes("low")) &&
-// reTube.meta_video.resolution &&
-// reTube.meta_video.resolution.includes("audio"):
+// reTube.Video.resolution &&
+// reTube.Video.resolution.includes("audio"):
 // pushTube.push({ Tube: "AudioStore", reTube });
 // break;
 // case reTube.meta_dl.formatnote.includes("HDR"):

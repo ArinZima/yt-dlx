@@ -1,12 +1,12 @@
 export default interface TubeConfig {
-  meta_audio: {
+  Audio: {
     codec: string;
     bitrate: number;
     channels: number;
     extension: string;
     samplerate: number;
   };
-  meta_video: {
+  Video: {
     width: number;
     codec: string;
     height: number;

@@ -85,8 +85,6 @@ export default async function AudioQualityCustom(
     proc.addOutputOption("-map", "1:0");
     proc.addOutputOption("-map", "0:a:0");
     proc.addOutputOption("-id3v2_version", "3");
-    proc.withAudioBitrate(metaEntry.meta_audio.bitrate);
-    proc.withAudioChannels(metaEntry.meta_audio.channels);
     proc.format(outputFormat);
     switch (filter) {
       case "bassboost":
