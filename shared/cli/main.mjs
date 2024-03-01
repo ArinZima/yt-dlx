@@ -1227,6 +1227,10 @@ async function extract_playlist_videos({
 async function ffmpeg() {
   return new Promise(async (resolve) => {
     let proc = fluentffmpeg();
+    proc.addOption("-spatial-aq", "1");
+    proc.addOption("-preset", "slow");
+    proc.addOption("-level:v", "4.2");
+    proc.addOption("-threads", "0");
     try {
       const ffprobePath = execSync("which ffprobe").toString().trim();
       const ffmpegPath = execSync("which ffmpeg").toString().trim();
@@ -1985,20 +1989,9 @@ async function AudioVideoLowest(input) {
     if (AmetaEntry === void 0 || VmetaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(VmetaEntry.AVDownload.mediaurl);
-    proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.complexFilter([
-      {
-        filter: "amix",
-        options: {
-          inputs: "0:1",
-          duration: "longest"
-        },
-        inputs: ["0:a", "1:v"],
-        outputs: "a"
-      }
-    ]);
-    proc.addOutputOptions(["-map", "[a]"]);
+    proc.input(VmetaEntry.AVDownload.mediaurl);
+    proc.input(AmetaEntry.AVDownload.mediaurl);
+    proc.addOutputOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
       if (verbose)
@@ -2104,20 +2097,9 @@ async function AudioVideoHighest(input) {
     if (AmetaEntry === void 0 || VmetaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(VmetaEntry.AVDownload.mediaurl);
-    proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.complexFilter([
-      {
-        filter: "amix",
-        options: {
-          inputs: "0:1",
-          duration: "longest"
-        },
-        inputs: ["0:a", "1:v"],
-        outputs: "a"
-      }
-    ]);
-    proc.addOutputOptions(["-map", "[a]"]);
+    proc.input(VmetaEntry.AVDownload.mediaurl);
+    proc.input(AmetaEntry.AVDownload.mediaurl);
+    proc.addOutputOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
       if (verbose)

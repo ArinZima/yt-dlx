@@ -7,6 +7,12 @@ import type { FfmpegCommand } from "fluent-ffmpeg";
 export default async function ffmpeg(): Promise<FfmpegCommand> {
   return new Promise(async (resolve) => {
     let proc: FfmpegCommand = fluentffmpeg();
+    proc.addOption("-spatial-aq", "1");
+    proc.addOption("-preset", "slow");
+    proc.addOption("-level:v", "4.2");
+    proc.addOption("-threads", "0");
+    proc.addOption("-rc", "vbr_hq");
+    proc.addOption("-b:v", "10M");
     try {
       const ffprobePath = execSync("which ffprobe").toString().trim();
       const ffmpegPath = execSync("which ffmpeg").toString().trim();
@@ -20,6 +26,15 @@ export default async function ffmpeg(): Promise<FfmpegCommand> {
       if (fs.existsSync(ffmpegPath) && fs.existsSync(ffprobePath)) {
         proc.setFfprobePath(ffprobePath);
         proc.setFfmpegPath(ffmpegPath);
+        const hasGPU = execSync(
+          "nvidia-smi --query-gpu=name --format=csv,noheader"
+        )
+          .toString()
+          .trim();
+        if (hasGPU) {
+          console.log(colors.green("@ffmpegGPU:"), hasGPU);
+          proc.addOption("-c:v", "h264_nvenc");
+        } else console.log(colors.yellow("@ffmpegGPU:"), "no GPU detected.");
       } else {
         throw new Error(
           colors.red("@error: ") + "could not find the ffmpeg & ffprobe files."

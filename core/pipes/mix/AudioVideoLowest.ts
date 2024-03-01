@@ -56,20 +56,9 @@ export default async function AudioVideoLowest(
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(VmetaEntry.AVDownload.mediaurl);
-    proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.complexFilter([
-      {
-        filter: "amix",
-        options: {
-          inputs: "0:1",
-          duration: "longest",
-        },
-        inputs: ["0:a", "1:v"],
-        outputs: "a",
-      },
-    ]);
-    proc.addOutputOptions(["-map", "[a]"]);
+    proc.input(VmetaEntry.AVDownload.mediaurl);
+    proc.input(AmetaEntry.AVDownload.mediaurl);
+    proc.addOutputOption("-shortest");
     proc.format(outputFormat);
     proc.on("start", (command) => {
       if (verbose) console.log(command);
