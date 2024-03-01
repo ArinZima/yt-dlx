@@ -5,7 +5,7 @@ import { ZodError } from "zod";
 import YouTubeID from "../../web/YouTubeId";
 import type { PlaylistInfoType } from "../../web/";
 
-export default async function get_playlist_info({
+export default async function extract_playlist_videos({
   playlistUrls,
 }: {
   playlistUrls: string[];

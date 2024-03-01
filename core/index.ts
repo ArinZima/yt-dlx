@@ -3,6 +3,7 @@ import help from "./pipes/command/help";
 import extract from "./pipes/command/extract";
 import list_formats from "./pipes/command/list_formats";
 import get_playlist_info from "./pipes/command/get_playlist_info";
+import extract_playlist_videos from "./pipes/command/extract_playlist_videos";
 
 import AudioLowest from "./pipes/audio/AudioLowest";
 import AudioHighest from "./pipes/audio/AudioHighest";
@@ -24,6 +25,7 @@ const ytdlx = {
     extract,
     list_formats,
     get_playlist_info,
+    extract_playlist_videos,
   },
   audio: {
     lowest: AudioLowest,
