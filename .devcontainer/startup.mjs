@@ -9,27 +9,31 @@ const colors = {
 };
 
 const core = {
-  "rerun": "bun ./.devcontainer/server.mjs & bun ./.devcontainer/rerun.mjs",
-  "remake": "bun run clean && bun run make && bun install --latest && bun run build",
-  "upload": "bun run test && bun run cli && bun run build && npm pkg fix && npm publish --access=public && bun run update",
-  "clean": "bun run clean:base && bun run clean:client",
+  rerun: "bun ./.devcontainer/server.mjs & bun ./.devcontainer/rerun.mjs",
+  remake: "bun clean && bun make && bun install --latest && bun run build",
+  upload:
+    "bun remake && bun run test && npm pkg fix && npm publish --access=public && bun update",
+  clean: "bun clean:base && bun clean:client",
   "clean:base": "rm -rf node_modules .temp shared bun.lockb",
   "clean:client": "cd client && rm -rf node_modules .next bun.lockb",
-  "make": "bun run make:deps && bun run make:base && bun run make:client",
+  make: "bun make:deps && bun make:base && bun make:client",
   "make:base": "bun install",
   "make:client": "cd client && bun install",
   "make:deps": "chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh",
-  "build": "bun run build:base && bun run build:client",
-  "build:base": "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
+  build: "bun run build:base && bun run build:client",
+  "build:base":
+    "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
   "build:client": "cd client && npm run build",
-  "update": "bun run make && bun run update:base && bun run update:client",
+  update: "bun make && bun update:base && bun update:client",
   "update:base": "bun install --latest && bun update --latest",
   "update:client": "cd client && bun install --latest && bun update --latest",
-  "cli": "bun link && bun run test:cli && bun unlink",
-  "test": "bun run test:bun && bun run test:cli",
+  cli: "bun link && bun test:cli && bun unlink",
+  test: "bun test:bun && bun test:cli",
   "test:bun": "bun test --timeout 120000 --bail --watch",
-  "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
-  "test:spec": "tsup --config 'tsup.config.ts' './core/__tests__/bun.spec.ts' --outDir '.temp' --clean && node .temp/bun.spec.js"
+  "test:cli":
+    "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
+  "test:spec":
+    "tsup --config 'tsup.config.ts' './core/__tests__/bun.spec.ts' --outDir '.temp' --clean && node .temp/bun.spec.js",
 };
 
 function runScript() {
