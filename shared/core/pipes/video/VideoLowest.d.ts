@@ -1,14 +1,17 @@
-import type StreamResult from "../../interface/StreamResult";
+/// <reference types="node" />
+import { Readable } from "stream";
 import type VideoFilters from "../../interface/VideoFilters";
-type VideoFormat = "mp4" | "avi" | "mov";
-interface VideoLowestOC {
+interface StreamResult {
+    stream: Readable;
+    filename: string;
+}
+export default function VideoLowest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    outputFormat?: VideoFormat;
     filter?: keyof VideoFilters;
-}
-export default function VideoLowest(input: VideoLowestOC): Promise<true | StreamResult>;
+    outputFormat?: "mp4" | "avi" | "mov";
+}): Promise<void | StreamResult>;
 export {};
 //# sourceMappingURL=VideoLowest.d.ts.map

@@ -1,15 +1,18 @@
-import type StreamResult from "../../interface/StreamResult";
+/// <reference types="node" />
+import { Readable } from "stream";
 import type AudioFilters from "../../interface/AudioFilters";
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-interface ListAudioLowestOC {
+interface StreamResult {
+    stream: Readable;
+    filename: string;
+}
+type ListAudioLowestType = void | StreamResult;
+export default function ListAudioLowest(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
     playlistUrls: string[];
-    outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
-}
-type ListAudioLowestType = true | StreamResult;
-export default function ListAudioLowest(input: ListAudioLowestOC): Promise<ListAudioLowestType[] | any>;
+    outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+}): Promise<ListAudioLowestType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioLowest.d.ts.map

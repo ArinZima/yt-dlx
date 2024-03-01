@@ -7,11 +7,12 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type ErrorResult from "../../interface/ErrorResult";
-import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
-type AudioQualityCustomType = Promise<true | ErrorResult | StreamResult>;
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
 const AudioQualityCustomZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -28,7 +29,7 @@ export default async function AudioQualityCustom(input: {
   quality: "high" | "medium" | "low" | "ultralow";
   outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
   filter?: keyof AudioFilters;
-}): AudioQualityCustomType {
+}): Promise<void | StreamResult> {
   try {
     const {
       query,
@@ -41,20 +42,14 @@ export default async function AudioQualityCustom(input: {
     } = AudioQualityCustomZod.parse(input);
     const metaResp = await ytdlx({ query });
     if (!metaResp) {
-      return {
-        message: "The specified quality was not found...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const metaBody = metaResp.AudioStore.filter(
       (op: { AVDownload: { formatnote: string } }) =>
         op.AVDownload.formatnote === quality
     );
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     let metaName: string = "";
     const title: string = metaResp.metaTube.title.replace(
@@ -68,10 +63,7 @@ export default async function AudioQualityCustom(input: {
     const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === undefined) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500,
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.addInput(metaResp.metaTube.thumbnail);
@@ -201,7 +193,6 @@ export default async function AudioQualityCustom(input: {
         proc.on("error", reject);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

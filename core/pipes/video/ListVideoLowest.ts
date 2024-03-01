@@ -9,10 +9,13 @@ import lowEntry from "../../base/lowEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type ListVideoLowestType = true | StreamResult;
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
+type ListVideoLowestType = void | StreamResult;
 const ListVideoLowestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),

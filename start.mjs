@@ -123,7 +123,7 @@ function runScript() {
               `${colors.red}@error:${colors.reset}`,
               `Exited with code ${code}`
             );
-          }
+          } else console.clear();
           runScript();
         });
       } else {

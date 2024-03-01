@@ -1,14 +1,17 @@
-import type StreamResult from "../../interface/StreamResult";
+/// <reference types="node" />
+import { Readable } from "stream";
 import type VideoFilters from "../../interface/VideoFilters";
-type VideoFormat = "mp4" | "avi" | "mov";
-interface VideoHighestOC {
+interface StreamResult {
+    stream: Readable;
+    filename: string;
+}
+export default function VideoHighest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    outputFormat?: VideoFormat;
     filter?: keyof VideoFilters;
-}
-export default function VideoHighest(input: VideoHighestOC): Promise<true | StreamResult>;
+    outputFormat?: "mp4" | "avi" | "mov";
+}): Promise<void | StreamResult>;
 export {};
 //# sourceMappingURL=VideoHighest.d.ts.map

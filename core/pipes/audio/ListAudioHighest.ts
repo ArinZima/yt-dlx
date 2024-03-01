@@ -9,10 +9,13 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
-type ListAudioHighestType = true | StreamResult;
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
+type ListAudioHighestType = void | StreamResult;
 const ListAudioHighestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),

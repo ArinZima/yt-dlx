@@ -1,12 +1,15 @@
-import type StreamResult from "../../interface/StreamResult";
-type VideoFormat = "webm" | "avi" | "mov";
-interface AudioVideoHighestOC {
+/// <reference types="node" />
+import { Readable } from "stream";
+interface StreamResult {
+    stream: Readable;
+    filename: string;
+}
+export default function AudioVideoHighest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    outputFormat?: VideoFormat;
-}
-export default function AudioVideoHighest(input: AudioVideoHighestOC): Promise<true | StreamResult>;
+    outputFormat?: "webm" | "avi" | "mov";
+}): Promise<void | StreamResult>;
 export {};
 //# sourceMappingURL=AudioVideoHighest.d.ts.map

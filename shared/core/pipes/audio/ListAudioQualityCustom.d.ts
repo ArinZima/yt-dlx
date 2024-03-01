@@ -1,17 +1,19 @@
-import type StreamResult from "../../interface/StreamResult";
+/// <reference types="node" />
+import { Readable } from "stream";
 import type AudioFilters from "../../interface/AudioFilters";
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-type AudioQualities = "high" | "medium" | "low" | "ultralow";
-interface ListAudioQualityCustomOC {
+interface StreamResult {
+    stream: Readable;
+    filename: string;
+}
+type ListAudioQualityCustomType = void | StreamResult;
+export default function ListAudioQualityCustom(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
     playlistUrls: string[];
-    quality: AudioQualities;
-    outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
-}
-type ListAudioQualityCustomType = true | StreamResult;
-export default function ListAudioQualityCustom(input: ListAudioQualityCustomOC): Promise<ListAudioQualityCustomType[] | any>;
+    outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+    quality: "high" | "medium" | "low" | "ultralow";
+}): Promise<ListAudioQualityCustomType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioQualityCustom.d.ts.map

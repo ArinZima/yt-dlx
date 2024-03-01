@@ -7,9 +7,12 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type StreamResult from "../../interface/StreamResult";
 import type AudioFilters from "../../interface/AudioFilters";
 
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
 const AudioHighestZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
@@ -25,7 +28,7 @@ export default async function AudioHighest(input: {
   folderName?: string;
   filter?: keyof AudioFilters;
   outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-}): Promise<true | StreamResult> {
+}): Promise<void | StreamResult> {
   try {
     const {
       query,
@@ -182,7 +185,6 @@ export default async function AudioHighest(input: {
         proc.on("error", reject);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

@@ -1394,7 +1394,7 @@ const progressBar = (prog) => {
         process.stdout.write("\n");
 };
 
-const AudioLowestInputSchema = z$1.object({
+const AudioLowestZod = z$1.object({
     query: z$1.string().min(1),
     filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
@@ -1404,7 +1404,7 @@ const AudioLowestInputSchema = z$1.object({
 });
 async function AudioLowest(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioLowestInputSchema.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioLowestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody) {
             throw new Error("Unable to get response from YouTube...");
@@ -1551,7 +1551,6 @@ async function AudioLowest(input) {
                 proc.on("error", reject);
                 proc.run();
             });
-            return true;
         }
     }
     catch (error) {
@@ -1584,7 +1583,7 @@ async function bigEntry(metaBody) {
     return sortedByFileSize[0];
 }
 
-const AudioHighestInputSchema = z$1.object({
+const AudioHighestZod = z$1.object({
     query: z$1.string().min(1),
     filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
@@ -1594,7 +1593,7 @@ const AudioHighestInputSchema = z$1.object({
 });
 async function AudioHighest(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioHighestInputSchema.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioHighestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody) {
             throw new Error("Unable to get response from YouTube...");
@@ -1741,7 +1740,6 @@ async function AudioHighest(input) {
                 proc.on("error", reject);
                 proc.run();
             });
-            return true;
         }
     }
     catch (error) {
@@ -1758,7 +1756,7 @@ async function AudioHighest(input) {
     }
 }
 
-const VideoLowestInputSchema$1 = z$1.object({
+const VideoLowestZod$1 = z$1.object({
     query: z$1.string().min(1),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -1768,7 +1766,7 @@ const VideoLowestInputSchema$1 = z$1.object({
 });
 async function VideoLowest$1(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestInputSchema$1.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod$1.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody) {
             throw new Error("Unable to get response from YouTube...");
@@ -1877,7 +1875,6 @@ async function VideoLowest$1(input) {
                     proc.on("error", reject);
                     proc.run();
                 });
-                return true;
         }
     }
     catch (error) {
@@ -1894,7 +1891,7 @@ async function VideoLowest$1(input) {
     }
 }
 
-const VideoHighestInputSchema = z$1.object({
+const VideoHighestZod = z$1.object({
     query: z$1.string().min(1),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -1904,7 +1901,7 @@ const VideoHighestInputSchema = z$1.object({
 });
 async function VideoHighest(input) {
     try {
-        const { query, stream, verbose, folderName, outputFormat = "mp4", filter, } = VideoHighestInputSchema.parse(input);
+        const { query, stream, verbose, folderName, outputFormat = "mp4", filter, } = VideoHighestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody) {
             throw new Error("Unable to get response from YouTube...");
@@ -2013,7 +2010,6 @@ async function VideoHighest(input) {
                     proc.on("error", reject);
                     proc.run();
                 });
-                return true;
         }
     }
     catch (error) {
@@ -2030,7 +2026,7 @@ async function VideoHighest(input) {
     }
 }
 
-const AudioVideoLowestInputSchema = z$1.object({
+const AudioVideoLowestZod = z$1.object({
     query: z$1.string().min(1),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2039,7 +2035,7 @@ const AudioVideoLowestInputSchema = z$1.object({
 });
 async function AudioVideoLowest(input) {
     try {
-        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoLowestInputSchema.parse(input);
+        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoLowestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody) {
             throw new Error("Unable to get response from YouTube...");
@@ -2121,7 +2117,6 @@ async function AudioVideoLowest(input) {
                 proc.on("error", reject);
                 proc.run();
             });
-            return true;
         }
     }
     catch (error) {
@@ -2138,7 +2133,7 @@ async function AudioVideoLowest(input) {
     }
 }
 
-const AudioVideoHighestInputSchema = z$1.object({
+const AudioVideoHighestZod = z$1.object({
     query: z$1.string().min(1),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2147,7 +2142,7 @@ const AudioVideoHighestInputSchema = z$1.object({
 });
 async function AudioVideoHighest(input) {
     try {
-        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoHighestInputSchema.parse(input);
+        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoHighestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody) {
             throw new Error("Unable to get response from YouTube...");
@@ -2229,7 +2224,6 @@ async function AudioVideoHighest(input) {
                 proc.on("error", reject);
                 proc.run();
             });
-            return true;
         }
     }
     catch (error) {
@@ -2246,7 +2240,7 @@ async function AudioVideoHighest(input) {
     }
 }
 
-const AudioQualityCustomInputSchema = z$1.object({
+const AudioQualityCustomZod = z$1.object({
     query: z$1.string().min(1),
     filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
@@ -2257,20 +2251,14 @@ const AudioQualityCustomInputSchema = z$1.object({
 });
 async function AudioQualityCustom(input) {
     try {
-        const { query, filter, stream, verbose, quality, folderName, outputFormat = "mp3", } = AudioQualityCustomInputSchema.parse(input);
+        const { query, filter, stream, verbose, quality, folderName, outputFormat = "mp3", } = AudioQualityCustomZod.parse(input);
         const metaResp = await Agent({ query });
         if (!metaResp) {
-            return {
-                message: "The specified quality was not found...",
-                status: 500,
-            };
+            throw new Error("Unable to get response from YouTube...");
         }
         const metaBody = metaResp.AudioStore.filter((op) => op.AVDownload.formatnote === quality);
         if (!metaBody) {
-            return {
-                message: "Unable to get response from YouTube...",
-                status: 500,
-            };
+            throw new Error("Unable to get response from YouTube...");
         }
         let metaName = "";
         const title = metaResp.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
@@ -2282,10 +2270,7 @@ async function AudioQualityCustom(input) {
         const proc = fluentffmpeg();
         const metaEntry = await bigEntry(metaBody);
         if (metaEntry === undefined) {
-            return {
-                message: "Unable to get response from YouTube...",
-                status: 500,
-            };
+            throw new Error("Unable to get response from YouTube...");
         }
         proc.addInput(metaEntry.AVDownload.mediaurl);
         proc.addInput(metaResp.metaTube.thumbnail);
@@ -2417,7 +2402,6 @@ async function AudioQualityCustom(input) {
                 proc.on("error", reject);
                 proc.run();
             });
-            return true;
         }
     }
     catch (error) {
@@ -2434,7 +2418,7 @@ async function AudioQualityCustom(input) {
     }
 }
 
-const VideoLowestInputSchema = z$1.object({
+const VideoLowestZod = z$1.object({
     query: z$1.string().min(1),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2444,7 +2428,7 @@ const VideoLowestInputSchema = z$1.object({
 });
 async function VideoLowest(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestInputSchema.parse(input);
+        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod.parse(input);
         const metaBody = await Agent({ query });
         if (!metaBody) {
             throw new Error("Unable to get response from YouTube...");
@@ -2553,7 +2537,6 @@ async function VideoLowest(input) {
                     proc.on("error", reject);
                     proc.run();
                 });
-                return true;
         }
     }
     catch (error) {
@@ -2570,7 +2553,7 @@ async function VideoLowest(input) {
     }
 }
 
-const ListVideoLowestInputSchema = z$1.object({
+const ListVideoLowestZod = z$1.object({
     filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2580,7 +2563,7 @@ const ListVideoLowestInputSchema = z$1.object({
 });
 async function ListVideoLowest(input) {
     try {
-        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListVideoLowestInputSchema.parse(input);
+        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListVideoLowestZod.parse(input);
         let parseList = [];
         let metaName = "";
         let results = [];
@@ -2727,7 +2710,7 @@ async function ListVideoLowest(input) {
     }
 }
 
-const ListVideoHighestInputSchema = z$1.object({
+const ListVideoHighestZod = z$1.object({
     filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -2737,7 +2720,7 @@ const ListVideoHighestInputSchema = z$1.object({
 });
 async function ListVideoHighest(input) {
     try {
-        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListVideoHighestInputSchema.parse(input);
+        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListVideoHighestZod.parse(input);
         let parseList = [];
         let metaName = "";
         let results = [];
@@ -2884,7 +2867,7 @@ async function ListVideoHighest(input) {
     }
 }
 
-const ListVideoQualityCustomInputSchema = z$1.object({
+const ListVideoQualityCustomZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
@@ -2909,7 +2892,7 @@ const ListVideoQualityCustomInputSchema = z$1.object({
 });
 async function ListVideoQualityCustom(input) {
     try {
-        const { filter, stream, quality, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListVideoQualityCustomInputSchema.parse(input);
+        const { filter, stream, quality, verbose, folderName, playlistUrls, outputFormat = "mp4", } = ListVideoQualityCustomZod.parse(input);
         let parseList = [];
         let metaName = "";
         let results = [];
@@ -3062,7 +3045,7 @@ async function ListVideoQualityCustom(input) {
     }
 }
 
-const ListAudioLowestInputSchema = z$1.object({
+const ListAudioLowestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
@@ -3072,7 +3055,7 @@ const ListAudioLowestInputSchema = z$1.object({
 });
 async function ListAudioLowest(input) {
     try {
-        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioLowestInputSchema.parse(input);
+        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioLowestZod.parse(input);
         let parseList = [];
         let metaName = "";
         let results = [];
@@ -3254,7 +3237,7 @@ async function ListAudioLowest(input) {
     }
 }
 
-const ListAudioHighestInputSchema = z$1.object({
+const ListAudioHighestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
@@ -3264,7 +3247,7 @@ const ListAudioHighestInputSchema = z$1.object({
 });
 async function ListAudioHighest(input) {
     try {
-        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioHighestInputSchema.parse(input);
+        const { filter, stream, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioHighestZod.parse(input);
         let parseList = [];
         let metaName = "";
         let results = [];
@@ -3446,7 +3429,7 @@ async function ListAudioHighest(input) {
     }
 }
 
-const ListAudioQualityCustomInputSchema = z$1.object({
+const ListAudioQualityCustomZod = z$1.object({
     filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
@@ -3457,7 +3440,7 @@ const ListAudioQualityCustomInputSchema = z$1.object({
 });
 async function ListAudioQualityCustom(input) {
     try {
-        const { filter, stream, quality, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioQualityCustomInputSchema.parse(input);
+        const { filter, stream, quality, verbose, folderName, playlistUrls, outputFormat = "mp3", } = ListAudioQualityCustomZod.parse(input);
         let parseList = [];
         let metaName = "";
         let results = [];
@@ -3642,7 +3625,7 @@ async function ListAudioQualityCustom(input) {
     }
 }
 
-const ListAudioVideoLowestInputSchema = z$1.object({
+const ListAudioVideoLowestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
@@ -3651,7 +3634,7 @@ const ListAudioVideoLowestInputSchema = z$1.object({
 });
 async function ListAudioVideoLowest(input) {
     try {
-        const { stream, verbose, folderName, playlistUrls, outputFormat = "webm", } = ListAudioVideoLowestInputSchema.parse(input);
+        const { stream, verbose, folderName, playlistUrls, outputFormat = "webm", } = ListAudioVideoLowestZod.parse(input);
         switch (true) {
             case playlistUrls.length === 0:
                 throw new Error("playlistUrls parameter cannot be empty");
@@ -3669,85 +3652,80 @@ async function ListAudioVideoLowest(input) {
                 else {
                     const results = [];
                     await async.eachSeries(videos, async (video) => {
-                        try {
-                            const metaBody = await Agent({ query: video.url });
-                            if (!metaBody) {
-                                throw new Error("Unable to get response from YouTube...");
-                            }
-                            const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
-                            let metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-                            const metaFold = folderName
-                                ? path.join(process.cwd(), folderName)
-                                : process.cwd();
-                            if (!fs.existsSync(metaFold))
-                                fs.mkdirSync(metaFold, { recursive: true });
-                            const proc = fluentffmpeg();
-                            const AmetaEntry = await lowEntry(metaBody.AudioStore);
-                            const VmetaEntry = await lowEntry(metaBody.VideoStore);
-                            if (AmetaEntry === undefined || VmetaEntry === undefined)
-                                return;
-                            proc.addInput(VmetaEntry.AVDownload.mediaurl);
-                            proc.addInput(AmetaEntry.AVDownload.mediaurl);
-                            proc.format(outputFormat);
-                            proc.on("start", (command) => {
-                                if (verbose)
-                                    console.log(command);
-                                progressBar({
-                                    timemark: undefined,
-                                    percent: undefined,
-                                });
-                            });
-                            proc.on("end", () => {
-                                progressBar({
-                                    timemark: undefined,
-                                    percent: undefined,
-                                });
-                            });
-                            proc.on("close", () => {
-                                progressBar({
-                                    timemark: undefined,
-                                    percent: undefined,
-                                });
-                            });
-                            proc.on("progress", (prog) => {
-                                progressBar({
-                                    timemark: prog.timemark,
-                                    percent: prog.percent,
-                                });
-                            });
-                            if (stream) {
-                                const readStream = new Readable({
-                                    read() { },
-                                });
-                                const writeStream = new Writable({
-                                    write(chunk, _encoding, callback) {
-                                        readStream.push(chunk);
-                                        callback();
-                                    },
-                                    final(callback) {
-                                        readStream.push(undefined);
-                                        callback();
-                                    },
-                                });
-                                proc.pipe(writeStream, { end: true });
-                                results.push({
-                                    stream: readStream,
-                                    filename: folderName
-                                        ? path.join(metaFold, metaName.replace("-.", "."))
-                                        : metaName.replace("-.", "."),
-                                });
-                            }
-                            else {
-                                await new Promise((resolve, reject) => {
-                                    proc.output(path.join(metaFold, metaName));
-                                    proc.on("end", () => resolve());
-                                    proc.on("error", reject);
-                                    proc.run();
-                                });
-                            }
+                        const metaBody = await Agent({ query: video.url });
+                        if (!metaBody) {
+                            throw new Error("Unable to get response from YouTube...");
                         }
-                        catch (error) {
-                            results.push(true);
+                        const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
+                        let metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
+                        const metaFold = folderName
+                            ? path.join(process.cwd(), folderName)
+                            : process.cwd();
+                        if (!fs.existsSync(metaFold))
+                            fs.mkdirSync(metaFold, { recursive: true });
+                        const proc = fluentffmpeg();
+                        const AmetaEntry = await lowEntry(metaBody.AudioStore);
+                        const VmetaEntry = await lowEntry(metaBody.VideoStore);
+                        if (AmetaEntry === undefined || VmetaEntry === undefined)
+                            return;
+                        proc.addInput(VmetaEntry.AVDownload.mediaurl);
+                        proc.addInput(AmetaEntry.AVDownload.mediaurl);
+                        proc.format(outputFormat);
+                        proc.on("start", (command) => {
+                            if (verbose)
+                                console.log(command);
+                            progressBar({
+                                timemark: undefined,
+                                percent: undefined,
+                            });
+                        });
+                        proc.on("end", () => {
+                            progressBar({
+                                timemark: undefined,
+                                percent: undefined,
+                            });
+                        });
+                        proc.on("close", () => {
+                            progressBar({
+                                timemark: undefined,
+                                percent: undefined,
+                            });
+                        });
+                        proc.on("progress", (prog) => {
+                            progressBar({
+                                timemark: prog.timemark,
+                                percent: prog.percent,
+                            });
+                        });
+                        if (stream) {
+                            const readStream = new Readable({
+                                read() { },
+                            });
+                            const writeStream = new Writable({
+                                write(chunk, _encoding, callback) {
+                                    readStream.push(chunk);
+                                    callback();
+                                },
+                                final(callback) {
+                                    readStream.push(undefined);
+                                    callback();
+                                },
+                            });
+                            proc.pipe(writeStream, { end: true });
+                            results.push({
+                                stream: readStream,
+                                filename: folderName
+                                    ? path.join(metaFold, metaName.replace("-.", "."))
+                                    : metaName.replace("-.", "."),
+                            });
+                        }
+                        else {
+                            await new Promise((resolve, reject) => {
+                                proc.output(path.join(metaFold, metaName));
+                                proc.on("end", () => resolve());
+                                proc.on("error", reject);
+                                proc.run();
+                            });
                         }
                     });
                     return results;
@@ -3768,7 +3746,7 @@ async function ListAudioVideoLowest(input) {
     }
 }
 
-const ListAudioVideoHighestInputSchema = z$1.object({
+const ListAudioVideoHighestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
@@ -3777,7 +3755,7 @@ const ListAudioVideoHighestInputSchema = z$1.object({
 });
 async function ListAudioVideoHighest(input) {
     try {
-        const { stream, verbose, folderName, playlistUrls, outputFormat = "webm", } = ListAudioVideoHighestInputSchema.parse(input);
+        const { stream, verbose, folderName, playlistUrls, outputFormat = "webm", } = ListAudioVideoHighestZod.parse(input);
         switch (true) {
             case playlistUrls.length === 0:
                 throw new Error("playlistUrls parameter cannot be empty");
@@ -3795,85 +3773,80 @@ async function ListAudioVideoHighest(input) {
                 else {
                     const results = [];
                     await async.eachSeries(videos, async (video) => {
-                        try {
-                            const metaBody = await Agent({ query: video.url });
-                            if (!metaBody) {
-                                throw new Error("Unable to get response from YouTube...");
-                            }
-                            const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
-                            let metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-                            const metaFold = folderName
-                                ? path.join(process.cwd(), folderName)
-                                : process.cwd();
-                            if (!fs.existsSync(metaFold))
-                                fs.mkdirSync(metaFold, { recursive: true });
-                            const proc = fluentffmpeg();
-                            const AmetaEntry = await bigEntry(metaBody.AudioStore);
-                            const VmetaEntry = await bigEntry(metaBody.VideoStore);
-                            if (AmetaEntry === undefined || VmetaEntry === undefined)
-                                return;
-                            proc.addInput(VmetaEntry.AVDownload.mediaurl);
-                            proc.addInput(AmetaEntry.AVDownload.mediaurl);
-                            proc.format(outputFormat);
-                            proc.on("start", (command) => {
-                                if (verbose)
-                                    console.log(command);
-                                progressBar({
-                                    timemark: undefined,
-                                    percent: undefined,
-                                });
-                            });
-                            proc.on("end", () => {
-                                progressBar({
-                                    timemark: undefined,
-                                    percent: undefined,
-                                });
-                            });
-                            proc.on("close", () => {
-                                progressBar({
-                                    timemark: undefined,
-                                    percent: undefined,
-                                });
-                            });
-                            proc.on("progress", (prog) => {
-                                progressBar({
-                                    timemark: prog.timemark,
-                                    percent: prog.percent,
-                                });
-                            });
-                            if (stream) {
-                                const readStream = new Readable({
-                                    read() { },
-                                });
-                                const writeStream = new Writable({
-                                    write(chunk, _encoding, callback) {
-                                        readStream.push(chunk);
-                                        callback();
-                                    },
-                                    final(callback) {
-                                        readStream.push(undefined);
-                                        callback();
-                                    },
-                                });
-                                proc.pipe(writeStream, { end: true });
-                                results.push({
-                                    stream: readStream,
-                                    filename: folderName
-                                        ? path.join(metaFold, metaName.replace("-.", "."))
-                                        : metaName.replace("-.", "."),
-                                });
-                            }
-                            else {
-                                await new Promise((resolve, reject) => {
-                                    proc.output(path.join(metaFold, metaName));
-                                    proc.on("end", () => resolve());
-                                    proc.on("error", reject);
-                                    proc.run();
-                                });
-                            }
+                        const metaBody = await Agent({ query: video.url });
+                        if (!metaBody) {
+                            throw new Error("Unable to get response from YouTube...");
                         }
-                        catch (error) {
-                            results.push(true);
+                        const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
+                        let metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
+                        const metaFold = folderName
+                            ? path.join(process.cwd(), folderName)
+                            : process.cwd();
+                        if (!fs.existsSync(metaFold))
+                            fs.mkdirSync(metaFold, { recursive: true });
+                        const proc = fluentffmpeg();
+                        const AmetaEntry = await bigEntry(metaBody.AudioStore);
+                        const VmetaEntry = await bigEntry(metaBody.VideoStore);
+                        if (AmetaEntry === undefined || VmetaEntry === undefined)
+                            return;
+                        proc.addInput(VmetaEntry.AVDownload.mediaurl);
+                        proc.addInput(AmetaEntry.AVDownload.mediaurl);
+                        proc.format(outputFormat);
+                        proc.on("start", (command) => {
+                            if (verbose)
+                                console.log(command);
+                            progressBar({
+                                timemark: undefined,
+                                percent: undefined,
+                            });
+                        });
+                        proc.on("end", () => {
+                            progressBar({
+                                timemark: undefined,
+                                percent: undefined,
+                            });
+                        });
+                        proc.on("close", () => {
+                            progressBar({
+                                timemark: undefined,
+                                percent: undefined,
+                            });
+                        });
+                        proc.on("progress", (prog) => {
+                            progressBar({
+                                timemark: prog.timemark,
+                                percent: prog.percent,
+                            });
+                        });
+                        if (stream) {
+                            const readStream = new Readable({
+                                read() { },
+                            });
+                            const writeStream = new Writable({
+                                write(chunk, _encoding, callback) {
+                                    readStream.push(chunk);
+                                    callback();
+                                },
+                                final(callback) {
+                                    readStream.push(undefined);
+                                    callback();
+                                },
+                            });
+                            proc.pipe(writeStream, { end: true });
+                            results.push({
+                                stream: readStream,
+                                filename: folderName
+                                    ? path.join(metaFold, metaName.replace("-.", "."))
+                                    : metaName.replace("-.", "."),
+                            });
+                        }
+                        else {
+                            await new Promise((resolve, reject) => {
+                                proc.output(path.join(metaFold, metaName));
+                                proc.on("end", () => resolve());
+                                proc.on("error", reject);
+                                proc.run();
+                            });
                         }
                     });
                     return results;

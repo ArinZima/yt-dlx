@@ -9,11 +9,13 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type ErrorResult from "../../interface/ErrorResult";
-import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type ListVideoHighestType = true | ErrorResult | StreamResult;
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
+type ListVideoHighestType = void | StreamResult;
 const ListVideoHighestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),

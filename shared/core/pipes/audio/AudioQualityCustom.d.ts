@@ -1,17 +1,17 @@
-import type ErrorResult from "../../interface/ErrorResult";
-import type StreamResult from "../../interface/StreamResult";
+/// <reference types="node" />
+import { Readable } from "stream";
 import type AudioFilters from "../../interface/AudioFilters";
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-type AudioQualities = "high" | "medium" | "low" | "ultralow";
-interface AudioQualityCustomOC {
+interface StreamResult {
+    stream: Readable;
+    filename: string;
+}
+export default function AudioQualityCustom(input: {
     query: string;
     stream?: boolean;
     folderName?: string;
-    quality: AudioQualities;
-    outputFormat?: AudioFormat;
+    quality: "high" | "medium" | "low" | "ultralow";
+    outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
     filter?: keyof AudioFilters;
-}
-type AudioQualityCustomType = Promise<true | ErrorResult | StreamResult>;
-export default function AudioQualityCustom(input: AudioQualityCustomOC): AudioQualityCustomType;
+}): Promise<void | StreamResult>;
 export {};
 //# sourceMappingURL=AudioQualityCustom.d.ts.map

@@ -9,10 +9,13 @@ import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
 import type TubeConfig from "../../interface/TubeConfig";
-import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
-type ListVideoQualityCustomType = true | StreamResult;
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
+type ListVideoQualityCustomType = void | StreamResult;
 const ListVideoQualityCustomZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),

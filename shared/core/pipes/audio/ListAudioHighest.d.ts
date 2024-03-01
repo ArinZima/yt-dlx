@@ -1,15 +1,18 @@
-import type StreamResult from "../../interface/StreamResult";
+/// <reference types="node" />
+import { Readable } from "stream";
 import type AudioFilters from "../../interface/AudioFilters";
-type AudioFormat = "mp3" | "ogg" | "flac" | "aiff";
-interface ListAudioHighestOC {
+interface StreamResult {
+    stream: Readable;
+    filename: string;
+}
+type ListAudioHighestType = void | StreamResult;
+export default function ListAudioHighest(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
     playlistUrls: string[];
-    outputFormat?: AudioFormat;
     filter?: keyof AudioFilters;
-}
-type ListAudioHighestType = true | StreamResult;
-export default function ListAudioHighest(input: ListAudioHighestOC): Promise<ListAudioHighestType[] | any>;
+    outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
+}): Promise<ListAudioHighestType[] | any>;
 export {};
 //# sourceMappingURL=ListAudioHighest.d.ts.map

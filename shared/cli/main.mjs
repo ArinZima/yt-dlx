@@ -1266,7 +1266,7 @@ var progressBar = (prog) => {
 var progressBar_default = progressBar;
 
 // core/pipes/audio/AudioLowest.ts
-var AudioLowestInputSchema = z.object({
+var AudioLowestZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -1283,7 +1283,7 @@ async function AudioLowest(input) {
       verbose,
       folderName,
       outputFormat = "mp3"
-    } = AudioLowestInputSchema.parse(input);
+    } = AudioLowestZod.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -1429,7 +1429,6 @@ async function AudioLowest(input) {
         proc.on("error", reject2);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -1460,7 +1459,7 @@ async function bigEntry(metaBody) {
   );
   return sortedByFileSize[0];
 }
-var AudioHighestInputSchema = z.object({
+var AudioHighestZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -1477,7 +1476,7 @@ async function AudioHighest(input) {
       verbose,
       folderName,
       outputFormat = "mp3"
-    } = AudioHighestInputSchema.parse(input);
+    } = AudioHighestZod.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -1623,7 +1622,6 @@ async function AudioHighest(input) {
         proc.on("error", reject2);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -1637,7 +1635,7 @@ async function AudioHighest(input) {
     }
   }
 }
-var VideoLowestInputSchema = z.object({
+var VideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -1654,7 +1652,7 @@ async function VideoLowest(input) {
       verbose,
       folderName,
       outputFormat = "mp4"
-    } = VideoLowestInputSchema.parse(input);
+    } = VideoLowestZod.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -1765,7 +1763,6 @@ async function VideoLowest(input) {
           proc.on("error", reject2);
           proc.run();
         });
-        return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -1779,7 +1776,7 @@ async function VideoLowest(input) {
     }
   }
 }
-var VideoHighestInputSchema = z.object({
+var VideoHighestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -1796,7 +1793,7 @@ async function VideoHighest(input) {
       folderName,
       outputFormat = "mp4",
       filter: filter2
-    } = VideoHighestInputSchema.parse(input);
+    } = VideoHighestZod.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -1907,7 +1904,6 @@ async function VideoHighest(input) {
           proc.on("error", reject2);
           proc.run();
         });
-        return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -1921,7 +1917,7 @@ async function VideoHighest(input) {
     }
   }
 }
-var AudioVideoLowestInputSchema = z.object({
+var AudioVideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -1936,7 +1932,7 @@ async function AudioVideoLowest(input) {
       verbose,
       folderName,
       outputFormat = "webm"
-    } = AudioVideoLowestInputSchema.parse(input);
+    } = AudioVideoLowestZod.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -2017,7 +2013,6 @@ async function AudioVideoLowest(input) {
         proc.on("error", reject2);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2031,7 +2026,7 @@ async function AudioVideoLowest(input) {
     }
   }
 }
-var AudioVideoHighestInputSchema = z.object({
+var AudioVideoHighestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -2046,7 +2041,7 @@ async function AudioVideoHighest(input) {
       verbose,
       folderName,
       outputFormat = "webm"
-    } = AudioVideoHighestInputSchema.parse(input);
+    } = AudioVideoHighestZod.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -2127,7 +2122,6 @@ async function AudioVideoHighest(input) {
         proc.on("error", reject2);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2141,7 +2135,7 @@ async function AudioVideoHighest(input) {
     }
   }
 }
-var AudioQualityCustomInputSchema = z.object({
+var AudioQualityCustomZod = z.object({
   query: z.string().min(1),
   filter: z.string().optional(),
   stream: z.boolean().optional(),
@@ -2160,22 +2154,16 @@ async function AudioQualityCustom(input) {
       quality,
       folderName,
       outputFormat = "mp3"
-    } = AudioQualityCustomInputSchema.parse(input);
+    } = AudioQualityCustomZod.parse(input);
     const metaResp = await Agent({ query });
     if (!metaResp) {
-      return {
-        message: "The specified quality was not found...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     const metaBody = metaResp.AudioStore.filter(
       (op) => op.AVDownload.formatnote === quality
     );
     if (!metaBody) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     let metaName = "";
     const title = metaResp.metaTube.title.replace(
@@ -2188,10 +2176,7 @@ async function AudioQualityCustom(input) {
     const proc = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === void 0) {
-      return {
-        message: "Unable to get response from YouTube...",
-        status: 500
-      };
+      throw new Error("Unable to get response from YouTube...");
     }
     proc.addInput(metaEntry.AVDownload.mediaurl);
     proc.addInput(metaResp.metaTube.thumbnail);
@@ -2321,7 +2306,6 @@ async function AudioQualityCustom(input) {
         proc.on("error", reject2);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2335,7 +2319,7 @@ async function AudioQualityCustom(input) {
     }
   }
 }
-var VideoLowestInputSchema2 = z.object({
+var VideoLowestZod2 = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -2352,7 +2336,7 @@ async function VideoLowest2(input) {
       verbose,
       folderName,
       outputFormat = "mp4"
-    } = VideoLowestInputSchema2.parse(input);
+    } = VideoLowestZod2.parse(input);
     const metaBody = await Agent({ query });
     if (!metaBody) {
       throw new Error("Unable to get response from YouTube...");
@@ -2463,7 +2447,6 @@ async function VideoLowest2(input) {
           proc.on("error", reject2);
           proc.run();
         });
-        return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
@@ -2477,7 +2460,7 @@ async function VideoLowest2(input) {
     }
   }
 }
-var ListVideoLowestInputSchema = z.object({
+var ListVideoLowestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -2494,7 +2477,7 @@ async function ListVideoLowest(input) {
       folderName,
       playlistUrls,
       outputFormat = "mp4"
-    } = ListVideoLowestInputSchema.parse(input);
+    } = ListVideoLowestZod.parse(input);
     let parseList = [];
     let metaName = "";
     let results = [];
@@ -2648,7 +2631,7 @@ async function ListVideoLowest(input) {
     }
   }
 }
-var ListVideoHighestInputSchema = z.object({
+var ListVideoHighestZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -2665,7 +2648,7 @@ async function ListVideoHighest(input) {
       folderName,
       playlistUrls,
       outputFormat = "mp4"
-    } = ListVideoHighestInputSchema.parse(input);
+    } = ListVideoHighestZod.parse(input);
     let parseList = [];
     let metaName = "";
     let results = [];
@@ -2819,7 +2802,7 @@ async function ListVideoHighest(input) {
     }
   }
 }
-var ListVideoQualityCustomInputSchema = z.object({
+var ListVideoQualityCustomZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -2852,7 +2835,7 @@ async function ListVideoQualityCustom(input) {
       folderName,
       playlistUrls,
       outputFormat = "mp4"
-    } = ListVideoQualityCustomInputSchema.parse(input);
+    } = ListVideoQualityCustomZod.parse(input);
     let parseList = [];
     let metaName = "";
     let results = [];
@@ -3010,7 +2993,7 @@ async function ListVideoQualityCustom(input) {
     }
   }
 }
-var ListAudioLowestInputSchema = z.object({
+var ListAudioLowestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -3027,7 +3010,7 @@ async function ListAudioLowest(input) {
       folderName,
       playlistUrls,
       outputFormat = "mp3"
-    } = ListAudioLowestInputSchema.parse(input);
+    } = ListAudioLowestZod.parse(input);
     let parseList = [];
     let metaName = "";
     let results = [];
@@ -3214,7 +3197,7 @@ async function ListAudioLowest(input) {
     }
   }
 }
-var ListAudioHighestInputSchema = z.object({
+var ListAudioHighestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -3231,7 +3214,7 @@ async function ListAudioHighest(input) {
       folderName,
       playlistUrls,
       outputFormat = "mp3"
-    } = ListAudioHighestInputSchema.parse(input);
+    } = ListAudioHighestZod.parse(input);
     let parseList = [];
     let metaName = "";
     let results = [];
@@ -3418,7 +3401,7 @@ async function ListAudioHighest(input) {
     }
   }
 }
-var ListAudioQualityCustomInputSchema = z.object({
+var ListAudioQualityCustomZod = z.object({
   filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -3437,7 +3420,7 @@ async function ListAudioQualityCustom(input) {
       folderName,
       playlistUrls,
       outputFormat = "mp3"
-    } = ListAudioQualityCustomInputSchema.parse(input);
+    } = ListAudioQualityCustomZod.parse(input);
     let parseList = [];
     let metaName = "";
     let results = [];
@@ -5449,7 +5432,7 @@ var index = {
   during: whilst$1,
   doDuring: doWhilst$1
 };
-var ListAudioVideoLowestInputSchema = z.object({
+var ListAudioVideoLowestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -5464,7 +5447,7 @@ async function ListAudioVideoLowest(input) {
       folderName,
       playlistUrls,
       outputFormat = "webm"
-    } = ListAudioVideoLowestInputSchema.parse(input);
+    } = ListAudioVideoLowestZod.parse(input);
     switch (true) {
       case playlistUrls.length === 0:
         throw new Error("playlistUrls parameter cannot be empty");
@@ -5487,83 +5470,79 @@ async function ListAudioVideoLowest(input) {
           await index.eachSeries(
             videos,
             async (video) => {
-              try {
-                const metaBody = await Agent({ query: video.url });
-                if (!metaBody) {
-                  throw new Error("Unable to get response from YouTube...");
-                }
-                const title = metaBody.metaTube.title.replace(
-                  /[^a-zA-Z0-9_]+/g,
-                  "-"
-                );
-                let metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-                if (!fs.existsSync(metaFold))
-                  fs.mkdirSync(metaFold, { recursive: true });
-                const proc = fluentffmpeg();
-                const AmetaEntry = await lowEntry(metaBody.AudioStore);
-                const VmetaEntry = await lowEntry(metaBody.VideoStore);
-                if (AmetaEntry === void 0 || VmetaEntry === void 0)
-                  return;
-                proc.addInput(VmetaEntry.AVDownload.mediaurl);
-                proc.addInput(AmetaEntry.AVDownload.mediaurl);
-                proc.format(outputFormat);
-                proc.on("start", (command) => {
-                  if (verbose)
-                    console.log(command);
-                  progressBar_default({
-                    timemark: void 0,
-                    percent: void 0
-                  });
+              const metaBody = await Agent({ query: video.url });
+              if (!metaBody) {
+                throw new Error("Unable to get response from YouTube...");
+              }
+              const title = metaBody.metaTube.title.replace(
+                /[^a-zA-Z0-9_]+/g,
+                "-"
+              );
+              let metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
+              const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
+              if (!fs.existsSync(metaFold))
+                fs.mkdirSync(metaFold, { recursive: true });
+              const proc = fluentffmpeg();
+              const AmetaEntry = await lowEntry(metaBody.AudioStore);
+              const VmetaEntry = await lowEntry(metaBody.VideoStore);
+              if (AmetaEntry === void 0 || VmetaEntry === void 0)
+                return;
+              proc.addInput(VmetaEntry.AVDownload.mediaurl);
+              proc.addInput(AmetaEntry.AVDownload.mediaurl);
+              proc.format(outputFormat);
+              proc.on("start", (command) => {
+                if (verbose)
+                  console.log(command);
+                progressBar_default({
+                  timemark: void 0,
+                  percent: void 0
                 });
-                proc.on("end", () => {
-                  progressBar_default({
-                    timemark: void 0,
-                    percent: void 0
-                  });
+              });
+              proc.on("end", () => {
+                progressBar_default({
+                  timemark: void 0,
+                  percent: void 0
                 });
-                proc.on("close", () => {
-                  progressBar_default({
-                    timemark: void 0,
-                    percent: void 0
-                  });
+              });
+              proc.on("close", () => {
+                progressBar_default({
+                  timemark: void 0,
+                  percent: void 0
                 });
-                proc.on("progress", (prog) => {
-                  progressBar_default({
-                    timemark: prog.timemark,
-                    percent: prog.percent
-                  });
+              });
+              proc.on("progress", (prog) => {
+                progressBar_default({
+                  timemark: prog.timemark,
+                  percent: prog.percent
                 });
-                if (stream) {
-                  const readStream = new Readable({
-                    read() {
-                    }
-                  });
-                  const writeStream = new Writable({
-                    write(chunk, _encoding, callback) {
-                      readStream.push(chunk);
-                      callback();
-                    },
-                    final(callback) {
-                      readStream.push(void 0);
-                      callback();
-                    }
-                  });
-                  proc.pipe(writeStream, { end: true });
-                  results.push({
-                    stream: readStream,
-                    filename: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
-                  });
-                } else {
-                  await new Promise((resolve, reject2) => {
-                    proc.output(path3.join(metaFold, metaName));
-                    proc.on("end", () => resolve());
-                    proc.on("error", reject2);
-                    proc.run();
-                  });
-                }
-              } catch (error) {
-                results.push(true);
+              });
+              if (stream) {
+                const readStream = new Readable({
+                  read() {
+                  }
+                });
+                const writeStream = new Writable({
+                  write(chunk, _encoding, callback) {
+                    readStream.push(chunk);
+                    callback();
+                  },
+                  final(callback) {
+                    readStream.push(void 0);
+                    callback();
+                  }
+                });
+                proc.pipe(writeStream, { end: true });
+                results.push({
+                  stream: readStream,
+                  filename: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+                });
+              } else {
+                await new Promise((resolve, reject2) => {
+                  proc.output(path3.join(metaFold, metaName));
+                  proc.on("end", () => resolve());
+                  proc.on("error", reject2);
+                  proc.run();
+                });
               }
             }
           );
@@ -5582,7 +5561,7 @@ async function ListAudioVideoLowest(input) {
     }
   }
 }
-var ListAudioVideoHighestInputSchema = z.object({
+var ListAudioVideoHighestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -5597,7 +5576,7 @@ async function ListAudioVideoHighest(input) {
       folderName,
       playlistUrls,
       outputFormat = "webm"
-    } = ListAudioVideoHighestInputSchema.parse(input);
+    } = ListAudioVideoHighestZod.parse(input);
     switch (true) {
       case playlistUrls.length === 0:
         throw new Error("playlistUrls parameter cannot be empty");
@@ -5620,83 +5599,79 @@ async function ListAudioVideoHighest(input) {
           await index.eachSeries(
             videos,
             async (video) => {
-              try {
-                const metaBody = await Agent({ query: video.url });
-                if (!metaBody) {
-                  throw new Error("Unable to get response from YouTube...");
-                }
-                const title = metaBody.metaTube.title.replace(
-                  /[^a-zA-Z0-9_]+/g,
-                  "-"
-                );
-                let metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-                const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-                if (!fs.existsSync(metaFold))
-                  fs.mkdirSync(metaFold, { recursive: true });
-                const proc = fluentffmpeg();
-                const AmetaEntry = await bigEntry(metaBody.AudioStore);
-                const VmetaEntry = await bigEntry(metaBody.VideoStore);
-                if (AmetaEntry === void 0 || VmetaEntry === void 0)
-                  return;
-                proc.addInput(VmetaEntry.AVDownload.mediaurl);
-                proc.addInput(AmetaEntry.AVDownload.mediaurl);
-                proc.format(outputFormat);
-                proc.on("start", (command) => {
-                  if (verbose)
-                    console.log(command);
-                  progressBar_default({
-                    timemark: void 0,
-                    percent: void 0
-                  });
+              const metaBody = await Agent({ query: video.url });
+              if (!metaBody) {
+                throw new Error("Unable to get response from YouTube...");
+              }
+              const title = metaBody.metaTube.title.replace(
+                /[^a-zA-Z0-9_]+/g,
+                "-"
+              );
+              let metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
+              const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
+              if (!fs.existsSync(metaFold))
+                fs.mkdirSync(metaFold, { recursive: true });
+              const proc = fluentffmpeg();
+              const AmetaEntry = await bigEntry(metaBody.AudioStore);
+              const VmetaEntry = await bigEntry(metaBody.VideoStore);
+              if (AmetaEntry === void 0 || VmetaEntry === void 0)
+                return;
+              proc.addInput(VmetaEntry.AVDownload.mediaurl);
+              proc.addInput(AmetaEntry.AVDownload.mediaurl);
+              proc.format(outputFormat);
+              proc.on("start", (command) => {
+                if (verbose)
+                  console.log(command);
+                progressBar_default({
+                  timemark: void 0,
+                  percent: void 0
                 });
-                proc.on("end", () => {
-                  progressBar_default({
-                    timemark: void 0,
-                    percent: void 0
-                  });
+              });
+              proc.on("end", () => {
+                progressBar_default({
+                  timemark: void 0,
+                  percent: void 0
                 });
-                proc.on("close", () => {
-                  progressBar_default({
-                    timemark: void 0,
-                    percent: void 0
-                  });
+              });
+              proc.on("close", () => {
+                progressBar_default({
+                  timemark: void 0,
+                  percent: void 0
                 });
-                proc.on("progress", (prog) => {
-                  progressBar_default({
-                    timemark: prog.timemark,
-                    percent: prog.percent
-                  });
+              });
+              proc.on("progress", (prog) => {
+                progressBar_default({
+                  timemark: prog.timemark,
+                  percent: prog.percent
                 });
-                if (stream) {
-                  const readStream = new Readable({
-                    read() {
-                    }
-                  });
-                  const writeStream = new Writable({
-                    write(chunk, _encoding, callback) {
-                      readStream.push(chunk);
-                      callback();
-                    },
-                    final(callback) {
-                      readStream.push(void 0);
-                      callback();
-                    }
-                  });
-                  proc.pipe(writeStream, { end: true });
-                  results.push({
-                    stream: readStream,
-                    filename: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
-                  });
-                } else {
-                  await new Promise((resolve, reject2) => {
-                    proc.output(path3.join(metaFold, metaName));
-                    proc.on("end", () => resolve());
-                    proc.on("error", reject2);
-                    proc.run();
-                  });
-                }
-              } catch (error) {
-                results.push(true);
+              });
+              if (stream) {
+                const readStream = new Readable({
+                  read() {
+                  }
+                });
+                const writeStream = new Writable({
+                  write(chunk, _encoding, callback) {
+                    readStream.push(chunk);
+                    callback();
+                  },
+                  final(callback) {
+                    readStream.push(void 0);
+                    callback();
+                  }
+                });
+                proc.pipe(writeStream, { end: true });
+                results.push({
+                  stream: readStream,
+                  filename: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
+                });
+              } else {
+                await new Promise((resolve, reject2) => {
+                  proc.output(path3.join(metaFold, metaName));
+                  proc.on("end", () => resolve());
+                  proc.on("error", reject2);
+                  proc.run();
+                });
               }
             }
           );

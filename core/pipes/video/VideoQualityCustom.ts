@@ -7,9 +7,12 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type StreamResult from "../../interface/StreamResult";
 import type VideoFilters from "../../interface/VideoFilters";
 
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
 const VideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -39,7 +42,7 @@ export default async function VideoLowest(input: {
     | "8640p"
     | "12000p";
   outputFormat?: "mp4" | "avi" | "mov";
-}): Promise<true | StreamResult> {
+}): Promise<void | StreamResult> {
   try {
     const {
       query,
@@ -162,7 +165,6 @@ export default async function VideoLowest(input: {
           proc.on("error", reject);
           proc.run();
         });
-        return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {

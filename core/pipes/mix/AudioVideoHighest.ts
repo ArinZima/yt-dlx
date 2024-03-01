@@ -7,8 +7,11 @@ import fluentffmpeg from "fluent-ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import { Readable, Writable } from "stream";
 import progressBar from "../../base/progressBar";
-import type StreamResult from "../../interface/StreamResult";
 
+interface StreamResult {
+  stream: Readable;
+  filename: string;
+}
 const AudioVideoHighestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -22,7 +25,7 @@ export default async function AudioVideoHighest(input: {
   verbose?: boolean;
   folderName?: string;
   outputFormat?: "webm" | "avi" | "mov";
-}): Promise<true | StreamResult> {
+}): Promise<void | StreamResult> {
   try {
     const {
       query,
@@ -113,7 +116,6 @@ export default async function AudioVideoHighest(input: {
         proc.on("error", reject);
         proc.run();
       });
-      return true;
     }
   } catch (error) {
     if (error instanceof ZodError) {
