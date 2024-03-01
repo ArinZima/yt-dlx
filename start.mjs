@@ -32,7 +32,7 @@ const core = {
   "test:cli":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
   "test:full":
-    "tsup --config 'tsup.config.ts' core --outDir '.temp' && node ./.temp/__tests__/runner.js && rm -rf .temp",
+    "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/runner.js",
   "test:spec":
     "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js",
 };

@@ -29,8 +29,8 @@
     "cli": "bun link && bun test:cli && bun unlink",
     "test": "bun test:bun && bun test:cli",
     "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
-    "test:spec": "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js",
-    "test:full": "rm -rf __spec__ && tsup --config 'tsup.config.ts' core/__tests__ --outDir '__spec__' && node __spec__/__tests__/runner.js"
+    "test:full": "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/runner.js",
+    "test:spec": "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js"
   },
   "files": [
     "util",
