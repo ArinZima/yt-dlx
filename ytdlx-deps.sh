@@ -17,6 +17,8 @@ run_command() {
     local command="$1"
     local error_message="$2"
     if [ "$use_sudo" = true ]; then
+        echo "Enter your password for sudo:"
+        sudo -v || { log_error "Failed to obtain sudo privileges."; exit 1; }
         command="sudo $command"
     fi
     if ! eval "$command"; then
@@ -37,8 +39,8 @@ if [ -x "$(command -v apt-get)" ]; then
     run_command "rm -rf /var/lib/apt/lists/*" "Failed to clean cache"
 elif [ -x "$(command -v pacman)" ]; then
     log_info "Detected Arch-based system"
-    run_command "yes | pacman -Syu" "Failed to update system with pacman"
-    run_command "yes | pacman -S ffmpeg opus-tools" "Failed to install ffmpeg opus-tools in arch"
+    run_command "pacman -Syu --noconfirm" "Failed to update system with pacman"
+    run_command "pacman -S --noconfirm ffmpeg opus-tools" "Failed to install ffmpeg opus-tools in arch"
     run_command "rm -rf /var/cache/pkgfile/*" "Failed to clean cache"
 fi
 echo -e "${GREEN}ytdlx-deps.sh execution completed${NC}"
