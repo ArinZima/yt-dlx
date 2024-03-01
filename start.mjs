@@ -29,9 +29,10 @@ const core = {
   "update:client": "cd client && bun install --latest && bun update --latest",
   cli: "bun link && bun test:cli && bun unlink",
   test: "bun test:bun && bun test:cli",
-  "test:bun": "bun test --timeout 120000 --bail --watch",
   "test:cli":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
+  "test:full":
+    "tsup --config 'tsup.config.ts' core --outDir '.temp' && node ./.temp/__tests__/runner.js && rm -rf .temp",
   "test:spec":
     "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js",
 };
