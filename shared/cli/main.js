@@ -1283,7 +1283,7 @@ var progressBar = (prog) => {
     color = colors29__default.default.yellow;
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
-    color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("TIMEMARK: ") + prog.timemark
+    color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% " + color("@timemark: ") + prog.timemark
   );
   if (prog.percent >= 99)
     process.stdout.write("\n");

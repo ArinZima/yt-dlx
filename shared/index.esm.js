@@ -1388,7 +1388,7 @@ const progressBar = (prog) => {
         " " +
         prog.percent.toFixed(2) +
         "% " +
-        color("TIMEMARK: ") +
+        color("@timemark: ") +
         prog.timemark);
     if (prog.percent >= 99)
         process.stdout.write("\n");
