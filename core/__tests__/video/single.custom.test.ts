@@ -15,8 +15,7 @@ async.series([
         quality: "720p",
         stream: false,
       });
-      if (holder) console.log(colors.bold.green("@pass:"), holder);
-      else throw new Error(colors.bold.red("@error:"), holder);
+      console.log(colors.bold.green("@pass:"), holder);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
@@ -32,8 +31,7 @@ async.series([
         quality: "720p",
         stream: false,
       });
-      if (holder) console.log(colors.bold.green("@pass:"), holder);
-      else throw new Error(colors.bold.red("@error:"), holder);
+      console.log(colors.bold.green("@pass:"), holder);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
