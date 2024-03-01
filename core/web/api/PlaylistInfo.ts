@@ -153,7 +153,8 @@ export default async function PlaylistInfo(
         });
       });
       spinnies.succeed(spin, {
-        text: colors.green("@info: ") + colors.white("scrapping done"),
+        text:
+          colors.green("@info: ") + colors.white("scrapping done for ") + query,
       });
       await page.close();
       await browser.close();

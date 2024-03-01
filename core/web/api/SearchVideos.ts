@@ -147,7 +147,10 @@ export default async function SearchVideos(
             });
           });
           spinnies.succeed(spin, {
-            text: colors.green("@info: ") + colors.white("scrapping done"),
+            text:
+              colors.green("@info: ") +
+              colors.white("scrapping done for ") +
+              query,
           });
           if (page) await page.close();
           if (browser) await browser.close();
@@ -213,7 +216,10 @@ export default async function SearchVideos(
             });
           });
           spinnies.succeed(spin, {
-            text: colors.green("@info: ") + colors.white("scrapping done"),
+            text:
+              colors.green("@info: ") +
+              colors.white("scrapping done for ") +
+              query,
           });
           if (page) await page.close();
           if (browser) await browser.close();

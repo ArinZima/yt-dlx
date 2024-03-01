@@ -137,7 +137,8 @@ export default async function VideoInfo(
         videoLink: "https://www.youtube.com/watch?v=" + videoId,
       };
       spinnies.succeed(spin, {
-        text: colors.green("@info: ") + colors.white("scrapping done"),
+        text:
+          colors.green("@info: ") + colors.white("scrapping done for ") + query,
       });
       await page.close();
       await browser.close();
