@@ -13,14 +13,9 @@ import AudioVideoHighest from "./pipes/mix/AudioVideoHighest";
 import AudioQualityCustom from "./pipes/audio/AudioQualityCustom";
 import VideoQualityCustom from "./pipes/video/VideoQualityCustom";
 
-import ListVideoLowest from "./pipes/video/ListVideoLowest";
-import ListVideoHighest from "./pipes/video/ListVideoHighest";
-import ListVideoQualityCustom from "./pipes/video/ListVideoQualityCustom";
 import ListAudioLowest from "./pipes/audio/ListAudioLowest";
 import ListAudioHighest from "./pipes/audio/ListAudioHighest";
 import ListAudioQualityCustom from "./pipes/audio/ListAudioQualityCustom";
-import ListAudioVideoLowest from "./pipes/mix/ListAudioVideoLowest";
-import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 
 const ytdlx = {
   search: {
@@ -52,18 +47,14 @@ const ytdlx = {
       highest: VideoHighest,
       custom: VideoQualityCustom,
     },
-    playlist: {
-      lowest: ListVideoLowest,
-      highest: ListVideoHighest,
-      custom: ListVideoQualityCustom,
-    },
+    playlist: {},
   },
   audio_video: {
     single: {
       lowest: AudioVideoLowest,
       highest: AudioVideoHighest,
     },
-    playlist: { lowest: ListAudioVideoLowest, highest: ListAudioVideoHighest },
+    playlist: {},
   },
 };
 
