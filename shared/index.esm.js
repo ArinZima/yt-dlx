@@ -2052,18 +2052,15 @@ async function AudioVideoLowest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const proc = fluentffmpeg();
-        const AmetaEntry = await lowEntry(metaBody.AudioStore);
-        const VmetaEntry = await lowEntry(metaBody.VideoStore);
+        const [AmetaEntry, VmetaEntry] = await Promise.all([
+            lowEntry(metaBody.AudioStore),
+            lowEntry(metaBody.VideoStore),
+        ]);
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         proc.addInput(VmetaEntry.AVDownload.mediaurl);
         proc.addInput(AmetaEntry.AVDownload.mediaurl);
-        proc.addOutputOption("-spatial-aq", "1");
-        proc.addOutputOption("-preset", "slow");
-        proc.addOutputOption("-level:v", "4.2");
-        proc.addOutputOption("-rc", "vbr_hq");
-        proc.addOutputOption("-b:v", "10M");
         proc.addOutputOption("-shortest");
         proc.format(outputFormat);
         proc.on("start", (command) => {
@@ -2163,19 +2160,16 @@ async function AudioVideoHighest(input) {
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
         const proc = fluentffmpeg();
-        const AmetaEntry = await bigEntry(metaBody.AudioStore);
-        const VmetaEntry = await bigEntry(metaBody.VideoStore);
+        const [AmetaEntry, VmetaEntry] = await Promise.all([
+            bigEntry(metaBody.AudioStore),
+            bigEntry(metaBody.VideoStore),
+        ]);
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
         proc.addInput(VmetaEntry.AVDownload.mediaurl);
         proc.addInput(AmetaEntry.AVDownload.mediaurl);
-        proc.addOutputOption("-spatial-aq", "1");
-        proc.addOutputOption("-preset", "slow");
-        proc.addOutputOption("-level:v", "4.2");
-        proc.addOutputOption("-rc", "vbr_hq");
-        proc.addOutputOption("-b:v", "10M");
-        proc.addOutputOption("-shortest");
+        proc.addOption("-shortest");
         proc.format(outputFormat);
         proc.on("start", (command) => {
             if (verbose)
