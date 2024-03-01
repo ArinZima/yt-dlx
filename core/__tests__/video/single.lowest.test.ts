@@ -1,87 +1,97 @@
-// import * as fs from "fs";
-// import ytdlx from "../..";
-// import fsx from "fs-extra";
-// import colors from "colors";
-// import * as bun from "bun:test";
-// // =======================================================[PASS-TEST]=======================================================
-// bun.test(colors.blue("\n\n@tesing: ") + "AutoDownloadTest()", async () => {
-// try {
-// let holder: any;
-// console.log(colors.bold.yellow("@test:"), "ytdlx.video.single.lowest()");
-// console.log(colors.bold.yellow("@info:"), "stream: false");
-// holder = await ytdlx.video.single.lowest({
-// query: "sQEgklEwhSo",
-// outputFormat: "mp4",
-// folderName: "video",
-// stream: false,
-// });
-// if (holder) {
-// console.log(colors.bold.green("@pass:"), holder);
-// await fsx.remove("video");
-// } else {
-// await fsx.remove("video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// console.log(colors.bold.yellow("@test:"), "ytdlx.video.single.lowest()");
-// console.log(colors.bold.yellow("@info:"), "stream: false");
-// holder = await ytdlx.video.single.lowest({
-// query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
-// outputFormat: "mov",
-// filter: "grayscale",
-// folderName: "video",
-// stream: false,
-// });
-// if (holder) {
-// console.log(colors.bold.green("@pass:"), holder);
-// await fsx.remove("video");
-// } else {
-// await fsx.remove("video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// } catch (error) {
-// await fsx.remove("video");
-// throw (colors.bold.red("@error:"), error);
-// }
-// });
-// // =======================================================[PASS-TEST]=======================================================
-// bun.test(colors.blue("\n\n@tesing: ") + "StreamingTest()", async () => {
-// try {
-// let holder: any;
-// console.log(colors.bold.yellow("@test:"), "ytdlx.video.single.lowest()");
-// console.log(colors.bold.yellow("@info:"), "stream: true");
-// holder = await ytdlx.video.single.lowest({
-// query: "sQEgklEwhSo",
-// outputFormat: "avi",
-// folderName: "video",
-// stream: true,
-// });
-// if (holder.stream && holder.filename) {
-// holder.stream.pipe(fs.createWriteStream(holder.filename));
-// console.log(colors.bold.green("@pass:"), holder.filename);
-// await fsx.remove("video");
-// } else {
-// await fsx.remove("video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// console.log(colors.bold.yellow("@test:"), "ytdlx.video.single.lowest()");
-// console.log(colors.bold.yellow("@info:"), "stream: true");
-// holder = await ytdlx.video.single.lowest({
-// query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
-// outputFormat: "mp4",
-// filter: "invert",
-// folderName: "video",
-// stream: true,
-// });
-// if (holder.stream && holder.filename) {
-// holder.stream.pipe(fs.createWriteStream(holder.filename));
-// console.log(colors.bold.green("@pass:"), holder.filename);
-// await fsx.remove("video");
-// } else {
-// await fsx.remove("video");
-// throw (colors.bold.red("@error:"), holder);
-// }
-// } catch (error) {
-// await fsx.remove("video");
-// throw (colors.bold.red("@error:"), error);
-// }
-// });
+import * as fs from "fs";
+import ytdlx from "../..";
+import fsx from "fs-extra";
+import colors from "colors";
+import * as async from "async";
+
+let holder: any;
+
+async.series([
+  async function () {
+    try {
+      holder = await ytdlx.video.single.lowest({
+        folderName: ".temp/video",
+        query: "sQEgklEwhSo",
+        outputFormat: "mp4",
+        stream: false,
+      });
+      if (holder) {
+        console.log(colors.bold.green("@pass:"), holder);
+        await fsx.remove(".temp/video");
+      } else {
+        await fsx.remove(".temp/video");
+        throw (colors.bold.red("@error:"), holder);
+      }
+    } catch (error: any) {
+      await fsx.remove(".temp/video");
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  // =========================[BREAK-TEST]=========================
+  async function () {
+    try {
+      holder = await ytdlx.video.single.lowest({
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        folderName: ".temp/video",
+        outputFormat: "mov",
+        filter: "grayscale",
+        stream: false,
+      });
+      if (holder) {
+        console.log(colors.bold.green("@pass:"), holder);
+        await fsx.remove(".temp/video");
+      } else {
+        await fsx.remove(".temp/video");
+        throw (colors.bold.red("@error:"), holder);
+      }
+    } catch (error: any) {
+      await fsx.remove(".temp/video");
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  // =========================[BREAK-TEST]=========================
+  async function () {
+    try {
+      holder = await ytdlx.video.single.lowest({
+        folderName: ".temp/video",
+        query: "sQEgklEwhSo",
+        outputFormat: "avi",
+        stream: true,
+      });
+      if (holder.stream && holder.filename) {
+        holder.stream.pipe(fs.createWriteStream(holder.filename));
+        console.log(colors.bold.green("@pass:"), holder.filename);
+        await fsx.remove(".temp/video");
+      } else {
+        await fsx.remove(".temp/video");
+        throw (colors.bold.red("@error:"), holder);
+      }
+    } catch (error: any) {
+      await fsx.remove(".temp/video");
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+  // =========================[BREAK-TEST]=========================
+  async function () {
+    try {
+      holder = await ytdlx.video.single.lowest({
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        folderName: ".temp/video",
+        outputFormat: "mp4",
+        filter: "invert",
+        stream: true,
+      });
+      if (holder.stream && holder.filename) {
+        holder.stream.pipe(fs.createWriteStream(holder.filename));
+        console.log(colors.bold.green("@pass:"), holder.filename);
+        await fsx.remove(".temp/video");
+      } else {
+        await fsx.remove(".temp/video");
+        throw (colors.bold.red("@error:"), holder);
+      }
+    } catch (error: any) {
+      await fsx.remove(".temp/video");
+      throw new Error(colors.bold.red("@error:"), error);
+    }
+  },
+]);

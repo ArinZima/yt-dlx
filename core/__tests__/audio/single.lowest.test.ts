@@ -16,14 +16,14 @@ async.series([
       });
       if (holder) {
         console.log(colors.bold.green("@pass:"), holder);
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         return holder;
       } else {
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         throw new Error(colors.bold.red("@error:"), holder);
       }
     } catch (error: any) {
-      await fsx.remove("audio");
+      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
@@ -39,14 +39,14 @@ async.series([
       });
       if (holder) {
         console.log(colors.bold.green("@pass:"), holder);
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         return holder;
       } else {
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         throw new Error(colors.bold.red("@error:"), holder);
       }
     } catch (error: any) {
-      await fsx.remove("audio");
+      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
@@ -62,14 +62,14 @@ async.series([
       if (holder.stream && holder.filename) {
         holder.stream.pipe(fs.createWriteStream(holder.filename));
         console.log(colors.bold.green("@pass:"), holder.filename);
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         return holder;
       } else {
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         throw new Error(colors.bold.red("@error:"), holder);
       }
     } catch (error: any) {
-      await fsx.remove("audio");
+      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
@@ -86,14 +86,14 @@ async.series([
       if (holder.stream && holder.filename) {
         holder.stream.pipe(fs.createWriteStream(holder.filename));
         console.log(colors.bold.green("@pass:"), holder.filename);
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         return holder;
       } else {
-        await fsx.remove("audio");
+        await fsx.remove(".temp/audio");
         throw new Error(colors.bold.red("@error:"), holder);
       }
     } catch (error: any) {
-      await fsx.remove("audio");
+      await fsx.remove(".temp/audio");
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
