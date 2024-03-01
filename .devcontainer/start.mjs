@@ -9,8 +9,8 @@ const colors = {
 };
 
 const core = {
+  remake: "bun clean && bun make && bun run update && bun run build",
   rerun: "bun ./.devcontainer/server.mjs & bun ./.devcontainer/rerun.mjs",
-  remake: "bun clean && bun make && bun install --latest && bun run build",
   upload:
     "bun remake && bun run test && npm pkg fix && npm publish --access=public && bun update",
   clean: "bun clean:base && bun clean:client",
