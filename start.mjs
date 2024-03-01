@@ -22,8 +22,8 @@ const core = {
   "make:deps": "chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh",
   build: "bun run build:base && bun run build:client",
   "build:base":
-    "tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
-  "build:client": "cd client && npm run build",
+    "rm -rf shared .temp && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
+  "build:client": "cd client && rm -rf .next .temp &&  npm run build",
   update: "bun make && bun update:base && bun update:client",
   "update:base": "bun install --latest && bun update --latest",
   "update:client": "cd client && bun install --latest && bun update --latest",
