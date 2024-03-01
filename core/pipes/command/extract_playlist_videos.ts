@@ -2,6 +2,7 @@ import colors from "colors";
 import web from "../../web";
 import * as async from "async";
 import { ZodError } from "zod";
+import ytdlx from "../../base/Agent";
 import YouTubeID from "../../web/YouTubeId";
 import type { PlaylistInfoType } from "../../web/";
 

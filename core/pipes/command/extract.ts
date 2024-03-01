@@ -1,8 +1,8 @@
-import Engine from "../../base/Agent";
+import ytdlx from "../../base/Agent";
 
 export default async function extract({ query }: { query: string }) {
   try {
-    const metaBody = await Engine({ query });
+    const metaBody = await ytdlx({ query });
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
