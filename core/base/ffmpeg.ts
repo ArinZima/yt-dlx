@@ -5,12 +5,6 @@ import { execSync } from "child_process";
 
 export default async function ffmpeg(): Promise<fluentffmpeg.FfmpegCommand> {
   let proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
-  proc.addOutputOption("-spatial-aq", "1");
-  proc.addOutputOption("-preset", "slow");
-  proc.addOutputOption("-level:v", "4.2");
-  proc.addOutputOption("-threads", "0");
-  proc.addOutputOption("-rc", "vbr_hq");
-  proc.addOutputOption("-b:v", "10M");
   try {
     const ffprobePath = execSync("which ffprobe").toString().trim();
     const ffmpegPath = execSync("which ffmpeg").toString().trim();
@@ -35,7 +29,7 @@ export default async function ffmpeg(): Promise<fluentffmpeg.FfmpegCommand> {
         "An error occurred while locating ffmpeg & ffprobe executables."
     );
   }
-  proc.addOutputOption("-threads", "0");
+  proc.addOption("-threads", "0");
   return proc;
 }
 /**
@@ -44,7 +38,7 @@ export default async function ffmpeg(): Promise<fluentffmpeg.FfmpegCommand> {
  * .toString().trim();
  * if (hasGPU) {
  * console.log(colors.green("@ffmpegGPU:"), hasGPU);
- * proc.addOutputOption("-c:v", "h264_nvenc");
+ * proc.addOption("-c:v", "h264_nvenc");
  * } else console.log(colors.yellow("@ffmpegGPU:"), "no GPU detected.");
  *
  */
