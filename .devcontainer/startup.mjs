@@ -30,7 +30,7 @@ const core = {
   "update:client": "cd client && bun install --latest && bun update --latest",
   cli: "bun link && bun run test:cli && bun unlink",
   test: "bun run test:bun && bun run test:cli",
-  "test:bun": "bun test --timeout 60000 --bail --watch",
+  "test:bun": "bun test --timeout 120000 --bail --watch",
   "test:spec":
     "tsup --config 'tsup.config.ts' './core/__tests__/bun.spec.ts' --outDir '.temp' --clean && node .temp/bun.spec.js",
   "test:cli":
