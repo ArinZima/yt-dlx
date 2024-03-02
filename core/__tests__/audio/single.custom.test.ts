@@ -4,17 +4,25 @@ import colors from "colors";
 import * as async from "async";
 
 let holder: any;
+const quals: ("high" | "medium" | "low" | "ultralow")[] = [
+  "high",
+  "medium",
+  "low",
+  "ultralow",
+];
 async.series([
   async () => {
     try {
-      holder = await ytdlx.audio.custom({
-        folderName: ".temp/audio",
-        query: "sQEgklEwhSo",
-        quality: "medium",
-        verbose: true,
-        stream: false,
-      });
-      console.log(colors.bold.green("@pass:"), true);
+      for (const quality of quals) {
+        holder = await ytdlx.audio.custom({
+          folderName: ".temp/audio",
+          query: "sQEgklEwhSo",
+          verbose: true,
+          stream: false,
+          quality,
+        });
+        console.log(colors.bold.green("@pass:"), true);
+      }
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
