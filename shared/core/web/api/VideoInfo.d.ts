@@ -1,5 +1,6 @@
 export interface InputYouTube {
     query: string;
+    verbose?: boolean;
     screenshot?: boolean;
 }
 export interface VideoInfoType {

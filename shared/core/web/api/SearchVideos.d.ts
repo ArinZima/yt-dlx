@@ -1,5 +1,6 @@
 export interface IpOp {
     query: string;
+    verbose?: boolean;
     screenshot?: boolean;
     type: keyof {
         video: "video";

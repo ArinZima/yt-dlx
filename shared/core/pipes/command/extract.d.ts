@@ -1,5 +1,6 @@
-export default function extract({ query }: {
+export default function extract({ query, verbose, }: {
     query: string;
+    verbose?: boolean;
 }): Promise<{
     audio_data: import("../../interface/TubeConfig").default[];
     video_data: import("../../interface/TubeConfig").default[];

@@ -88,11 +88,11 @@ function YouTubeID(videoLink) {
 }
 var browser;
 var page;
-async function crawler() {
+async function crawler(verbose) {
   try {
     browser = await puppeteer__default.default.launch({
+      headless: verbose ? false : true,
       userDataDir: "others",
-      headless: false,
       args: [
         "--no-zygote",
         "--incognito",
@@ -122,7 +122,6 @@ async function crawler() {
 // core/web/api/SearchVideos.ts
 async function SearchVideos(input) {
   try {
-    await crawler();
     const QuerySchema = z4.z.object({
       query: z4.z.string().min(1).refine(
         async (query2) => {
@@ -133,9 +132,11 @@ async function SearchVideos(input) {
           message: "Query must not be a YouTube video/Playlist link"
         }
       ),
+      verbose: z4.z.boolean().optional(),
       screenshot: z4.z.boolean().optional()
     });
-    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const { query, screenshot, verbose } = await QuerySchema.parseAsync(input);
+    await crawler(verbose);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -284,7 +285,6 @@ process.on("uncaughtException", async () => await closers(browser));
 process.on("unhandledRejection", async () => await closers(browser));
 async function PlaylistInfo(input) {
   try {
-    await crawler();
     let query;
     const spinnies = new spinClient__default.default();
     const QuerySchema = z4.z.object({
@@ -316,9 +316,11 @@ async function PlaylistInfo(input) {
           message: "Query must be a valid YouTube Playlist Link or ID."
         }
       ),
+      verbose: z4.z.boolean().optional(),
       screenshot: z4.z.boolean().optional()
     });
-    const { screenshot } = await QuerySchema.parseAsync(input);
+    const { screenshot, verbose } = await QuerySchema.parseAsync(input);
+    await crawler(verbose);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -415,7 +417,6 @@ process.on("uncaughtException", async () => await closers(browser));
 process.on("unhandledRejection", async () => await closers(browser));
 async function VideoInfo(input) {
   try {
-    await crawler();
     let query;
     const spinnies = new spinClient__default.default();
     const QuerySchema = z4.z.object({
@@ -447,9 +448,11 @@ async function VideoInfo(input) {
           message: "Query must be a valid YouTube video Link or ID."
         }
       ),
+      verbose: z4.z.boolean().optional(),
       screenshot: z4.z.boolean().optional()
     });
-    const { screenshot } = await QuerySchema.parseAsync(input);
+    const { screenshot, verbose } = await QuerySchema.parseAsync(input);
+    await crawler(verbose);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -821,7 +824,8 @@ var version = "3.0.6";
 
 // core/base/Agent.ts
 async function Agent({
-  query
+  query,
+  verbose
 }) {
   let respEngine = void 0;
   let videoId = await YouTubeID(query);
@@ -830,6 +834,7 @@ async function Agent({
   if (!videoId) {
     TubeBody = await web_default.search.SearchVideos({
       type: "video",
+      verbose,
       query
     });
     if (!TubeBody[0]) {
@@ -845,7 +850,10 @@ async function Agent({
       respEngine = await Engine(TubeBody[0].videoLink);
     }
   } else {
-    TubeBody = await web_default.search.VideoInfo({ query });
+    TubeBody = await web_default.search.VideoInfo({
+      verbose,
+      query
+    });
     if (!TubeBody) {
       throw new Error(
         colors23__default.default.red("@error: ") + "Unable to get response from YouTube..."
@@ -868,7 +876,10 @@ async function Agent({
 }
 
 // core/pipes/command/extract.ts
-async function extract({ query }) {
+async function extract({
+  query,
+  verbose
+}) {
   try {
     let calculateUploadAgo2 = function(days) {
       const years = Math.floor(days / 365);
@@ -899,7 +910,7 @@ async function extract({ query }) {
       return `${count}`;
     };
     var calculateUploadAgo = calculateUploadAgo2, calculateVideoDuration = calculateVideoDuration2, formatCount = formatCount2;
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",
@@ -974,13 +985,14 @@ async function extract({ query }) {
   }
 }
 function list_formats({
-  query
+  query,
+  verbose
 }) {
   return new Promise(async (resolve, reject2) => {
     try {
       const zval = z4__namespace.object({
         query: z4__namespace.string().min(1)
-      }).parse({ query });
+      }).parse({ query, verbose });
       const EnResp = await Agent(zval);
       if (!EnResp)
         return reject2("Unable to get response from YouTube...");
@@ -1866,7 +1878,7 @@ async function AudioLowest(input) {
       folderName,
       outputFormat = "mp3"
     } = AudioLowestZod.parse(input);
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
     let metaName = "";
@@ -2048,7 +2060,7 @@ async function AudioHighest(input) {
       folderName,
       outputFormat = "mp3"
     } = AudioHighestZod.parse(input);
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
     let metaName = "";
@@ -2211,7 +2223,7 @@ async function VideoLowest(input) {
       folderName,
       outputFormat = "mp4"
     } = VideoLowestZod.parse(input);
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
     let metaName = "";
@@ -2338,7 +2350,7 @@ async function VideoHighest(input) {
       outputFormat = "mp4",
       filter: filter2
     } = VideoHighestZod.parse(input);
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
     const title = metaBody.metaTube.title.replace(
@@ -2463,7 +2475,7 @@ async function AudioVideoLowest(input) {
       folderName,
       outputFormat = "webm"
     } = AudioVideoLowestZod.parse(input);
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
     const title = metaBody.metaTube.title.replace(
@@ -2559,7 +2571,7 @@ async function AudioVideoHighest(input) {
       folderName,
       outputFormat = "webm"
     } = AudioVideoHighestZod.parse(input);
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
     const title = metaBody.metaTube.title.replace(
@@ -2659,7 +2671,7 @@ async function AudioQualityCustom(input) {
       folderName,
       outputFormat = "mp3"
     } = AudioQualityCustomZod.parse(input);
-    const metaResp = await Agent({ query });
+    const metaResp = await Agent({ query, verbose });
     if (!metaResp) {
       throw new Error("Unable to get response from YouTube...");
     }
@@ -2828,7 +2840,7 @@ async function VideoLowest2(input) {
       folderName,
       outputFormat = "mp4"
     } = VideoLowestZod2.parse(input);
-    const metaBody = await Agent({ query });
+    const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
     let metaName = "";

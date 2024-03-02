@@ -6,6 +6,7 @@ import fluentffmpeg from 'fluent-ffmpeg';
 
 interface InputYouTube$1 {
     query: string;
+    verbose?: boolean;
     screenshot?: boolean;
 }
 interface VideoInfoType {
@@ -21,6 +22,7 @@ declare function VideoInfo(input: InputYouTube$1): Promise<VideoInfoType | undef
 
 interface IpOp {
     query: string;
+    verbose?: boolean;
     screenshot?: boolean;
     type: keyof {
         video: "video";
@@ -50,6 +52,7 @@ declare function SearchVideos(input: IpOp): Promise<TypeVideo[] | TypePlaylist[]
 
 interface InputYouTube {
     query: string;
+    verbose?: boolean;
     screenshot?: boolean;
 }
 interface PlaylistVideos {
@@ -107,8 +110,9 @@ interface TubeConfig {
     };
 }
 
-declare function extract({ query }: {
+declare function extract({ query, verbose, }: {
     query: string;
+    verbose?: boolean;
 }): Promise<{
     audio_data: TubeConfig[];
     video_data: TubeConfig[];
@@ -159,8 +163,9 @@ declare function extract({ query }: {
     status: number;
 }>;
 
-declare function list_formats({ query, }: {
+declare function list_formats({ query, verbose, }: {
     query: string;
+    verbose?: boolean;
 }): Promise<any>;
 
 interface EngineData {
@@ -300,10 +305,11 @@ declare function AudioVideoHighest(input: {
 declare function AudioQualityCustom(input: {
     query: string;
     stream?: boolean;
+    verbose?: boolean;
     folderName?: string;
+    filter?: keyof AudioFilters;
     quality: "high" | "medium" | "low" | "ultralow";
     outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-    filter?: keyof AudioFilters;
 }): Promise<void | {
     fileName: string;
     stream: fluentffmpeg.FfprobeStreamDisposition;
