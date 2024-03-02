@@ -37,3 +37,4 @@ const scripts: object[] = [
     },
   },
 ];
+console.log(scripts);
