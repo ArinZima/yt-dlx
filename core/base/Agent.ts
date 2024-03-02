@@ -26,7 +26,13 @@ export default async function Agent({
       | VideoInfoType
       | TypePlaylist[]
       | PlaylistInfoType;
-    console.log(colors.green("@info:"), `using yt-dlx version ${version}`);
+    console.log(
+      colors.green("@info:"),
+      "using",
+      colors.green("yt-dlx"),
+      "version",
+      colors.green(version)
+    );
     if (!videoId) {
       TubeBody = (await core.search.SearchVideos({
         type: "video",

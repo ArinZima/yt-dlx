@@ -6,49 +6,37 @@ import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
-let color = colors.green;
-let maxTries: number = 6;
-let currentDir: string = __dirname;
-let FfprobePath: string, FfmpegPath: string;
-
 function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
+  let maxTries: number = 6;
+  let currentDir: string = __dirname;
+  let FfprobePath: string, FfmpegPath: string;
   const progressBar = (prog: any) => {
-    const formatBytes = (bytes: number) => {
-      if (bytes === 0) return "0 B";
-      const sizes = ["B", "KB", "MB", "GB", "TB"];
-      const i = Math.floor(Math.log(bytes) / Math.log(1024));
-      return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
-    };
     if (prog.timemark === undefined || prog.percent === undefined) return;
     if (prog.percent < 1 && prog.timemark.includes("-")) return;
     readline.cursorTo(process.stdout, 0);
-    if (prog.percent < 30) color = colors.red;
-    else if (prog.percent < 60) color = colors.yellow;
-    const width = Math.floor(process.stdout.columns / 3);
+    let color = colors.green;
+    if (prog.percent < 25) color = colors.red;
+    else if (prog.percent < 50) color = colors.yellow;
+    const width = Math.floor(process.stdout.columns / 4);
     const scomp = Math.round((width * prog.percent) / 100);
     const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
     process.stdout.write(
       color("@prog: ") +
         sprog +
+        " | " +
         color("@percent: ") +
         prog.percent.toFixed(2) +
-        "% " +
+        "% | " +
         color("@timemark: ") +
         prog.timemark +
-        "s " +
+        " | " +
         color("@frames: ") +
         prog.frames +
-        ", " +
+        " | " +
         color("@currentFps: ") +
-        prog.currentFps +
-        ", " +
-        color("@rate: ") +
-        prog.currentKbps +
-        "kbps, " +
-        color("@size: ") +
-        formatBytes(prog.targetSize)
+        prog.currentFps
     );
-    if (prog.timemark.includes("-")) process.stdout.write("\n");
+    if (prog.timemark.includes("-")) process.stdout.write("\n\n");
   };
   const getTerm = (command: string) => {
     try {
@@ -79,7 +67,7 @@ function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
   const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
   switch (true) {
     case vendor && vendor.includes("NVIDIA"):
-      console.log(colors.green("@ffmpeg: using GPU " + vendor));
+      console.log(colors.green("@ffmpeg:"), "using GPU", colors.green(vendor));
       ffmpeg.withInputOption("-hwaccel cuda");
       ffmpeg.withVideoCodec("h264_nvenc");
       break;
