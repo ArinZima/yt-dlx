@@ -10,14 +10,14 @@
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
-    "start": "node util/dev-test-kit.mjs",
+    "start": "node util/dev.mjs",
     "remake": "yarn run clean && yarn run make && yarn run run update && yarn run run build",
-    "preinstall": "node util/ffmpeg.mjs && node util/engine.mjs && yarn run perm",
+    "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && yarn run perm",
     "upload": "yarn run remake && yarn run run test && npm pkg fix && npm publish --access=public && yarn run update",
     "perm": "chmod +x util/ffmpeg/bin/ffmpeg util/ffmpeg/bin/ffprobe util/ffmpeg/bin/ffplay util/engine",
     "clean": "yarn run clean:base && yarn run clean:client",
-    "clean:base": "rm -rf node_modules .temp shared yarn.lock",
-    "clean:client": "cd client && rm -rf node_modules .next yarn.lock",
+    "clean:base": "rm -rf node_modules .temp shared",
+    "clean:client": "cd client && rm -rf node_modules .next",
     "make": "yarn run make:deps && yarn run make:base && yarn run make:client",
     "make:base": "yarn install",
     "make:client": "cd client && yarn install",
