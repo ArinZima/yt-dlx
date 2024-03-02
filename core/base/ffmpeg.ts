@@ -92,35 +92,3 @@ function gpuffmpeg(input: string): FfmpegCommand {
 }
 export default gpuffmpeg;
 export type { FfmpegCommand as gpuffmpegCommand };
-// =====================================[TEST-LOGIC]=====================================
-// console.clear();
-// import * as fs from "fs";
-// import Agent from "../base/Agent";
-// import bigEntry from "../base/bigEntry";
-// Agent({
-// query: "Tightrope",
-// })
-// .then(async (metaTube) => {
-// const [EntryAudio, EntryVideo] = await Promise.all([
-// bigEntry(metaTube.AudioStore),
-// bigEntry(metaTube.VideoStore),
-// ]);
-// if (!EntryAudio || !EntryVideo) return;
-// ffmpeg(EntryVideo.AVDownload.mediaurl)
-// .addInput(EntryAudio.AVDownload.mediaurl)
-// .outputFormat("matroska")
-// .pipe(fs.createWriteStream("mix.mkv"), {
-// end: true,
-// });
-// ffmpeg(EntryAudio.AVDownload.mediaurl)
-// .outputFormat("avi")
-// .pipe(fs.createWriteStream("Audio.avi"), {
-// end: true,
-// });
-// ffmpeg(EntryVideo.AVDownload.mediaurl)
-// .outputFormat("matroska")
-// .pipe(fs.createWriteStream("Video.mkv"), {
-// end: true,
-// });
-// })
-// .catch((error) => console.error(error.message));
