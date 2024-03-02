@@ -10,10 +10,11 @@ const colors = {
 };
 
 const core = {
-  prepublishOnly: "rm -rf util/ffmpeg util/ffmpeg.tar.xz util/engine",
   postinstall: "node util/ffmpeg.mjs && node util/engine.mjs && yarn run perm",
   remake:
     "yarn run clean && yarn run make && yarn run update && yarn run build",
+  prepublishOnly:
+    "rm -rf util/ffmpeg util/ffmpeg.tar.xz util/engine && yarn remake",
   upload:
     "yarn run remake && yarn run test && npm pkg fix && npm publish --access=public && yarn run update",
   perm: "chmod +x util/ffmpeg/bin/ffmpeg util/ffmpeg/bin/ffprobe util/ffmpeg/bin/ffplay util/engine",
