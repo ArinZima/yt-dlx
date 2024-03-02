@@ -14,6 +14,8 @@ function gpuffmpeg(input: string): FfmpegCommand {
   };
   // =====================================[FFMPEG-LOGIC]=====================================
   const ffmpeg: FfmpegCommand = fluent()
+    .setFfprobePath("util/ffmpeg/bin/ffmpeg")
+    .setFfmpegPath("util/ffmpeg/bin/ffprobe")
     .input(input)
     .on("start", () => {
       progressBar({ timemark: undefined, percent: undefined });
@@ -29,45 +31,7 @@ function gpuffmpeg(input: string): FfmpegCommand {
       console.error(colors.red("@ffmpeg:"), error.message);
       progressBar({ timemark: undefined, percent: undefined });
     });
-  // =====================================[FFMPEG_FFPROBE-LOGIC]=====================================
-  let ffmpegpath: string | undefined;
-  let ffprobepath: string | undefined;
-  try {
-    ffprobepath = getTerm("which ffprobe");
-    ffmpegpath = getTerm("which ffmpeg");
-  } catch (error: any) {
-    console.error(colors.red("@ffmpeg:"), error.message);
-  }
-  switch (true) {
-    case !!(ffprobepath && ffmpegpath):
-      console.log(
-        colors.green("@ffmpeg:"),
-        "both ffprobe and ffmpeg paths are set."
-      );
-      ffmpeg.setFfprobePath(ffprobepath);
-      ffmpeg.setFfmpegPath(ffmpegpath);
-      break;
-    case !!(!ffprobepath && ffmpegpath):
-      console.error(
-        colors.red("@ffmpeg:"),
-        "ffprobe path is not found. using fluent-ffmpeg default paths."
-      );
-      ffmpeg.setFfmpegPath(ffmpegpath);
-      break;
-    case !!(ffprobepath && !ffmpegpath):
-      console.error(
-        colors.red("@ffmpeg:"),
-        "ffmpeg path is not found. using fluent-ffmpeg default paths."
-      );
-      ffmpeg.setFfprobePath(ffprobepath);
-      break;
-    default:
-      console.error(
-        colors.red("@ffmpeg:"),
-        "neither ffprobe nor ffmpeg path is found. using fluent-ffmpeg default paths."
-      );
-      break;
-  }
+
   // =====================================[GPU-LOGIC]=====================================
   let gpuVendor: string | undefined;
   try {
