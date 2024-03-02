@@ -47,7 +47,7 @@ function formatBytes(bytes) {
 function runScript() {
   console.log(`${colors.red}=================================${colors.reset}`);
   console.log(
-    `${colors.green}@system:${colors.reset} welcome to the ${colors.red}yt-dlp${colors.reset} dev-startup kit`
+    `${colors.green}@system:${colors.reset} welcome to the ${colors.red}yt-dlp${colors.reset} dev-test-kit`
   );
   console.log(
     `${colors.green}@system:${colors.reset} os type: ${colors.red}${os.type()}${
