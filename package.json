@@ -75,13 +75,18 @@
     "fluent-ffmpeg": "latest",
     "minimist": "latest",
     "node-cron": "latest",
+    "node-fetch": "^3.3.2",
     "puppeteer": "latest",
     "readline-sync": "latest",
     "spinnies": "latest",
     "stream": "latest",
+    "tar": "latest",
+    "yt-dlx": "latest",
+    "zlib": "latest",
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/tar": "latest",
     "@rollup/plugin-json": "latest",
     "@rollup/plugin-typescript": "latest",
     "@types/async": "latest",
