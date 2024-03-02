@@ -8,6 +8,7 @@ export default async function bigEntry(
     console.log(colors.red("@error:"), "sorry no downloadable data found");
     return undefined;
   }
+  if (metaBody.length === 1) return metaBody[0];
   const validEntries = metaBody.filter(
     (entry) =>
       entry.AVInfo.filesizebytes !== null &&

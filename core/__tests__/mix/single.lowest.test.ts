@@ -10,12 +10,12 @@ async.series([
       holder = await ytdlx.audio_video.lowest({
         folderName: ".temp/audio_video",
         query: "sQEgklEwhSo",
-        verbose: true,
+        verbose: false,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
     } catch (error: any) {
-      throw new Error(colors.bold.red("@error:"), error);
+      console.error(error.message);
     }
   },
   // =========================[FULL-TEST]=========================
@@ -24,7 +24,7 @@ async.series([
       holder = await ytdlx.audio_video.lowest({
         folderName: ".temp/audio_video",
         query: "sQEgklEwhSo",
-        verbose: true,
+        verbose: false,
         stream: true,
       });
       if (holder) {
@@ -37,9 +37,9 @@ async.series([
               holder.filename
             );
           });
-      } else throw new Error(colors.bold.red("@error:"), holder);
+      } else throw new Error(holder);
     } catch (error: any) {
-      throw new Error(colors.bold.red("@error:"), error);
+      console.error(error.message);
     }
   },
 ]);

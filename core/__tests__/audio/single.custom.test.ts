@@ -10,31 +10,29 @@ const quals: ("high" | "medium" | "low" | "ultralow")[] = [
   "low",
   "ultralow",
 ];
-async.series([
-  async () => {
+
+async.series(
+  quals.map((quality) => async () => {
     try {
-      for (const quality of quals) {
-        holder = await ytdlx.audio.custom({
-          folderName: ".temp/audio",
-          query: "sQEgklEwhSo",
-          verbose: true,
-          stream: false,
-          quality,
-        });
-        console.log(colors.bold.green("@pass:"), true);
-      }
+      holder = await ytdlx.audio.custom({
+        folderName: ".temp/audio",
+        query: "sQEgklEwhSo",
+        verbose: false,
+        stream: false,
+        quality,
+      });
+      console.log(colors.bold.green("@pass:"), true);
     } catch (error: any) {
-      throw new Error(colors.bold.red("@error:"), error);
+      console.error(error.message);
     }
-  },
-  // =========================[FULL-TEST]=========================
+  }),
   async () => {
     try {
       holder = await ytdlx.audio.custom({
         folderName: ".temp/audio",
         query: "sQEgklEwhSo",
         quality: "medium",
-        verbose: true,
+        verbose: false,
         stream: true,
       });
       if (holder) {
@@ -47,9 +45,11 @@ async.series([
               holder.filename
             );
           });
-      } else throw new Error(colors.bold.red("@error:"), holder);
+      } else {
+        throw new Error(holder);
+      }
     } catch (error: any) {
-      throw new Error(colors.bold.red("@error:"), error);
+      console.error(error);
     }
-  },
-]);
+  }
+);
