@@ -1,4 +1,5 @@
 import colors from "colors";
+import * as path from "path";
 import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import progressBar from "../base/progressBar";
@@ -14,8 +15,8 @@ function gpuffmpeg(input: string): FfmpegCommand {
   };
   // =====================================[FFMPEG-LOGIC]=====================================
   const ffmpeg: FfmpegCommand = fluent()
-    .setFfprobePath("util/ffmpeg/bin/ffmpeg")
-    .setFfmpegPath("util/ffmpeg/bin/ffprobe")
+    .setFfprobePath(path.join(__dirname, "util", "ffmpeg", "bin", "ffprobe"))
+    .setFfmpegPath(path.join(__dirname, "util", "ffmpeg", "bin", "ffmpeg"))
     .input(input)
     .on("start", () => {
       progressBar({ timemark: undefined, percent: undefined });
