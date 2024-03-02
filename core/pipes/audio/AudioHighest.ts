@@ -3,9 +3,10 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import progressBar from "../../base/progressBar";
+import type { gpuffmpegCommand } from "../../base/ffmpeg";
 import type AudioFilters from "../../interface/AudioFilters";
 
 const AudioHighestZod = z.object({
@@ -22,8 +23,8 @@ export default async function AudioHighest(input: {
   folderName?: string;
   filter?: keyof AudioFilters;
 }): Promise<void | {
-  fileName: string;
-  stream: fluentffmpeg.FfprobeStreamDisposition;
+  filename: string;
+  ffmpeg: gpuffmpegCommand;
 }> {
   try {
     const { query, filter, stream, verbose, folderName } =
@@ -44,8 +45,7 @@ export default async function AudioHighest(input: {
       throw new Error("Unable to get response from YouTube...");
     }
     const outputFormat = "avi";
-    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
-    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg(metaEntry.AVDownload.mediaurl);
     ffmpeg.addInput(metaBody.metaTube.thumbnail);
     ffmpeg.addOutputOption("-map", "1:0");
     ffmpeg.addOutputOption("-map", "0:a:0");
@@ -135,8 +135,8 @@ export default async function AudioHighest(input: {
     }
     if (stream) {
       return {
-        stream: ffmpeg,
-        fileName: folderName
+        ffmpeg,
+        filename: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };

@@ -42,7 +42,7 @@ async.series([
         stream: true,
       });
       if (holder) {
-        await holder.stream
+        await holder.ffmpeg
           .pipe(fs.createWriteStream(holder.filename))
           .on("finish", () => {
             console.log(
@@ -66,7 +66,7 @@ async.series([
         stream: true,
       });
       if (holder) {
-        await holder.stream
+        await holder.ffmpeg
           .pipe(fs.createWriteStream(holder.filename))
           .on("finish", () => {
             console.log(

@@ -3,9 +3,10 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import progressBar from "../../base/progressBar";
+import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const AudioVideoHighestZod = z.object({
   query: z.string().min(1),
@@ -19,8 +20,8 @@ export default async function AudioVideoHighest(input: {
   verbose?: boolean;
   folderName?: string;
 }): Promise<void | {
-  fileName: string;
-  stream: fluentffmpeg.FfprobeStreamDisposition;
+  filename: string;
+  stream: gpuffmpegCommand;
 }> {
   try {
     const { query, stream, verbose, folderName } =
@@ -37,7 +38,6 @@ export default async function AudioVideoHighest(input: {
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const outputFormat = "mkv";
     const metaName: string = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       bigEntry(metaBody.AudioStore),
       bigEntry(metaBody.VideoStore),
@@ -45,7 +45,7 @@ export default async function AudioVideoHighest(input: {
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg(VmetaEntry.AVDownload.mediaurl);
     ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
     ffmpeg.outputFormat("matroska");
     ffmpeg.addOption("-shortest");
@@ -68,7 +68,7 @@ export default async function AudioVideoHighest(input: {
     if (stream) {
       return {
         stream: ffmpeg,
-        fileName: folderName
+        filename: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };

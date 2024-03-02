@@ -1,9 +1,10 @@
 import colors from "colors";
+import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
-import fluentffmpeg from "fluent-ffmpeg";
 import progressBar from "../base/progressBar";
+import type { FfmpegCommand } from "fluent-ffmpeg";
 
-export default function ffmpeg(input: string): fluentffmpeg.FfmpegCommand {
+function gpuffmpeg(input: string): FfmpegCommand {
   const getTerm = (command: string) => {
     try {
       return execSync(command).toString().trim();
@@ -12,7 +13,7 @@ export default function ffmpeg(input: string): fluentffmpeg.FfmpegCommand {
     }
   };
   // =====================================[FFMPEG-LOGIC]=====================================
-  const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg()
+  const ffmpeg: FfmpegCommand = fluent()
     .input(input)
     .on("start", () => {
       progressBar({ timemark: undefined, percent: undefined });
@@ -89,6 +90,8 @@ export default function ffmpeg(input: string): fluentffmpeg.FfmpegCommand {
   }
   return ffmpeg;
 }
+export default gpuffmpeg;
+export type { FfmpegCommand as gpuffmpegCommand };
 // =====================================[TEST-LOGIC]=====================================
 // console.clear();
 // import * as fs from "fs";

@@ -3,10 +3,11 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import progressBar from "../../base/progressBar";
 import type VideoFilters from "../../interface/VideoFilters";
+import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const VideoHighestZod = z.object({
   query: z.string().min(1),
@@ -22,8 +23,8 @@ export default async function VideoHighest(input: {
   folderName?: string;
   filter?: keyof VideoFilters;
 }): Promise<void | {
-  fileName: string;
-  stream: fluentffmpeg.FfprobeStreamDisposition;
+  filename: string;
+  stream: gpuffmpegCommand;
 }> {
   try {
     const { query, stream, verbose, folderName, filter } =
@@ -46,8 +47,7 @@ export default async function VideoHighest(input: {
       throw new Error("Unable to get response from YouTube...");
     }
     const outputFormat = "mkv";
-    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
-    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg(metaEntry.AVDownload.mediaurl);
     ffmpeg.outputFormat("matroska");
     switch (filter) {
       case "grayscale":
@@ -102,7 +102,7 @@ export default async function VideoHighest(input: {
     if (stream) {
       return {
         stream: ffmpeg,
-        fileName: folderName
+        filename: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };

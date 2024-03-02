@@ -3,9 +3,10 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import progressBar from "../../base/progressBar";
+import type { gpuffmpegCommand } from "../../base/ffmpeg";
 import type AudioFilters from "../../interface/AudioFilters";
 
 const AudioQualityCustomZod = z.object({
@@ -24,8 +25,8 @@ export default async function AudioQualityCustom(input: {
   filter?: keyof AudioFilters;
   quality: "high" | "medium" | "low" | "ultralow";
 }): Promise<void | {
-  fileName: string;
-  stream: fluentffmpeg.FfprobeStreamDisposition;
+  filename: string;
+  ffmpeg: gpuffmpegCommand;
 }> {
   try {
     const { query, filter, stream, verbose, quality, folderName } =
@@ -52,9 +53,8 @@ export default async function AudioQualityCustom(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const outputFormat = "avi";
-    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg(metaEntry.AVDownload.mediaurl);
     ffmpeg.addInput(metaResp.metaTube.thumbnail);
     ffmpeg.addOutputOption("-map", "1:0");
     ffmpeg.addOutputOption("-map", "0:a:0");
@@ -144,8 +144,8 @@ export default async function AudioQualityCustom(input: {
     });
     if (stream) {
       return {
-        stream: ffmpeg,
-        fileName: folderName
+        ffmpeg,
+        filename: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };

@@ -3,9 +3,10 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
-import fluentffmpeg from "fluent-ffmpeg";
+import gpuffmpeg from "../../base/ffmpeg";
 import lowEntry from "../../base/lowEntry";
 import progressBar from "../../base/progressBar";
+import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const AudioVideoLowestZod = z.object({
   query: z.string().min(1),
@@ -20,8 +21,8 @@ export default async function AudioVideoLowest(input: {
   verbose?: boolean;
   folderName?: string;
 }): Promise<void | {
-  fileName: string;
-  stream: fluentffmpeg.FfprobeStreamDisposition;
+  filename: string;
+  stream: gpuffmpegCommand;
 }> {
   try {
     const { query, stream, verbose, folderName } =
@@ -36,9 +37,6 @@ export default async function AudioVideoLowest(input: {
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const outputFormat = "mkv";
-    const metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       lowEntry(metaBody.AudioStore),
       lowEntry(metaBody.VideoStore),
@@ -46,7 +44,9 @@ export default async function AudioVideoLowest(input: {
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
+    const outputFormat = "mkv";
+    const metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg(VmetaEntry.AVDownload.mediaurl);
     ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
     ffmpeg.addOutputOption("-shortest");
     ffmpeg.outputFormat("matroska");
@@ -69,7 +69,7 @@ export default async function AudioVideoLowest(input: {
     if (stream) {
       return {
         stream: ffmpeg,
-        fileName: folderName
+        filename: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };
