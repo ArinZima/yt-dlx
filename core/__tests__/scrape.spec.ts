@@ -1,5 +1,6 @@
-import colors from "colors";
+console.clear();
 import web from "../web";
+import colors from "colors";
 import type {
   PlaylistInfoType,
   VideoInfoType,
