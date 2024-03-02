@@ -35,10 +35,10 @@ YT-DLX is a robust multimedia downloading tool meticulously crafted to elevate y
 
 You can install yt-dlx using any package manager of your choice:
 
-- **bun** add yt-dlx
-- **yarn** add yt-dlx
-- **pnpm** add yt-dlx
-- **npm** install yt-dlx
+- **bun** add yt-dlx | **bun** add -g yt-dlx
+- **yarn** add yt-dlx | **yarn** global add yt-dlx
+- **pnpm** add yt-dlx | **pnpm** install -g yt-dlx
+- **npm** install yt-dlx | **npm** install -g yt-dlx
 
 ## Usage 🚀
 

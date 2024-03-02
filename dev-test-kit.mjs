@@ -25,8 +25,8 @@ const core = {
     "rm -rf shared .temp && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
   "build:client": "cd client && rm -rf .next .temp &&  npm run build",
   update: "bun update:base && bun update:client",
-  "update:base": "bun install --latest && bun update --latest",
-  "update:client": "cd client && bun install --latest && bun update --latest",
+  "update:base": "bun install && bun update --force",
+  "update:client": "cd client && bun install && bun update --force",
   cli: "bun link && bun test:cli && bun unlink",
   test: "bun test:web && bun test:full && bun test:cli",
   "test:cli":
