@@ -45,7 +45,17 @@ async.series([
         quality: "medium",
         stream: true,
       });
-      await holder.stream.pipe(fs.createWriteStream(holder.filename));
+      if (holder) {
+        await holder.stream
+          .pipe(fs.createWriteStream(holder.filename))
+          .on("finish", () => {
+            console.log(
+              colors.bold.green("@pass:"),
+              "filename",
+              holder.filename
+            );
+          });
+      } else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
@@ -61,7 +71,17 @@ async.series([
         quality: "medium",
         stream: true,
       });
-      await holder.stream.pipe(fs.createWriteStream(holder.filename));
+      if (holder) {
+        await holder.stream
+          .pipe(fs.createWriteStream(holder.filename))
+          .on("finish", () => {
+            console.log(
+              colors.bold.green("@pass:"),
+              "filename",
+              holder.filename
+            );
+          });
+      } else throw new Error(colors.bold.red("@error:"), holder);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
