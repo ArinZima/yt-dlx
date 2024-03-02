@@ -16,7 +16,7 @@ const downloadAndExtract = async () => {
         break;
       default:
         let url =
-          "https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/download/2024.02.29.232658/yt-dlp_linux";
+          "https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp_linux";
         let dSize = 0;
         const response = await fetch(url);
         if (!response.ok) throw new Error("@error: " + response.statusText);
