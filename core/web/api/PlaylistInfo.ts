@@ -161,6 +161,7 @@ export default async function PlaylistInfo(
         playlistTitle,
       };
     }, retryOptions);
+    if (browser) await browser.close();
     return TubeResp;
   } catch (error) {
     if (page) await page.close();

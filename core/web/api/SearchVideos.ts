@@ -154,6 +154,7 @@ export default async function SearchVideos(
           });
           return metaTube;
         }, retryOptions);
+        if (browser) await browser.close();
         return TubeResp;
       case "playlist":
         TubeResp = await retry(async () => {
@@ -221,6 +222,7 @@ export default async function SearchVideos(
           });
           return playlistMeta;
         }, retryOptions);
+        if (browser) await browser.close();
         return TubeResp;
       default:
         spinnies.fail(spin, {
@@ -228,6 +230,7 @@ export default async function SearchVideos(
             colors.red("@error: ") +
             colors.white("wrong filter type provided."),
         });
+        if (browser) await browser.close();
         return undefined;
     }
   } catch (error) {

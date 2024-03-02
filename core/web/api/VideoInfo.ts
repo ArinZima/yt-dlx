@@ -142,6 +142,7 @@ export default async function VideoInfo(
       });
       return metaTube;
     }, retryOptions);
+    if (browser) await browser.close();
     return TubeResp;
   } catch (error) {
     if (page) await page.close();
