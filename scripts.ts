@@ -14,15 +14,15 @@ const scripts: object[] = [
       deps: `rm -rf util/ffmpeg.tar.xz util/ffmpeg util/engine`,
     },
     make: {
-      main: `yarn make:deps && yarn make:base && yarn make:client`,
+      main: `yarn make:deps && yarn make:base && yarn make:client && yarn postinstall`,
       base: `yarn install`,
       client: `cd client && yarn install`,
       deps: `chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh`,
     },
     update: {
       main: `yarn update:base && yarn update:client`,
-      base: `yarn install && yarn upgrade --latest`,
-      client: `cd client && yarn install && yarn upgrade --latest`,
+      base: `yarn install --verbose && yarn upgrade --latest`,
+      client: `cd client && yarn install --verbose && yarn upgrade --latest`,
     },
     build: {
       main: `yarn build:base && yarn build:client`,
