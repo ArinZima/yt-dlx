@@ -28,15 +28,14 @@ const core = {
   "update:base": "bun install --latest && bun update --latest",
   "update:client": "cd client && bun install --latest && bun update --latest",
   cli: "bun link && bun test:cli && bun unlink",
-  test: "bun test:bun && bun test:cli",
+  test: "bun test:web && bun test:full && bun test:cli",
   "test:cli":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
   "test:full":
     "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/runner.js",
   "test:web":
     "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/web.spec.js",
-  "test:spec":
-    "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js",
+  spec: "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
