@@ -57,8 +57,13 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.devcontainer
+.github
+backups
+client
+core
 others
-ffmpeg.tar.xz
-ffmpeg
-engine
-yt-dlp_linux
+util/ffmpeg.tar.xz
+util/ffmpeg
+util/engine
+util/yt-dlp_linux

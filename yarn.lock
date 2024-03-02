@@ -2487,6 +2487,28 @@ yn@3.1.1:
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
+yt-dlx@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-4.5.0.tgz#e31fcdc548ce393d4e377b2c7c9eb7115aba4839"
+  integrity sha512-iaQ0ui6swz5xWkZjq2GuF4nxxJO2d8qbCCOd10Zzukj3avidEpFYST664GeO1OP01xuVGr7IeU+SG2cxYchpgw==
+  dependencies:
+    async-retry latest
+    chai latest
+    cheerio latest
+    colors latest
+    crypto latest
+    fluent-ffmpeg latest
+    minimist latest
+    node-cron latest
+    node-fetch "^3.3.2"
+    puppeteer latest
+    readline-sync latest
+    spinnies latest
+    stream latest
+    tar latest
+    zlib latest
+    zod latest
+
 zlib@latest:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/zlib/-/zlib-1.0.5.tgz#6e7c972fc371c645a6afb03ab14769def114fcc0"

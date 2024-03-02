@@ -58,7 +58,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 others
-ffmpeg.tar.xz
-ffmpeg
-engine
-yt-dlp_linux
+util/ffmpeg.tar.xz
+util/ffmpeg
+util/engine
+util/yt-dlp_linux
+
+
