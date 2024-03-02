@@ -74,32 +74,32 @@ function ffmpeg(url: string): fluentffmpeg.FfmpegCommand {
       break;
   }
   // =====================================[GPU-LOGIC]=====================================
-  try {
-    gpuVendor =
-      getTerm("nvidia-smi --query-gpu=name --format=csv,noheader") ||
-      getTerm("rocm-smi --show_product_name") ||
-      getTerm("intel_gpu_top -s");
-  } catch (error) {
-    gpuVendor = undefined;
-  }
-  switch (true) {
-    case gpuVendor &&
-      (gpuVendor.includes("AMD") || gpuVendor.includes("Intel")):
-      console.log(colors.green("@ffmpeg: using GPU " + gpuVendor));
-      ffmpeg.withVideoCodec("h264_vaapi");
-      break;
-    case gpuVendor && gpuVendor.includes("NVIDIA"):
-      console.log(colors.green("@ffmpeg: using GPU " + gpuVendor));
-      ffmpeg.withInputOption("-hwaccel cuda");
-      ffmpeg.withVideoCodec("h264_nvenc");
-      break;
-    default:
-      console.log(
-        colors.yellow("@ffmpeg:"),
-        "GPU vendor not recognized.",
-        "Defaulting to software processing."
-      );
-  }
+  // try {
+  // gpuVendor =
+  // getTerm("nvidia-smi --query-gpu=name --format=csv,noheader") ||
+  // getTerm("rocm-smi --show_product_name") ||
+  // getTerm("intel_gpu_top -s");
+  // } catch (error) {
+  // gpuVendor = undefined;
+  // }
+  // switch (true) {
+  // case gpuVendor &&
+  // (gpuVendor.includes("AMD") || gpuVendor.includes("Intel")):
+  // console.log(colors.green("@ffmpeg: using GPU " + gpuVendor));
+  // ffmpeg.withVideoCodec("h264_vaapi");
+  // break;
+  // case gpuVendor && gpuVendor.includes("NVIDIA"):
+  // console.log(colors.green("@ffmpeg: using GPU " + gpuVendor));
+  // ffmpeg.withInputOption("-hwaccel cuda");
+  // ffmpeg.withVideoCodec("h264_nvenc");
+  // break;
+  // default:
+  // console.log(
+  // colors.yellow("@ffmpeg:"),
+  // "GPU vendor not recognized.",
+  // "Defaulting to software processing."
+  // );
+  // }
   return ffmpeg;
 }
 
@@ -115,3 +115,9 @@ ffmpeg(videoLink)
 ffmpeg(videoLink).outputFormat("avi").pipe(fs.createWriteStream("output.avi"), {
   end: true,
 });
+
+ffmpeg(videoLink)
+  .outputFormat("webm")
+  .pipe(fs.createWriteStream("output.webm"), {
+    end: true,
+  });
