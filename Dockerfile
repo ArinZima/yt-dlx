@@ -16,9 +16,9 @@ RUN apt-get update \
         nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install --global --force bun yarn yt-dlx
+RUN npm install --global --force yarn yt-dlx
 WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
-RUN bun run remake
-CMD ["bun", "util/server.mjs"]
+RUN yarn run remake
+CMD ["node", "util/server.mjs"]

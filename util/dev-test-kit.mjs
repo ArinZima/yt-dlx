@@ -10,26 +10,28 @@ const colors = {
 };
 
 const core = {
-  preinstall: "node util/ffmpeg.mjs && node util/engine.mjs",
-  remake: "bun clean && bun make && bun run update && bun run build",
+  remake:
+    "yarn run clean && yarn run make && yarn run run update && yarn run run build",
+  preinstall: "node util/ffmpeg.mjs && node util/engine.mjs && yarn run perm",
   upload:
-    "bun remake && bun run test && npm pkg fix && npm publish --access=public && bun update",
-  clean: "bun clean:base && bun clean:client",
-  "clean:base": "rm -rf node_modules .temp shared bun.lockb",
-  "clean:client": "cd client && rm -rf node_modules .next bun.lockb",
-  make: "bun make:deps && bun make:base && bun make:client",
-  "make:base": "bun install",
-  "make:client": "cd client && bun install",
+    "yarn run remake && yarn run run test && npm pkg fix && npm publish --access=public && yarn run update",
+  perm: "chmod +x util/ffmpeg/bin/ffmpeg util/ffmpeg/bin/ffprobe util/ffmpeg/bin/ffplay util/engine",
+  clean: "yarn run clean:base && yarn run clean:client",
+  "clean:base": "rm -rf node_modules .temp shared yarn.lock",
+  "clean:client": "cd client && rm -rf node_modules .next yarn.lock",
+  make: "yarn run make:deps && yarn run make:base && yarn run make:client",
+  "make:base": "yarn install",
+  "make:client": "cd client && yarn install",
   "make:deps": "chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh",
-  build: "bun run build:base && bun run build:client",
+  build: "yarn run run build:base && yarn run run build:client",
   "build:base":
     "rm -rf shared .temp && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
   "build:client": "cd client && rm -rf .next .temp &&  npm run build",
-  update: "bun update:base && bun update:client",
-  "update:base": "bun install && bun update --force",
-  "update:client": "cd client && bun install && bun update --force",
-  cli: "bun link && bun test:cli && bun unlink",
-  test: "bun test:web && bun test:full && bun test:cli",
+  update: "yarn run update:base && yarn run update:client",
+  "update:base": "yarn install && yarn install --latest",
+  "update:client": "cd client && yarn install && yarn install --latest",
+  cli: "yarn run link && yarn run test:cli && yarn run unlink",
+  test: "yarn run test:web && yarn run test:full && yarn run test:cli",
   "test:cli":
     "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
   "test:full":
