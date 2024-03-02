@@ -6,7 +6,6 @@ export default function VideoHighest(input: {
     verbose?: boolean;
     folderName?: string;
     filter?: keyof VideoFilters;
-    outputFormat?: "mp4" | "avi" | "mov";
 }): Promise<void | {
     fileName: string;
     stream: fluentffmpeg.FfprobeStreamDisposition;

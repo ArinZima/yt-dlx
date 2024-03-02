@@ -1227,7 +1227,7 @@ const progressBar = (prog) => {
     const scomp = Math.round((width * prog.percent) / 100);
     if (prog.percent < 20)
         color = colors.red;
-    else if (prog.percent < 80)
+    else if (prog.percent < 60)
         color = colors.yellow;
     const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
     process.stdout.write(color("@prog: ") +
@@ -1247,11 +1247,10 @@ const AudioLowestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
-    outputFormat: z$1.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 async function AudioLowest(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioLowestZod.parse(input);
+        const { query, filter, stream, verbose, folderName } = AudioLowestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1266,38 +1265,27 @@ async function AudioLowest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
+        const outputFormat = "avi";
         const ffmpeg = fluentffmpeg();
         ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(metaBody.metaTube.thumbnail);
         ffmpeg.addOutputOption("-map", "1:0");
         ffmpeg.addOutputOption("-map", "0:a:0");
         ffmpeg.addOutputOption("-id3v2_version", "3");
-        ffmpeg.format(outputFormat);
+        ffmpeg.outputFormat("avi");
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;
@@ -1421,11 +1409,10 @@ const AudioHighestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
-    outputFormat: z$1.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 async function AudioHighest(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp3", } = AudioHighestZod.parse(input);
+        const { query, filter, stream, verbose, folderName } = AudioHighestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1440,38 +1427,27 @@ async function AudioHighest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
+        const outputFormat = "avi";
         const ffmpeg = fluentffmpeg();
         ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(metaBody.metaTube.thumbnail);
         ffmpeg.addOutputOption("-map", "1:0");
         ffmpeg.addOutputOption("-map", "0:a:0");
         ffmpeg.addOutputOption("-id3v2_version", "3");
-        ffmpeg.format(outputFormat);
+        ffmpeg.outputFormat("avi");
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;
@@ -1579,11 +1555,10 @@ const VideoLowestZod$1 = z$1.object({
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
     filter: z$1.string().optional(),
-    outputFormat: z$1.enum(["mp4", "avi", "mov"]).optional(),
 });
 async function VideoLowest$1(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod$1.parse(input);
+        const { query, filter, stream, verbose, folderName } = VideoLowestZod$1.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1598,9 +1573,10 @@ async function VideoLowest$1(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
+        const outputFormat = "mkv";
         const ffmpeg = fluentffmpeg();
         ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
-        ffmpeg.format(outputFormat);
+        ffmpeg.outputFormat("matroska");
         switch (filter) {
             case "grayscale":
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -1636,28 +1612,16 @@ async function VideoLowest$1(input) {
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;
@@ -1698,12 +1662,11 @@ const VideoHighestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
-    outputFormat: z$1.enum(["mp4", "avi", "mov"]).optional(),
     filter: z$1.string().optional(),
 });
 async function VideoHighest(input) {
     try {
-        const { query, stream, verbose, folderName, outputFormat = "mp4", filter, } = VideoHighestZod.parse(input);
+        const { query, stream, verbose, folderName, filter } = VideoHighestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1718,9 +1681,10 @@ async function VideoHighest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
+        const outputFormat = "mkv";
         const ffmpeg = fluentffmpeg();
         ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
-        ffmpeg.format(outputFormat);
+        ffmpeg.outputFormat("matroska");
         switch (filter) {
             case "grayscale":
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -1756,28 +1720,16 @@ async function VideoHighest(input) {
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;
@@ -1822,17 +1774,18 @@ const AudioVideoLowestZod = z$1.object({
 });
 async function AudioVideoLowest(input) {
     try {
-        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoLowestZod.parse(input);
+        const { query, stream, verbose, folderName } = AudioVideoLowestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
         const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
-        const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
         const metaFold = folderName
             ? path.join(process.cwd(), folderName)
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
+        const outputFormat = "mkv";
+        const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
         const ffmpeg = fluentffmpeg();
         const [AmetaEntry, VmetaEntry] = await Promise.all([
             lowEntry(metaBody.AudioStore),
@@ -1844,32 +1797,20 @@ async function AudioVideoLowest(input) {
         ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
         ffmpeg.addOutputOption("-shortest");
-        ffmpeg.format(outputFormat);
+        ffmpeg.outputFormat("matroska");
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;
@@ -1910,21 +1851,21 @@ const AudioVideoHighestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
-    outputFormat: z$1.enum(["webm", "avi", "mov"]).optional(),
 });
 async function AudioVideoHighest(input) {
     try {
-        const { query, stream, verbose, folderName, outputFormat = "webm", } = AudioVideoHighestZod.parse(input);
+        const { query, stream, verbose, folderName } = AudioVideoHighestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
         const title = metaBody.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
-        const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
         const metaFold = folderName
             ? path.join(process.cwd(), folderName)
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
+        const outputFormat = "mkv";
+        const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
         const ffmpeg = fluentffmpeg();
         const [AmetaEntry, VmetaEntry] = await Promise.all([
             bigEntry(metaBody.AudioStore),
@@ -1935,33 +1876,21 @@ async function AudioVideoHighest(input) {
         }
         ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
+        ffmpeg.outputFormat("matroska");
         ffmpeg.addOption("-shortest");
-        ffmpeg.format(outputFormat);
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;
@@ -2004,11 +1933,10 @@ const AudioQualityCustomZod = z$1.object({
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
     quality: z$1.enum(["high", "medium", "low", "ultralow"]),
-    outputFormat: z$1.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 async function AudioQualityCustom(input) {
     try {
-        const { query, filter, stream, verbose, quality, folderName, outputFormat = "mp3", } = AudioQualityCustomZod.parse(input);
+        const { query, filter, stream, verbose, quality, folderName } = AudioQualityCustomZod.parse(input);
         const metaResp = await Agent({ query, verbose });
         if (!metaResp) {
             throw new Error("Unable to get response from YouTube...");
@@ -2023,17 +1951,18 @@ async function AudioQualityCustom(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const ffmpeg = fluentffmpeg();
         const metaEntry = await bigEntry(metaBody);
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
+        const ffmpeg = fluentffmpeg();
+        const outputFormat = "avi";
         ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(metaResp.metaTube.thumbnail);
         ffmpeg.addOutputOption("-map", "1:0");
         ffmpeg.addOutputOption("-map", "0:a:0");
         ffmpeg.addOutputOption("-id3v2_version", "3");
-        ffmpeg.format(outputFormat);
+        ffmpeg.outputFormat("avi");
         switch (filter) {
             case "bassboost":
                 ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2103,28 +2032,16 @@ async function AudioQualityCustom(input) {
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;
@@ -2166,11 +2083,10 @@ const VideoLowestZod = z$1.object({
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
     filter: z$1.string().optional(),
-    outputFormat: z$1.enum(["mp4", "avi", "mov"]).optional(),
 });
 async function VideoLowest(input) {
     try {
-        const { query, filter, stream, verbose, folderName, outputFormat = "mp4", } = VideoLowestZod.parse(input);
+        const { query, filter, stream, verbose, folderName } = VideoLowestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -2185,9 +2101,10 @@ async function VideoLowest(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
+        const outputFormat = "mkv";
         const ffmpeg = fluentffmpeg();
         ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
-        ffmpeg.format(outputFormat);
+        ffmpeg.outputFormat("matroska");
         switch (filter) {
             case "grayscale":
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -2223,28 +2140,16 @@ async function VideoLowest(input) {
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("end", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
         ffmpeg.on("close", () => {
-            progressBar({
-                timemark: undefined,
-                percent: undefined,
-            });
+            progressBar({ timemark: undefined, percent: undefined });
         });
-        ffmpeg.on("progress", (prog) => {
-            progressBar({
-                timemark: prog.timemark,
-                percent: prog.percent,
-            });
+        ffmpeg.on("progress", ({ percent, timemark }) => {
+            progressBar({ timemark, percent });
         });
         ffmpeg.on("error", (error) => {
             return error;

@@ -4,7 +4,6 @@ export default function AudioVideoHighest(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    outputFormat?: "webm" | "avi" | "mov";
 }): Promise<void | {
     fileName: string;
     stream: fluentffmpeg.FfprobeStreamDisposition;

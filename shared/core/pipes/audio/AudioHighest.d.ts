@@ -6,7 +6,6 @@ export default function AudioHighest(input: {
     verbose?: boolean;
     folderName?: string;
     filter?: keyof AudioFilters;
-    outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
 }): Promise<void | {
     fileName: string;
     stream: fluentffmpeg.FfprobeStreamDisposition;

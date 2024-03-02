@@ -7,7 +7,6 @@ export default function AudioQualityCustom(input: {
     folderName?: string;
     filter?: keyof AudioFilters;
     quality: "high" | "medium" | "low" | "ultralow";
-    outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
 }): Promise<void | {
     fileName: string;
     stream: fluentffmpeg.FfprobeStreamDisposition;
