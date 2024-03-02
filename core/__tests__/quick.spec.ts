@@ -45,12 +45,12 @@ const ffmpeg = fluentffmpeg()
   });
 
 switch (true) {
+  case gpuVendor && (gpuVendor.includes("AMD") || gpuVendor.includes("Intel")):
+    ffmpeg.withVideoCodec("h264_vaapi");
+    break;
   case gpuVendor && gpuVendor.includes("NVIDIA"):
     ffmpeg.withInputOption("-hwaccel cuda");
     ffmpeg.withVideoCodec("h264_nvenc");
-    break;
-  case gpuVendor && (gpuVendor.includes("AMD") || gpuVendor.includes("Intel")):
-    ffmpeg.withVideoCodec("h264_vaapi");
     break;
   default:
     console.log(
