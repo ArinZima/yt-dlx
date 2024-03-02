@@ -14,9 +14,9 @@ import { z as z$1, ZodError } from 'zod';
 import { randomUUID } from 'crypto';
 import * as path from 'path';
 import { promisify } from 'util';
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import * as async from 'async';
-import fluentffmpeg from 'fluent-ffmpeg';
+import fluent from 'fluent-ffmpeg';
 import readline from 'readline';
 
 async function closers(browser) {
@@ -1198,22 +1198,6 @@ async function extract_playlist_videos({ playlistUrls, }) {
     }
 }
 
-async function lowEntry(metaBody) {
-    if (!metaBody || metaBody.length === 0) {
-        console.log(colors.red("@error:"), "sorry no downloadable data found");
-        return undefined;
-    }
-    const validEntries = metaBody.filter((entry) => entry.AVInfo.filesizebytes !== null &&
-        entry.AVInfo.filesizebytes !== undefined &&
-        !isNaN(entry.AVInfo.filesizebytes));
-    if (validEntries.length === 0) {
-        console.log(colors.red("@error:"), "sorry no downloadable data found");
-        return undefined;
-    }
-    const sortedByFileSize = [...validEntries].sort((a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes);
-    return sortedByFileSize[0];
-}
-
 const progressBar = (prog) => {
     if (prog.percent === undefined)
         return;
@@ -1241,16 +1225,137 @@ const progressBar = (prog) => {
         process.stdout.write("\n");
 };
 
+function gpuffmpeg(input) {
+    const getTerm = (command) => {
+        try {
+            return execSync(command).toString().trim();
+        }
+        catch (error) {
+            return undefined;
+        }
+    };
+    // =====================================[FFMPEG-LOGIC]=====================================
+    const ffmpeg = fluent()
+        .input(input)
+        .on("start", () => {
+        progressBar({ timemark: undefined, percent: undefined });
+    })
+        .on("progress", ({ percent, timemark }) => {
+        progressBar({ timemark, percent });
+    })
+        .on("end", () => {
+        console.log(colors.green("@ffmpeg:"), "completed");
+        progressBar({ timemark: undefined, percent: undefined });
+    })
+        .on("error", (error) => {
+        console.error(colors.red("@ffmpeg:"), error.message);
+        progressBar({ timemark: undefined, percent: undefined });
+    });
+    // =====================================[FFMPEG_FFPROBE-LOGIC]=====================================
+    let ffmpegpath;
+    let ffprobepath;
+    try {
+        ffprobepath = getTerm("which ffprobe");
+        ffmpegpath = getTerm("which ffmpeg");
+    }
+    catch (error) {
+        console.error(colors.red("@ffmpeg:"), error.message);
+    }
+    switch (true) {
+        case !!(ffprobepath && ffmpegpath):
+            console.log(colors.green("@ffmpeg:"), "both ffprobe and ffmpeg paths are set.");
+            ffmpeg.setFfprobePath(ffprobepath);
+            ffmpeg.setFfmpegPath(ffmpegpath);
+            break;
+        case !!(!ffprobepath && ffmpegpath):
+            console.error(colors.red("@ffmpeg:"), "ffprobe path is not found. using fluent-ffmpeg default paths.");
+            ffmpeg.setFfmpegPath(ffmpegpath);
+            break;
+        case !!(ffprobepath && !ffmpegpath):
+            console.error(colors.red("@ffmpeg:"), "ffmpeg path is not found. using fluent-ffmpeg default paths.");
+            ffmpeg.setFfprobePath(ffprobepath);
+            break;
+        default:
+            console.error(colors.red("@ffmpeg:"), "neither ffprobe nor ffmpeg path is found. using fluent-ffmpeg default paths.");
+            break;
+    }
+    // =====================================[GPU-LOGIC]=====================================
+    let gpuVendor;
+    try {
+        gpuVendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
+    }
+    catch (error) {
+        gpuVendor = undefined;
+    }
+    switch (true) {
+        case gpuVendor && gpuVendor.includes("NVIDIA"):
+            console.log(colors.green("@ffmpeg: using GPU " + gpuVendor));
+            ffmpeg.withInputOption("-hwaccel cuda");
+            ffmpeg.withVideoCodec("h264_nvenc");
+            break;
+        default:
+            console.log(colors.yellow("@ffmpeg:"), "GPU vendor not recognized.", "defaulting to software processing.");
+    }
+    return ffmpeg;
+}
+// =====================================[TEST-LOGIC]=====================================
+// console.clear();
+// import * as fs from "fs";
+// import Agent from "../base/Agent";
+// import bigEntry from "../base/bigEntry";
+// Agent({
+// query: "Tightrope",
+// })
+// .then(async (metaTube) => {
+// const [EntryAudio, EntryVideo] = await Promise.all([
+// bigEntry(metaTube.AudioStore),
+// bigEntry(metaTube.VideoStore),
+// ]);
+// if (!EntryAudio || !EntryVideo) return;
+// ffmpeg(EntryVideo.AVDownload.mediaurl)
+// .addInput(EntryAudio.AVDownload.mediaurl)
+// .outputFormat("matroska")
+// .pipe(fs.createWriteStream("mix.mkv"), {
+// end: true,
+// });
+// ffmpeg(EntryAudio.AVDownload.mediaurl)
+// .outputFormat("avi")
+// .pipe(fs.createWriteStream("Audio.avi"), {
+// end: true,
+// });
+// ffmpeg(EntryVideo.AVDownload.mediaurl)
+// .outputFormat("matroska")
+// .pipe(fs.createWriteStream("Video.mkv"), {
+// end: true,
+// });
+// })
+// .catch((error) => console.error(error.message));
+
+async function lowEntry(metaBody) {
+    if (!metaBody || metaBody.length === 0) {
+        console.log(colors.red("@error:"), "sorry no downloadable data found");
+        return undefined;
+    }
+    const validEntries = metaBody.filter((entry) => entry.AVInfo.filesizebytes !== null &&
+        entry.AVInfo.filesizebytes !== undefined &&
+        !isNaN(entry.AVInfo.filesizebytes));
+    if (validEntries.length === 0) {
+        console.log(colors.red("@error:"), "sorry no downloadable data found");
+        return undefined;
+    }
+    const sortedByFileSize = [...validEntries].sort((a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes);
+    return sortedByFileSize[0];
+}
+
 const AudioLowestZod = z$1.object({
     query: z$1.string().min(1),
-    filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
 });
 async function AudioLowest(input) {
     try {
-        const { query, filter, stream, verbose, folderName } = AudioLowestZod.parse(input);
+        const { query, stream, verbose, folderName } = AudioLowestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1266,8 +1371,7 @@ async function AudioLowest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const outputFormat = "avi";
-        const ffmpeg = fluentffmpeg();
-        ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+        const ffmpeg = gpuffmpeg(metaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(metaBody.metaTube.thumbnail);
         ffmpeg.addOutputOption("-map", "1:0");
         ffmpeg.addOutputOption("-map", "0:a:0");
@@ -1290,76 +1394,12 @@ async function AudioLowest(input) {
         ffmpeg.on("error", (error) => {
             return error;
         });
-        switch (filter) {
-            case "bassboost":
-                ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                metaName = `yt-dlp-(AudioLowest_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "echo":
-                ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                metaName = `yt-dlp-(AudioLowest_echo)-${title}.${outputFormat}`;
-                break;
-            case "flanger":
-                ffmpeg.withAudioFilter(["flanger"]);
-                metaName = `yt-dlp-(AudioLowest_flanger)-${title}.${outputFormat}`;
-                break;
-            case "nightcore":
-                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                metaName = `yt-dlp-(AudioLowest_nightcore)-${title}.${outputFormat}`;
-                break;
-            case "panning":
-                ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-                metaName = `yt-dlp-(AudioLowest_panning)-${title}.${outputFormat}`;
-                break;
-            case "phaser":
-                ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-                metaName = `yt-dlp-(AudioLowest_phaser)-${title}.${outputFormat}`;
-                break;
-            case "reverse":
-                ffmpeg.withAudioFilter(["areverse"]);
-                metaName = `yt-dlp-(AudioLowest_reverse)-${title}.${outputFormat}`;
-                break;
-            case "slow":
-                ffmpeg.withAudioFilter(["atempo=0.8"]);
-                metaName = `yt-dlp-(AudioLowest_slow)-${title}.${outputFormat}`;
-                break;
-            case "speed":
-                ffmpeg.withAudioFilter(["atempo=2"]);
-                metaName = `yt-dlp-(AudioLowest_speed)-${title}.${outputFormat}`;
-                break;
-            case "subboost":
-                ffmpeg.withAudioFilter(["asubboost"]);
-                metaName = `yt-dlp-(AudioLowest_subboost)-${title}.${outputFormat}`;
-                break;
-            case "superslow":
-                ffmpeg.withAudioFilter(["atempo=0.5"]);
-                metaName = `yt-dlp-(AudioLowest_superslow)-${title}.${outputFormat}`;
-                break;
-            case "superspeed":
-                ffmpeg.withAudioFilter(["atempo=3"]);
-                metaName = `yt-dlp-(AudioLowest_superspeed)-${title}.${outputFormat}`;
-                break;
-            case "surround":
-                ffmpeg.withAudioFilter(["surround"]);
-                metaName = `yt-dlp-(AudioLowest_surround)-${title}.${outputFormat}`;
-                break;
-            case "vaporwave":
-                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                metaName = `yt-dlp-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
-                break;
-            case "vibrato":
-                ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-                metaName = `yt-dlp-(AudioLowest_vibrato)-${title}.${outputFormat}`;
-                break;
-            default:
-                ffmpeg.withAudioFilter([]);
-                metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
-                break;
-        }
+        ffmpeg.withAudioFilter([]);
+        metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
         if (stream) {
             return {
-                stream: ffmpeg,
-                fileName: folderName
+                ffmpeg,
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1405,14 +1445,13 @@ async function bigEntry(metaBody) {
 
 const AudioHighestZod = z$1.object({
     query: z$1.string().min(1),
-    filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
 });
 async function AudioHighest(input) {
     try {
-        const { query, filter, stream, verbose, folderName } = AudioHighestZod.parse(input);
+        const { query, stream, verbose, folderName } = AudioHighestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1428,8 +1467,7 @@ async function AudioHighest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const outputFormat = "avi";
-        const ffmpeg = fluentffmpeg();
-        ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+        const ffmpeg = gpuffmpeg(metaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(metaBody.metaTube.thumbnail);
         ffmpeg.addOutputOption("-map", "1:0");
         ffmpeg.addOutputOption("-map", "0:a:0");
@@ -1452,76 +1490,12 @@ async function AudioHighest(input) {
         ffmpeg.on("error", (error) => {
             return error;
         });
-        switch (filter) {
-            case "bassboost":
-                ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                metaName = `yt-dlp-(AudioHighest_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "echo":
-                ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                metaName = `yt-dlp-(AudioHighest_echo)-${title}.${outputFormat}`;
-                break;
-            case "flanger":
-                ffmpeg.withAudioFilter(["flanger"]);
-                metaName = `yt-dlp-(AudioHighest_flanger)-${title}.${outputFormat}`;
-                break;
-            case "nightcore":
-                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                metaName = `yt-dlp-(AudioHighest_nightcore)-${title}.${outputFormat}`;
-                break;
-            case "panning":
-                ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-                metaName = `yt-dlp-(AudioHighest_panning)-${title}.${outputFormat}`;
-                break;
-            case "phaser":
-                ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-                metaName = `yt-dlp-(AudioHighest_phaser)-${title}.${outputFormat}`;
-                break;
-            case "reverse":
-                ffmpeg.withAudioFilter(["areverse"]);
-                metaName = `yt-dlp-(AudioHighest_reverse)-${title}.${outputFormat}`;
-                break;
-            case "slow":
-                ffmpeg.withAudioFilter(["atempo=0.8"]);
-                metaName = `yt-dlp-(AudioHighest_slow)-${title}.${outputFormat}`;
-                break;
-            case "speed":
-                ffmpeg.withAudioFilter(["atempo=2"]);
-                metaName = `yt-dlp-(AudioHighest_speed)-${title}.${outputFormat}`;
-                break;
-            case "subboost":
-                ffmpeg.withAudioFilter(["asubboost"]);
-                metaName = `yt-dlp-(AudioHighest_subboost)-${title}.${outputFormat}`;
-                break;
-            case "superslow":
-                ffmpeg.withAudioFilter(["atempo=0.5"]);
-                metaName = `yt-dlp-(AudioHighest_superslow)-${title}.${outputFormat}`;
-                break;
-            case "superspeed":
-                ffmpeg.withAudioFilter(["atempo=3"]);
-                metaName = `yt-dlp-(AudioHighest_superspeed)-${title}.${outputFormat}`;
-                break;
-            case "surround":
-                ffmpeg.withAudioFilter(["surround"]);
-                metaName = `yt-dlp-(AudioHighest_surround)-${title}.${outputFormat}`;
-                break;
-            case "vaporwave":
-                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                metaName = `yt-dlp-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
-                break;
-            case "vibrato":
-                ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-                metaName = `yt-dlp-(AudioHighest_vibrato)-${title}.${outputFormat}`;
-                break;
-            default:
-                ffmpeg.withAudioFilter([]);
-                metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
-                break;
-        }
+        ffmpeg.withAudioFilter([]);
+        metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
         if (stream) {
             return {
-                stream: ffmpeg,
-                fileName: folderName
+                ffmpeg,
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1554,11 +1528,10 @@ const VideoLowestZod$1 = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
-    filter: z$1.string().optional(),
 });
 async function VideoLowest$1(input) {
     try {
-        const { query, filter, stream, verbose, folderName } = VideoLowestZod$1.parse(input);
+        const { query, stream, verbose, folderName } = VideoLowestZod$1.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1574,41 +1547,9 @@ async function VideoLowest$1(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const outputFormat = "mkv";
-        const ffmpeg = fluentffmpeg();
-        ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+        const ffmpeg = gpuffmpeg(metaEntry.AVDownload.mediaurl);
         ffmpeg.outputFormat("matroska");
-        switch (filter) {
-            case "grayscale":
-                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
-                break;
-            case "invert":
-                ffmpeg.withVideoFilter("negate");
-                metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
-                break;
-            case "rotate90":
-                ffmpeg.withVideoFilter("rotate=PI/2");
-                metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
-                break;
-            case "rotate180":
-                ffmpeg.withVideoFilter("rotate=PI");
-                metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
-                break;
-            case "rotate270":
-                ffmpeg.withVideoFilter("rotate=3*PI/2");
-                metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
-                break;
-            case "flipHorizontal":
-                ffmpeg.withVideoFilter("hflip");
-                metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
-                break;
-            case "flipVertical":
-                ffmpeg.withVideoFilter("vflip");
-                metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
-                break;
-            default:
-                metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
-        }
+        metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
@@ -1629,7 +1570,7 @@ async function VideoLowest$1(input) {
         if (stream) {
             return {
                 stream: ffmpeg,
-                fileName: folderName
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1662,11 +1603,10 @@ const VideoHighestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
-    filter: z$1.string().optional(),
 });
 async function VideoHighest(input) {
     try {
-        const { query, stream, verbose, folderName, filter } = VideoHighestZod.parse(input);
+        const { query, stream, verbose, folderName } = VideoHighestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -1682,41 +1622,9 @@ async function VideoHighest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const outputFormat = "mkv";
-        const ffmpeg = fluentffmpeg();
-        ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+        const ffmpeg = gpuffmpeg(metaEntry.AVDownload.mediaurl);
         ffmpeg.outputFormat("matroska");
-        switch (filter) {
-            case "grayscale":
-                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                metaName = `yt-dlp_(VideoHighest-grayscale)_${title}.${outputFormat}`;
-                break;
-            case "invert":
-                ffmpeg.withVideoFilter("negate");
-                metaName = `yt-dlp_(VideoHighest-invert)_${title}.${outputFormat}`;
-                break;
-            case "rotate90":
-                ffmpeg.withVideoFilter("rotate=PI/2");
-                metaName = `yt-dlp_(VideoHighest-rotate90)_${title}.${outputFormat}`;
-                break;
-            case "rotate180":
-                ffmpeg.withVideoFilter("rotate=PI");
-                metaName = `yt-dlp_(VideoHighest-rotate180)_${title}.${outputFormat}`;
-                break;
-            case "rotate270":
-                ffmpeg.withVideoFilter("rotate=3*PI/2");
-                metaName = `yt-dlp_(VideoHighest-rotate270)_${title}.${outputFormat}`;
-                break;
-            case "flipHorizontal":
-                ffmpeg.withVideoFilter("hflip");
-                metaName = `yt-dlp_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
-                break;
-            case "flipVertical":
-                ffmpeg.withVideoFilter("vflip");
-                metaName = `yt-dlp_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
-                break;
-            default:
-                metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
-        }
+        metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
@@ -1737,7 +1645,7 @@ async function VideoHighest(input) {
         if (stream) {
             return {
                 stream: ffmpeg,
-                fileName: folderName
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1784,9 +1692,6 @@ async function AudioVideoLowest(input) {
             : process.cwd();
         if (!fs.existsSync(metaFold))
             fs.mkdirSync(metaFold, { recursive: true });
-        const outputFormat = "mkv";
-        const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-        const ffmpeg = fluentffmpeg();
         const [AmetaEntry, VmetaEntry] = await Promise.all([
             lowEntry(metaBody.AudioStore),
             lowEntry(metaBody.VideoStore),
@@ -1794,7 +1699,9 @@ async function AudioVideoLowest(input) {
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
+        const outputFormat = "mkv";
+        const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
+        const ffmpeg = gpuffmpeg(VmetaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
         ffmpeg.addOutputOption("-shortest");
         ffmpeg.outputFormat("matroska");
@@ -1818,7 +1725,7 @@ async function AudioVideoLowest(input) {
         if (stream) {
             return {
                 stream: ffmpeg,
-                fileName: folderName
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1866,7 +1773,6 @@ async function AudioVideoHighest(input) {
             fs.mkdirSync(metaFold, { recursive: true });
         const outputFormat = "mkv";
         const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
-        const ffmpeg = fluentffmpeg();
         const [AmetaEntry, VmetaEntry] = await Promise.all([
             bigEntry(metaBody.AudioStore),
             bigEntry(metaBody.VideoStore),
@@ -1874,7 +1780,7 @@ async function AudioVideoHighest(input) {
         if (AmetaEntry === undefined || VmetaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
+        const ffmpeg = gpuffmpeg(VmetaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
         ffmpeg.outputFormat("matroska");
         ffmpeg.addOption("-shortest");
@@ -1898,7 +1804,7 @@ async function AudioVideoHighest(input) {
         if (stream) {
             return {
                 stream: ffmpeg,
-                fileName: folderName
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -1928,7 +1834,6 @@ async function AudioVideoHighest(input) {
 
 const AudioQualityCustomZod = z$1.object({
     query: z$1.string().min(1),
-    filter: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
@@ -1936,7 +1841,7 @@ const AudioQualityCustomZod = z$1.object({
 });
 async function AudioQualityCustom(input) {
     try {
-        const { query, filter, stream, verbose, quality, folderName } = AudioQualityCustomZod.parse(input);
+        const { query, stream, verbose, quality, folderName } = AudioQualityCustomZod.parse(input);
         const metaResp = await Agent({ query, verbose });
         if (!metaResp) {
             throw new Error("Unable to get response from YouTube...");
@@ -1955,80 +1860,15 @@ async function AudioQualityCustom(input) {
         if (metaEntry === undefined) {
             throw new Error("Unable to get response from YouTube...");
         }
-        const ffmpeg = fluentffmpeg();
         const outputFormat = "avi";
-        ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+        const ffmpeg = gpuffmpeg(metaEntry.AVDownload.mediaurl);
         ffmpeg.addInput(metaResp.metaTube.thumbnail);
         ffmpeg.addOutputOption("-map", "1:0");
         ffmpeg.addOutputOption("-map", "0:a:0");
         ffmpeg.addOutputOption("-id3v2_version", "3");
         ffmpeg.outputFormat("avi");
-        switch (filter) {
-            case "bassboost":
-                ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "echo":
-                ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "flanger":
-                ffmpeg.withAudioFilter(["flanger"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "nightcore":
-                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "panning":
-                ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "phaser":
-                ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "reverse":
-                ffmpeg.withAudioFilter(["areverse"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "slow":
-                ffmpeg.withAudioFilter(["atempo=0.8"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "speed":
-                ffmpeg.withAudioFilter(["atempo=2"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "subboost":
-                ffmpeg.withAudioFilter(["asubboost"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "superslow":
-                ffmpeg.withAudioFilter(["atempo=0.5"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "superspeed":
-                ffmpeg.withAudioFilter(["atempo=3"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "surround":
-                ffmpeg.withAudioFilter(["surround"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "vaporwave":
-                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            case "vibrato":
-                ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-                metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-                break;
-            default:
-                ffmpeg.withAudioFilter([]);
-                metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
-                break;
-        }
+        ffmpeg.withAudioFilter([]);
+        metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
@@ -2048,8 +1888,8 @@ async function AudioQualityCustom(input) {
         });
         if (stream) {
             return {
-                stream: ffmpeg,
-                fileName: folderName
+                ffmpeg,
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };
@@ -2082,11 +1922,10 @@ const VideoLowestZod = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     folderName: z$1.string().optional(),
-    filter: z$1.string().optional(),
 });
 async function VideoLowest(input) {
     try {
-        const { query, filter, stream, verbose, folderName } = VideoLowestZod.parse(input);
+        const { query, stream, verbose, folderName } = VideoLowestZod.parse(input);
         const metaBody = await Agent({ query, verbose });
         if (!metaBody)
             throw new Error("Unable to get response from YouTube...");
@@ -2102,41 +1941,9 @@ async function VideoLowest(input) {
             throw new Error("Unable to get response from YouTube...");
         }
         const outputFormat = "mkv";
-        const ffmpeg = fluentffmpeg();
-        ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+        const ffmpeg = gpuffmpeg(metaEntry.AVDownload.mediaurl);
         ffmpeg.outputFormat("matroska");
-        switch (filter) {
-            case "grayscale":
-                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
-                break;
-            case "invert":
-                ffmpeg.withVideoFilter("negate");
-                metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
-                break;
-            case "rotate90":
-                ffmpeg.withVideoFilter("rotate=PI/2");
-                metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
-                break;
-            case "rotate180":
-                ffmpeg.withVideoFilter("rotate=PI");
-                metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
-                break;
-            case "rotate270":
-                ffmpeg.withVideoFilter("rotate=3*PI/2");
-                metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
-                break;
-            case "flipHorizontal":
-                ffmpeg.withVideoFilter("hflip");
-                metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
-                break;
-            case "flipVertical":
-                ffmpeg.withVideoFilter("vflip");
-                metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
-                break;
-            default:
-                metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
-        }
+        metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
         ffmpeg.on("start", (command) => {
             if (verbose)
                 console.log(command);
@@ -2157,7 +1964,7 @@ async function VideoLowest(input) {
         if (stream) {
             return {
                 stream: ffmpeg,
-                fileName: folderName
+                filename: folderName
                     ? path.join(metaFold, metaName.replace("-.", "."))
                     : metaName.replace("-.", "."),
             };

@@ -1,14 +1,13 @@
-import fluentffmpeg from "fluent-ffmpeg";
-import type AudioFilters from "../../interface/AudioFilters";
+/// <reference types="fluent-ffmpeg" />
+import type { gpuffmpegCommand } from "../../base/ffmpeg";
 export default function AudioQualityCustom(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof AudioFilters;
     quality: "high" | "medium" | "low" | "ultralow";
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    ffmpeg: gpuffmpegCommand;
 }>;
 //# sourceMappingURL=AudioQualityCustom.d.ts.map

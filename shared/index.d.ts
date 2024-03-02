@@ -2,7 +2,7 @@
  * ========================================[ 📢YOUTUBE DOWNLOADER YT-DLX <( YT-DLX )/>📹 ]================================
  * ===========================================[ 🚨License: MIT] [ 🧙🏻Owner: ShovitDutta]===================================
  */
-import fluentffmpeg from 'fluent-ffmpeg';
+import { FfmpegCommand } from 'fluent-ffmpeg';
 
 interface InputYouTube$1 {
     query: string;
@@ -204,33 +204,14 @@ declare function extract_playlist_videos({ playlistUrls, }: {
     playlistUrls: string[];
 }): Promise<EngineResult[]>;
 
-interface AudioFilters {
-    bassboost: string;
-    echo: string;
-    flanger: string;
-    nightcore: string;
-    panning: string;
-    phaser: string;
-    reverse: string;
-    slow: string;
-    speed: string;
-    subboost: string;
-    superslow: string;
-    superspeed: string;
-    surround: string;
-    vaporwave: string;
-    vibrato: string;
-}
-
 declare function AudioLowest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof AudioFilters;
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    ffmpeg: FfmpegCommand;
 }>;
 
 declare function AudioHighest(input: {
@@ -238,31 +219,19 @@ declare function AudioHighest(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof AudioFilters;
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    ffmpeg: FfmpegCommand;
 }>;
-
-interface VideoFilters {
-    grayscale: string;
-    invert: string;
-    rotate90: string;
-    rotate180: string;
-    rotate270: string;
-    flipHorizontal: string;
-    flipVertical: string;
-}
 
 declare function VideoLowest$1(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof VideoFilters;
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    stream: FfmpegCommand;
 }>;
 
 declare function VideoHighest(input: {
@@ -270,10 +239,9 @@ declare function VideoHighest(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof VideoFilters;
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    stream: FfmpegCommand;
 }>;
 
 declare function AudioVideoLowest(input: {
@@ -282,8 +250,8 @@ declare function AudioVideoLowest(input: {
     verbose?: boolean;
     folderName?: string;
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    stream: FfmpegCommand;
 }>;
 
 declare function AudioVideoHighest(input: {
@@ -292,8 +260,8 @@ declare function AudioVideoHighest(input: {
     verbose?: boolean;
     folderName?: string;
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    stream: FfmpegCommand;
 }>;
 
 declare function AudioQualityCustom(input: {
@@ -301,11 +269,10 @@ declare function AudioQualityCustom(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof AudioFilters;
     quality: "high" | "medium" | "low" | "ultralow";
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    ffmpeg: FfmpegCommand;
 }>;
 
 declare function VideoLowest(input: {
@@ -313,11 +280,10 @@ declare function VideoLowest(input: {
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof VideoFilters;
     quality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    stream: FfmpegCommand;
 }>;
 
 declare const ytdlx: {

@@ -1,13 +1,12 @@
-import fluentffmpeg from "fluent-ffmpeg";
-import type AudioFilters from "../../interface/AudioFilters";
+/// <reference types="fluent-ffmpeg" />
+import type { gpuffmpegCommand } from "../../base/ffmpeg";
 export default function AudioLowest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
     folderName?: string;
-    filter?: keyof AudioFilters;
 }): Promise<void | {
-    fileName: string;
-    stream: fluentffmpeg.FfprobeStreamDisposition;
+    filename: string;
+    ffmpeg: gpuffmpegCommand;
 }>;
 //# sourceMappingURL=AudioLowest.d.ts.map
