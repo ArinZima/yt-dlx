@@ -72,7 +72,6 @@
     "cheerio": "latest",
     "colors": "latest",
     "crypto": "latest",
-    "ffmpeg-static": "latest",
     "fluent-ffmpeg": "latest",
     "minimist": "latest",
     "node-cron": "latest",
