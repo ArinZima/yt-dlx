@@ -30,8 +30,8 @@ const core = {
     "rm -rf shared .temp && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
   "build:client": "cd client && rm -rf .next .temp &&  npm run build",
   update: "yarn run update:base && yarn run update:client",
-  "update:base": "yarn install && yarn install --latest",
-  "update:client": "cd client && yarn install && yarn install --latest",
+  "update:base": "yarn install && yarn upgrade --latest",
+  "update:client": "cd client && yarn install && yarn upgrade --latest",
   cli: "yarn run link && yarn run test:cli && yarn run unlink",
   test: "yarn run test:web && yarn run test:full && yarn run test:cli",
   "test:cli":
