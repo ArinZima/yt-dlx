@@ -5,7 +5,6 @@
 # YT-DLX: Elevate Your Video Downloading & Streaming Experience 🚀
 
 [![npm version](https://img.shields.io/npm/v/yt-dlx.svg)](https://www.npmjs.com/package/yt-dlx)
-![license](https://img.shields.io/npm/l/yt-dlx.svg)
 ![supports](https://img.shields.io/badge/supports-Linux%20%7C%20Mac%20%7C%20WSL-green)
 ![GitHub stars](https://img.shields.io/github/stars/yt-dlx/yt-dlx?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/yt-dlx/yt-dlx?style=social)
@@ -15,8 +14,6 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/yt-dlx/yt-dlx)
 ![GitHub last commit](https://img.shields.io/github/last-commit/yt-dlx/yt-dlx)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yt-dlx/yt-dlx)
-![Codecov](https://img.shields.io/codecov/c/github/yt-dlx/yt-dlx)
-![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/yt-dlx/yt-dlx)
 
 ## Overview 🌟
 
