@@ -5,6 +5,7 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
+import progressBar from "../../base/progressBar";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const VideoLowestZod = z.object({
@@ -59,6 +60,16 @@ export default async function VideoLowest(input: {
     metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
     ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
+      progressBar({ timemark: undefined, percent: undefined });
+    });
+    ffmpeg.on("end", () => {
+      progressBar({ timemark: undefined, percent: undefined });
+    });
+    ffmpeg.on("close", () => {
+      progressBar({ timemark: undefined, percent: undefined });
+    });
+    ffmpeg.on("progress", ({ percent, timemark }) => {
+      progressBar({ timemark, percent });
     });
     ffmpeg.on("error", (error) => {
       return error;

@@ -5,6 +5,7 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
+import progressBar from "../../base/progressBar";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const AudioVideoHighestZod = z.object({
@@ -50,6 +51,16 @@ export default async function AudioVideoHighest(input: {
     ffmpeg.addOption("-shortest");
     ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
+      progressBar({ timemark: undefined, percent: undefined });
+    });
+    ffmpeg.on("end", () => {
+      progressBar({ timemark: undefined, percent: undefined });
+    });
+    ffmpeg.on("close", () => {
+      progressBar({ timemark: undefined, percent: undefined });
+    });
+    ffmpeg.on("progress", ({ percent, timemark }) => {
+      progressBar({ timemark, percent });
     });
     ffmpeg.on("error", (error) => {
       return error;
