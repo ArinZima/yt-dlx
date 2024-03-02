@@ -1,7 +1,6 @@
 console.clear();
 import * as fs from "fs";
 import colors from "colors";
-import * as path from "path";
 import { execSync } from "child_process";
 import fluentffmpeg from "fluent-ffmpeg";
 import progressBar from "../base/progressBar";
@@ -20,8 +19,7 @@ function ffmpeg(url: string): fluentffmpeg.FfmpegCommand {
   // =====================================[FFMPEG-LOGIC]=====================================
   const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg()
     .input(url)
-    .on("start", (cmd) => {
-      console.log(colors.green("@ffmpeg:"), cmd);
+    .on("start", () => {
       progressBar({ timemark: undefined, percent: undefined });
     })
     .on("progress", ({ percent, timemark }) => {
@@ -105,6 +103,15 @@ function ffmpeg(url: string): fluentffmpeg.FfmpegCommand {
   return ffmpeg;
 }
 
-ffmpeg(
-  "https://rr2---sn-gwpa-niad.googlevideo.com/videoplayback?expire=1709384369&ei=Uc7iZYaWA67BrtoP76OQgAY&ip=2409%3A40e1%3Aa%3Abdd4%3A13db%3A5d5a%3Ad07b%3A72ae&id=o-AK5H9-i-gU2YK_F4qo8dQgTOOu9h5NiGSvwnmRGm6Ftg&itag=137&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=Ny&mm=31%2C29&mn=sn-gwpa-niad%2Csn-qxaelned&ms=au%2Crdu&mv=m&mvi=2&pcm2cms=yes&pl=36&gcr=in&initcwndbps=480000&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=59629419&dur=194.110&lmt=1706319416857349&mt=1709362148&fvip=4&keepalive=yes&fexp=24007246&c=IOS&txp=453C434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cgcr%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhALnFchG73wBsCWToO5eh-7xIrO-QARchhtPmfUrNzK0LAiEAzm98CAuFLAWKsKqP74S8YVcPiKxxgOMY8boQ-vt_MDY%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpcm2cms%2Cpl%2Cinitcwndbps&lsig=APTiJQcwRgIhAO4Mf1vQsl0As0K1AR09s8yLVpMt_IgbAVZWZ0QJOTdbAiEAsWrruHbTsgtXZc9koxqJQDjFAOH7jtgFSTCQXjvSJ2E%3D"
-).pipe(fs.createWriteStream(path.join("output.mkv")), { end: true });
+const videoLink =
+  "https://rr5---sn-gwpa-niad.googlevideo.com/videoplayback?expire=1709392729&ei=-e7iZZToI6Du2roP2a-YoAE&ip=2409%3A40e1%3Aa%3Abdd4%3A13db%3A5d5a%3Ad07b%3A72ae&id=o-AEGrn5OrXil3vJuEWAjonrZYL4-laPKE9cAAQe86orxA&itag=271&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=bQ&mm=31%2C29&mn=sn-gwpa-niad%2Csn-qxaeen7l&ms=au%2Crdu&mv=m&mvi=5&pl=36&initcwndbps=407500&vprv=1&svpuc=1&mime=video%2Fwebm&gir=yes&clen=539424&dur=183.983&lmt=1705829926354675&mt=1709370539&fvip=2&keepalive=yes&fexp=24007246&c=IOS&txp=4532434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgQmtpc3i0qwFDQGhIVEGw5eWFoh0OV3Hrgw4ekuAiq1YCIBmGa9ioejkPidqe4jAm0fr4cIbmGVctrZH2v55m5dbG&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=APTiJQcwRQIhAP6pejw6csuCBAvAlKAA4hoj69w7WMAd4_c6mscpx5b_AiBl54HNI7SICP-kC-6ku35nO3qKSYmKF5MpIzaeAaw4Vw%3D%3D";
+
+ffmpeg(videoLink)
+  .outputFormat("matroska")
+  .pipe(fs.createWriteStream("output.mkv"), {
+    end: true,
+  });
+
+ffmpeg(videoLink).outputFormat("avi").pipe(fs.createWriteStream("output.avi"), {
+  end: true,
+});
