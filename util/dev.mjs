@@ -10,38 +10,42 @@ const colors = {
 };
 
 const core = {
-  postinstall: "node util/ffmpeg.mjs && node util/engine.mjs && yarn run perm",
-  remake:
-    "yarn run clean && yarn run make && yarn run update && yarn run build",
-  prepublishOnly:
-    "yarn remake && rm -rf util/ffmpeg util/ffmpeg.tar.xz util/engine",
-  upload:
-    "yarn run remake && yarn run test && npm pkg fix && npm publish --access=public && yarn run update",
-  perm: "chmod +x util/ffmpeg/bin/ffmpeg util/ffmpeg/bin/ffprobe util/ffmpeg/bin/ffplay util/engine",
-  clean:
-    "yarn run clean:base && yarn run clean:client && rm -rf util/ffmpeg util/ffmpeg.tar.xz util/engine",
-  "clean:base": "rm -rf node_modules .temp shared others",
+  server: "node util/server.mjs",
+  prepublishOnly: "yarn remake && yarn test && npm pkg fix",
+  remake: "yarn clean && yarn make && yarn update && yarn build",
+  postinstall:
+    "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*",
+  clean: "yarn clean:base && yarn clean:client && yarn clean:deps",
+  "clean:base": "rm -rf node_modules temp shared others",
   "clean:client": "cd client && rm -rf node_modules .next",
-  make: "yarn run make:deps && yarn run make:base && yarn run make:client",
+  "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/engine",
+  make: "yarn make:deps && yarn make:base && yarn make:client && yarn postinstall",
   "make:base": "yarn install",
   "make:client": "cd client && yarn install",
   "make:deps": "chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh",
-  build: "yarn run build:base && yarn run build:client",
+  update: "yarn update:base && yarn update:client",
+  "update:base": "yarn install --verbose && yarn upgrade --latest",
+  "update:client":
+    "cd client && yarn install --verbose && yarn upgrade --latest",
+  build: "yarn build:base && yarn build:client",
   "build:base":
-    "rm -rf shared .temp && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
-  "build:client": "cd client && rm -rf .next .temp &&  npm run build",
-  update: "yarn run update:base && yarn run update:client",
-  "update:base": "yarn install && yarn upgrade --latest",
-  "update:client": "cd client && yarn install && yarn upgrade --latest",
-  cli: "yarn run link && yarn run test:cli && yarn run unlink",
-  test: "yarn run test:web && yarn run test:full && yarn run test:cli",
+    "rm -rf shared temp && tsup --config tsup.config.ts && rollup -c rollup.config.mjs",
+  "build:client": "cd client && rm -rf .next temp && yarn build",
+  test: "yarn test:scrape && yarn test:full && yarn test:cli",
   "test:cli":
-    "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
+    "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
+  "test:scrape":
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js",
   "test:full":
-    "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/runner.js",
-  "test:web":
-    "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/web.spec.js",
-  spec: "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
+  "test:audio":
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js",
+  "test:video":
+    "`rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
+  "test:mix":
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
+  "test:spec":
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/quick.spec.js",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];

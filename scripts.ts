@@ -1,40 +1,29 @@
-const scripts: object[] = [
-  {
-    start: `node util/dev.mjs`,
-    server: `node util/server.mjs`,
-    remake: `yarn clean && yarn make && yarn update && yarn build`,
-    postinstall: `node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*`,
-    prepublishOnly: `yarn remake && rm -rf util/ffmpeg util/ffmpeg.tar.xz util/engine`,
-    upload: `yarn remake && yarn test && npm pkg fix && npm publish --access=public && yarn update`,
-    spec: `tsup --config tsup.config.ts ./core/__tests__/quick.spec.ts --outDir temp --clean && node temp/quick.spec.js`,
-    clean: {
-      main: `yarn clean:base && yarn clean:client && yarn clean:deps`,
-      base: `rm -rf node_modules temp shared others`,
-      client: `cd client && rm -rf node_modules .next`,
-      deps: `rm -rf util/ffmpeg.tar.xz util/ffmpeg util/engine`,
-    },
-    make: {
-      main: `yarn make:deps && yarn make:base && yarn make:client && yarn postinstall`,
-      base: `yarn install`,
-      client: `cd client && yarn install`,
-      deps: `chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh`,
-    },
-    update: {
-      main: `yarn update:base && yarn update:client`,
-      base: `yarn install --verbose && yarn upgrade --latest`,
-      client: `cd client && yarn install --verbose && yarn upgrade --latest`,
-    },
-    build: {
-      main: `yarn build:base && yarn build:client`,
-      base: `rm -rf shared temp && tsup --config tsup.config.ts && rollup -c rollup.config.mjs`,
-      client: `cd client && rm -rf .next temp && yarn build`,
-    },
-    test: {
-      main: `yarn test:scrape && yarn test:full && yarn test:cli`,
-      cli: `yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink`,
-      scrape: `rm -rf temp && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js`,
-      full: `rm -rf temp && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js`,
-    },
-  },
-];
-console.log(scripts);
+// "scripts": {
+// start: "node util/dev.mjs"
+// server: "node util/server.mjs"
+// prepublishOnly: "yarn remake && yarn test && npm pkg fix"
+// remake: "yarn clean && yarn make && yarn update && yarn build"
+// postinstall: "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*"
+// clean: "yarn clean:base && yarn clean:client && yarn clean:deps"
+// "clean:base": "rm -rf node_modules temp shared others"
+// "clean:client": "cd client && rm -rf node_modules .next"
+// "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/engine"
+// make: "yarn make:deps && yarn make:base && yarn make:client && yarn postinstall"
+// "make:base": "yarn install"
+// "make:client": "cd client && yarn install"
+// "make:deps": "chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh"
+// update: "yarn update:base && yarn update:client"
+// "update:base": "yarn install --verbose && yarn upgrade --latest"
+// "update:client": "cd client && yarn install --verbose && yarn upgrade --latest"
+// build: "yarn build:base && yarn build:client"
+// "build:base": "rm -rf shared temp && tsup --config tsup.config.ts && rollup -c rollup.config.mjs"
+// "build:client": "cd client && rm -rf .next temp && yarn build"
+// test: "yarn test:scrape && yarn test:full && yarn test:cli"
+// "test:cli": "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink"
+// "test:scrape": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js"
+// "test:full": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js"
+// "test:audio": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js"
+// "test:video": "`rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js"
+// "test:mix": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js"
+// "test:spec": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/quick.spec.js"
+// }
