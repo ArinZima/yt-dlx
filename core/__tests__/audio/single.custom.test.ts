@@ -9,7 +9,7 @@ async.series([
     try {
       holder = await ytdlx.audio.custom({
         folderName: ".temp/audio",
-        query: "sQEgklEwhSo",
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         outputFormat: "ogg",
         quality: "medium",
         stream: false,
@@ -41,7 +41,7 @@ async.series([
       holder = await ytdlx.audio.custom({
         folderName: ".temp/audio",
         outputFormat: "flac",
-        query: "sQEgklEwhSo",
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         quality: "medium",
         stream: true,
       });

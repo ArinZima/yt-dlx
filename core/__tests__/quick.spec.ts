@@ -5,7 +5,7 @@ import * as fs from "fs";
 (async () => {
   const core = await ytdlx.audio.lowest({
     folderName: ".temp/audio",
-    query: "sQEgklEwhSo",
+    query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
     outputFormat: "mp3",
     stream: true,
   });

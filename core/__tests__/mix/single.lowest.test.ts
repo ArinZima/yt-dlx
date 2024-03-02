@@ -9,7 +9,7 @@ async.series([
     try {
       holder = await ytdlx.audio_video.lowest({
         folderName: "audio_video",
-        query: "sQEgklEwhSo",
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         outputFormat: "avi",
         stream: false,
       });
@@ -37,7 +37,7 @@ async.series([
     try {
       holder = await ytdlx.audio_video.lowest({
         folderName: "audio_video",
-        query: "sQEgklEwhSo",
+        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
         outputFormat: "webm",
         stream: true,
       });
