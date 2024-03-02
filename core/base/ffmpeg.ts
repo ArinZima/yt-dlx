@@ -6,35 +6,22 @@ import { execSync } from "child_process";
 import progressBar from "../base/progressBar";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
-function gpuffmpeg(input: string): FfmpegCommand {
-  const getTerm = (command: string) => {
-    try {
-      return execSync(command).toString().trim();
-    } catch (error) {
-      return undefined;
-    }
-  };
-  // =====================================[FFMPEG-LOGIC]=====================================
+let maxTries: number = 6;
+let currentDir: string = __dirname;
+let FfprobePath: string, FfmpegPath: string;
+function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
   const ffmpeg: FfmpegCommand = fluent()
     .input(input)
-    .on("start", () => {
-      progressBar({ timemark: undefined, percent: undefined });
+    .on("start", (command) => {
+      if (verbose) console.log(colors.green("\n@ffmpeg:"), command);
     })
     .on("progress", ({ percent, timemark }) => {
       progressBar({ timemark, percent });
     })
-    .on("end", () => {
-      console.log(colors.green("@ffmpeg:"), "completed");
-      progressBar({ timemark: undefined, percent: undefined });
-    })
-    .on("error", (error) => {
-      console.error(colors.red("@ffmpeg:"), error.message);
-      progressBar({ timemark: undefined, percent: undefined });
-    });
-  // =====================================[FFMPEG_FFPROBE-LOGIC]=====================================
-  let maxTries = 6;
-  let currentDir = __dirname;
-  let FfprobePath, FfmpegPath;
+    .on("end", () => console.log(colors.green("\n@ffmpeg:"), "ended"))
+    .on("close", () => console.log(colors.green("\n@ffmpeg:"), "closed"))
+    .on("finish", () => console.log(colors.green("\n@ffmpeg:"), "finish"))
+    .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
   while (maxTries > 0) {
     FfprobePath = path.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
     FfmpegPath = path.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
@@ -47,16 +34,17 @@ function gpuffmpeg(input: string): FfmpegCommand {
       maxTries--;
     }
   }
-  // =====================================[GPU-LOGIC]=====================================
-  let gpuVendor: string | undefined;
-  try {
-    gpuVendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
-  } catch (error) {
-    gpuVendor = undefined;
-  }
+  const getTerm = (command: string) => {
+    try {
+      return execSync(command).toString().trim();
+    } catch {
+      return undefined;
+    }
+  };
+  const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
   switch (true) {
-    case gpuVendor && gpuVendor.includes("NVIDIA"):
-      console.log(colors.green("@ffmpeg: using GPU " + gpuVendor));
+    case vendor && vendor.includes("NVIDIA"):
+      console.log(colors.green("@ffmpeg: using GPU " + vendor));
       ffmpeg.withInputOption("-hwaccel cuda");
       ffmpeg.withVideoCodec("h264_nvenc");
       break;

@@ -5,7 +5,6 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import gpuffmpeg from "../../base/ffmpeg";
 import lowEntry from "../../base/lowEntry";
-import progressBar from "../../base/progressBar";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const AudioLowestZod = z.object({
@@ -41,25 +40,15 @@ export default async function AudioLowest(input: {
       throw new Error("Unable to get response from YouTube...");
     }
     const outputFormat = "avi";
-    const ffmpeg: gpuffmpegCommand = gpuffmpeg(metaEntry.AVDownload.mediaurl);
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg(
+      metaEntry.AVDownload.mediaurl,
+      verbose
+    );
     ffmpeg.addInput(metaBody.metaTube.thumbnail);
     ffmpeg.addOutputOption("-map", "1:0");
     ffmpeg.addOutputOption("-map", "0:a:0");
     ffmpeg.addOutputOption("-id3v2_version", "3");
     ffmpeg.outputFormat("avi");
-    ffmpeg.on("start", (command) => {
-      if (verbose) console.log(command);
-      progressBar({ timemark: undefined, percent: undefined });
-    });
-    ffmpeg.on("end", () => {
-      progressBar({ timemark: undefined, percent: undefined });
-    });
-    ffmpeg.on("close", () => {
-      progressBar({ timemark: undefined, percent: undefined });
-    });
-    ffmpeg.on("progress", ({ percent, timemark }) => {
-      progressBar({ timemark, percent });
-    });
     ffmpeg.on("error", (error) => {
       return error;
     });

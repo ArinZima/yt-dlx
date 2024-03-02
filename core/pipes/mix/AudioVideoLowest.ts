@@ -5,7 +5,6 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import gpuffmpeg from "../../base/ffmpeg";
 import lowEntry from "../../base/lowEntry";
-import progressBar from "../../base/progressBar";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const AudioVideoLowestZod = z.object({
@@ -46,23 +45,13 @@ export default async function AudioVideoLowest(input: {
     }
     const outputFormat = "mkv";
     const metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
-    const ffmpeg: gpuffmpegCommand = gpuffmpeg(VmetaEntry.AVDownload.mediaurl);
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg(
+      VmetaEntry.AVDownload.mediaurl,
+      verbose
+    );
     ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
     ffmpeg.addOutputOption("-shortest");
     ffmpeg.outputFormat("matroska");
-    ffmpeg.on("start", (command) => {
-      if (verbose) console.log(command);
-      progressBar({ timemark: undefined, percent: undefined });
-    });
-    ffmpeg.on("end", () => {
-      progressBar({ timemark: undefined, percent: undefined });
-    });
-    ffmpeg.on("close", () => {
-      progressBar({ timemark: undefined, percent: undefined });
-    });
-    ffmpeg.on("progress", ({ percent, timemark }) => {
-      progressBar({ timemark, percent });
-    });
     ffmpeg.on("error", (error) => {
       return error;
     });
