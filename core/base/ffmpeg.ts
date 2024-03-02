@@ -14,18 +14,13 @@ interface ProgressData {
   percent: number | undefined;
   frames: number | undefined;
 }
-
 export function progressBar(prog: ProgressData) {
-  if (
-    prog.currentKbps === undefined ||
-    prog.currentFps === undefined ||
-    prog.targetSize === undefined ||
-    prog.timemark === undefined ||
-    prog.percent === undefined ||
-    prog.frames === undefined
-  ) {
-    return;
-  }
+  if (prog.currentKbps === undefined) return;
+  if (prog.currentFps === undefined) return;
+  if (prog.targetSize === undefined) return;
+  if (prog.timemark === undefined) return;
+  if (prog.percent === undefined) return;
+  if (prog.frames === undefined) return;
   let color = colors.green;
   if (prog.percent >= 98) prog.percent = 100;
   readline.cursorTo(process.stdout, 0);
@@ -54,7 +49,6 @@ export function progressBar(prog: ProgressData) {
       color("@targetSize: ") +
       prog.targetSize
   );
-  if (prog.percent >= 99) process.stdout.write("\n");
 }
 
 function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
