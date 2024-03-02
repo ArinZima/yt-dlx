@@ -2,7 +2,6 @@ import colors from "colors";
 import readline from "readline";
 
 let color = colors.green;
-
 const progressBar = (prog: { timemark: any; percent: any }) => {
   if (prog.timemark === undefined || prog.percent === undefined) return;
   readline.cursorTo(process.stdout, 0);
@@ -17,5 +16,4 @@ const progressBar = (prog: { timemark: any; percent: any }) => {
     )}${prog.timemark}`
   );
 };
-
 export default progressBar;

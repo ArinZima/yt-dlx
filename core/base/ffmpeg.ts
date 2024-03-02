@@ -1,10 +1,26 @@
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
+import readline from "readline";
 import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
-import progressBar from "../base/progressBar";
 import type { FfmpegCommand } from "fluent-ffmpeg";
+
+let color = colors.green;
+const progressBar = (prog: { timemark: any; percent: any }) => {
+  if (prog.timemark === undefined || prog.percent === undefined) return;
+  readline.cursorTo(process.stdout, 0);
+  if (prog.percent < 30) color = colors.red;
+  else if (prog.percent < 60) color = colors.yellow;
+  const width = Math.floor(process.stdout.columns / 3);
+  const scomp = Math.round((width * prog.percent) / 100);
+  const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+  process.stdout.write(
+    `${color("@prog: ")}${sprog} ${prog.percent.toFixed(2)}% ${color(
+      "@timemark: "
+    )}${prog.timemark}`
+  );
+};
 
 let maxTries: number = 6;
 let currentDir: string = __dirname;
@@ -15,12 +31,8 @@ function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
     .on("start", (command) => {
       if (verbose) console.log(colors.green("\n@ffmpeg:"), command);
     })
-    .on("progress", ({ percent, timemark }) => {
-      progressBar({ timemark, percent });
-    })
+    .on("progress", (prog) => progressBar(prog))
     .on("end", () => console.log(colors.green("\n@ffmpeg:"), "ended"))
-    .on("close", () => console.log(colors.green("\n@ffmpeg:"), "closed"))
-    .on("finish", () => console.log(colors.green("\n@ffmpeg:"), "finish"))
     .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
   while (maxTries > 0) {
     FfprobePath = path.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
