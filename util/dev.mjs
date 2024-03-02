@@ -18,7 +18,8 @@ const core = {
   upload:
     "yarn run remake && yarn run test && npm pkg fix && npm publish --access=public && yarn run update",
   perm: "chmod +x util/ffmpeg/bin/ffmpeg util/ffmpeg/bin/ffprobe util/ffmpeg/bin/ffplay util/engine",
-  clean: "yarn run clean:base && yarn run clean:client",
+  clean:
+    "yarn run clean:base && yarn run clean:client && rm -rf util/ffmpeg util/ffmpeg.tar.xz util/engine",
   "clean:base": "rm -rf node_modules .temp shared others",
   "clean:client": "cd client && rm -rf node_modules .next",
   make: "yarn run make:deps && yarn run make:base && yarn run make:client",
