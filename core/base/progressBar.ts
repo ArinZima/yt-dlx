@@ -15,7 +15,7 @@ const progressBar = (prog: ProgressData) => {
   const width = Math.floor(process.stdout.columns / 3);
   const scomp = Math.round((width * prog.percent) / 100);
   if (prog.percent < 20) color = colors.red;
-  else if (prog.percent < 80) color = colors.yellow;
+  else if (prog.percent < 60) color = colors.yellow;
   const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
   process.stdout.write(
     color("@prog: ") +
