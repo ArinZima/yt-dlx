@@ -15,6 +15,7 @@ function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
     if (prog.percent < 1 && prog.timemark.includes("-")) return;
     readline.cursorTo(process.stdout, 0);
     let color = colors.green;
+    if (prog.percent > 98) prog.percent = 100;
     if (prog.percent < 25) color = colors.red;
     else if (prog.percent < 50) color = colors.yellow;
     const width = Math.floor(process.stdout.columns / 4);
