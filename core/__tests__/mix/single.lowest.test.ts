@@ -11,6 +11,7 @@ async.series([
         folderName: ".temp/audio_video",
         query: "sQEgklEwhSo",
         outputFormat: "avi",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -25,6 +26,7 @@ async.series([
         query: "sQEgklEwhSo",
         folderName: ".temp/audio_video",
         outputFormat: "mov",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -39,6 +41,7 @@ async.series([
         folderName: ".temp/audio_video",
         query: "sQEgklEwhSo",
         outputFormat: "webm",
+        verbose: true,
         stream: true,
       });
       if (holder) {
@@ -63,6 +66,7 @@ async.series([
         query: "sQEgklEwhSo",
         folderName: ".temp/audio_video",
         outputFormat: "webm",
+        verbose: true,
         stream: true,
       });
       if (holder) {

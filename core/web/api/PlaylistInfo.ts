@@ -11,6 +11,7 @@ import crawler, { browser, page } from "../crawler";
 
 export interface InputYouTube {
   query: string;
+  verbose?: boolean;
   screenshot?: boolean;
 }
 export interface PlaylistVideos {
@@ -35,7 +36,6 @@ export default async function PlaylistInfo(
   input: InputYouTube
 ): Promise<PlaylistInfoType | undefined> {
   try {
-    await crawler();
     let query: string;
     const spinnies = new spinClient();
     const QuerySchema = z.object({
@@ -70,9 +70,11 @@ export default async function PlaylistInfo(
             message: "Query must be a valid YouTube Playlist Link or ID.",
           }
         ),
+      verbose: z.boolean().optional(),
       screenshot: z.boolean().optional(),
     });
-    const { screenshot } = await QuerySchema.parseAsync(input);
+    const { screenshot, verbose } = await QuerySchema.parseAsync(input);
+    await crawler(verbose);
     const retryOptions = {
       maxTimeout: 6000,
       minTimeout: 1000,

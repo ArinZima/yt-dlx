@@ -13,8 +13,10 @@ import type EngineResult from "../interface/EngineResult";
 
 export default async function Agent({
   query,
+  verbose,
 }: {
   query: string;
+  verbose?: boolean;
 }): Promise<EngineResult> {
   let respEngine: EngineResult | undefined = undefined;
   let videoId: string | undefined = await YouTubeID(query);
@@ -23,6 +25,7 @@ export default async function Agent({
   if (!videoId) {
     TubeBody = (await core.search.SearchVideos({
       type: "video",
+      verbose,
       query,
     })) as TypeVideo[];
     if (!TubeBody[0]) {
@@ -38,7 +41,10 @@ export default async function Agent({
       respEngine = await Engine(TubeBody[0].videoLink);
     }
   } else {
-    TubeBody = (await core.search.VideoInfo({ query })) as VideoInfoType;
+    TubeBody = (await core.search.VideoInfo({
+      verbose,
+      query,
+    })) as VideoInfoType;
     if (!TubeBody) {
       throw new Error(
         colors.red("@error: ") + "Unable to get response from YouTube..."

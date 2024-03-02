@@ -11,6 +11,7 @@ import crawler, { browser, page } from "../crawler";
 
 export interface IpOp {
   query: string;
+  verbose?: boolean;
   screenshot?: boolean;
   type: keyof { video: "video"; playlist: "playlist" };
 }
@@ -40,7 +41,6 @@ export default async function SearchVideos(
   input: IpOp
 ): Promise<TypeVideo[] | TypePlaylist[] | undefined> {
   try {
-    await crawler();
     const QuerySchema = z.object({
       query: z
         .string()
@@ -54,10 +54,11 @@ export default async function SearchVideos(
             message: "Query must not be a YouTube video/Playlist link",
           }
         ),
+      verbose: z.boolean().optional(),
       screenshot: z.boolean().optional(),
     });
-
-    const { query, screenshot } = await QuerySchema.parseAsync(input);
+    const { query, screenshot, verbose } = await QuerySchema.parseAsync(input);
+    await crawler(verbose);
     const retryOptions = {
       maxTimeout: 6000,
       minTimeout: 1000,

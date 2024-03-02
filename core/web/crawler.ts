@@ -3,11 +3,11 @@ import colors from "colors";
 export let browser: Browser;
 export let page: Page;
 
-export default async function crawler() {
+export default async function crawler(verbose?: boolean) {
   try {
     browser = await puppeteer.launch({
+      headless: verbose ? false : true,
       userDataDir: "others",
-      headless: false,
       args: [
         "--no-zygote",
         "--incognito",

@@ -1,9 +1,15 @@
 import colors from "colors";
 import ytdlx from "../../base/Agent";
 
-export default async function extract({ query }: { query: string }) {
+export default async function extract({
+  query,
+  verbose,
+}: {
+  query: string;
+  verbose?: boolean;
+}) {
   try {
-    const metaBody = await ytdlx({ query });
+    const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) {
       return {
         message: "Unable to get response from YouTube...",

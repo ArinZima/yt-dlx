@@ -33,7 +33,7 @@ export default async function AudioVideoHighest(input: {
       outputFormat = "webm",
     } = AudioVideoHighestZod.parse(input);
 
-    const metaBody = await ytdlx({ query });
+    const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,

@@ -51,7 +51,7 @@ export default async function VideoLowest(input: {
       outputFormat = "mp4",
     } = VideoLowestZod.parse(input);
 
-    const metaBody = await ytdlx({ query });
+    const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     let metaName: string = "";
     const title: string = metaBody.metaTube.title.replace(

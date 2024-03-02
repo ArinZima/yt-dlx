@@ -12,6 +12,7 @@ async.series([
         query: "sQEgklEwhSo",
         outputFormat: "mp4",
         quality: "720p",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -28,6 +29,7 @@ async.series([
         outputFormat: "mov",
         filter: "grayscale",
         quality: "720p",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -43,6 +45,7 @@ async.series([
         query: "sQEgklEwhSo",
         outputFormat: "avi",
         quality: "720p",
+        verbose: true,
         stream: true,
       });
       if (holder) {
@@ -69,6 +72,7 @@ async.series([
         outputFormat: "mp4",
         filter: "invert",
         quality: "720p",
+        verbose: true,
         stream: true,
       });
       if (holder) {

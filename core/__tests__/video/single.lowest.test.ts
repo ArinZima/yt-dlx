@@ -11,6 +11,7 @@ async.series([
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
         outputFormat: "mp4",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -26,6 +27,7 @@ async.series([
         folderName: ".temp/video",
         outputFormat: "mov",
         filter: "grayscale",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -40,6 +42,7 @@ async.series([
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
         outputFormat: "avi",
+        verbose: true,
         stream: true,
       });
       if (holder) {
@@ -65,6 +68,7 @@ async.series([
         folderName: ".temp/video",
         outputFormat: "mp4",
         filter: "invert",
+        verbose: true,
         stream: true,
       });
       if (holder) {

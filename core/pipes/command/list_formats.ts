@@ -4,8 +4,10 @@ import ytdlx from "../../base/Agent";
 
 export default function list_formats({
   query,
+  verbose,
 }: {
   query: string;
+  verbose?: boolean;
 }): Promise<any> {
   return new Promise(async (resolve, reject) => {
     try {
@@ -13,7 +15,7 @@ export default function list_formats({
         .object({
           query: z.string().min(1),
         })
-        .parse({ query });
+        .parse({ query, verbose });
       const EnResp = await ytdlx(zval);
       if (!EnResp) return reject("Unable to get response from YouTube...");
       const metaTube = (data: any[]) =>

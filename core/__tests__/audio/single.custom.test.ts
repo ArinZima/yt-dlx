@@ -12,6 +12,7 @@ async.series([
         query: "sQEgklEwhSo",
         outputFormat: "ogg",
         quality: "medium",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -28,6 +29,7 @@ async.series([
         outputFormat: "mp3",
         filter: "nightcore",
         quality: "medium",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -43,6 +45,7 @@ async.series([
         outputFormat: "flac",
         query: "sQEgklEwhSo",
         quality: "medium",
+        verbose: true,
         stream: true,
       });
       if (holder) {
@@ -69,6 +72,7 @@ async.series([
         outputFormat: "aiff",
         filter: "bassboost",
         quality: "medium",
+        verbose: true,
         stream: true,
       });
       if (holder) {

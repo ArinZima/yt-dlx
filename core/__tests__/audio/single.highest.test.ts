@@ -11,6 +11,7 @@ async.series([
         folderName: ".temp/audio",
         query: "sQEgklEwhSo",
         outputFormat: "ogg",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -26,6 +27,7 @@ async.series([
         folderName: ".temp/audio",
         outputFormat: "mp3",
         filter: "nightcore",
+        verbose: true,
         stream: false,
       });
       console.log(colors.bold.green("@pass:"), true);
@@ -40,6 +42,7 @@ async.series([
         folderName: ".temp/audio",
         outputFormat: "flac",
         query: "sQEgklEwhSo",
+        verbose: true,
         stream: true,
       });
       if (holder) {
@@ -65,6 +68,7 @@ async.series([
         folderName: ".temp/audio",
         outputFormat: "aiff",
         filter: "bassboost",
+        verbose: true,
         stream: true,
       });
       if (holder) {

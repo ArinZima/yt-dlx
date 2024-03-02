@@ -37,7 +37,7 @@ export default async function VideoHighest(input: {
       filter,
     } = VideoHighestZod.parse(input);
 
-    const metaBody = await ytdlx({ query });
+    const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,

@@ -36,7 +36,7 @@ export default async function AudioLowest(input: {
       folderName,
       outputFormat = "mp3",
     } = AudioLowestZod.parse(input);
-    const metaBody = await ytdlx({ query });
+    const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     let metaName: string = "";
     const title: string = metaBody.metaTube.title.replace(

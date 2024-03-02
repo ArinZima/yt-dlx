@@ -20,10 +20,11 @@ const AudioQualityCustomZod = z.object({
 export default async function AudioQualityCustom(input: {
   query: string;
   stream?: boolean;
+  verbose?: boolean;
   folderName?: string;
+  filter?: keyof AudioFilters;
   quality: "high" | "medium" | "low" | "ultralow";
   outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
-  filter?: keyof AudioFilters;
 }): Promise<void | {
   fileName: string;
   stream: fluentffmpeg.FfprobeStreamDisposition;
@@ -38,7 +39,7 @@ export default async function AudioQualityCustom(input: {
       folderName,
       outputFormat = "mp3",
     } = AudioQualityCustomZod.parse(input);
-    const metaResp = await ytdlx({ query });
+    const metaResp = await ytdlx({ query, verbose });
     if (!metaResp) {
       throw new Error("Unable to get response from YouTube...");
     }

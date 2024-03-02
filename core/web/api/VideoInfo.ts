@@ -11,6 +11,7 @@ import crawler, { browser, page } from "../crawler";
 
 export interface InputYouTube {
   query: string;
+  verbose?: boolean;
   screenshot?: boolean;
 }
 export interface VideoInfoType {
@@ -26,7 +27,6 @@ export default async function VideoInfo(
   input: InputYouTube
 ): Promise<VideoInfoType | undefined> {
   try {
-    await crawler();
     let query: string;
     const spinnies = new spinClient();
     const QuerySchema = z.object({
@@ -61,9 +61,11 @@ export default async function VideoInfo(
             message: "Query must be a valid YouTube video Link or ID.",
           }
         ),
+      verbose: z.boolean().optional(),
       screenshot: z.boolean().optional(),
     });
-    const { screenshot } = await QuerySchema.parseAsync(input);
+    const { screenshot, verbose } = await QuerySchema.parseAsync(input);
+    await crawler(verbose);
     const retryOptions = {
       maxTimeout: 6000,
       minTimeout: 1000,
