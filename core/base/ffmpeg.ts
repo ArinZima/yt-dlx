@@ -47,7 +47,7 @@ function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
   };
   const ffmpeg: FfmpegCommand = fluent(input)
     .on("start", (command) => {
-      if (verbose) console.log(colors.green("\n@ffmpeg:"), command);
+      if (verbose) console.log(colors.green("@ffmpeg:"), command);
     })
     .on("progress", (prog) => progressBar(prog))
     .on("end", () => console.log(colors.green("\n@ffmpeg:"), "ended"))
