@@ -49,7 +49,6 @@ export default async function AudioQualityCustom(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const outputFormat = "avi";
     const ffmpeg: gpuffmpegCommand = gpuffmpeg(
       metaEntry.AVDownload.mediaurl,
       verbose
@@ -60,16 +59,14 @@ export default async function AudioQualityCustom(input: {
     ffmpeg.addOutputOption("-id3v2_version", "3");
     ffmpeg.outputFormat("avi");
     ffmpeg.withAudioFilter([]);
-    metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
+    metaName = `yt-dlp-(AudioQualityCustom)-${title}.avi`;
     ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
         ffmpeg,
-        filename: folderName
-          ? path.join(metaFold, metaName.replace("-.", "."))
-          : metaName.replace("-.", "."),
+        filename: folderName ? path.join(metaFold, metaName) : metaName,
       };
     } else {
       await new Promise<void>((resolve, reject) => {

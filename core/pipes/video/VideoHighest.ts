@@ -41,22 +41,19 @@ export default async function VideoHighest(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const outputFormat = "mkv";
     const ffmpeg: gpuffmpegCommand = gpuffmpeg(
       metaEntry.AVDownload.mediaurl,
       verbose
     );
     ffmpeg.outputFormat("matroska");
-    metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
+    metaName = `yt-dlp_(VideoHighest)_${title}.mkv`;
     ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
         stream: ffmpeg,
-        filename: folderName
-          ? path.join(metaFold, metaName.replace("-.", "."))
-          : metaName.replace("-.", "."),
+        filename: folderName ? path.join(metaFold, metaName) : metaName,
       };
     } else {
       await new Promise<void>((resolve, reject) => {

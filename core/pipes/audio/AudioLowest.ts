@@ -39,7 +39,6 @@ export default async function AudioLowest(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const outputFormat = "avi";
     const ffmpeg: gpuffmpegCommand = gpuffmpeg(
       metaEntry.AVDownload.mediaurl,
       verbose
@@ -53,13 +52,11 @@ export default async function AudioLowest(input: {
       return error;
     });
     ffmpeg.withAudioFilter([]);
-    metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
+    metaName = `yt-dlp-(AudioLowest)-${title}.avi`;
     if (stream) {
       return {
         ffmpeg,
-        filename: folderName
-          ? path.join(metaFold, metaName.replace("-.", "."))
-          : metaName.replace("-.", "."),
+        filename: folderName ? path.join(metaFold, metaName) : metaName,
       };
     } else {
       await new Promise<void>((resolve, reject) => {

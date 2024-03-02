@@ -43,8 +43,7 @@ export default async function AudioVideoLowest(input: {
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const outputFormat = "mkv";
-    const metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
+    const metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.mkv`;
     const ffmpeg: gpuffmpegCommand = gpuffmpeg(
       VmetaEntry.AVDownload.mediaurl,
       verbose
@@ -58,9 +57,7 @@ export default async function AudioVideoLowest(input: {
     if (stream) {
       return {
         stream: ffmpeg,
-        filename: folderName
-          ? path.join(metaFold, metaName.replace("-.", "."))
-          : metaName.replace("-.", "."),
+        filename: folderName ? path.join(metaFold, metaName) : metaName,
       };
     } else {
       await new Promise<void>((resolve, reject) => {

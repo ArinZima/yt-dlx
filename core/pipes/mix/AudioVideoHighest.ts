@@ -35,8 +35,7 @@ export default async function AudioVideoHighest(input: {
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const outputFormat = "mkv";
-    const metaName: string = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
+    const metaName: string = `yt-dlp_(AudioVideoHighest)_${title}.mkv`;
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       bigEntry(metaBody.AudioStore),
       bigEntry(metaBody.VideoStore),
@@ -57,9 +56,7 @@ export default async function AudioVideoHighest(input: {
     if (stream) {
       return {
         stream: ffmpeg,
-        filename: folderName
-          ? path.join(metaFold, metaName.replace("-.", "."))
-          : metaName.replace("-.", "."),
+        filename: folderName ? path.join(metaFold, metaName) : metaName,
       };
     } else {
       await new Promise<void>((resolve, reject) => {
