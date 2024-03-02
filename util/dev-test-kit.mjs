@@ -10,6 +10,7 @@ const colors = {
 };
 
 const core = {
+  preinstall: "node util/ffmpeg.mjs && node util/engine.mjs",
   remake: "bun clean && bun make && bun run update && bun run build",
   upload:
     "bun remake && bun run test && npm pkg fix && npm publish --access=public && bun update",
