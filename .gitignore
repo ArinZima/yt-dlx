@@ -60,3 +60,5 @@ dist
 others
 ffmpeg.tar.xz
 ffmpeg
+engine
+yt-dlp_linux

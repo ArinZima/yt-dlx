@@ -2,32 +2,29 @@ import fetch from "node-fetch";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { spawn } from "child_process";
-import { createWriteStream, existsSync, renameSync } from "fs";
+import {
+  createWriteStream,
+  existsSync,
+  readdirSync,
+  rmSync,
+  renameSync,
+} from "fs";
 
 const downloadAndExtract = async () => {
   try {
     const __filename = fileURLToPath(import.meta.url);
-    const filepath = join(dirname(__filename), "ffmpeg.tar.xz");
+    const currentDir = dirname(__filename);
+    const filepath = join(currentDir, "ffmpeg.tar.xz");
     let extractProcess;
+    const ffmpegFolderName = "ffmpeg";
+    const extractedFolderName = "ffmpeg-master-latest-linux64-gpl";
+    const extractedFolder = join(currentDir, extractedFolderName);
+    const newFolderName = join(currentDir, ffmpegFolderName);
+    if (existsSync(newFolderName)) rmSync(newFolderName, { recursive: true });
     switch (true) {
       case existsSync(filepath):
-        extractProcess = spawn("tar", [
-          "xf",
-          filepath,
-          "-C",
-          dirname(__filename),
-        ]);
-        extractProcess.on("exit", (code) => {
-          if (code === 0) {
-            const extractedFolder = join(
-              dirname(__filename),
-              "ffmpeg-master-latest-linux64-gpl"
-            );
-            const newFolderName = join(dirname(__filename), "ffmpeg");
-            renameSync(extractedFolder, newFolderName);
-          } else throw new Error("@error: ffmpeg extraction failed");
-        });
-        return;
+        extractProcess = spawn("tar", ["xf", filepath, "-C", currentDir]);
+        break;
       default:
         let url =
           "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-";
@@ -52,23 +49,14 @@ const downloadAndExtract = async () => {
           writer.on("finish", resolve);
           writer.on("error", reject);
         });
-        extractProcess = spawn("tar", [
-          "xf",
-          filepath,
-          "-C",
-          dirname(__filename),
-        ]);
-        extractProcess.on("exit", (code) => {
-          if (code === 0) {
-            const extractedFolder = join(
-              dirname(__filename),
-              "ffmpeg-master-latest-linux64-gpl"
-            );
-            const newFolderName = join(dirname(__filename), "ffmpeg");
-            renameSync(extractedFolder, newFolderName);
-          } else throw new Error("@error: ffmpeg extraction failed");
-        });
+        extractProcess = spawn("tar", ["xf", filepath, "-C", currentDir]);
     }
+
+    extractProcess.on("exit", (code) => {
+      if (code === 0) {
+        renameSync(extractedFolder, newFolderName);
+      } else throw new Error("@error: ffmpeg extraction failed");
+    });
   } catch (error) {
     console.error("@error:", error.message);
   }
