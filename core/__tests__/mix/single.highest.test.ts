@@ -8,8 +8,8 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.highest({
-        folderName: "audio_video",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        folderName: ".temp/audio_video",
+        query: "sQEgklEwhSo",
         outputFormat: "avi",
         stream: false,
       });
@@ -22,8 +22,8 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.highest({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
-        folderName: "audio_video",
+        query: "sQEgklEwhSo",
+        folderName: ".temp/audio_video",
         outputFormat: "mov",
         stream: false,
       });
@@ -36,8 +36,8 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.highest({
-        folderName: "audio_video",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        folderName: ".temp/audio_video",
+        query: "sQEgklEwhSo",
         outputFormat: "webm",
         stream: true,
       });
@@ -60,8 +60,8 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.highest({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
-        folderName: "audio_video",
+        query: "sQEgklEwhSo",
+        folderName: ".temp/audio_video",
         outputFormat: "webm",
         stream: true,
       });

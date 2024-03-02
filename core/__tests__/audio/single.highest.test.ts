@@ -9,7 +9,7 @@ async.series([
     try {
       holder = await ytdlx.audio.highest({
         folderName: ".temp/audio",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         outputFormat: "ogg",
         stream: false,
       });
@@ -22,7 +22,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio.highest({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         folderName: ".temp/audio",
         outputFormat: "mp3",
         filter: "nightcore",
@@ -39,7 +39,7 @@ async.series([
       holder = await ytdlx.audio.highest({
         folderName: ".temp/audio",
         outputFormat: "flac",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         stream: true,
       });
       if (holder) {
@@ -61,7 +61,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio.highest({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         folderName: ".temp/audio",
         outputFormat: "aiff",
         filter: "bassboost",

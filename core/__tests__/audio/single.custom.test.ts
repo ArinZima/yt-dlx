@@ -9,7 +9,7 @@ async.series([
     try {
       holder = await ytdlx.audio.custom({
         folderName: ".temp/audio",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         outputFormat: "ogg",
         quality: "medium",
         stream: false,
@@ -23,7 +23,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio.custom({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         folderName: ".temp/audio",
         outputFormat: "mp3",
         filter: "nightcore",
@@ -41,7 +41,7 @@ async.series([
       holder = await ytdlx.audio.custom({
         folderName: ".temp/audio",
         outputFormat: "flac",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         quality: "medium",
         stream: true,
       });
@@ -64,7 +64,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio.custom({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         folderName: ".temp/audio",
         outputFormat: "aiff",
         filter: "bassboost",

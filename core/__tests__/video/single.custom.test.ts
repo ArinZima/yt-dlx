@@ -4,13 +4,12 @@ import colors from "colors";
 import * as async from "async";
 
 let holder: any;
-
 async.series([
   async () => {
     try {
       holder = await ytdlx.video.custom({
         folderName: ".temp/video",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         outputFormat: "mp4",
         quality: "720p",
         stream: false,
@@ -24,7 +23,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.video.custom({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         folderName: ".temp/video",
         outputFormat: "mov",
         filter: "grayscale",
@@ -41,7 +40,7 @@ async.series([
     try {
       holder = await ytdlx.video.custom({
         folderName: ".temp/video",
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         outputFormat: "avi",
         quality: "720p",
         stream: true,
@@ -65,7 +64,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.video.custom({
-        query: "https://youtu.be/sQEgklEwhSo?si=vuiHFaNCpYvMigWq",
+        query: "sQEgklEwhSo",
         folderName: ".temp/video",
         outputFormat: "mp4",
         filter: "invert",
