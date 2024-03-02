@@ -69,7 +69,6 @@
   ],
   "dependencies": {
     "async-retry": "latest",
-    "bun": "latest",
     "chai": "latest",
     "cheerio": "latest",
     "colors": "latest",
@@ -93,7 +92,6 @@
     "@rollup/plugin-typescript": "latest",
     "@types/async": "latest",
     "@types/async-retry": "latest",
-    "@types/bun": "latest",
     "@types/chai": "latest",
     "@types/cheerio": "latest",
     "@types/fluent-ffmpeg": "latest",
