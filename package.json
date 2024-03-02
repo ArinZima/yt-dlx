@@ -79,7 +79,6 @@
     "readline-sync": "latest",
     "spinnies": "latest",
     "stream": "latest",
-    "yt-dlx": "latest",
     "zod": "latest"
   },
   "devDependencies": {
