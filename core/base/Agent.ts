@@ -18,49 +18,61 @@ export default async function Agent({
   query: string;
   verbose?: boolean;
 }): Promise<EngineResult> {
-  let respEngine: EngineResult | undefined = undefined;
-  let videoId: string | undefined = await YouTubeID(query);
-  let TubeBody: TypeVideo[] | VideoInfoType | TypePlaylist[] | PlaylistInfoType;
-  console.log(colors.green("@info:"), `using yt-dlx version ${version}`);
-  if (!videoId) {
-    TubeBody = (await core.search.SearchVideos({
-      type: "video",
-      verbose,
-      query,
-    })) as TypeVideo[];
-    if (!TubeBody[0]) {
-      throw new Error(
-        colors.red("@error: ") + "Unable to get response from YouTube..."
-      );
+  try {
+    let respEngine: EngineResult | undefined = undefined;
+    let videoId: string | undefined = await YouTubeID(query);
+    let TubeBody:
+      | TypeVideo[]
+      | VideoInfoType
+      | TypePlaylist[]
+      | PlaylistInfoType;
+    console.log(colors.green("@info:"), `using yt-dlx version ${version}`);
+    if (!videoId) {
+      TubeBody = (await core.search.SearchVideos({
+        type: "video",
+        verbose,
+        query,
+      })) as TypeVideo[];
+      if (!TubeBody[0]) {
+        throw new Error(
+          colors.red("@error: ") + "Unable to get response from YouTube..."
+        );
+      } else {
+        console.log(
+          colors.green("@info:"),
+          `preparing payload for`,
+          colors.green(TubeBody[0].title as string)
+        );
+        respEngine = await Engine(TubeBody[0].videoLink);
+      }
     } else {
-      console.log(
-        colors.green("@info:"),
-        `preparing payload for`,
-        colors.green(TubeBody[0].title as string)
-      );
-      respEngine = await Engine(TubeBody[0].videoLink);
+      TubeBody = (await core.search.VideoInfo({
+        verbose,
+        query,
+      })) as VideoInfoType;
+      if (!TubeBody) {
+        throw new Error(
+          colors.red("@error: ") + "Unable to get response from YouTube..."
+        );
+      } else {
+        console.log(
+          colors.green("@info:"),
+          `preparing payload for`,
+          colors.green(TubeBody.title)
+        );
+        respEngine = await Engine(TubeBody.videoLink);
+      }
     }
-  } else {
-    TubeBody = (await core.search.VideoInfo({
-      verbose,
-      query,
-    })) as VideoInfoType;
-    if (!TubeBody) {
+    if (respEngine === undefined) {
       throw new Error(
         colors.red("@error: ") + "Unable to get response from YouTube..."
       );
+    } else return respEngine;
+  } catch (error: any) {
+    if (error instanceof Error) {
+      throw new Error(colors.red("@error: ") + error.message);
     } else {
-      console.log(
-        colors.green("@info:"),
-        `preparing payload for`,
-        colors.green(TubeBody.title)
-      );
-      respEngine = await Engine(TubeBody.videoLink);
+      throw new Error(colors.red("@error: ") + "internal server error");
     }
   }
-  if (respEngine === undefined) {
-    throw new Error(
-      colors.red("@error: ") + "Unable to get response from YouTube..."
-    );
-  } else return respEngine;
 }

@@ -11,9 +11,10 @@
   },
   "scripts": {
     "start": "node util/dev-test-kit.mjs",
-    "preinstall": "node util/ffmpeg.mjs && node util/engine.mjs",
     "remake": "bun clean && bun make && bun run update && bun run build",
+    "preinstall": "node util/ffmpeg.mjs && node util/engine.mjs && bun perm",
     "upload": "bun remake && bun run test && npm pkg fix && npm publish --access=public && bun update",
+    "perm": "chmod +x util/ffmpeg/bin/ffmpeg util/ffmpeg/bin/ffprobe util/ffmpeg/bin/ffplay util/engine",
     "clean": "bun clean:base && bun clean:client",
     "clean:base": "rm -rf node_modules .temp shared bun.lockb",
     "clean:client": "cd client && rm -rf node_modules .next bun.lockb",
