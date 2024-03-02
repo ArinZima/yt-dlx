@@ -1,18 +1,14 @@
 import fetch from "node-fetch";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { createWriteStream, existsSync, renameSync } from "fs";
+import { createWriteStream, existsSync } from "fs";
 
 const downloadAndExtract = async () => {
   try {
     const __filename = fileURLToPath(import.meta.url);
-    const filepath = join(dirname(__filename), "yt-dlp_linux");
-    const newFilePath = join(dirname(__filename), "engine");
+    const filepath = join(dirname(__filename), "engine");
     switch (true) {
-      case existsSync(newFilePath):
-        break;
       case existsSync(filepath):
-        renameSync(filepath, newFilePath);
         break;
       default:
         let url =
@@ -32,7 +28,6 @@ const downloadAndExtract = async () => {
           writer.on("finish", resolve);
           writer.on("error", reject);
         });
-        renameSync(filepath, newFilePath);
     }
   } catch (error) {
     console.error("@error:", error.message);
