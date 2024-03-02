@@ -6,7 +6,7 @@ import colors from "colors";
   try {
     await ytdlx.audio.highest({
       folderName: ".temp/audio",
-      query: "sQEgklEwhSo",
+      query: "Houdini",
       verbose: false,
       stream: false,
     });
