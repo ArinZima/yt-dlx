@@ -8,7 +8,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio.lowest({
-        folderName: ".temp/audio",
+        folderName: "temp/audio",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: false,
@@ -22,7 +22,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio.lowest({
-        folderName: ".temp/audio",
+        folderName: "temp/audio",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: true,

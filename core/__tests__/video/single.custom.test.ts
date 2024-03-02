@@ -37,7 +37,7 @@ async.series(
   quals.map((quality) => async () => {
     try {
       holder = await ytdlx.video.custom({
-        folderName: ".temp/video",
+        folderName: "temp/video",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: false,
@@ -51,7 +51,7 @@ async.series(
   async () => {
     try {
       holder = await ytdlx.video.custom({
-        folderName: ".temp/video",
+        folderName: "temp/video",
         query: "sQEgklEwhSo",
         quality: "720p",
         verbose: false,

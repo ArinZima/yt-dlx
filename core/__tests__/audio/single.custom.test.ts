@@ -15,7 +15,7 @@ async.series(
   quals.map((quality) => async () => {
     try {
       holder = await ytdlx.audio.custom({
-        folderName: ".temp/audio",
+        folderName: "temp/audio",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: false,
@@ -29,7 +29,7 @@ async.series(
   async () => {
     try {
       holder = await ytdlx.audio.custom({
-        folderName: ".temp/audio",
+        folderName: "temp/audio",
         query: "sQEgklEwhSo",
         quality: "medium",
         verbose: false,

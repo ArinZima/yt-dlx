@@ -45,7 +45,7 @@ out
 dist
 .cache/
 .vuepress/dist
-.temp
+temp
 .cache
 .serverless/
 .fusebox/
