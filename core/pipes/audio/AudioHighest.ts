@@ -14,7 +14,6 @@ const AudioHighestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
-  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 export default async function AudioHighest(input: {
   query: string;
@@ -22,20 +21,13 @@ export default async function AudioHighest(input: {
   verbose?: boolean;
   folderName?: string;
   filter?: keyof AudioFilters;
-  outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
 }): Promise<void | {
   fileName: string;
   stream: fluentffmpeg.FfprobeStreamDisposition;
 }> {
   try {
-    const {
-      query,
-      filter,
-      stream,
-      verbose,
-      folderName,
-      outputFormat = "mp3",
-    } = AudioHighestZod.parse(input);
+    const { query, filter, stream, verbose, folderName } =
+      AudioHighestZod.parse(input);
     const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     let metaName: string = "";
@@ -51,13 +43,14 @@ export default async function AudioHighest(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
+    const outputFormat = "avi";
     const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
     ffmpeg.addInput(metaBody.metaTube.thumbnail);
     ffmpeg.addOutputOption("-map", "1:0");
     ffmpeg.addOutputOption("-map", "0:a:0");
     ffmpeg.addOutputOption("-id3v2_version", "3");
-    ffmpeg.format(outputFormat);
+    ffmpeg.outputFormat("avi");
     ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({ timemark: undefined, percent: undefined });

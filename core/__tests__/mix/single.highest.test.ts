@@ -10,7 +10,6 @@ async.series([
       holder = await ytdlx.audio_video.highest({
         folderName: ".temp/audio_video",
         query: "sQEgklEwhSo",
-        outputFormat: "avi",
         verbose: true,
         stream: false,
       });
@@ -25,7 +24,6 @@ async.series([
       holder = await ytdlx.audio_video.highest({
         query: "sQEgklEwhSo",
         folderName: ".temp/audio_video",
-        outputFormat: "mov",
         verbose: true,
         stream: false,
       });
@@ -40,7 +38,6 @@ async.series([
       holder = await ytdlx.audio_video.highest({
         folderName: ".temp/audio_video",
         query: "sQEgklEwhSo",
-        outputFormat: "webm",
         verbose: true,
         stream: true,
       });
@@ -65,7 +62,6 @@ async.series([
       holder = await ytdlx.audio_video.highest({
         query: "sQEgklEwhSo",
         folderName: ".temp/audio_video",
-        outputFormat: "webm",
         verbose: true,
         stream: true,
       });

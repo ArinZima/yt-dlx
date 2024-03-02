@@ -15,7 +15,6 @@ const AudioQualityCustomZod = z.object({
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
   quality: z.enum(["high", "medium", "low", "ultralow"]),
-  outputFormat: z.enum(["mp3", "ogg", "flac", "aiff"]).optional(),
 });
 export default async function AudioQualityCustom(input: {
   query: string;
@@ -24,21 +23,13 @@ export default async function AudioQualityCustom(input: {
   folderName?: string;
   filter?: keyof AudioFilters;
   quality: "high" | "medium" | "low" | "ultralow";
-  outputFormat?: "mp3" | "ogg" | "flac" | "aiff";
 }): Promise<void | {
   fileName: string;
   stream: fluentffmpeg.FfprobeStreamDisposition;
 }> {
   try {
-    const {
-      query,
-      filter,
-      stream,
-      verbose,
-      quality,
-      folderName,
-      outputFormat = "mp3",
-    } = AudioQualityCustomZod.parse(input);
+    const { query, filter, stream, verbose, quality, folderName } =
+      AudioQualityCustomZod.parse(input);
     const metaResp = await ytdlx({ query, verbose });
     if (!metaResp) {
       throw new Error("Unable to get response from YouTube...");
@@ -57,17 +48,18 @@ export default async function AudioQualityCustom(input: {
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
+    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
+    const outputFormat = "avi";
     ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
     ffmpeg.addInput(metaResp.metaTube.thumbnail);
     ffmpeg.addOutputOption("-map", "1:0");
     ffmpeg.addOutputOption("-map", "0:a:0");
     ffmpeg.addOutputOption("-id3v2_version", "3");
-    ffmpeg.format(outputFormat);
+    ffmpeg.outputFormat("avi");
     switch (filter) {
       case "bassboost":
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);

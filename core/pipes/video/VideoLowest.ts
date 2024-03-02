@@ -14,7 +14,6 @@ const VideoLowestZod = z.object({
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
   filter: z.string().optional(),
-  outputFormat: z.enum(["mp4", "avi", "mov"]).optional(),
 });
 export default async function VideoLowest(input: {
   query: string;
@@ -22,20 +21,13 @@ export default async function VideoLowest(input: {
   verbose?: boolean;
   folderName?: string;
   filter?: keyof VideoFilters;
-  outputFormat?: "mp4" | "avi" | "mov";
 }): Promise<void | {
   fileName: string;
   stream: fluentffmpeg.FfprobeStreamDisposition;
 }> {
   try {
-    const {
-      query,
-      filter,
-      stream,
-      verbose,
-      folderName,
-      outputFormat = "mp4",
-    } = VideoLowestZod.parse(input);
+    const { query, filter, stream, verbose, folderName } =
+      VideoLowestZod.parse(input);
 
     const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
@@ -53,9 +45,10 @@ export default async function VideoLowest(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
+    const outputFormat = "mkv";
     const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
-    ffmpeg.format(outputFormat);
+    ffmpeg.outputFormat("matroska");
     switch (filter) {
       case "grayscale":
         ffmpeg.withVideoFilter(

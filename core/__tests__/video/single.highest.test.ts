@@ -10,7 +10,6 @@ async.series([
       holder = await ytdlx.video.highest({
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
-        outputFormat: "mp4",
         verbose: true,
         stream: false,
       });
@@ -25,7 +24,6 @@ async.series([
       holder = await ytdlx.video.highest({
         query: "sQEgklEwhSo",
         folderName: ".temp/video",
-        outputFormat: "mov",
         filter: "grayscale",
         verbose: true,
         stream: false,
@@ -41,7 +39,6 @@ async.series([
       holder = await ytdlx.video.highest({
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
-        outputFormat: "avi",
         verbose: true,
         stream: true,
       });
@@ -66,7 +63,6 @@ async.series([
       holder = await ytdlx.video.highest({
         query: "sQEgklEwhSo",
         folderName: ".temp/video",
-        outputFormat: "mp4",
         filter: "invert",
         verbose: true,
         stream: true,

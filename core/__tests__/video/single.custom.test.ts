@@ -10,7 +10,6 @@ async.series([
       holder = await ytdlx.video.custom({
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
-        outputFormat: "mp4",
         quality: "720p",
         verbose: true,
         stream: false,
@@ -26,7 +25,6 @@ async.series([
       holder = await ytdlx.video.custom({
         query: "sQEgklEwhSo",
         folderName: ".temp/video",
-        outputFormat: "mov",
         filter: "grayscale",
         quality: "720p",
         verbose: true,
@@ -43,7 +41,6 @@ async.series([
       holder = await ytdlx.video.custom({
         folderName: ".temp/video",
         query: "sQEgklEwhSo",
-        outputFormat: "avi",
         quality: "720p",
         verbose: true,
         stream: true,
@@ -69,7 +66,6 @@ async.series([
       holder = await ytdlx.video.custom({
         query: "sQEgklEwhSo",
         folderName: ".temp/video",
-        outputFormat: "mp4",
         filter: "invert",
         quality: "720p",
         verbose: true,

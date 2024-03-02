@@ -12,38 +12,31 @@ const AudioVideoHighestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
-  outputFormat: z.enum(["webm", "avi", "mov"]).optional(),
 });
 export default async function AudioVideoHighest(input: {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  outputFormat?: "webm" | "avi" | "mov";
 }): Promise<void | {
   fileName: string;
   stream: fluentffmpeg.FfprobeStreamDisposition;
 }> {
   try {
-    const {
-      query,
-      stream,
-      verbose,
-      folderName,
-      outputFormat = "webm",
-    } = AudioVideoHighestZod.parse(input);
-
+    const { query, stream, verbose, folderName } =
+      AudioVideoHighestZod.parse(input);
     const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaName: string = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
     const metaFold = folderName
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
+    const outputFormat = "mkv";
+    const metaName: string = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
     const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       bigEntry(metaBody.AudioStore),
@@ -54,8 +47,8 @@ export default async function AudioVideoHighest(input: {
     }
     ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
     ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
+    ffmpeg.outputFormat("matroska");
     ffmpeg.addOption("-shortest");
-    ffmpeg.format(outputFormat);
     ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({ timemark: undefined, percent: undefined });
