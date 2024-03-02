@@ -67,3 +67,9 @@ util/ffmpeg.tar.xz
 util/ffmpeg
 util/engine
 util/yt-dlp_linux
+.gitattributes
+Dockerfile
+rollup.config.mjs
+tsconfig.json
+tsup.config.ts
+yt-dlx.png
