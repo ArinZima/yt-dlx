@@ -3,10 +3,10 @@ import colors from "colors";
 import cron from "node-cron";
 
 let counter = 0;
-cron.schedule("*/6 * * * *", async () => {
+cron.schedule("*/20 * * * *", async () => {
   try {
     const ipop =
-      await bun.$`npm install -g yt-dlx && npm uninstall -g yt-dlx`.text();
+      await bun.$`yarn global add yt-dlx@latest && yarn global remove yt-dlx@latest`.text();
     console.log(colors.green("@info:"), "re-installing iteration", counter);
     console.log(colors.yellow("@debug:"), ipop);
     counter++;
