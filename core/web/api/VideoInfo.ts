@@ -2,11 +2,13 @@ import fs from "fs";
 import colors from "colors";
 import { load } from "cheerio";
 import retry from "async-retry";
+import closers from "../closers";
 import spinClient from "spinnies";
 import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
 import YouTubeId from "../YouTubeId";
 import crawler, { browser, page } from "../crawler";
+
 export interface InputYouTube {
   query: string;
   screenshot?: boolean;
@@ -142,11 +144,10 @@ export default async function VideoInfo(
       });
       return metaTube;
     }, retryOptions);
-    if (browser) await browser.close();
+    await closers(browser);
     return TubeResp;
   } catch (error) {
-    if (page) await page.close();
-    if (browser) await browser.close();
+    await closers(browser);
     switch (true) {
       case error instanceof ZodError:
         throw error.errors.map((err) => err.message).join(", ");
@@ -157,3 +158,8 @@ export default async function VideoInfo(
     }
   }
 }
+
+process.on("SIGINT", async () => await closers(browser));
+process.on("SIGTERM", async () => await closers(browser));
+process.on("uncaughtException", async () => await closers(browser));
+process.on("unhandledRejection", async () => await closers(browser));

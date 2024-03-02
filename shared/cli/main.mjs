@@ -2,8 +2,8 @@
 import { fileURLToPath } from 'url';
 import * as path3 from 'path';
 import path3__default from 'path';
-import * as fs6 from 'fs';
-import fs6__default from 'fs';
+import * as fs from 'fs';
+import fs__default from 'fs';
 import colors22 from 'colors';
 import { load } from 'cheerio';
 import retry from 'async-retry';
@@ -134,7 +134,7 @@ async function SearchVideos(input) {
             snapshot = await page.screenshot({
               path: "TypeVideo.png"
             });
-            fs6__default.writeFileSync("TypeVideo.png", snapshot);
+            fs__default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
               text: colors22.yellow("@scrape: ") + "took snapshot..."
             });
@@ -196,7 +196,7 @@ async function SearchVideos(input) {
             snapshot = await page.screenshot({
               path: "TypePlaylist.png"
             });
-            fs6__default.writeFileSync("TypePlaylist.png", snapshot);
+            fs__default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
               text: colors22.yellow("@scrape: ") + "took snapshot..."
             });
@@ -310,7 +310,7 @@ async function PlaylistInfo(input) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs6__default.writeFileSync("FilterVideo.png", snapshot);
+        fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
           text: colors22.yellow("@scrape: ") + "took snapshot..."
         });
@@ -440,7 +440,7 @@ async function VideoInfo(input) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs6__default.writeFileSync("FilterVideo.png", snapshot);
+        fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
           text: colors22.yellow("@scrape: ") + "took snapshot..."
         });
@@ -674,7 +674,7 @@ async function Engine(query) {
     let currentDir = __dirname;
     while (maxTries > 0) {
       const enginePath = path3.join(currentDir, "util", "engine");
-      if (fs6.existsSync(enginePath)) {
+      if (fs.existsSync(enginePath)) {
         proLoc = enginePath;
         break;
       } else {
@@ -790,71 +790,48 @@ var version = "3.0.6";
 async function Agent({
   query
 }) {
-  try {
-    let videoId;
-    let respEngine = void 0;
-    let TubeBody;
-    console.log(colors22.green("@info:"), `using yt-dlx version ${version}`);
-    switch (true) {
-      case (!query || query.trim() === ""):
-        throw new Error(colors22.red("@error: ") + "'query' is required.");
-      case (/https/i.test(query) && /list/i.test(query)):
-        throw new Error(
-          colors22.red("@error: ") + "use extract_playlist_videos()."
-        );
-      case (/https/i.test(query) && !/list/i.test(query)):
-        videoId = await YouTubeID(query);
-        break;
-      default:
-        videoId = await YouTubeID(query);
+  let respEngine = void 0;
+  let videoId = await YouTubeID(query);
+  let TubeBody;
+  console.log(colors22.green("@info:"), `using yt-dlx version ${version}`);
+  if (!videoId) {
+    TubeBody = await web_default.search.SearchVideos({
+      type: "video",
+      query
+    });
+    if (!TubeBody[0]) {
+      throw new Error(
+        colors22.red("@error: ") + "Unable to get response from YouTube..."
+      );
+    } else {
+      console.log(
+        colors22.green("@info:"),
+        `preparing payload for`,
+        colors22.green(TubeBody[0].title)
+      );
+      respEngine = await Engine(TubeBody[0].videoLink);
     }
-    switch (videoId) {
-      case void 0:
-        TubeBody = await web_default.search.SearchVideos({
-          query,
-          type: "video"
-        });
-        if (!TubeBody[0]) {
-          throw new Error(
-            colors22.red("@error: ") + "no data returned from server."
-          );
-        } else {
-          console.log(
-            colors22.green("@info:"),
-            `preparing payload for`,
-            colors22.green(TubeBody[0].title)
-          );
-          respEngine = await Engine(TubeBody[0].videoLink);
-        }
-        break;
-      default:
-        TubeBody = await web_default.search.VideoInfo({
-          query
-        });
-        if (!TubeBody) {
-          throw new Error(
-            colors22.red("@error: ") + "no data returned from server."
-          );
-        } else {
-          console.log(
-            colors22.green("@info:"),
-            `preparing payload for`,
-            colors22.green(TubeBody.title)
-          );
-          respEngine = await Engine(TubeBody.videoLink);
-        }
-        break;
+  } else {
+    TubeBody = await web_default.search.VideoInfo({ query });
+    if (!TubeBody) {
+      throw new Error(
+        colors22.red("@error: ") + "Unable to get response from YouTube..."
+      );
+    } else {
+      console.log(
+        colors22.green("@info:"),
+        `preparing payload for`,
+        colors22.green(TubeBody.title)
+      );
+      respEngine = await Engine(TubeBody.videoLink);
     }
-    if (respEngine === void 0) {
-      throw new Error(colors22.red("@error: ") + "no data returned from server.");
-    } else
-      return respEngine;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(colors22.red("@error: ") + error.message);
-    } else
-      throw new Error(colors22.red("@error: ") + "internal server error");
   }
+  if (respEngine === void 0) {
+    throw new Error(
+      colors22.red("@error: ") + "Unable to get response from YouTube..."
+    );
+  } else
+    return respEngine;
 }
 
 // core/pipes/command/extract.ts
@@ -1865,8 +1842,8 @@ async function AudioLowest(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.AudioStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2047,8 +2024,8 @@ async function AudioHighest(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2183,19 +2160,6 @@ async function AudioHighest(input) {
       throw new Error(colors22.red("@error: ") + "internal server error");
   }
 }
-(async () => {
-  const core = await AudioHighest({
-    folderName: ".temp/audio",
-    query: "sQEgklEwhSo",
-    outputFormat: "mp3",
-    stream: true
-  });
-  if (!core)
-    return;
-  await core.stream.pipe(fs6.createWriteStream(core.fileName)).on("finish", () => {
-    console.log("finished successfully...");
-  });
-})();
 var VideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -2223,8 +2187,8 @@ async function VideoLowest(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2350,8 +2314,8 @@ async function VideoHighest(input) {
     );
     let metaName = "";
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2475,8 +2439,8 @@ async function AudioVideoLowest(input) {
     );
     const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const ffmpeg = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       lowEntry(metaBody.AudioStore),
@@ -2571,8 +2535,8 @@ async function AudioVideoHighest(input) {
     );
     const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const ffmpeg = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       bigEntry(metaBody.AudioStore),
@@ -2677,8 +2641,8 @@ async function AudioQualityCustom(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const ffmpeg = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === void 0) {
@@ -2840,8 +2804,8 @@ async function VideoLowest2(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6.existsSync(metaFold))
-      fs6.mkdirSync(metaFold, { recursive: true });
+    if (!fs.existsSync(metaFold))
+      fs.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");

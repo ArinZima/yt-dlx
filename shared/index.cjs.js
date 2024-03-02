@@ -986,62 +986,38 @@ async function Engine(query) {
 var version = "3.0.6";
 
 async function Agent({ query, }) {
-    try {
-        let videoId;
-        let respEngine = undefined;
-        let TubeBody;
-        console.log(colors.green("@info:"), `using yt-dlx version ${version}`);
-        switch (true) {
-            case !query || query.trim() === "":
-                throw new Error(colors.red("@error: ") + "'query' is required.");
-            case /https/i.test(query) && /list/i.test(query):
-                throw new Error(colors.red("@error: ") + "use extract_playlist_videos().");
-            case /https/i.test(query) && !/list/i.test(query):
-                videoId = await YouTubeID(query);
-                break;
-            default:
-                videoId = await YouTubeID(query);
+    let respEngine = undefined;
+    let videoId = await YouTubeID(query);
+    let TubeBody;
+    console.log(colors.green("@info:"), `using yt-dlx version ${version}`);
+    if (!videoId) {
+        TubeBody = (await web.search.SearchVideos({
+            type: "video",
+            query,
+        }));
+        if (!TubeBody[0]) {
+            throw new Error(colors.red("@error: ") + "Unable to get response from YouTube...");
         }
-        switch (videoId) {
-            case undefined:
-                TubeBody = (await web.search.SearchVideos({
-                    query: query,
-                    type: "video",
-                }));
-                if (!TubeBody[0]) {
-                    throw new Error(colors.red("@error: ") + "no data returned from server.");
-                }
-                else {
-                    console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody[0].title));
-                    respEngine = await Engine(TubeBody[0].videoLink);
-                }
-                break;
-            default:
-                TubeBody = (await web.search.VideoInfo({
-                    query: query,
-                }));
-                if (!TubeBody) {
-                    throw new Error(colors.red("@error: ") + "no data returned from server.");
-                }
-                else {
-                    console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody.title));
-                    respEngine = await Engine(TubeBody.videoLink);
-                }
-                break;
+        else {
+            console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody[0].title));
+            respEngine = await Engine(TubeBody[0].videoLink);
         }
-        if (respEngine === undefined) {
-            throw new Error(colors.red("@error: ") + "no data returned from server.");
-        }
-        else
-            return respEngine;
     }
-    catch (error) {
-        if (error instanceof Error) {
-            throw new Error(colors.red("@error: ") + error.message);
+    else {
+        TubeBody = (await web.search.VideoInfo({ query }));
+        if (!TubeBody) {
+            throw new Error(colors.red("@error: ") + "Unable to get response from YouTube...");
         }
-        else
-            throw new Error(colors.red("@error: ") + "internal server error");
+        else {
+            console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody.title));
+            respEngine = await Engine(TubeBody.videoLink);
+        }
     }
+    if (respEngine === undefined) {
+        throw new Error(colors.red("@error: ") + "Unable to get response from YouTube...");
+    }
+    else
+        return respEngine;
 }
 
 async function extract({ query }) {
@@ -1602,21 +1578,6 @@ async function AudioHighest(input) {
             throw new Error(colors.red("@error: ") + "internal server error");
     }
 }
-(async () => {
-    const core = await AudioHighest({
-        folderName: ".temp/audio",
-        query: "sQEgklEwhSo",
-        outputFormat: "mp3",
-        stream: true,
-    });
-    if (!core)
-        return;
-    await core.stream
-        .pipe(fs__namespace.createWriteStream(core.fileName))
-        .on("finish", () => {
-        console.log("finished successfully...");
-    });
-})();
 
 const VideoLowestZod$1 = z.z.object({
     query: z.z.string().min(1),

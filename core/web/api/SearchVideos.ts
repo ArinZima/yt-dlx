@@ -2,6 +2,7 @@ import fs from "fs";
 import colors from "colors";
 import { load } from "cheerio";
 import retry from "async-retry";
+import closers from "../closers";
 import spinClient from "spinnies";
 import { z, ZodError } from "zod";
 import { randomUUID } from "crypto";
@@ -154,7 +155,7 @@ export default async function SearchVideos(
           });
           return metaTube;
         }, retryOptions);
-        if (browser) await browser.close();
+        await closers(browser);
         return TubeResp;
       case "playlist":
         TubeResp = await retry(async () => {
@@ -222,7 +223,7 @@ export default async function SearchVideos(
           });
           return playlistMeta;
         }, retryOptions);
-        if (browser) await browser.close();
+        await closers(browser);
         return TubeResp;
       default:
         spinnies.fail(spin, {
@@ -230,12 +231,11 @@ export default async function SearchVideos(
             colors.red("@error: ") +
             colors.white("wrong filter type provided."),
         });
-        if (browser) await browser.close();
+        await closers(browser);
         return undefined;
     }
   } catch (error) {
-    if (page) await page.close();
-    if (browser) await browser.close();
+    await closers(browser);
     switch (true) {
       case error instanceof ZodError:
         throw new Error(
@@ -249,3 +249,8 @@ export default async function SearchVideos(
     }
   }
 }
+
+process.on("SIGINT", async () => await closers(browser));
+process.on("SIGTERM", async () => await closers(browser));
+process.on("uncaughtException", async () => await closers(browser));
+process.on("unhandledRejection", async () => await closers(browser));

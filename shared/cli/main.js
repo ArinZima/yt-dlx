@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-var fs6 = require('fs');
+var fs = require('fs');
 var colors22 = require('colors');
 var cheerio = require('cheerio');
 var retry = require('async-retry');
@@ -36,7 +36,7 @@ function _interopNamespace(e) {
   return Object.freeze(n);
 }
 
-var fs6__namespace = /*#__PURE__*/_interopNamespace(fs6);
+var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
 var colors22__default = /*#__PURE__*/_interopDefault(colors22);
 var retry__default = /*#__PURE__*/_interopDefault(retry);
 var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
@@ -159,7 +159,7 @@ async function SearchVideos(input) {
             snapshot = await page.screenshot({
               path: "TypeVideo.png"
             });
-            fs6__namespace.default.writeFileSync("TypeVideo.png", snapshot);
+            fs__namespace.default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
               text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
             });
@@ -221,7 +221,7 @@ async function SearchVideos(input) {
             snapshot = await page.screenshot({
               path: "TypePlaylist.png"
             });
-            fs6__namespace.default.writeFileSync("TypePlaylist.png", snapshot);
+            fs__namespace.default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
               text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
             });
@@ -335,7 +335,7 @@ async function PlaylistInfo(input) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs6__namespace.default.writeFileSync("FilterVideo.png", snapshot);
+        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
           text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
         });
@@ -465,7 +465,7 @@ async function VideoInfo(input) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs6__namespace.default.writeFileSync("FilterVideo.png", snapshot);
+        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
           text: colors22__default.default.yellow("@scrape: ") + "took snapshot..."
         });
@@ -699,7 +699,7 @@ async function Engine(query) {
     let currentDir = __dirname;
     while (maxTries > 0) {
       const enginePath = path2__namespace.join(currentDir, "util", "engine");
-      if (fs6__namespace.existsSync(enginePath)) {
+      if (fs__namespace.existsSync(enginePath)) {
         proLoc = enginePath;
         break;
       } else {
@@ -815,71 +815,48 @@ var version = "3.0.6";
 async function Agent({
   query
 }) {
-  try {
-    let videoId;
-    let respEngine = void 0;
-    let TubeBody;
-    console.log(colors22__default.default.green("@info:"), `using yt-dlx version ${version}`);
-    switch (true) {
-      case (!query || query.trim() === ""):
-        throw new Error(colors22__default.default.red("@error: ") + "'query' is required.");
-      case (/https/i.test(query) && /list/i.test(query)):
-        throw new Error(
-          colors22__default.default.red("@error: ") + "use extract_playlist_videos()."
-        );
-      case (/https/i.test(query) && !/list/i.test(query)):
-        videoId = await YouTubeID(query);
-        break;
-      default:
-        videoId = await YouTubeID(query);
+  let respEngine = void 0;
+  let videoId = await YouTubeID(query);
+  let TubeBody;
+  console.log(colors22__default.default.green("@info:"), `using yt-dlx version ${version}`);
+  if (!videoId) {
+    TubeBody = await web_default.search.SearchVideos({
+      type: "video",
+      query
+    });
+    if (!TubeBody[0]) {
+      throw new Error(
+        colors22__default.default.red("@error: ") + "Unable to get response from YouTube..."
+      );
+    } else {
+      console.log(
+        colors22__default.default.green("@info:"),
+        `preparing payload for`,
+        colors22__default.default.green(TubeBody[0].title)
+      );
+      respEngine = await Engine(TubeBody[0].videoLink);
     }
-    switch (videoId) {
-      case void 0:
-        TubeBody = await web_default.search.SearchVideos({
-          query,
-          type: "video"
-        });
-        if (!TubeBody[0]) {
-          throw new Error(
-            colors22__default.default.red("@error: ") + "no data returned from server."
-          );
-        } else {
-          console.log(
-            colors22__default.default.green("@info:"),
-            `preparing payload for`,
-            colors22__default.default.green(TubeBody[0].title)
-          );
-          respEngine = await Engine(TubeBody[0].videoLink);
-        }
-        break;
-      default:
-        TubeBody = await web_default.search.VideoInfo({
-          query
-        });
-        if (!TubeBody) {
-          throw new Error(
-            colors22__default.default.red("@error: ") + "no data returned from server."
-          );
-        } else {
-          console.log(
-            colors22__default.default.green("@info:"),
-            `preparing payload for`,
-            colors22__default.default.green(TubeBody.title)
-          );
-          respEngine = await Engine(TubeBody.videoLink);
-        }
-        break;
+  } else {
+    TubeBody = await web_default.search.VideoInfo({ query });
+    if (!TubeBody) {
+      throw new Error(
+        colors22__default.default.red("@error: ") + "Unable to get response from YouTube..."
+      );
+    } else {
+      console.log(
+        colors22__default.default.green("@info:"),
+        `preparing payload for`,
+        colors22__default.default.green(TubeBody.title)
+      );
+      respEngine = await Engine(TubeBody.videoLink);
     }
-    if (respEngine === void 0) {
-      throw new Error(colors22__default.default.red("@error: ") + "no data returned from server.");
-    } else
-      return respEngine;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(colors22__default.default.red("@error: ") + error.message);
-    } else
-      throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
+  if (respEngine === void 0) {
+    throw new Error(
+      colors22__default.default.red("@error: ") + "Unable to get response from YouTube..."
+    );
+  } else
+    return respEngine;
 }
 
 // core/pipes/command/extract.ts
@@ -1890,8 +1867,8 @@ async function AudioLowest(input) {
       "-"
     );
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.AudioStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2072,8 +2049,8 @@ async function AudioHighest(input) {
       "-"
     );
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2208,19 +2185,6 @@ async function AudioHighest(input) {
       throw new Error(colors22__default.default.red("@error: ") + "internal server error");
   }
 }
-(async () => {
-  const core = await AudioHighest({
-    folderName: ".temp/audio",
-    query: "sQEgklEwhSo",
-    outputFormat: "mp3",
-    stream: true
-  });
-  if (!core)
-    return;
-  await core.stream.pipe(fs6__namespace.createWriteStream(core.fileName)).on("finish", () => {
-    console.log("finished successfully...");
-  });
-})();
 var VideoLowestZod = z4.z.object({
   query: z4.z.string().min(1),
   stream: z4.z.boolean().optional(),
@@ -2248,8 +2212,8 @@ async function VideoLowest(input) {
       "-"
     );
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2375,8 +2339,8 @@ async function VideoHighest(input) {
     );
     let metaName = "";
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
@@ -2500,8 +2464,8 @@ async function AudioVideoLowest(input) {
     );
     const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const ffmpeg = fluentffmpeg__default.default();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       lowEntry(metaBody.AudioStore),
@@ -2596,8 +2560,8 @@ async function AudioVideoHighest(input) {
     );
     const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const ffmpeg = fluentffmpeg__default.default();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       bigEntry(metaBody.AudioStore),
@@ -2702,8 +2666,8 @@ async function AudioQualityCustom(input) {
       "-"
     );
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const ffmpeg = fluentffmpeg__default.default();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === void 0) {
@@ -2865,8 +2829,8 @@ async function VideoLowest2(input) {
       "-"
     );
     const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs6__namespace.existsSync(metaFold))
-      fs6__namespace.mkdirSync(metaFold, { recursive: true });
+    if (!fs__namespace.existsSync(metaFold))
+      fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
