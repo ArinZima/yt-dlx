@@ -45,7 +45,7 @@ async.series(
       });
       console.log(colors.bold.green("@pass:"), true);
     } catch (error: any) {
-      console.error(error.message);
+      console.error(colors.red(error));
     }
   }),
   async () => {
@@ -62,14 +62,14 @@ async.series(
           .pipe(fs.createWriteStream(holder.filename))
           .on("finish", () => {
             console.log(
-              colors.bold.green("@pass:"),
+              colors.bold.green("\n@pass:"),
               "filename",
               holder.filename
             );
           });
-      } else throw new Error(holder);
+      } else console.error(colors.red(holder));
     } catch (error: any) {
-      console.error(error.message);
+      console.error(colors.red(error));
     }
   }
 );
