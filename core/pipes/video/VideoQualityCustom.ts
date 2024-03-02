@@ -6,7 +6,6 @@ import ytdlx from "../../base/Agent";
 import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import progressBar from "../../base/progressBar";
-import type VideoFilters from "../../interface/VideoFilters";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const VideoLowestZod = z.object({
@@ -14,14 +13,12 @@ const VideoLowestZod = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
-  filter: z.string().optional(),
 });
 export default async function VideoLowest(input: {
   query: string;
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  filter?: keyof VideoFilters;
   quality:
     | "144p"
     | "240p"
@@ -41,9 +38,7 @@ export default async function VideoLowest(input: {
   stream: gpuffmpegCommand;
 }> {
   try {
-    const { query, filter, stream, verbose, folderName } =
-      VideoLowestZod.parse(input);
-
+    const { query, stream, verbose, folderName } = VideoLowestZod.parse(input);
     const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     let metaName: string = "";
@@ -62,40 +57,7 @@ export default async function VideoLowest(input: {
     const outputFormat = "mkv";
     const ffmpeg: gpuffmpegCommand = gpuffmpeg(metaEntry.AVDownload.mediaurl);
     ffmpeg.outputFormat("matroska");
-    switch (filter) {
-      case "grayscale":
-        ffmpeg.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
-        break;
-      case "invert":
-        ffmpeg.withVideoFilter("negate");
-        metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
-        break;
-      case "rotate90":
-        ffmpeg.withVideoFilter("rotate=PI/2");
-        metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
-        break;
-      case "rotate180":
-        ffmpeg.withVideoFilter("rotate=PI");
-        metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
-        break;
-      case "rotate270":
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
-        metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
-        break;
-      case "flipHorizontal":
-        ffmpeg.withVideoFilter("hflip");
-        metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
-        break;
-      case "flipVertical":
-        ffmpeg.withVideoFilter("vflip");
-        metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
-        break;
-      default:
-        metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
-    }
+    metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
     ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({ timemark: undefined, percent: undefined });

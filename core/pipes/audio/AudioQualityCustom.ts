@@ -7,11 +7,9 @@ import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import progressBar from "../../base/progressBar";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
-import type AudioFilters from "../../interface/AudioFilters";
 
 const AudioQualityCustomZod = z.object({
   query: z.string().min(1),
-  filter: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   folderName: z.string().optional(),
@@ -22,14 +20,13 @@ export default async function AudioQualityCustom(input: {
   stream?: boolean;
   verbose?: boolean;
   folderName?: string;
-  filter?: keyof AudioFilters;
   quality: "high" | "medium" | "low" | "ultralow";
 }): Promise<void | {
   filename: string;
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, filter, stream, verbose, quality, folderName } =
+    const { query, stream, verbose, quality, folderName } =
       AudioQualityCustomZod.parse(input);
     const metaResp = await ytdlx({ query, verbose });
     if (!metaResp) {
@@ -60,72 +57,8 @@ export default async function AudioQualityCustom(input: {
     ffmpeg.addOutputOption("-map", "0:a:0");
     ffmpeg.addOutputOption("-id3v2_version", "3");
     ffmpeg.outputFormat("avi");
-    switch (filter) {
-      case "bassboost":
-        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "echo":
-        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "flanger":
-        ffmpeg.withAudioFilter(["flanger"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "nightcore":
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "panning":
-        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "phaser":
-        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "reverse":
-        ffmpeg.withAudioFilter(["areverse"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "slow":
-        ffmpeg.withAudioFilter(["atempo=0.8"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "speed":
-        ffmpeg.withAudioFilter(["atempo=2"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "subboost":
-        ffmpeg.withAudioFilter(["asubboost"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "superslow":
-        ffmpeg.withAudioFilter(["atempo=0.5"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "superspeed":
-        ffmpeg.withAudioFilter(["atempo=3"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "surround":
-        ffmpeg.withAudioFilter(["surround"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "vaporwave":
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      case "vibrato":
-        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-        metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
-        break;
-      default:
-        ffmpeg.withAudioFilter([]);
-        metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
-        break;
-    }
+    ffmpeg.withAudioFilter([]);
+    metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
     ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({ timemark: undefined, percent: undefined });
