@@ -1,0 +1,115 @@
+{
+  "name": "yt-dlx",
+  "version": "4.4.0",
+  "types": "shared/index.d.ts",
+  "main": "shared/index.cjs.js",
+  "module": "shared/index.esm.js",
+  "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
+  "bin": {
+    "yt": "shared/cli/main.js",
+    "yt-dlx": "shared/cli/main.js"
+  },
+  "scripts": {
+    "start": "node util/dev.mjs",
+    "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && yarn run perm",
+    "remake": "yarn run clean && yarn run make && yarn run update && yarn run build",
+    "prepublishOnly": "yarn remake && rm -rf util/ffmpeg util/ffmpeg.tar.xz util/engine",
+    "upload": "yarn run remake && yarn run test && npm pkg fix && npm publish --access=public && yarn run update",
+    "perm": "chmod +x util/ffmpeg/bin/ffmpeg util/ffmpeg/bin/ffprobe util/ffmpeg/bin/ffplay util/engine",
+    "clean": "yarn run clean:base && yarn run clean:client",
+    "clean:base": "rm -rf node_modules .temp shared others",
+    "clean:client": "cd client && rm -rf node_modules .next",
+    "make": "yarn run make:deps && yarn run make:base && yarn run make:client",
+    "make:base": "yarn install",
+    "make:client": "cd client && yarn install",
+    "make:deps": "chmod +x ./ytdlx-deps.sh && ./ytdlx-deps.sh",
+    "build": "yarn run build:base && yarn run build:client",
+    "build:base": "rm -rf shared .temp && tsup --config 'tsup.config.ts' && rollup -c 'rollup.config.mjs'",
+    "build:client": "cd client && rm -rf .next .temp &&  npm run build",
+    "update": "yarn run update:base && yarn run update:client",
+    "update:base": "yarn install && yarn install --latest",
+    "update:client": "cd client && yarn install && yarn install --latest",
+    "cli": "yarn run link && yarn run test:cli && yarn run unlink",
+    "test": "yarn run test:web && yarn run test:full && yarn run test:cli",
+    "test:cli": "yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc'",
+    "test:full": "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/runner.js",
+    "test:web": "rm -rf .temp && tsup --config 'tsup.config.ts' 'core' --outDir '.temp' && node .temp/__tests__/web.spec.js",
+    "spec": "tsup --config 'tsup.config.ts' './core/__tests__/quick.spec.ts' --outDir '.temp' --clean && node .temp/quick.spec.js"
+  },
+  "files": [
+    "util",
+    "shared",
+    "LICENSE",
+    "README.md",
+    "yt-dlx.png",
+    "package.json",
+    "ytdlx-deps.sh"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "author": {
+    "name": "yt-dlx"
+  },
+  "licenses": [
+    {
+      "type": "AGPL-3.0",
+      "url": "https://opensource.org/licenses/AGPL-3.0"
+    }
+  ],
+  "homepage": "https://rebrand.ly/mixly",
+  "repository": {
+    "type": "git",
+    "url": "https://mixly-yt-dlx.koyeb.app/pkg"
+  },
+  "keywords": [
+    "yt-dlx",
+    "ytdlp",
+    "cli",
+    "yt"
+  ],
+  "dependencies": {
+    "async-retry": "latest",
+    "chai": "latest",
+    "cheerio": "latest",
+    "colors": "latest",
+    "crypto": "latest",
+    "fluent-ffmpeg": "latest",
+    "minimist": "latest",
+    "node-cron": "latest",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "latest",
+    "readline-sync": "latest",
+    "spinnies": "latest",
+    "stream": "latest",
+    "tar": "latest",
+    "zlib": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "latest",
+    "@rollup/plugin-typescript": "latest",
+    "@types/async": "latest",
+    "@types/async-retry": "latest",
+    "@types/chai": "latest",
+    "@types/cheerio": "latest",
+    "@types/fluent-ffmpeg": "latest",
+    "@types/fs-extra": "latest",
+    "@types/minimist": "latest",
+    "@types/node": "latest",
+    "@types/node-cron": "latest",
+    "@types/node-fetch": "latest",
+    "@types/readline-sync": "latest",
+    "@types/rollup-plugin-progress": "latest",
+    "@types/spinnies": "latest",
+    "@types/tar": "latest",
+    "@types/yt-search": "latest",
+    "rollup": "latest",
+    "rollup-plugin-dts": "latest",
+    "rollup-plugin-progress": "latest",
+    "rollup-plugin-typescript2": "latest",
+    "ts-node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  }
+}
