@@ -35,17 +35,17 @@ const core = {
   "test:cli":
     "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
   "test:scrape":
-    "tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js",
   "test:full":
-    "tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
   "test:audio":
-    "tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js",
   "test:video":
-    "`tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
+    "`rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
-    "tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
   "test:spec":
-    "tsup --config tsup.config.ts core --outDir temp && node temp/quick.spec.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/quick.spec.js",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];

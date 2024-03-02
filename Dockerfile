@@ -20,5 +20,5 @@ RUN npm install --global --force yarn yt-dlx
 WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
-RUN yarn run remake
-CMD ["node", "util/server.mjs"]
+RUN yarn remake
+CMD ["yarn", "server"]
