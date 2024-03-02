@@ -1,5 +1,4 @@
 #!/bin/bash
-
 NC='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -26,6 +25,7 @@ run_command() {
     fi
 }
 
+clear
 if [ -x "$(command -v sudo)" ]; then
     use_sudo=true
 else
