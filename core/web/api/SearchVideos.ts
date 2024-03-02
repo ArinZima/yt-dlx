@@ -152,8 +152,6 @@ export default async function SearchVideos(
               colors.white("scrapping done for ") +
               query,
           });
-          if (page) await page.close();
-          if (browser) await browser.close();
           return metaTube;
         }, retryOptions);
         return TubeResp;
@@ -221,8 +219,6 @@ export default async function SearchVideos(
               colors.white("scrapping done for ") +
               query,
           });
-          if (page) await page.close();
-          if (browser) await browser.close();
           return playlistMeta;
         }, retryOptions);
         return TubeResp;
@@ -232,8 +228,6 @@ export default async function SearchVideos(
             colors.red("@error: ") +
             colors.white("wrong filter type provided."),
         });
-        if (page) await page.close();
-        if (browser) await browser.close();
         return undefined;
     }
   } catch (error) {

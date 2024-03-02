@@ -44,21 +44,17 @@ export default async function Agent({
           query: query,
           type: "video",
         })) as TypeVideo[];
-        if (!TubeBody || TubeBody.length === 0) {
+        if (!TubeBody[0]) {
           throw new Error(
             colors.red("@error: ") + "no data returned from server."
           );
-        } else if (TubeBody[0]) {
+        } else {
           console.log(
             colors.green("@info:"),
             `preparing payload for`,
             colors.green(TubeBody[0].title as string)
           );
           respEngine = await Engine(TubeBody[0].videoLink);
-        } else {
-          throw new Error(
-            colors.red("@error: ") + "no data returned from server."
-          );
         }
         break;
       default:
@@ -69,13 +65,14 @@ export default async function Agent({
           throw new Error(
             colors.red("@error: ") + "no data returned from server."
           );
+        } else {
+          console.log(
+            colors.green("@info:"),
+            `preparing payload for`,
+            colors.green(TubeBody.title)
+          );
+          respEngine = await Engine(TubeBody.videoLink);
         }
-        console.log(
-          colors.green("@info:"),
-          `preparing payload for`,
-          colors.green(TubeBody.title)
-        );
-        respEngine = await Engine(TubeBody.videoLink);
         break;
     }
     if (respEngine === undefined) {
@@ -84,8 +81,6 @@ export default async function Agent({
   } catch (error: any) {
     if (error instanceof Error) {
       throw new Error(colors.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors.red("@error: ") + "internal server error");
-    }
+    } else throw new Error(colors.red("@error: ") + "internal server error");
   }
 }

@@ -6,14 +6,15 @@ export let page: Page;
 export default async function crawler() {
   try {
     browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-zygote", // Disables the use of the zygote process for forking child processes
-        "--incognito", // Launch Chrome in incognito mode to avoid cookies and cache interference
-        "--no-sandbox", // Disable the sandbox mode (useful for running in Docker containers)
-        "--enable-automation", // Enable automation in Chrome (e.g., for Selenium)
-        "--disable-dev-shm-usage", // Disable /dev/shm usage (useful for running in Docker containers)
-      ],
+      // userDataDir: "others",
+      // headless: false,
+      // args: [
+      // "--no-zygote",
+      // "--incognito",
+      // "--no-sandbox",
+      // "--enable-automation",
+      // "--disable-dev-shm-usage",
+      // ],
     });
     page = await browser.newPage();
     await page.setUserAgent(

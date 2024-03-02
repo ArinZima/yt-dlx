@@ -2,8 +2,8 @@
 import { fileURLToPath } from 'url';
 import * as path3 from 'path';
 import path3__default from 'path';
-import * as fs from 'fs';
-import fs__default from 'fs';
+import * as fs6 from 'fs';
+import fs6__default from 'fs';
 import colors22 from 'colors';
 import { load } from 'cheerio';
 import retry from 'async-retry';
@@ -138,7 +138,7 @@ async function SearchVideos(input) {
             snapshot = await page.screenshot({
               path: "TypeVideo.png"
             });
-            fs__default.writeFileSync("TypeVideo.png", snapshot);
+            fs6__default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
               text: colors22.yellow("@scrape: ") + "took snapshot..."
             });
@@ -202,7 +202,7 @@ async function SearchVideos(input) {
             snapshot = await page.screenshot({
               path: "TypePlaylist.png"
             });
-            fs__default.writeFileSync("TypePlaylist.png", snapshot);
+            fs6__default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
               text: colors22.yellow("@scrape: ") + "took snapshot..."
             });
@@ -320,7 +320,7 @@ async function PlaylistInfo(input) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs__default.writeFileSync("FilterVideo.png", snapshot);
+        fs6__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
           text: colors22.yellow("@scrape: ") + "took snapshot..."
         });
@@ -451,7 +451,7 @@ async function VideoInfo(input) {
         snapshot = await page.screenshot({
           path: "FilterVideo.png"
         });
-        fs__default.writeFileSync("FilterVideo.png", snapshot);
+        fs6__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
           text: colors22.yellow("@scrape: ") + "took snapshot..."
         });
@@ -685,7 +685,7 @@ async function Engine(query) {
     let currentDir = __dirname;
     while (maxTries > 0) {
       const enginePath = path3.join(currentDir, "util", "engine");
-      if (fs.existsSync(enginePath)) {
+      if (fs6.existsSync(enginePath)) {
         proLoc = enginePath;
         break;
       } else {
@@ -1880,20 +1880,20 @@ async function AudioLowest(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.AudioStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = fluentffmpeg();
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.addInput(metaBody.metaTube.thumbnail);
-    proc.addOutputOption("-map", "1:0");
-    proc.addOutputOption("-map", "0:a:0");
-    proc.addOutputOption("-id3v2_version", "3");
-    proc.format(outputFormat);
-    proc.on("start", (command) => {
+    const ffmpeg = fluentffmpeg();
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.addInput(metaBody.metaTube.thumbnail);
+    ffmpeg.addOutputOption("-map", "1:0");
+    ffmpeg.addOutputOption("-map", "0:a:0");
+    ffmpeg.addOutputOption("-id3v2_version", "3");
+    ffmpeg.format(outputFormat);
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -1901,104 +1901,104 @@ async function AudioLowest(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     switch (filter2) {
       case "bassboost":
-        proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         metaName = `yt-dlp-(AudioLowest_bassboost)-${title}.${outputFormat}`;
         break;
       case "echo":
-        proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         metaName = `yt-dlp-(AudioLowest_echo)-${title}.${outputFormat}`;
         break;
       case "flanger":
-        proc.withAudioFilter(["flanger"]);
+        ffmpeg.withAudioFilter(["flanger"]);
         metaName = `yt-dlp-(AudioLowest_flanger)-${title}.${outputFormat}`;
         break;
       case "nightcore":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         metaName = `yt-dlp-(AudioLowest_nightcore)-${title}.${outputFormat}`;
         break;
       case "panning":
-        proc.withAudioFilter(["apulsator=hz=0.08"]);
+        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
         metaName = `yt-dlp-(AudioLowest_panning)-${title}.${outputFormat}`;
         break;
       case "phaser":
-        proc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
         metaName = `yt-dlp-(AudioLowest_phaser)-${title}.${outputFormat}`;
         break;
       case "reverse":
-        proc.withAudioFilter(["areverse"]);
+        ffmpeg.withAudioFilter(["areverse"]);
         metaName = `yt-dlp-(AudioLowest_reverse)-${title}.${outputFormat}`;
         break;
       case "slow":
-        proc.withAudioFilter(["atempo=0.8"]);
+        ffmpeg.withAudioFilter(["atempo=0.8"]);
         metaName = `yt-dlp-(AudioLowest_slow)-${title}.${outputFormat}`;
         break;
       case "speed":
-        proc.withAudioFilter(["atempo=2"]);
+        ffmpeg.withAudioFilter(["atempo=2"]);
         metaName = `yt-dlp-(AudioLowest_speed)-${title}.${outputFormat}`;
         break;
       case "subboost":
-        proc.withAudioFilter(["asubboost"]);
+        ffmpeg.withAudioFilter(["asubboost"]);
         metaName = `yt-dlp-(AudioLowest_subboost)-${title}.${outputFormat}`;
         break;
       case "superslow":
-        proc.withAudioFilter(["atempo=0.5"]);
+        ffmpeg.withAudioFilter(["atempo=0.5"]);
         metaName = `yt-dlp-(AudioLowest_superslow)-${title}.${outputFormat}`;
         break;
       case "superspeed":
-        proc.withAudioFilter(["atempo=3"]);
+        ffmpeg.withAudioFilter(["atempo=3"]);
         metaName = `yt-dlp-(AudioLowest_superspeed)-${title}.${outputFormat}`;
         break;
       case "surround":
-        proc.withAudioFilter(["surround"]);
+        ffmpeg.withAudioFilter(["surround"]);
         metaName = `yt-dlp-(AudioLowest_surround)-${title}.${outputFormat}`;
         break;
       case "vaporwave":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         metaName = `yt-dlp-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
         break;
       case "vibrato":
-        proc.withAudioFilter(["vibrato=f=6.5"]);
+        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
         metaName = `yt-dlp-(AudioLowest_vibrato)-${title}.${outputFormat}`;
         break;
       default:
-        proc.withAudioFilter([]);
+        ffmpeg.withAudioFilter([]);
         metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
         break;
     }
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(
@@ -2062,20 +2062,20 @@ async function AudioHighest(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.AudioStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = fluentffmpeg();
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.addInput(metaBody.metaTube.thumbnail);
-    proc.addOutputOption("-map", "1:0");
-    proc.addOutputOption("-map", "0:a:0");
-    proc.addOutputOption("-id3v2_version", "3");
-    proc.format(outputFormat);
-    proc.on("start", (command) => {
+    const ffmpeg = fluentffmpeg();
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.addInput(metaBody.metaTube.thumbnail);
+    ffmpeg.addOutputOption("-map", "1:0");
+    ffmpeg.addOutputOption("-map", "0:a:0");
+    ffmpeg.addOutputOption("-id3v2_version", "3");
+    ffmpeg.format(outputFormat);
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -2083,104 +2083,104 @@ async function AudioHighest(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     switch (filter2) {
       case "bassboost":
-        proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         metaName = `yt-dlp-(AudioHighest_bassboost)-${title}.${outputFormat}`;
         break;
       case "echo":
-        proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         metaName = `yt-dlp-(AudioHighest_echo)-${title}.${outputFormat}`;
         break;
       case "flanger":
-        proc.withAudioFilter(["flanger"]);
+        ffmpeg.withAudioFilter(["flanger"]);
         metaName = `yt-dlp-(AudioHighest_flanger)-${title}.${outputFormat}`;
         break;
       case "nightcore":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         metaName = `yt-dlp-(AudioHighest_nightcore)-${title}.${outputFormat}`;
         break;
       case "panning":
-        proc.withAudioFilter(["apulsator=hz=0.08"]);
+        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
         metaName = `yt-dlp-(AudioHighest_panning)-${title}.${outputFormat}`;
         break;
       case "phaser":
-        proc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
         metaName = `yt-dlp-(AudioHighest_phaser)-${title}.${outputFormat}`;
         break;
       case "reverse":
-        proc.withAudioFilter(["areverse"]);
+        ffmpeg.withAudioFilter(["areverse"]);
         metaName = `yt-dlp-(AudioHighest_reverse)-${title}.${outputFormat}`;
         break;
       case "slow":
-        proc.withAudioFilter(["atempo=0.8"]);
+        ffmpeg.withAudioFilter(["atempo=0.8"]);
         metaName = `yt-dlp-(AudioHighest_slow)-${title}.${outputFormat}`;
         break;
       case "speed":
-        proc.withAudioFilter(["atempo=2"]);
+        ffmpeg.withAudioFilter(["atempo=2"]);
         metaName = `yt-dlp-(AudioHighest_speed)-${title}.${outputFormat}`;
         break;
       case "subboost":
-        proc.withAudioFilter(["asubboost"]);
+        ffmpeg.withAudioFilter(["asubboost"]);
         metaName = `yt-dlp-(AudioHighest_subboost)-${title}.${outputFormat}`;
         break;
       case "superslow":
-        proc.withAudioFilter(["atempo=0.5"]);
+        ffmpeg.withAudioFilter(["atempo=0.5"]);
         metaName = `yt-dlp-(AudioHighest_superslow)-${title}.${outputFormat}`;
         break;
       case "superspeed":
-        proc.withAudioFilter(["atempo=3"]);
+        ffmpeg.withAudioFilter(["atempo=3"]);
         metaName = `yt-dlp-(AudioHighest_superspeed)-${title}.${outputFormat}`;
         break;
       case "surround":
-        proc.withAudioFilter(["surround"]);
+        ffmpeg.withAudioFilter(["surround"]);
         metaName = `yt-dlp-(AudioHighest_surround)-${title}.${outputFormat}`;
         break;
       case "vaporwave":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         metaName = `yt-dlp-(AudioHighest_vaporwave)-${title}.${outputFormat}`;
         break;
       case "vibrato":
-        proc.withAudioFilter(["vibrato=f=6.5"]);
+        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
         metaName = `yt-dlp-(AudioHighest_vibrato)-${title}.${outputFormat}`;
         break;
       default:
-        proc.withAudioFilter([]);
+        ffmpeg.withAudioFilter([]);
         metaName = `yt-dlp-(AudioHighest)-${title}.${outputFormat}`;
         break;
     }
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(
@@ -2198,6 +2198,19 @@ async function AudioHighest(input) {
       throw new Error(colors22.red("@error: ") + "internal server error");
   }
 }
+(async () => {
+  const core = await AudioHighest({
+    folderName: ".temp/audio",
+    query: "sQEgklEwhSo",
+    outputFormat: "mp3",
+    stream: true
+  });
+  if (!core)
+    return;
+  await core.stream.pipe(fs6.createWriteStream(core.fileName)).on("finish", () => {
+    console.log("finished successfully...");
+  });
+})();
 var VideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
@@ -2225,50 +2238,50 @@ async function VideoLowest(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await lowEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = fluentffmpeg();
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.format(outputFormat);
+    const ffmpeg = fluentffmpeg();
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.format(outputFormat);
     switch (filter2) {
       case "grayscale":
-        proc.withVideoFilter(
+        ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        proc.withVideoFilter("negate");
+        ffmpeg.withVideoFilter("negate");
         metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        proc.withVideoFilter("rotate=PI/2");
+        ffmpeg.withVideoFilter("rotate=PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        proc.withVideoFilter("rotate=PI");
+        ffmpeg.withVideoFilter("rotate=PI");
         metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        proc.withVideoFilter("rotate=3*PI/2");
+        ffmpeg.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        proc.withVideoFilter("hflip");
+        ffmpeg.withVideoFilter("hflip");
         metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        proc.withVideoFilter("vflip");
+        ffmpeg.withVideoFilter("vflip");
         metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
         metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
     }
-    proc.on("start", (command) => {
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -2276,38 +2289,38 @@ async function VideoLowest(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(
@@ -2352,50 +2365,50 @@ async function VideoHighest(input) {
     );
     let metaName = "";
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = fluentffmpeg();
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.format(outputFormat);
+    const ffmpeg = fluentffmpeg();
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.format(outputFormat);
     switch (filter2) {
       case "grayscale":
-        proc.withVideoFilter(
+        ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         metaName = `yt-dlp_(VideoHighest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        proc.withVideoFilter("negate");
+        ffmpeg.withVideoFilter("negate");
         metaName = `yt-dlp_(VideoHighest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        proc.withVideoFilter("rotate=PI/2");
+        ffmpeg.withVideoFilter("rotate=PI/2");
         metaName = `yt-dlp_(VideoHighest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        proc.withVideoFilter("rotate=PI");
+        ffmpeg.withVideoFilter("rotate=PI");
         metaName = `yt-dlp_(VideoHighest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        proc.withVideoFilter("rotate=3*PI/2");
+        ffmpeg.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-dlp_(VideoHighest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        proc.withVideoFilter("hflip");
+        ffmpeg.withVideoFilter("hflip");
         metaName = `yt-dlp_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        proc.withVideoFilter("vflip");
+        ffmpeg.withVideoFilter("vflip");
         metaName = `yt-dlp_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
         metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
     }
-    proc.on("start", (command) => {
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -2403,38 +2416,38 @@ async function VideoHighest(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(
@@ -2477,9 +2490,9 @@ async function AudioVideoLowest(input) {
     );
     const metaName = `yt-dlp_(AudioVideoLowest)_${title}.${outputFormat}`;
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const proc = fluentffmpeg();
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
+    const ffmpeg = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       lowEntry(metaBody.AudioStore),
       lowEntry(metaBody.VideoStore)
@@ -2487,11 +2500,11 @@ async function AudioVideoLowest(input) {
     if (AmetaEntry === void 0 || VmetaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(VmetaEntry.AVDownload.mediaurl);
-    proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.addOutputOption("-shortest");
-    proc.format(outputFormat);
-    proc.on("start", (command) => {
+    ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
+    ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
+    ffmpeg.addOutputOption("-shortest");
+    ffmpeg.format(outputFormat);
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -2499,38 +2512,38 @@ async function AudioVideoLowest(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(
@@ -2573,9 +2586,9 @@ async function AudioVideoHighest(input) {
     );
     const metaName = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const proc = fluentffmpeg();
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
+    const ffmpeg = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       bigEntry(metaBody.AudioStore),
       bigEntry(metaBody.VideoStore)
@@ -2583,11 +2596,11 @@ async function AudioVideoHighest(input) {
     if (AmetaEntry === void 0 || VmetaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(VmetaEntry.AVDownload.mediaurl);
-    proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.addOption("-shortest");
-    proc.format(outputFormat);
-    proc.on("start", (command) => {
+    ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
+    ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
+    ffmpeg.addOption("-shortest");
+    ffmpeg.format(outputFormat);
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -2595,38 +2608,38 @@ async function AudioVideoHighest(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(
@@ -2679,86 +2692,86 @@ async function AudioQualityCustom(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
-    const proc = fluentffmpeg();
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
+    const ffmpeg = fluentffmpeg();
     const metaEntry = await bigEntry(metaBody);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.addInput(metaResp.metaTube.thumbnail);
-    proc.addOutputOption("-map", "1:0");
-    proc.addOutputOption("-map", "0:a:0");
-    proc.addOutputOption("-id3v2_version", "3");
-    proc.format(outputFormat);
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.addInput(metaResp.metaTube.thumbnail);
+    ffmpeg.addOutputOption("-map", "1:0");
+    ffmpeg.addOutputOption("-map", "0:a:0");
+    ffmpeg.addOutputOption("-id3v2_version", "3");
+    ffmpeg.format(outputFormat);
     switch (filter2) {
       case "bassboost":
-        proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "echo":
-        proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "flanger":
-        proc.withAudioFilter(["flanger"]);
+        ffmpeg.withAudioFilter(["flanger"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "nightcore":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "panning":
-        proc.withAudioFilter(["apulsator=hz=0.08"]);
+        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "phaser":
-        proc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "reverse":
-        proc.withAudioFilter(["areverse"]);
+        ffmpeg.withAudioFilter(["areverse"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "slow":
-        proc.withAudioFilter(["atempo=0.8"]);
+        ffmpeg.withAudioFilter(["atempo=0.8"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "speed":
-        proc.withAudioFilter(["atempo=2"]);
+        ffmpeg.withAudioFilter(["atempo=2"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "subboost":
-        proc.withAudioFilter(["asubboost"]);
+        ffmpeg.withAudioFilter(["asubboost"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "superslow":
-        proc.withAudioFilter(["atempo=0.5"]);
+        ffmpeg.withAudioFilter(["atempo=0.5"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "superspeed":
-        proc.withAudioFilter(["atempo=3"]);
+        ffmpeg.withAudioFilter(["atempo=3"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "surround":
-        proc.withAudioFilter(["surround"]);
+        ffmpeg.withAudioFilter(["surround"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "vaporwave":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       case "vibrato":
-        proc.withAudioFilter(["vibrato=f=6.5"]);
+        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
         metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
         break;
       default:
-        proc.withAudioFilter([]);
+        ffmpeg.withAudioFilter([]);
         metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
         break;
     }
-    proc.on("start", (command) => {
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -2766,38 +2779,38 @@ async function AudioQualityCustom(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(
@@ -2842,50 +2855,50 @@ async function VideoLowest2(input) {
       "-"
     );
     const metaFold = folderName ? path3.join(process.cwd(), folderName) : process.cwd();
-    if (!fs.existsSync(metaFold))
-      fs.mkdirSync(metaFold, { recursive: true });
+    if (!fs6.existsSync(metaFold))
+      fs6.mkdirSync(metaFold, { recursive: true });
     const metaEntry = await bigEntry(metaBody.VideoStore);
     if (metaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc = fluentffmpeg();
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.format(outputFormat);
+    const ffmpeg = fluentffmpeg();
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.format(outputFormat);
     switch (filter2) {
       case "grayscale":
-        proc.withVideoFilter(
+        ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        proc.withVideoFilter("negate");
+        ffmpeg.withVideoFilter("negate");
         metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        proc.withVideoFilter("rotate=PI/2");
+        ffmpeg.withVideoFilter("rotate=PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        proc.withVideoFilter("rotate=PI");
+        ffmpeg.withVideoFilter("rotate=PI");
         metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        proc.withVideoFilter("rotate=3*PI/2");
+        ffmpeg.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        proc.withVideoFilter("hflip");
+        ffmpeg.withVideoFilter("hflip");
         metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        proc.withVideoFilter("vflip");
+        ffmpeg.withVideoFilter("vflip");
         metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
         metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
     }
-    proc.on("start", (command) => {
+    ffmpeg.on("start", (command) => {
       if (verbose)
         console.log(command);
       progressBar_default({
@@ -2893,38 +2906,38 @@ async function VideoLowest2(input) {
         percent: void 0
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar_default({
         timemark: void 0,
         percent: void 0
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar_default({
         timemark: prog.timemark,
         percent: prog.percent
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName ? path3.join(metaFold, metaName.replace("-.", ".")) : metaName.replace("-.", ".")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        proc.output(path3.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject2);
-        proc.run();
+        ffmpeg.output(path3.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject2);
+        ffmpeg.run();
       });
     }
     console.log(

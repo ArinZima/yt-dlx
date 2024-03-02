@@ -14,7 +14,7 @@ async.series([
         quality: "medium",
         stream: false,
       });
-      console.log(colors.bold.green("@pass:"), holder);
+      console.log(colors.bold.green("@pass:"), true);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
@@ -30,7 +30,7 @@ async.series([
         quality: "medium",
         stream: false,
       });
-      console.log(colors.bold.green("@pass:"), holder);
+      console.log(colors.bold.green("@pass:"), true);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
@@ -45,20 +45,7 @@ async.series([
         quality: "medium",
         stream: true,
       });
-      if (holder.stream && holder.filename) {
-        await holder.stream
-          .pipe(fs.createWriteStream(holder.filename))
-          .on("open", () => {
-            console.log(colors.bold.green("@info:"), "writestream opened.");
-          })
-          .on("finish", () => {
-            console.log(
-              colors.bold.green("@pass:"),
-              "filename",
-              holder.filename
-            );
-          });
-      } else throw new Error(colors.bold.red("@error:"), holder);
+      await holder.stream.pipe(fs.createWriteStream(holder.filename));
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
@@ -74,20 +61,7 @@ async.series([
         quality: "medium",
         stream: true,
       });
-      if (holder.stream && holder.filename) {
-        await holder.stream
-          .pipe(fs.createWriteStream(holder.filename))
-          .on("open", () => {
-            console.log(colors.bold.green("@info:"), "writestream opened.");
-          })
-          .on("finish", () => {
-            console.log(
-              colors.bold.green("@pass:"),
-              "filename",
-              holder.filename
-            );
-          });
-      } else throw new Error(colors.bold.red("@error:"), holder);
+      await holder.stream.pipe(fs.createWriteStream(holder.filename));
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }

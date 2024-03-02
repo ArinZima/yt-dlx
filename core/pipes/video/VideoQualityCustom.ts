@@ -67,84 +67,84 @@ export default async function VideoLowest(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.format(outputFormat);
+    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.format(outputFormat);
     switch (filter) {
       case "grayscale":
-        proc.withVideoFilter(
+        ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         metaName = `yt-dlp_(VideoLowest-grayscale)_${title}.${outputFormat}`;
         break;
       case "invert":
-        proc.withVideoFilter("negate");
+        ffmpeg.withVideoFilter("negate");
         metaName = `yt-dlp_(VideoLowest-invert)_${title}.${outputFormat}`;
         break;
       case "rotate90":
-        proc.withVideoFilter("rotate=PI/2");
+        ffmpeg.withVideoFilter("rotate=PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate90)_${title}.${outputFormat}`;
         break;
       case "rotate180":
-        proc.withVideoFilter("rotate=PI");
+        ffmpeg.withVideoFilter("rotate=PI");
         metaName = `yt-dlp_(VideoLowest-rotate180)_${title}.${outputFormat}`;
         break;
       case "rotate270":
-        proc.withVideoFilter("rotate=3*PI/2");
+        ffmpeg.withVideoFilter("rotate=3*PI/2");
         metaName = `yt-dlp_(VideoLowest-rotate270)_${title}.${outputFormat}`;
         break;
       case "flipHorizontal":
-        proc.withVideoFilter("hflip");
+        ffmpeg.withVideoFilter("hflip");
         metaName = `yt-dlp_(VideoLowest-flipHorizontal)_${title}.${outputFormat}`;
         break;
       case "flipVertical":
-        proc.withVideoFilter("vflip");
+        ffmpeg.withVideoFilter("vflip");
         metaName = `yt-dlp_(VideoLowest-flipVertical)_${title}.${outputFormat}`;
         break;
       default:
         metaName = `yt-dlp_(VideoLowest)_${title}.${outputFormat}`;
     }
-    proc.on("start", (command) => {
+    ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar({
         timemark: prog.timemark,
         percent: prog.percent,
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };
     } else {
       await new Promise<void>((resolve, reject) => {
-        proc.output(path.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject);
-        proc.run();
+        ffmpeg.output(path.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject);
+        ffmpeg.run();
       });
     }
     console.log(

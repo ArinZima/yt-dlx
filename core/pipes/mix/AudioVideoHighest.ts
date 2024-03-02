@@ -44,7 +44,7 @@ export default async function AudioVideoHighest(input: {
       ? path.join(process.cwd(), folderName)
       : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-    const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
+    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       bigEntry(metaBody.AudioStore),
       bigEntry(metaBody.VideoStore),
@@ -52,51 +52,51 @@ export default async function AudioVideoHighest(input: {
     if (AmetaEntry === undefined || VmetaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    proc.addInput(VmetaEntry.AVDownload.mediaurl);
-    proc.addInput(AmetaEntry.AVDownload.mediaurl);
-    proc.addOption("-shortest");
-    proc.format(outputFormat);
-    proc.on("start", (command) => {
+    ffmpeg.addInput(VmetaEntry.AVDownload.mediaurl);
+    ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
+    ffmpeg.addOption("-shortest");
+    ffmpeg.format(outputFormat);
+    ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar({
         timemark: prog.timemark,
         percent: prog.percent,
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };
     } else {
       await new Promise<void>((resolve, reject) => {
-        proc.output(path.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject);
-        proc.run();
+        ffmpeg.output(path.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject);
+        ffmpeg.run();
       });
     }
     console.log(

@@ -140,8 +140,6 @@ export default async function VideoInfo(
         text:
           colors.green("@info: ") + colors.white("scrapping done for ") + query,
       });
-      await page.close();
-      await browser.close();
       return metaTube;
     }, retryOptions);
     return TubeResp;

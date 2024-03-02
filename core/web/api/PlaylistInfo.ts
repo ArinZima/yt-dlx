@@ -133,7 +133,6 @@ export default async function PlaylistInfo(
           .find(".style-scope.ytd-video-meta-block span:last-child")
           .text();
         const thumbnailUrls = [
-          `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
           `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
           `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
           `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
@@ -154,8 +153,6 @@ export default async function PlaylistInfo(
         text:
           colors.green("@info: ") + colors.white("scrapping done for ") + query,
       });
-      await page.close();
-      await browser.close();
       return {
         playlistVideos: metaTube,
         playlistDescription: playlistDescription.trim(),

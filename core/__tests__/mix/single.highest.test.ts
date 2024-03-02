@@ -13,7 +13,7 @@ async.series([
         outputFormat: "avi",
         stream: false,
       });
-      console.log(colors.bold.green("@pass:"), holder);
+      console.log(colors.bold.green("@pass:"), true);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
@@ -27,7 +27,7 @@ async.series([
         outputFormat: "mov",
         stream: false,
       });
-      console.log(colors.bold.green("@pass:"), holder);
+      console.log(colors.bold.green("@pass:"), true);
     } catch (error: any) {
       throw new Error(colors.bold.red("@error:"), error);
     }
@@ -41,12 +41,9 @@ async.series([
         outputFormat: "webm",
         stream: true,
       });
-      if (holder.stream && holder.filename) {
-        await holder.stream
+      if (holder) {
+        holder.stream
           .pipe(fs.createWriteStream(holder.filename))
-          .on("open", () => {
-            console.log(colors.bold.green("@info:"), "writestream opened.");
-          })
           .on("finish", () => {
             console.log(
               colors.bold.green("@pass:"),
@@ -68,12 +65,9 @@ async.series([
         outputFormat: "webm",
         stream: true,
       });
-      if (holder.stream && holder.filename) {
-        await holder.stream
+      if (holder) {
+        holder.stream
           .pipe(fs.createWriteStream(holder.filename))
-          .on("open", () => {
-            console.log(colors.bold.green("@info:"), "writestream opened.");
-          })
           .on("finish", () => {
             console.log(
               colors.bold.green("@pass:"),

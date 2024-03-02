@@ -51,120 +51,120 @@ export default async function AudioLowest(input: {
     if (metaEntry === undefined) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const proc: fluentffmpeg.FfmpegCommand = fluentffmpeg();
-    proc.addInput(metaEntry.AVDownload.mediaurl);
-    proc.addInput(metaBody.metaTube.thumbnail);
-    proc.addOutputOption("-map", "1:0");
-    proc.addOutputOption("-map", "0:a:0");
-    proc.addOutputOption("-id3v2_version", "3");
-    proc.format(outputFormat);
-    proc.on("start", (command) => {
+    const ffmpeg: fluentffmpeg.FfmpegCommand = fluentffmpeg();
+    ffmpeg.addInput(metaEntry.AVDownload.mediaurl);
+    ffmpeg.addInput(metaBody.metaTube.thumbnail);
+    ffmpeg.addOutputOption("-map", "1:0");
+    ffmpeg.addOutputOption("-map", "0:a:0");
+    ffmpeg.addOutputOption("-id3v2_version", "3");
+    ffmpeg.format(outputFormat);
+    ffmpeg.on("start", (command) => {
       if (verbose) console.log(command);
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("end", () => {
+    ffmpeg.on("end", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("close", () => {
+    ffmpeg.on("close", () => {
       progressBar({
         timemark: undefined,
         percent: undefined,
       });
     });
-    proc.on("progress", (prog) => {
+    ffmpeg.on("progress", (prog) => {
       progressBar({
         timemark: prog.timemark,
         percent: prog.percent,
       });
     });
-    proc.on("error", (error) => {
+    ffmpeg.on("error", (error) => {
       return error;
     });
     switch (filter) {
       case "bassboost":
-        proc.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         metaName = `yt-dlp-(AudioLowest_bassboost)-${title}.${outputFormat}`;
         break;
       case "echo":
-        proc.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         metaName = `yt-dlp-(AudioLowest_echo)-${title}.${outputFormat}`;
         break;
       case "flanger":
-        proc.withAudioFilter(["flanger"]);
+        ffmpeg.withAudioFilter(["flanger"]);
         metaName = `yt-dlp-(AudioLowest_flanger)-${title}.${outputFormat}`;
         break;
       case "nightcore":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         metaName = `yt-dlp-(AudioLowest_nightcore)-${title}.${outputFormat}`;
         break;
       case "panning":
-        proc.withAudioFilter(["apulsator=hz=0.08"]);
+        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
         metaName = `yt-dlp-(AudioLowest_panning)-${title}.${outputFormat}`;
         break;
       case "phaser":
-        proc.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
         metaName = `yt-dlp-(AudioLowest_phaser)-${title}.${outputFormat}`;
         break;
       case "reverse":
-        proc.withAudioFilter(["areverse"]);
+        ffmpeg.withAudioFilter(["areverse"]);
         metaName = `yt-dlp-(AudioLowest_reverse)-${title}.${outputFormat}`;
         break;
       case "slow":
-        proc.withAudioFilter(["atempo=0.8"]);
+        ffmpeg.withAudioFilter(["atempo=0.8"]);
         metaName = `yt-dlp-(AudioLowest_slow)-${title}.${outputFormat}`;
         break;
       case "speed":
-        proc.withAudioFilter(["atempo=2"]);
+        ffmpeg.withAudioFilter(["atempo=2"]);
         metaName = `yt-dlp-(AudioLowest_speed)-${title}.${outputFormat}`;
         break;
       case "subboost":
-        proc.withAudioFilter(["asubboost"]);
+        ffmpeg.withAudioFilter(["asubboost"]);
         metaName = `yt-dlp-(AudioLowest_subboost)-${title}.${outputFormat}`;
         break;
       case "superslow":
-        proc.withAudioFilter(["atempo=0.5"]);
+        ffmpeg.withAudioFilter(["atempo=0.5"]);
         metaName = `yt-dlp-(AudioLowest_superslow)-${title}.${outputFormat}`;
         break;
       case "superspeed":
-        proc.withAudioFilter(["atempo=3"]);
+        ffmpeg.withAudioFilter(["atempo=3"]);
         metaName = `yt-dlp-(AudioLowest_superspeed)-${title}.${outputFormat}`;
         break;
       case "surround":
-        proc.withAudioFilter(["surround"]);
+        ffmpeg.withAudioFilter(["surround"]);
         metaName = `yt-dlp-(AudioLowest_surround)-${title}.${outputFormat}`;
         break;
       case "vaporwave":
-        proc.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         metaName = `yt-dlp-(AudioLowest_vaporwave)-${title}.${outputFormat}`;
         break;
       case "vibrato":
-        proc.withAudioFilter(["vibrato=f=6.5"]);
+        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
         metaName = `yt-dlp-(AudioLowest_vibrato)-${title}.${outputFormat}`;
         break;
       default:
-        proc.withAudioFilter([]);
+        ffmpeg.withAudioFilter([]);
         metaName = `yt-dlp-(AudioLowest)-${title}.${outputFormat}`;
         break;
     }
     if (stream) {
       return {
-        stream: proc,
+        stream: ffmpeg,
         fileName: folderName
           ? path.join(metaFold, metaName.replace("-.", "."))
           : metaName.replace("-.", "."),
       };
     } else {
       await new Promise<void>((resolve, reject) => {
-        proc.output(path.join(metaFold, metaName));
-        proc.on("end", () => resolve());
-        proc.on("error", reject);
-        proc.run();
+        ffmpeg.output(path.join(metaFold, metaName));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", reject);
+        ffmpeg.run();
       });
     }
     console.log(
