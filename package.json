@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "types": "shared/index.d.ts",
   "main": "shared/index.cjs.js",
   "module": "shared/index.esm.js",
@@ -87,7 +87,6 @@
     "zod": "latest"
   },
   "devDependencies": {
-    "@types/tar": "latest",
     "@rollup/plugin-json": "latest",
     "@rollup/plugin-typescript": "latest",
     "@types/async": "latest",
@@ -103,6 +102,7 @@
     "@types/readline-sync": "latest",
     "@types/rollup-plugin-progress": "latest",
     "@types/spinnies": "latest",
+    "@types/tar": "latest",
     "@types/yt-search": "latest",
     "rollup": "latest",
     "rollup-plugin-dts": "latest",
