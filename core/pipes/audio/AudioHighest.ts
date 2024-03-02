@@ -182,18 +182,3 @@ export default async function AudioHighest(input: {
     } else throw new Error(colors.red("@error: ") + "internal server error");
   }
 }
-
-(async () => {
-  const core = await AudioHighest({
-    folderName: ".temp/audio",
-    query: "sQEgklEwhSo",
-    outputFormat: "mp3",
-    stream: true,
-  });
-  if (!core) return;
-  await core.stream
-    .pipe(fs.createWriteStream(core.fileName))
-    .on("finish", () => {
-      console.log("finished successfully...");
-    });
-})();

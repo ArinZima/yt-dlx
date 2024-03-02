@@ -18,7 +18,7 @@ async.series([
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
-  // =========================[BREAK-TEST]=========================
+  // =========================[FULL-TEST]=========================
   async () => {
     try {
       holder = await ytdlx.audio_video.lowest({
@@ -32,7 +32,7 @@ async.series([
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
-  // =========================[BREAK-TEST]=========================
+  // =========================[FULL-TEST]=========================
   async () => {
     try {
       holder = await ytdlx.audio_video.lowest({
@@ -56,7 +56,7 @@ async.series([
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
-  // =========================[BREAK-TEST]=========================
+  // =========================[FULL-TEST]=========================
   async () => {
     try {
       holder = await ytdlx.audio_video.lowest({
@@ -80,5 +80,4 @@ async.series([
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
-  // =========================[BREAK-TEST]=========================
 ]);

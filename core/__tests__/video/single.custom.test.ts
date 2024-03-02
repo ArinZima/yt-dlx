@@ -20,7 +20,7 @@ async.series([
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
-  // =========================[BREAK-TEST]=========================
+  // =========================[FULL-TEST]=========================
   async () => {
     try {
       holder = await ytdlx.video.custom({
@@ -36,7 +36,7 @@ async.series([
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
-  // =========================[BREAK-TEST]=========================
+  // =========================[FULL-TEST]=========================
   async () => {
     try {
       holder = await ytdlx.video.custom({
@@ -61,7 +61,7 @@ async.series([
       throw new Error(colors.bold.red("@error:"), error);
     }
   },
-  // =========================[BREAK-TEST]=========================
+  // =========================[FULL-TEST]=========================
   async () => {
     try {
       holder = await ytdlx.video.custom({
