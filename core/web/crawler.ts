@@ -6,15 +6,15 @@ export let page: Page;
 export default async function crawler() {
   try {
     browser = await puppeteer.launch({
-      // userDataDir: "others",
-      // headless: false,
-      // args: [
-      // "--no-zygote",
-      // "--incognito",
-      // "--no-sandbox",
-      // "--enable-automation",
-      // "--disable-dev-shm-usage",
-      // ],
+      userDataDir: "others",
+      headless: false,
+      args: [
+        "--no-zygote",
+        "--incognito",
+        "--no-sandbox",
+        "--enable-automation",
+        "--disable-dev-shm-usage",
+      ],
     });
     page = await browser.newPage();
     await page.setUserAgent(
