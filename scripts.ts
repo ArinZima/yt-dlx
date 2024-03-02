@@ -27,7 +27,7 @@ const scripts: object[] = [
     build: {
       main: `yarn build:base && yarn build:client`,
       base: `rm -rf shared temp && tsup --config tsup.config.ts && rollup -c rollup.config.mjs`,
-      client: `cd client && rm -rf .next temp &&  npm run build`,
+      client: `cd client && rm -rf .next temp && yarn build`,
     },
     test: {
       main: `yarn test:scrape && yarn test:full && yarn test:cli`,
