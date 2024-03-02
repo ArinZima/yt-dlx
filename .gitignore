@@ -59,5 +59,4 @@ dist
 .pnp.*
 others
 ffmpeg.tar.xz
-ffmpeg-master-latest-linux64-gpl
-ffmpeg-master-latest-linuxarm64-gpl
+ffmpeg

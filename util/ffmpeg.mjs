@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { spawn } from "child_process";
-import { createWriteStream, existsSync } from "fs";
+import { createWriteStream, existsSync, renameSync } from "fs";
 
 const downloadAndExtract = async () => {
   try {
@@ -18,8 +18,14 @@ const downloadAndExtract = async () => {
           dirname(__filename),
         ]);
         extractProcess.on("exit", (code) => {
-          if (code === 0) console.log("Extraction completed successfully.");
-          else console.error(`Extraction failed with code ${code}`);
+          if (code === 0) {
+            const extractedFolder = join(
+              dirname(__filename),
+              "ffmpeg-master-latest-linux64-gpl"
+            );
+            const newFolderName = join(dirname(__filename), "ffmpeg");
+            renameSync(extractedFolder, newFolderName);
+          } else throw new Error("@error: ffmpeg extraction failed");
         });
         return;
       default:
@@ -33,7 +39,7 @@ const downloadAndExtract = async () => {
           url += "linuxarm64-gpl.tar.xz";
         } else throw new Error("Unsupported platform or architecture");
         const response = await fetch(url);
-        if (!response.ok) throw new Error("@reason: " + response.statusText);
+        if (!response.ok) throw new Error("@error: " + response.statusText);
         const tSize = parseInt(response.headers.get("content-length"), 10);
         const writer = createWriteStream(filepath);
         response.body.on("data", (chunk) => {
@@ -53,8 +59,14 @@ const downloadAndExtract = async () => {
           dirname(__filename),
         ]);
         extractProcess.on("exit", (code) => {
-          if (code === 0) console.log("Extraction completed successfully.");
-          else console.error(`Extraction failed with code ${code}`);
+          if (code === 0) {
+            const extractedFolder = join(
+              dirname(__filename),
+              "ffmpeg-master-latest-linux64-gpl"
+            );
+            const newFolderName = join(dirname(__filename), "ffmpeg");
+            renameSync(extractedFolder, newFolderName);
+          } else throw new Error("@error: ffmpeg extraction failed");
         });
     }
   } catch (error) {
