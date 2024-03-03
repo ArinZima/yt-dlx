@@ -34,6 +34,8 @@ const core = {
     "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
   "test:scrape":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js",
+  "test:spec":
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/quick.spec.js",
   "test:full":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
   "test:audio":
@@ -42,8 +44,6 @@ const core = {
     "`rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
-  "test:spec":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/quick.spec.js",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
