@@ -14,22 +14,21 @@ export interface InputYouTube {
   verbose?: boolean;
   screenshot?: boolean;
 }
-export interface PlaylistVideos {
-  ago: string;
-  title: string;
-  views: string;
-  author: string;
-  videoId: string;
-  videoLink: string;
-  authorUrl: string;
-  thumbnailUrls: string[];
-}
 export interface PlaylistInfoType {
   playlistViews: number;
   playlistTitle: string;
   playlistVideoCount: number;
   playlistDescription: string;
-  playlistVideos: PlaylistVideos[];
+  playlistVideos: {
+    ago: string;
+    title: string;
+    views: string;
+    author: string;
+    videoId: string;
+    videoLink: string;
+    authorUrl: string;
+    thumbnailUrls: string[];
+  }[];
 }
 
 export default async function PlaylistInfo(
