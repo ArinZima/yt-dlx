@@ -82,6 +82,11 @@ export default async function VideoQualityCustom(input: {
       const customData = engineData.VideoStore.filter(
         (op) => op.AVDownload.formatnote === quality
       );
+      if (!customData) {
+        throw new Error(
+          colors.red("@error: ") + quality + " not found in the video."
+        );
+      }
       const title: string = engineData.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"

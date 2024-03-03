@@ -81,6 +81,12 @@ export default async function ListAudioQualityCustom(input: {
       const customData = engineData.AudioStore.filter(
         (op) => op.AVDownload.formatnote === quality
       );
+      if (!customData) {
+        console.log(
+          colors.red("@error: ") + quality + " not found in the video."
+        );
+        continue;
+      }
       const title: string = engineData.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"
