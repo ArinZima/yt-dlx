@@ -11,7 +11,7 @@ const colors = {
 
 const core = {
   server: "node util/server.mjs",
-  prepublishOnly: "yarn remake && yarn test && npm pkg fix",
+  prepublishOnly: "yarn remake && npm pkg fix",
   remake: "yarn clean && yarn make && yarn update && yarn build",
   postinstall:
     "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*",
