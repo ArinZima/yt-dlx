@@ -86,7 +86,7 @@ export default async function VideoQualityCustom(input: {
         })
           .addInput(engineData.metaTube.thumbnail)
           .outputFormat("matroska");
-        let filename: string = `yt-dlx-(VideoQualityCustom_${quality}_`;
+        let filename: string = `yt-dlx-(VideoQualityCustom_${quality}`;
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

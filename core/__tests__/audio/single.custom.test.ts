@@ -16,7 +16,7 @@ async.series(
     try {
       holder = await ytdlx.audio.custom({
         output: "temp/audio",
-        query: "sQEgklEwhSo",
+        query: "inyjMXHZyw4",
         verbose: false,
         stream: false,
         quality,
@@ -30,7 +30,7 @@ async.series(
     try {
       holder = await ytdlx.audio.custom({
         output: "temp/audio",
-        query: "sQEgklEwhSo",
+        query: "inyjMXHZyw4",
         quality: "medium",
         verbose: false,
         stream: true,

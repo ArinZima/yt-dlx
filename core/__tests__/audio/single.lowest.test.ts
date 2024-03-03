@@ -9,7 +9,7 @@ async.series([
     try {
       holder = await ytdlx.audio.lowest({
         output: "temp/audio",
-        query: "sQEgklEwhSo",
+        query: "inyjMXHZyw4",
         verbose: false,
         stream: false,
       });
@@ -23,7 +23,7 @@ async.series([
     try {
       holder = await ytdlx.audio.lowest({
         output: "temp/audio",
-        query: "sQEgklEwhSo",
+        query: "inyjMXHZyw4",
         verbose: false,
         stream: true,
       });
