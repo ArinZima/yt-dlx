@@ -37,13 +37,13 @@ const core = {
   "test:spec":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/quick.spec.js",
   "test:full":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/spec/runner.js",
   "test:audio":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/spec/audio.js",
   "test:video":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/spec/video.js",
   "test:mix":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/spec/mix.js",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
