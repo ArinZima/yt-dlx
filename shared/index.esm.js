@@ -973,7 +973,7 @@ async function Engine(query) {
 // }
 // }
 
-var version = "4.7.0";
+var version = "4.8.0";
 
 async function Agent({ query, verbose, }) {
     try {
@@ -1208,43 +1208,44 @@ async function extract_playlist_videos({ playlistUrls, }) {
     }
 }
 
+const progressBar = (prog) => {
+    if (prog.timemark === undefined || prog.percent === undefined)
+        return;
+    if (prog.percent < 1 && prog.timemark.includes("-"))
+        return;
+    readline.cursorTo(process.stdout, 0);
+    let color = colors.green;
+    if (prog.percent > 98)
+        prog.percent = 100;
+    if (prog.percent < 25)
+        color = colors.red;
+    else if (prog.percent < 50)
+        color = colors.yellow;
+    const width = Math.floor(process.stdout.columns / 4);
+    const scomp = Math.round((width * prog.percent) / 100);
+    const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+    let output = color("@prog: ") +
+        sprog +
+        " | " +
+        color("@percent: ") +
+        prog.percent.toFixed(2) +
+        "% | " +
+        color("@timemark: ") +
+        prog.timemark;
+    if (prog.frames !== 0) {
+        output += " | " + color("@frames: ") + prog.frames;
+    }
+    if (prog.currentFps !== 0) {
+        output += " | " + color("@currentFps: ") + prog.currentFps;
+    }
+    process.stdout.write(output);
+    if (prog.timemark.includes("-"))
+        process.stdout.write("\n\n");
+};
 function gpuffmpeg({ input, verbose, }) {
     let maxTries = 6;
     let currentDir = __dirname;
     let FfprobePath, FfmpegPath;
-    const progressBar = (prog) => {
-        if (prog.timemark === undefined || prog.percent === undefined)
-            return;
-        if (prog.percent < 1 && prog.timemark.includes("-"))
-            return;
-        readline.cursorTo(process.stdout, 0);
-        let color = colors.green;
-        if (prog.percent > 98)
-            prog.percent = 100;
-        if (prog.percent < 25)
-            color = colors.red;
-        else if (prog.percent < 50)
-            color = colors.yellow;
-        const width = Math.floor(process.stdout.columns / 4);
-        const scomp = Math.round((width * prog.percent) / 100);
-        const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
-        process.stdout.write(color("@prog: ") +
-            sprog +
-            " | " +
-            color("@percent: ") +
-            prog.percent.toFixed(2) +
-            "% | " +
-            color("@timemark: ") +
-            prog.timemark +
-            " | " +
-            color("@frames: ") +
-            prog.frames +
-            " | " +
-            color("@currentFps: ") +
-            prog.currentFps);
-        if (prog.timemark.includes("-"))
-            process.stdout.write("\n\n");
-    };
     const getTerm = (command) => {
         try {
             return execSync(command).toString().trim();
@@ -1305,7 +1306,7 @@ async function lowEntry(metaBody) {
     return sortedByFileSize[0];
 }
 
-const qconf$7 = z$1.object({
+const qconf$8 = z$1.object({
     query: z$1.string().min(1),
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
@@ -1332,7 +1333,7 @@ const qconf$7 = z$1.object({
 });
 async function AudioLowest(input) {
     try {
-        const { query, output, stream, verbose, filter } = await qconf$7.parseAsync(input);
+        const { query, output, stream, verbose, filter } = await qconf$8.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1351,12 +1352,12 @@ async function AudioLowest(input) {
                 const ffmpeg = gpuffmpeg({
                     input: sortedData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(engineData.metaTube.thumbnail)
-                    .addOutputOption("-map", "1:0")
-                    .addOutputOption("-map", "0:a:0")
-                    .addOutputOption("-id3v2_version", "3")
-                    .outputFormat("avi");
+                });
+                ffmpeg.addInput(engineData.metaTube.thumbnail);
+                ffmpeg.addOutputOption("-map", "1:0");
+                ffmpeg.addOutputOption("-map", "0:a:0");
+                ffmpeg.addOutputOption("-id3v2_version", "3");
+                ffmpeg.outputFormat("avi");
                 if (filter === "bassboost") {
                     ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                     filename += `bassboost)_${title}.avi`;
@@ -1467,7 +1468,7 @@ async function bigEntry(metaBody) {
     return sortedByFileSize[0];
 }
 
-const qconf$6 = z$1.object({
+const qconf$7 = z$1.object({
     query: z$1.string().min(1),
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
@@ -1494,7 +1495,7 @@ const qconf$6 = z$1.object({
 });
 async function AudioHighest(input) {
     try {
-        const { query, output, stream, verbose, filter } = await qconf$6.parseAsync(input);
+        const { query, output, stream, verbose, filter } = await qconf$7.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1513,12 +1514,12 @@ async function AudioHighest(input) {
                 const ffmpeg = gpuffmpeg({
                     input: sortedData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(engineData.metaTube.thumbnail)
-                    .addOutputOption("-map", "1:0")
-                    .addOutputOption("-map", "0:a:0")
-                    .addOutputOption("-id3v2_version", "3")
-                    .outputFormat("avi");
+                });
+                ffmpeg.addInput(engineData.metaTube.thumbnail);
+                ffmpeg.addOutputOption("-map", "1:0");
+                ffmpeg.addOutputOption("-map", "0:a:0");
+                ffmpeg.addOutputOption("-id3v2_version", "3");
+                ffmpeg.outputFormat("avi");
                 if (filter === "bassboost") {
                     ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                     filename += `bassboost)_${title}.avi`;
@@ -1611,7 +1612,7 @@ async function AudioHighest(input) {
     }
 }
 
-const qconf$5 = z$1.object({
+const qconf$6 = z$1.object({
     query: z$1.string().min(1),
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
@@ -1630,7 +1631,7 @@ const qconf$5 = z$1.object({
 });
 async function VideoLowest(input) {
     try {
-        const { query, stream, verbose, output, filter } = await qconf$5.parseAsync(input);
+        const { query, stream, verbose, output, filter } = await qconf$6.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1648,10 +1649,111 @@ async function VideoLowest(input) {
                 const ffmpeg = gpuffmpeg({
                     input: sortedData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(engineData.metaTube.thumbnail)
-                    .outputFormat("matroska");
-                let filename = "yt-dlx-(VideoLowest_";
+                });
+                ffmpeg.addInput(engineData.metaTube.thumbnail);
+                ffmpeg.outputFormat("matroska");
+                let filename = "yt-dlx_(VideoLowest_";
+                if (filter === "grayscale") {
+                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                }
+                else if (filter === "invert") {
+                    ffmpeg.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                }
+                else if (filter === "rotate90") {
+                    ffmpeg.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                }
+                else if (filter === "rotate180") {
+                    ffmpeg.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                }
+                else if (filter === "rotate270") {
+                    ffmpeg.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                }
+                else if (filter === "flipHorizontal") {
+                    ffmpeg.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                }
+                else if (filter === "flipVertical") {
+                    ffmpeg.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                }
+                else
+                    filename += `)_${title}.mkv`;
+                switch (stream) {
+                    case true:
+                        return {
+                            ffmpeg,
+                            filename: output ? path.join(folder, filename) : filename,
+                        };
+                    default:
+                        await new Promise(() => {
+                            ffmpeg.output(path.join(folder, filename));
+                            ffmpeg.run();
+                        });
+                        break;
+                }
+                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+            }
+        }
+    }
+    catch (error) {
+        if (error instanceof ZodError) {
+            throw new Error(colors.red("@error: ") +
+                error.errors.map((error) => error.message).join(", "));
+        }
+        else if (error instanceof Error) {
+            throw new Error(colors.red("@error: ") + error.message);
+        }
+        else
+            throw new Error(colors.red("@error: ") + "internal server error");
+    }
+}
+
+const qconf$5 = z$1.object({
+    query: z$1.string().min(1),
+    output: z$1.string().optional(),
+    stream: z$1.boolean().optional(),
+    verbose: z$1.boolean().optional(),
+    filter: z$1
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
+});
+async function VideoHighest(input) {
+    try {
+        const { query, stream, verbose, output, filter } = await qconf$5.parseAsync(input);
+        const engineData = await Agent({ query, verbose });
+        if (engineData === undefined) {
+            throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+        }
+        else {
+            const title = engineData.metaTube.title.replace(/[^a-zA-Z0-9_]+/g, "-");
+            const folder = output ? path.join(process.cwd(), output) : process.cwd();
+            if (!fs.existsSync(folder))
+                fs.mkdirSync(folder, { recursive: true });
+            const sortedData = await bigEntry(engineData.VideoStore);
+            if (sortedData === undefined) {
+                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            }
+            else {
+                const ffmpeg = gpuffmpeg({
+                    input: sortedData.AVDownload.mediaurl,
+                    verbose,
+                });
+                ffmpeg.addInput(engineData.metaTube.thumbnail);
+                ffmpeg.outputFormat("matroska");
+                let filename = "yt-dlx_(VideoHighest_";
                 if (filter === "grayscale") {
                     ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                     filename += `grayscale)_${title}.mkv`;
@@ -1729,7 +1831,7 @@ const qconf$4 = z$1.object({
     ])
         .optional(),
 });
-async function VideoHighest(input) {
+async function AudioVideoLowest(input) {
     try {
         const { query, stream, verbose, output, filter } = await qconf$4.parseAsync(input);
         const engineData = await Agent({ query, verbose });
@@ -1741,18 +1843,21 @@ async function VideoHighest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const sortedData = await bigEntry(engineData.VideoStore);
-            if (sortedData === undefined) {
+            const [AudioData, VideoData] = await Promise.all([
+                await lowEntry(engineData.AudioStore),
+                await lowEntry(engineData.VideoStore),
+            ]);
+            if (AudioData === undefined || VideoData === undefined) {
                 throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
             }
             else {
                 const ffmpeg = gpuffmpeg({
-                    input: sortedData.AVDownload.mediaurl,
+                    input: VideoData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(engineData.metaTube.thumbnail)
-                    .outputFormat("matroska");
-                let filename = "yt-dlx-(VideoHighest_";
+                });
+                ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+                ffmpeg.outputFormat("matroska");
+                let filename = "yt-dlx_(AudioVideoLowest_";
                 if (filter === "grayscale") {
                     ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                     filename += `grayscale)_${title}.mkv`;
@@ -1830,7 +1935,7 @@ const qconf$3 = z$1.object({
     ])
         .optional(),
 });
-async function AudioVideoLowest(input) {
+async function AudioVideoHighest(input) {
     try {
         const { query, stream, verbose, output, filter } = await qconf$3.parseAsync(input);
         const engineData = await Agent({ query, verbose });
@@ -1842,21 +1947,21 @@ async function AudioVideoLowest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const [AmetaEntry, VmetaEntry] = await Promise.all([
-                lowEntry(engineData.AudioStore),
-                lowEntry(engineData.VideoStore),
+            const [AudioData, VideoData] = await Promise.all([
+                await bigEntry(engineData.AudioStore),
+                await bigEntry(engineData.VideoStore),
             ]);
-            if (AmetaEntry === undefined || VmetaEntry === undefined) {
+            if (AudioData === undefined || VideoData === undefined) {
                 throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
             }
             else {
                 const ffmpeg = gpuffmpeg({
-                    input: VmetaEntry.AVDownload.mediaurl,
+                    input: VideoData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(AmetaEntry.AVDownload.mediaurl)
-                    .outputFormat("matroska");
-                let filename = "yt-dlx-(AudioVideoLowest_";
+                });
+                ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+                ffmpeg.outputFormat("matroska");
+                let filename = "yt-dlx_(AudioVideoHighest_";
                 if (filter === "grayscale") {
                     ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                     filename += `grayscale)_${title}.mkv`;
@@ -1922,6 +2027,22 @@ const qconf$2 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
+    AQuality: z$1.enum(["high", "medium", "low", "ultralow"]),
+    VQuality: z$1.enum([
+        "144p",
+        "240p",
+        "360p",
+        "480p",
+        "720p",
+        "1080p",
+        "1440p",
+        "2160p",
+        "2880p",
+        "4320p",
+        "5760p",
+        "8640p",
+        "12000p",
+    ]),
     filter: z$1
         .enum([
         "invert",
@@ -1934,9 +2055,9 @@ const qconf$2 = z$1.object({
     ])
         .optional(),
 });
-async function AudioVideoHighest(input) {
+async function AudioVideoQualityCustom(input) {
     try {
-        const { query, stream, verbose, output, filter } = await qconf$2.parseAsync(input);
+        const { query, stream, verbose, output, VQuality, AQuality, filter } = await qconf$2.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1946,21 +2067,23 @@ async function AudioVideoHighest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const [AmetaEntry, VmetaEntry] = await Promise.all([
-                bigEntry(engineData.AudioStore),
-                bigEntry(engineData.VideoStore),
+            const ACustomData = engineData.AudioStore.filter((op) => op.AVDownload.formatnote === AQuality);
+            const VCustomData = engineData.VideoStore.filter((op) => op.AVDownload.formatnote === VQuality);
+            const [AudioData, VideoData] = await Promise.all([
+                await bigEntry(ACustomData),
+                await bigEntry(VCustomData),
             ]);
-            if (AmetaEntry === undefined || VmetaEntry === undefined) {
+            if (AudioData === undefined || VideoData === undefined) {
                 throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
             }
             else {
                 const ffmpeg = gpuffmpeg({
-                    input: VmetaEntry.AVDownload.mediaurl,
+                    input: VideoData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(AmetaEntry.AVDownload.mediaurl)
-                    .outputFormat("matroska");
-                let filename = "yt-dlx-(AudioVideoHighest_";
+                });
+                ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+                ffmpeg.outputFormat("matroska");
+                let filename = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
                 if (filter === "grayscale") {
                     ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                     filename += `grayscale)_${title}.mkv`;
@@ -2068,13 +2191,13 @@ async function AudioQualityCustom(input) {
                 const ffmpeg = gpuffmpeg({
                     input: sortedData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(engineData.metaTube.thumbnail)
-                    .addOutputOption("-map", "1:0")
-                    .addOutputOption("-map", "0:a:0")
-                    .addOutputOption("-id3v2_version", "3")
-                    .outputFormat("avi");
-                let filename = `yt-dlx-(AudioQualityCustom_${quality}_`;
+                });
+                ffmpeg.addInput(engineData.metaTube.thumbnail);
+                ffmpeg.addOutputOption("-map", "1:0");
+                ffmpeg.addOutputOption("-map", "0:a:0");
+                ffmpeg.addOutputOption("-id3v2_version", "3");
+                ffmpeg.outputFormat("avi");
+                let filename = `yt-dlx-(AudioQualityCustom_${quality}`;
                 if (filter === "bassboost") {
                     ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
                     filename += `bassboost)_${title}.avi`;
@@ -2172,7 +2295,21 @@ const qconf = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    quality: z$1.enum(["high", "medium", "low", "ultralow"]),
+    quality: z$1.enum([
+        "144p",
+        "240p",
+        "360p",
+        "480p",
+        "720p",
+        "1080p",
+        "1440p",
+        "2160p",
+        "2880p",
+        "4320p",
+        "5760p",
+        "8640p",
+        "12000p",
+    ]),
     filter: z$1
         .enum([
         "invert",
@@ -2206,10 +2343,10 @@ async function VideoQualityCustom(input) {
                 const ffmpeg = gpuffmpeg({
                     input: sortedData.AVDownload.mediaurl,
                     verbose,
-                })
-                    .addInput(engineData.metaTube.thumbnail)
-                    .outputFormat("matroska");
-                let filename = `yt-dlx-(VideoQualityCustom_${quality}_`;
+                });
+                ffmpeg.addInput(engineData.metaTube.thumbnail);
+                ffmpeg.outputFormat("matroska");
+                let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
                 if (filter === "grayscale") {
                     ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                     filename += `grayscale)_${title}.mkv`;
@@ -2295,6 +2432,7 @@ const ytdlx = {
     audio_video: {
         lowest: AudioVideoLowest,
         highest: AudioVideoHighest,
+        custom: AudioVideoQualityCustom,
     },
 };
 

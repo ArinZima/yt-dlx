@@ -13,7 +13,7 @@ const qconf = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   AQuality: z.enum(["high", "medium", "low", "ultralow"]),
-  vQuality: z.enum([
+  VQuality: z.enum([
     "144p",
     "240p",
     "360p",
@@ -46,7 +46,7 @@ export default async function AudioVideoQualityCustom(input: {
   stream?: boolean;
   verbose?: boolean;
   AQuality: "high" | "medium" | "low" | "ultralow";
-  vQuality:
+  VQuality:
     | "144p"
     | "240p"
     | "360p"
@@ -73,7 +73,7 @@ export default async function AudioVideoQualityCustom(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, output, vQuality, AQuality, filter } =
+    const { query, stream, verbose, output, VQuality, AQuality, filter } =
       await qconf.parseAsync(input);
     const engineData = await ytdlx({ query, verbose });
     if (engineData === undefined) {
@@ -91,15 +91,19 @@ export default async function AudioVideoQualityCustom(input: {
         (op) => op.AVDownload.formatnote === AQuality
       );
       const VCustomData = engineData.VideoStore.filter(
-        (op) => op.AVDownload.formatnote === vQuality
+        (op) => op.AVDownload.formatnote === VQuality
       );
       const [AudioData, VideoData] = await Promise.all([
         await bigEntry(ACustomData),
         await bigEntry(VCustomData),
       ]);
-      if (AudioData === undefined || VideoData === undefined) {
+      if (AudioData === undefined) {
         throw new Error(
-          colors.red("@error: ") + "unable to get response from youtube."
+          colors.red("@error: ") + AQuality + " not found in the video."
+        );
+      } else if (VideoData === undefined) {
+        throw new Error(
+          colors.red("@error: ") + VQuality + " not found in the video."
         );
       } else {
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
@@ -108,7 +112,7 @@ export default async function AudioVideoQualityCustom(input: {
         });
         ffmpeg.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg.outputFormat("matroska");
-        let filename: string = `yt-dlx_(AudioVideoQualityCustom_${vQuality}_${AQuality}`;
+        let filename: string = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

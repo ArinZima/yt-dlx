@@ -8,6 +8,7 @@ import VideoLowest from "./pipes/video/VideoLowest";
 import VideoHighest from "./pipes/video/VideoHighest";
 import AudioVideoLowest from "./pipes/mix/AudioVideoLowest";
 import AudioVideoHighest from "./pipes/mix/AudioVideoHighest";
+import AudioVideoQualityCustom from "./pipes/mix/AudioVideoQualityCustom.";
 import AudioQualityCustom from "./pipes/audio/AudioQualityCustom";
 import VideoQualityCustom from "./pipes/video/VideoQualityCustom";
 declare const ytdlx: {
@@ -35,6 +36,7 @@ declare const ytdlx: {
     audio_video: {
         lowest: typeof AudioVideoLowest;
         highest: typeof AudioVideoHighest;
+        custom: typeof AudioVideoQualityCustom;
     };
 };
 export default ytdlx;

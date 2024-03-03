@@ -91,7 +91,7 @@ export default async function VideoQualityCustom(input: {
       const sortedData = await lowEntry(customData);
       if (sortedData === undefined) {
         throw new Error(
-          colors.red("@error: ") + "unable to get response from youtube."
+          colors.red("@error: ") + quality + " not found in the video."
         );
       } else {
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
