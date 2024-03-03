@@ -80,7 +80,6 @@ export default async function ListVideoHighest(input: {
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
       ffmpeg.outputFormat("matroska");
       if (filter === "grayscale") {
         ffmpeg.withVideoFilter(
