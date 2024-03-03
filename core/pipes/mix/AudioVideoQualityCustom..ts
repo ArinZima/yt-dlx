@@ -12,7 +12,8 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  quality: z.enum([
+  AQuality: z.enum(["high", "medium", "low", "ultralow"]),
+  vQuality: z.enum([
     "144p",
     "240p",
     "360p",
@@ -44,7 +45,8 @@ export default async function AudioVideoQualityCustom(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
-  quality:
+  AQuality: "high" | "medium" | "low" | "ultralow";
+  vQuality:
     | "144p"
     | "240p"
     | "360p"
@@ -71,7 +73,7 @@ export default async function AudioVideoQualityCustom(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, output, quality, filter } =
+    const { query, stream, verbose, output, vQuality, AQuality, filter } =
       await qconf.parseAsync(input);
     const engineData = await ytdlx({ query, verbose });
     if (engineData === undefined) {
@@ -85,25 +87,28 @@ export default async function AudioVideoQualityCustom(input: {
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const customData = engineData.VideoStore.filter(
-        (op) => op.AVDownload.formatnote === quality
+      const ACustomData = engineData.AudioStore.filter(
+        (op) => op.AVDownload.formatnote === AQuality
       );
-      const [AmetaEntry, VmetaEntry] = await Promise.all([
-        await bigEntry(engineData.AudioStore),
-        await bigEntry(customData),
+      const VCustomData = engineData.VideoStore.filter(
+        (op) => op.AVDownload.formatnote === vQuality
+      );
+      const [AudioData, VideoData] = await Promise.all([
+        await bigEntry(ACustomData),
+        await bigEntry(VCustomData),
       ]);
-      if (AmetaEntry === undefined || VmetaEntry === undefined) {
+      if (AudioData === undefined || VideoData === undefined) {
         throw new Error(
           colors.red("@error: ") + "unable to get response from youtube."
         );
       } else {
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-          input: VmetaEntry.AVDownload.mediaurl,
+          input: VideoData.AVDownload.mediaurl,
           verbose,
-        })
-          .addInput(AmetaEntry.AVDownload.mediaurl)
-          .outputFormat("matroska");
-        let filename: string = `yt-dlx_(AudioVideoQualityCustom_${quality}`;
+        });
+        ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+        ffmpeg.outputFormat("matroska");
+        let filename: string = `yt-dlx_(AudioVideoQualityCustom_${vQuality}_${AQuality}`;
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

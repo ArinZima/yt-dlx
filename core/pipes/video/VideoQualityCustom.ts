@@ -97,9 +97,9 @@ export default async function VideoQualityCustom(input: {
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
           input: sortedData.AVDownload.mediaurl,
           verbose,
-        })
-          .addInput(engineData.metaTube.thumbnail)
-          .outputFormat("matroska");
+        });
+        ffmpeg.addInput(engineData.metaTube.thumbnail);
+        ffmpeg.outputFormat("matroska");
         let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(

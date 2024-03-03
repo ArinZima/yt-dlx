@@ -57,21 +57,21 @@ export default async function AudioVideoLowest(input: {
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const [AmetaEntry, VmetaEntry] = await Promise.all([
+      const [AudioData, VideoData] = await Promise.all([
         await lowEntry(engineData.AudioStore),
         await lowEntry(engineData.VideoStore),
       ]);
-      if (AmetaEntry === undefined || VmetaEntry === undefined) {
+      if (AudioData === undefined || VideoData === undefined) {
         throw new Error(
           colors.red("@error: ") + "unable to get response from youtube."
         );
       } else {
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-          input: VmetaEntry.AVDownload.mediaurl,
+          input: VideoData.AVDownload.mediaurl,
           verbose,
-        })
-          .addInput(AmetaEntry.AVDownload.mediaurl)
-          .outputFormat("matroska");
+        });
+        ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+        ffmpeg.outputFormat("matroska");
         let filename: string = "yt-dlx_(AudioVideoLowest_";
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(

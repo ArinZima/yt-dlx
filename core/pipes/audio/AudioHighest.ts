@@ -83,12 +83,12 @@ export default async function AudioHighest(input: {
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
           input: sortedData.AVDownload.mediaurl,
           verbose,
-        })
-          .addInput(engineData.metaTube.thumbnail)
-          .addOutputOption("-map", "1:0")
-          .addOutputOption("-map", "0:a:0")
-          .addOutputOption("-id3v2_version", "3")
-          .outputFormat("avi");
+        });
+        ffmpeg.addInput(engineData.metaTube.thumbnail);
+        ffmpeg.addOutputOption("-map", "1:0");
+        ffmpeg.addOutputOption("-map", "0:a:0");
+        ffmpeg.addOutputOption("-id3v2_version", "3");
+        ffmpeg.outputFormat("avi");
         if (filter === "bassboost") {
           ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
           filename += `bassboost)_${title}.avi`;
