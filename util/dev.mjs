@@ -41,7 +41,7 @@ const core = {
   "test:audio":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js",
   "test:video":
-    "`rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
 };
