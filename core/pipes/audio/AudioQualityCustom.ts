@@ -58,7 +58,7 @@ export default async function AudioQualityCustom(input: {
           .addOutputOption("-map", "0:a:0")
           .addOutputOption("-id3v2_version", "3")
           .outputFormat("avi");
-        const filename: string = `yt-dlp-(AudioQualityCustom)-${title}.avi`;
+        const filename: string = `yt-dlp-(AudioQualityCustom_${quality})-${title}.avi`;
         switch (stream) {
           case true:
             return {

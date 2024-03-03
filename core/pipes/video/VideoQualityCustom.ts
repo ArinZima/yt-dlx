@@ -68,7 +68,7 @@ export default async function VideoQualityCustom(input: {
         })
           .addInput(engineData.metaTube.thumbnail)
           .outputFormat("matroska");
-        const filename: string = `yt-dlp-(VideoQualityCustom)-${title}.mkv`;
+        const filename: string = `yt-dlp-(VideoQualityCustom_${quality})-${title}.mkv`;
         switch (stream) {
           case true:
             return {
