@@ -26,10 +26,10 @@ const progressBar = (prog: any) => {
     "% | " +
     color("@timemark: ") +
     prog.timemark;
-  if (prog.frames !== 0) {
+  if (prog.frames !== 0 && !isNaN(prog.frames)) {
     output += " | " + color("@frames: ") + prog.frames;
   }
-  if (prog.currentFps !== 0) {
+  if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
     output += " | " + color("@currentFps: ") + prog.currentFps;
   }
   process.stdout.write(output);
@@ -58,7 +58,7 @@ function gpuffmpeg({
       if (verbose) console.log(colors.green("@ffmpeg:"), command);
     })
     .on("progress", (prog) => progressBar(prog))
-    .on("end", () => console.log(colors.green("\n@ffmpeg:"), "ended"))
+    .on("end", () => console.log("\n"))
     .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
   while (maxTries > 0) {
     FfprobePath = path.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");

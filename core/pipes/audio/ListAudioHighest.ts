@@ -144,20 +144,25 @@ export default async function ListAudioHighest(input: {
         ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
         filename += `vibrato)_${title}.avi`;
       } else filename += `)_${title}.avi`;
-      await new Promise<void>(() => {
+      await new Promise<void>((resolve, reject) => {
         ffmpeg.output(path.join(folder, filename));
+        ffmpeg.on("error", (err) => {
+          console.error("FFmpeg error:", err);
+          reject(err);
+        });
+        ffmpeg.on("end", () => resolve());
         ffmpeg.run();
       });
-      console.log(
-        colors.green("@info:"),
-        "❣️ Thank you for using",
-        colors.green("yt-dlx."),
-        "If you enjoy the project, consider",
-        colors.green("🌟starring"),
-        "the github repo",
-        colors.green("https://github.com/yt-dlx")
-      );
     }
+    console.log(
+      colors.green("@info:"),
+      "❣️ Thank you for using",
+      colors.green("yt-dlx."),
+      "If you enjoy the project, consider",
+      colors.green("🌟starring"),
+      "the github repo",
+      colors.green("https://github.com/yt-dlx")
+    );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
