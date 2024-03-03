@@ -1,9 +1,6 @@
-import * as fs from "fs";
 import ytdlx from "../..";
 import colors from "colors";
-import * as async from "async";
 
-let holder: any;
 const quals: ("high" | "medium" | "low" | "ultralow")[] = [
   "high",
   "medium",
@@ -11,43 +8,17 @@ const quals: ("high" | "medium" | "low" | "ultralow")[] = [
   "ultralow",
 ];
 
-async.series(
-  quals.map((quality) => async () => {
-    try {
-      holder = await ytdlx.audio.custom({
-        query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-        output: "temp/audio",
-        verbose: false,
-        stream: false,
-        quality,
-      });
-      console.log(colors.bold.green("@pass:"), true);
-    } catch (error: any) {
-      console.error(colors.red(error));
-    }
-  }),
-  async () => {
-    try {
-      holder = await ytdlx.audio.custom({
-        query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-        output: "temp/audio",
-        quality: "medium",
-        verbose: false,
-        stream: true,
-      });
-      if (holder) {
-        await holder.ffmpeg
-          .pipe(fs.createWriteStream(holder.filename))
-          .on("finish", () => {
-            console.log(
-              colors.bold.green("\n@pass:"),
-              "filename",
-              holder.filename
-            );
-          });
-      } else console.error(colors.red(holder));
-    } catch (error: any) {
-      console.error(colors.red(error));
-    }
+quals.map((quality) => async () => {
+  try {
+    await ytdlx.audio.custom({
+      query: "https://www.youtube.com/watch?v=7PIji8OubXU",
+      output: "temp/audio",
+      verbose: false,
+      stream: false,
+      quality,
+    });
+    console.log(colors.bold.green("@pass:"), true);
+  } catch (error: any) {
+    console.error(colors.red(error));
   }
-);
+});

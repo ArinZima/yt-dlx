@@ -1,9 +1,6 @@
-import * as fs from "fs";
 import ytdlx from "../..";
 import colors from "colors";
-import * as async from "async";
 
-let holder: any;
 const AQuals: (
   | "high"
   | "medium"
@@ -64,51 +61,20 @@ const VQuals: (
   "12000p",
 ];
 
-async.series(
-  VQuals.map((VQuality) => async () => {
-    AQuals.map((AQuality) => async () => {
-      try {
-        holder = await ytdlx.audio_video.custom({
-          query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-          output: "temp/audio_video",
-          verbose: false,
-          stream: false,
-          AQuality,
-          VQuality,
-        });
-        console.log(colors.bold.green("@pass:"), true);
-      } catch (error: any) {
-        console.error(colors.red(error));
-      }
-    });
-  }),
-  async () => {
-    VQuals.map((VQuality) => async () => {
-      AQuals.map((AQuality) => async () => {
-        try {
-          holder = await ytdlx.audio_video.custom({
-            query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-            output: "temp/audio_video",
-            verbose: false,
-            stream: true,
-            AQuality,
-            VQuality,
-          });
-          if (holder) {
-            await holder.ffmpeg
-              .pipe(fs.createWriteStream(holder.filename))
-              .on("finish", () => {
-                console.log(
-                  colors.bold.green("\n@pass:"),
-                  "filename",
-                  holder.filename
-                );
-              });
-          } else console.error(colors.red(holder));
-        } catch (error: any) {
-          console.error(colors.red(error));
-        }
+VQuals.map((VQuality) => async () => {
+  AQuals.map((AQuality) => async () => {
+    try {
+      await ytdlx.audio_video.custom({
+        query: "https://www.youtube.com/watch?v=7PIji8OubXU",
+        output: "temp/audio_video",
+        verbose: false,
+        stream: false,
+        AQuality,
+        VQuality,
       });
-    });
-  }
-);
+      console.log(colors.bold.green("@pass:"), true);
+    } catch (error: any) {
+      console.error(colors.red(error));
+    }
+  });
+});
