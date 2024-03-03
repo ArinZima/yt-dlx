@@ -12,6 +12,7 @@ const qconf = z.object({
   query: z.string().min(1),
   output: z.string().optional(),
   verbose: z.boolean().optional(),
+  quality: z.enum(["high", "medium", "low", "ultralow"]),
   filter: z
     .enum([
       "echo",
@@ -33,10 +34,11 @@ const qconf = z.object({
     .optional(),
 });
 
-export default async function ListAudioHighest(input: {
+export default async function ListAudioQualityCustom(input: {
   query: string;
   output?: string;
   verbose?: boolean;
+  quality: "high" | "medium" | "low" | "ultralow";
   filter?:
     | "echo"
     | "slow"
@@ -55,7 +57,9 @@ export default async function ListAudioHighest(input: {
     | "superspeed";
 }): Promise<void> {
   try {
-    const { query, output, verbose, filter } = await qconf.parseAsync(input);
+    const { query, output, verbose, quality, filter } = await qconf.parseAsync(
+      input
+    );
     const playlistData = await web.search.PlaylistInfo({ query });
     if (playlistData === undefined) {
       throw new Error(
@@ -74,13 +78,16 @@ export default async function ListAudioHighest(input: {
         );
         continue;
       }
+      const customData = engineData.AudioStore.filter(
+        (op) => op.AVDownload.formatnote === quality
+      );
       const title: string = engineData.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const sortedData = await bigEntry(engineData.AudioStore);
+      const sortedData = await bigEntry(customData);
       if (sortedData === undefined) {
         console.log(
           colors.red("@error:"),
@@ -88,7 +95,7 @@ export default async function ListAudioHighest(input: {
         );
         continue;
       }
-      let filename: string = "yt-dlx_(AudioHighest_";
+      let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         input: sortedData.AVDownload.mediaurl,
         verbose,

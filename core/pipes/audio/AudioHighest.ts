@@ -79,7 +79,7 @@ export default async function AudioHighest(input: {
           colors.red("@error: ") + "unable to get response from youtube."
         );
       } else {
-        let filename: string = "yt-dlx-(AudioHighest_";
+        let filename: string = "yt-dlx_(AudioHighest_";
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
           input: sortedData.AVDownload.mediaurl,
           verbose,

@@ -79,7 +79,7 @@ export default async function AudioLowest(input: {
           colors.red("@error: ") + "unable to get response from youtube."
         );
       } else {
-        let filename: string = "yt-dlx-(AudioLowest_";
+        let filename: string = "yt-dlx_(AudioLowest_";
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
           input: sortedData.AVDownload.mediaurl,
           verbose,

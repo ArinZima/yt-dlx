@@ -88,7 +88,7 @@ export default async function ListAudioLowest(input: {
         );
         continue;
       }
-      let filename: string = "yt-dlx-(AudioLowest_";
+      let filename: string = "yt-dlx_(AudioLowest_";
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         input: sortedData.AVDownload.mediaurl,
         verbose,
