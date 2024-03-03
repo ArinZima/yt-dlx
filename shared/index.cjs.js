@@ -995,7 +995,7 @@ async function Engine(query) {
 // }
 // }
 
-var version = "4.8.0";
+var version = "5.0.0";
 
 async function Agent({ query, verbose, }) {
     try {

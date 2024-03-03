@@ -794,7 +794,7 @@ async function Engine(query) {
 }
 
 // package.json
-var version = "4.8.0";
+var version = "5.0.0";
 
 // core/base/Agent.ts
 async function Agent({

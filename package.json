@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "4.8.0",
+  "version": "5.0.0",
   "types": "shared/index.d.ts",
   "main": "shared/index.cjs.js",
   "module": "shared/index.esm.js",
@@ -11,6 +11,7 @@
   },
   "scripts": {
     "start": "node util/dev.mjs",
+    "prepublishOnly": "yarn clean:deps",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
     "upload": "yarn test && yarn remake && npm pkg fix && npm publish --force",
     "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
@@ -78,6 +79,12 @@
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
   },
+  "files": [
+    "util",
+    "shared",
+    "LICENSE",
+    "package.json"
+  ],
   "engines": {
     "node": ">=18"
   },
