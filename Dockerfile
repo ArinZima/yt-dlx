@@ -16,7 +16,7 @@ RUN apt-get update \
         nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm i -g yarn yt-dlx
+RUN npm i -g yarn
 WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
