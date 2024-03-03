@@ -6,7 +6,13 @@ import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
-function gpuffmpeg(input: string, verbose?: boolean): FfmpegCommand {
+function gpuffmpeg({
+  input,
+  verbose,
+}: {
+  input: string;
+  verbose?: boolean;
+}): FfmpegCommand {
   let maxTries: number = 6;
   let currentDir: string = __dirname;
   let FfprobePath: string, FfmpegPath: string;
