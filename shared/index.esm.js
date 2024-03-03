@@ -1818,10 +1818,21 @@ const qconf$3 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
+    filter: z$1
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
 });
 async function AudioVideoLowest(input) {
     try {
-        const { query, stream, verbose, output } = await qconf$3.parseAsync(input);
+        const { query, stream, verbose, output, filter } = await qconf$3.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1845,7 +1856,37 @@ async function AudioVideoLowest(input) {
                 })
                     .addInput(AmetaEntry.AVDownload.mediaurl)
                     .outputFormat("matroska");
-                const filename = `yt-dlx_(AudioVideoLowest)_${title}.mkv`;
+                let filename = "yt-dlx-(AudioVideoLowest_";
+                if (filter === "grayscale") {
+                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                }
+                else if (filter === "invert") {
+                    ffmpeg.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                }
+                else if (filter === "rotate90") {
+                    ffmpeg.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                }
+                else if (filter === "rotate180") {
+                    ffmpeg.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                }
+                else if (filter === "rotate270") {
+                    ffmpeg.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                }
+                else if (filter === "flipHorizontal") {
+                    ffmpeg.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                }
+                else if (filter === "flipVertical") {
+                    ffmpeg.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                }
+                else
+                    filename += `)_${title}.mkv`;
                 switch (stream) {
                     case true:
                         return {
@@ -1881,10 +1922,21 @@ const qconf$2 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
+    filter: z$1
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
 });
 async function AudioVideoHighest(input) {
     try {
-        const { query, stream, verbose, output } = await qconf$2.parseAsync(input);
+        const { query, stream, verbose, output, filter } = await qconf$2.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1908,7 +1960,37 @@ async function AudioVideoHighest(input) {
                 })
                     .addInput(AmetaEntry.AVDownload.mediaurl)
                     .outputFormat("matroska");
-                const filename = `yt-dlx_(AudioVideoHighest)_${title}.mkv`;
+                let filename = "yt-dlx-(AudioVideoHighest_";
+                if (filter === "grayscale") {
+                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                }
+                else if (filter === "invert") {
+                    ffmpeg.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                }
+                else if (filter === "rotate90") {
+                    ffmpeg.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                }
+                else if (filter === "rotate180") {
+                    ffmpeg.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                }
+                else if (filter === "rotate270") {
+                    ffmpeg.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                }
+                else if (filter === "flipHorizontal") {
+                    ffmpeg.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                }
+                else if (filter === "flipVertical") {
+                    ffmpeg.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                }
+                else
+                    filename += `)_${title}.mkv`;
                 switch (stream) {
                     case true:
                         return {

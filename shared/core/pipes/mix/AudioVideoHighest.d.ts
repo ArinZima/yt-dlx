@@ -5,6 +5,7 @@ export default function AudioVideoHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
     ffmpeg: gpuffmpegCommand;
