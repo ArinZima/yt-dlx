@@ -101,11 +101,13 @@ export default async function AudioVideoHighest(input: {
           case true:
             return {
               ffmpeg,
-              filename: output ? path.join(folder, filename) : filename,
+              filename: output
+                ? path.join(folder, filename)
+                : filename.replace("_)_", ")_"),
             };
           default:
             await new Promise<void>(() => {
-              ffmpeg.output(path.join(folder, filename));
+              ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
               ffmpeg.run();
             });
             break;

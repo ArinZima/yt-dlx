@@ -105,7 +105,7 @@ export default async function ListVideoHighest(input: {
         filename += `flipVertical)_${title}.mkv`;
       } else filename += `)_${title}.mkv`;
       await new Promise<void>((resolve, reject) => {
-        ffmpeg.output(path.join(folder, filename));
+        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
         ffmpeg.on("error", (err) => {
           console.error("FFmpeg error:", err);
           reject(err);

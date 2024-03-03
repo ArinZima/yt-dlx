@@ -145,7 +145,7 @@ export default async function ListAudioLowest(input: {
         filename += `vibrato)_${title}.avi`;
       } else filename += `)_${title}.avi`;
       await new Promise<void>((resolve, reject) => {
-        ffmpeg.output(path.join(folder, filename));
+        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
         ffmpeg.on("error", (err) => {
           console.error("FFmpeg error:", err);
           reject(err);
