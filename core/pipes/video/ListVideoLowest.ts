@@ -48,7 +48,6 @@ export default async function ListVideoLowest(input: {
         colors.red("@error: ") + "unable to get response from youtube."
       );
     }
-
     for (const video of playlistData.playlistVideos) {
       const engineData = await ytdlx({
         query: video.videoLink,
