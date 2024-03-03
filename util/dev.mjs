@@ -10,7 +10,6 @@ const colors = {
 };
 
 const core = {
-  server: "node util/server.mjs",
   prepublishOnly: "yarn remake && npm pkg fix",
   remake: "yarn clean && yarn make && yarn update && yarn build",
   postinstall:

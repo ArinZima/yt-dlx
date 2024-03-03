@@ -21,4 +21,4 @@ WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
 RUN yarn remake
-CMD ["yarn", "server"]
+CMD ["node", "util/wakeLock.mjs"]
