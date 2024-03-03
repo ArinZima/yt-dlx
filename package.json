@@ -76,7 +76,7 @@
     "spinnies": "latest",
     "stream": "latest",
     "tar": "latest",
-    "yt-dlx": "^4.5.0",
+    "yt-dlx": "^4.6.0",
     "zlib": "latest",
     "zod": "latest"
   },
