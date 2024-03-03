@@ -6,13 +6,19 @@ import extract_playlist_videos from "./pipes/command/extract_playlist_videos";
 
 import AudioLowest from "./pipes/audio/AudioLowest";
 import AudioHighest from "./pipes/audio/AudioHighest";
+import AudioQualityCustom from "./pipes/audio/AudioQualityCustom";
+import ListAudioLowest from "./pipes/audio/ListAudioLowest";
+import ListAudioHighest from "./pipes/audio/ListAudioHighest";
+
 import VideoLowest from "./pipes/video/VideoLowest";
 import VideoHighest from "./pipes/video/VideoHighest";
+import VideoQualityCustom from "./pipes/video/VideoQualityCustom";
+import ListVideoLowest from "./pipes/video/ListVideoLowest";
+import ListVideoHighest from "./pipes/video/ListVideoHighest";
+
 import AudioVideoLowest from "./pipes/mix/AudioVideoLowest";
 import AudioVideoHighest from "./pipes/mix/AudioVideoHighest";
 import AudioVideoQualityCustom from "./pipes/mix/AudioVideoQualityCustom.";
-import AudioQualityCustom from "./pipes/audio/AudioQualityCustom";
-import VideoQualityCustom from "./pipes/video/VideoQualityCustom";
 
 const ytdlx = {
   search: {
@@ -27,14 +33,26 @@ const ytdlx = {
     extract_playlist_videos,
   },
   audio: {
-    lowest: AudioLowest,
-    highest: AudioHighest,
-    custom: AudioQualityCustom,
+    single: {
+      lowest: AudioLowest,
+      highest: AudioHighest,
+      custom: AudioQualityCustom,
+    },
+    playlist: {
+      lowest: ListAudioLowest,
+      highest: ListAudioHighest,
+    },
   },
   video: {
-    lowest: VideoLowest,
-    highest: VideoHighest,
-    custom: VideoQualityCustom,
+    single: {
+      lowest: VideoLowest,
+      highest: VideoHighest,
+      custom: VideoQualityCustom,
+    },
+    playlist: {
+      lowest: ListVideoLowest,
+      highest: ListVideoHighest,
+    },
   },
   audio_video: {
     lowest: AudioVideoLowest,

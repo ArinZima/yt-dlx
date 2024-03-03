@@ -1,11 +1,11 @@
 console.clear();
-import ListAudioHighest from "../pipes/audio/ListAudioHighest";
+import ListVideoLowest from "../pipes/video/ListVideoLowest";
 
 (async () => {
-  await ListAudioHighest({
+  await ListVideoLowest({
     query:
       "https://youtube.com/playlist?list=PLOGXbfrrYmuHaKdTvngShVfcfWDq3E6VR&si=FtaCNRNWtUtW00Fc",
-    output: "temp/audio",
     verbose: false,
+    output: "temp",
   });
 })();

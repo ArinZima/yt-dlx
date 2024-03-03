@@ -10,7 +10,7 @@ const quals: ("high" | "medium" | "low" | "ultralow")[] = [
 
 quals.map((quality) => async () => {
   try {
-    await ytdlx.audio.custom({
+    await ytdlx.audio.single.custom({
       query: "https://www.youtube.com/watch?v=7PIji8OubXU",
       output: "temp/audio",
       verbose: false,

@@ -3,7 +3,7 @@ import colors from "colors";
 
 (async () => {
   try {
-    await ytdlx.audio.lowest({
+    await ytdlx.audio.single.lowest({
       query: "https://www.youtube.com/watch?v=7PIji8OubXU",
       output: "temp/audio",
       verbose: false,

@@ -7,7 +7,7 @@ let holder: any;
 async.series([
   async () => {
     try {
-      holder = await ytdlx.video.lowest({
+      holder = await ytdlx.video.single.lowest({
         query: "https://www.youtube.com/watch?v=EUshgvt7I8U",
         output: "temp/video",
         verbose: false,
@@ -21,7 +21,7 @@ async.series([
   // =========================[FULL-TEST]=========================
   async () => {
     try {
-      holder = await ytdlx.video.lowest({
+      holder = await ytdlx.video.single.lowest({
         query: "https://www.youtube.com/watch?v=EUshgvt7I8U",
         output: "temp/video",
         verbose: false,
