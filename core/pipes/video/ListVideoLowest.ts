@@ -41,7 +41,7 @@ export default async function ListVideoLowest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, verbose, output, filter } = await qconf.parseAsync(input);
+    const { query, output, verbose, filter } = await qconf.parseAsync(input);
     const playlistData = await web.search.PlaylistInfo({ query });
     if (playlistData === undefined) {
       throw new Error(
@@ -79,7 +79,7 @@ export default async function ListVideoLowest(input: {
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });
-      ffmpeg.outputFormat("matroska");
+      ffmpeg.withOutputFormat("matroska");
       if (filter === "grayscale") {
         ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
@@ -104,6 +104,15 @@ export default async function ListVideoLowest(input: {
         ffmpeg.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
       } else filename += `)_${title}.mkv`;
+      await new Promise<void>((resolve, reject) => {
+        ffmpeg.output(path.join(folder, filename));
+        ffmpeg.on("error", (err) => {
+          console.error("FFmpeg error:", err);
+          reject(err);
+        });
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.run();
+      });
     }
     console.log(
       colors.green("@info:"),

@@ -71,7 +71,7 @@ export default async function AudioVideoHighest(input: {
           verbose,
         });
         ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-        ffmpeg.outputFormat("matroska");
+        ffmpeg.withOutputFormat("matroska");
         let filename: string = "yt-dlx_(AudioVideoHighest_";
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(

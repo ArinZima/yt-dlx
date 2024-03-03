@@ -97,7 +97,7 @@ export default async function ListAudioLowest(input: {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
-      ffmpeg.outputFormat("avi");
+      ffmpeg.withOutputFormat("avi");
       if (filter === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         filename += `bassboost)_${title}.avi`;

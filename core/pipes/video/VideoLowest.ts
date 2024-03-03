@@ -68,7 +68,7 @@ export default async function VideoLowest(input: {
           verbose,
         });
         ffmpeg.addInput(engineData.metaTube.thumbnail);
-        ffmpeg.outputFormat("matroska");
+        ffmpeg.withOutputFormat("matroska");
         let filename: string = "yt-dlx_(VideoLowest_";
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
