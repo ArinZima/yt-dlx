@@ -63,67 +63,67 @@
 // switch (filter) {
 // case "bassboost":
 // ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "echo":
 // ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "flanger":
 // ffmpeg.withAudioFilter(["flanger"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "nightcore":
 // ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "panning":
 // ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "phaser":
 // ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "reverse":
 // ffmpeg.withAudioFilter(["areverse"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "slow":
 // ffmpeg.withAudioFilter(["atempo=0.8"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "speed":
 // ffmpeg.withAudioFilter(["atempo=2"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "subboost":
 // ffmpeg.withAudioFilter(["asubboost"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "superslow":
 // ffmpeg.withAudioFilter(["atempo=0.5"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "superspeed":
 // ffmpeg.withAudioFilter(["atempo=3"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "surround":
 // ffmpeg.withAudioFilter(["surround"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "vaporwave":
 // ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // case "vibrato":
 // ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-// metaName = `yt-dlp-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom_bassboost)-${title}.${outputFormat}`;
 // break;
 // default:
 // ffmpeg.withAudioFilter([]);
-// metaName = `yt-dlp-(AudioQualityCustom)-${title}.${outputFormat}`;
+// metaName = `yt-dlx-(AudioQualityCustom)-${title}.${outputFormat}`;
 // break;
 // }
 // ffmpeg.on("start", (command) => {

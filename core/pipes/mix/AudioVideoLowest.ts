@@ -51,7 +51,7 @@ export default async function AudioVideoLowest(input: {
         })
           .addInput(AmetaEntry.AVDownload.mediaurl)
           .outputFormat("matroska");
-        const filename: string = `yt-dlp-(AudioVideoLowest)-${title}.mkv`;
+        const filename: string = `yt-dlx_(AudioVideoLowest)_${title}.mkv`;
         switch (stream) {
           case true:
             return {

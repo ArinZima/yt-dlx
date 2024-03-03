@@ -25,7 +25,7 @@ export default function help(): Promise<string> {
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃    FILTERS    ┃ ❝ AUDIO ONLY: ❞                                                                              ┃
 ┃               ┃   bassboost                  echo                                                            ┃
-┃               ┃   flanger                    nightdlp                                                        ┃
+┃               ┃   flanger                    nightcore                                                       ┃
 ┃               ┃   panning                    phaser                                                          ┃
 ┃               ┃   reverse                    slow                                                            ┃
 ┃               ┃   speed                      subboost                                                        ┃

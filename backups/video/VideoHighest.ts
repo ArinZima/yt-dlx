@@ -54,34 +54,34 @@
 // ffmpeg.withVideoFilter(
 // "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
 // );
-// metaName = `yt-dlp_(VideoHighest-grayscale)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest-grayscale)_${title}.${outputFormat}`;
 // break;
 // case "invert":
 // ffmpeg.withVideoFilter("negate");
-// metaName = `yt-dlp_(VideoHighest-invert)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest-invert)_${title}.${outputFormat}`;
 // break;
 // case "rotate90":
 // ffmpeg.withVideoFilter("rotate=PI/2");
-// metaName = `yt-dlp_(VideoHighest-rotate90)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest-rotate90)_${title}.${outputFormat}`;
 // break;
 // case "rotate180":
 // ffmpeg.withVideoFilter("rotate=PI");
-// metaName = `yt-dlp_(VideoHighest-rotate180)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest-rotate180)_${title}.${outputFormat}`;
 // break;
 // case "rotate270":
 // ffmpeg.withVideoFilter("rotate=3*PI/2");
-// metaName = `yt-dlp_(VideoHighest-rotate270)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest-rotate270)_${title}.${outputFormat}`;
 // break;
 // case "flipHorizontal":
 // ffmpeg.withVideoFilter("hflip");
-// metaName = `yt-dlp_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest-flipHorizontal)_${title}.${outputFormat}`;
 // break;
 // case "flipVertical":
 // ffmpeg.withVideoFilter("vflip");
-// metaName = `yt-dlp_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest-flipVertical)_${title}.${outputFormat}`;
 // break;
 // default:
-// metaName = `yt-dlp_(VideoHighest)_${title}.${outputFormat}`;
+// metaName = `yt-dlx_(VideoHighest)_${title}.${outputFormat}`;
 // }
 // ffmpeg.on("start", (command) => {
 // if (verbose) console.log(command);

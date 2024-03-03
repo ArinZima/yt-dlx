@@ -37,7 +37,7 @@
 // : process.cwd();
 // if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
 // const outputFormat = "mkv";
-// const metaName: string = `yt-dlp_(AudioVideoHighest)_${title}.${outputFormat}`;
+// const metaName: string = `yt-dlx_(AudioVideoHighest)_${title}.${outputFormat}`;
 // const [AmetaEntry, VmetaEntry] = await Promise.all([
 // bigEntry(metaBody.AudioStore),
 // bigEntry(metaBody.VideoStore),
