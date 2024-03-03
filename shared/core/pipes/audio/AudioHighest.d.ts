@@ -5,6 +5,7 @@ export default function AudioHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
+    filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;
     ffmpeg: gpuffmpegCommand;

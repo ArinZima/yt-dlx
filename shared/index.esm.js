@@ -573,7 +573,7 @@ function help() {
 ┃               ┃──────────────────────────────────────────────────────────────────────────────────────────────┃
 ┃    FILTERS    ┃ ❝ AUDIO ONLY: ❞                                                                              ┃
 ┃               ┃   bassboost                  echo                                                            ┃
-┃               ┃   flanger                    nightdlp                                                        ┃
+┃               ┃   flanger                    nightcore                                                       ┃
 ┃               ┃   panning                    phaser                                                          ┃
 ┃               ┃   reverse                    slow                                                            ┃
 ┃               ┃   speed                      subboost                                                        ┃
@@ -1310,10 +1310,29 @@ const qconf$7 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
+    filter: z$1
+        .enum([
+        "echo",
+        "slow",
+        "speed",
+        "phaser",
+        "flanger",
+        "panning",
+        "reverse",
+        "vibrato",
+        "subboost",
+        "surround",
+        "bassboost",
+        "nightcore",
+        "superslow",
+        "vaporwave",
+        "superspeed",
+    ])
+        .optional(),
 });
 async function AudioLowest(input) {
     try {
-        const { query, stream, verbose, output } = await qconf$7.parseAsync(input);
+        const { query, output, stream, verbose, filter } = await qconf$7.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1328,6 +1347,7 @@ async function AudioLowest(input) {
                 throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
             }
             else {
+                let filename = "yt-dlx-(AudioLowest_";
                 const ffmpeg = gpuffmpeg({
                     input: sortedData.AVDownload.mediaurl,
                     verbose,
@@ -1337,7 +1357,68 @@ async function AudioLowest(input) {
                     .addOutputOption("-map", "0:a:0")
                     .addOutputOption("-id3v2_version", "3")
                     .outputFormat("avi");
-                const filename = `yt-dlp-(AudioLowest)-${title}.avi`;
+                if (filter === "bassboost") {
+                    ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    filename += `bassboost)_${title}.avi`;
+                }
+                else if (filter === "echo") {
+                    ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    filename += `echo)_${title}.avi`;
+                }
+                else if (filter === "flanger") {
+                    ffmpeg.withAudioFilter(["flanger"]);
+                    filename += `flanger)_${title}.avi`;
+                }
+                else if (filter === "nightcore") {
+                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    filename += `nightcore)_${title}.avi`;
+                }
+                else if (filter === "panning") {
+                    ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+                    filename += `panning)_${title}.avi`;
+                }
+                else if (filter === "phaser") {
+                    ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    filename += `phaser)_${title}.avi`;
+                }
+                else if (filter === "reverse") {
+                    ffmpeg.withAudioFilter(["areverse"]);
+                    filename += `reverse)_${title}.avi`;
+                }
+                else if (filter === "slow") {
+                    ffmpeg.withAudioFilter(["atempo=0.8"]);
+                    filename += `slow)_${title}.avi`;
+                }
+                else if (filter === "speed") {
+                    ffmpeg.withAudioFilter(["atempo=2"]);
+                    filename += `speed)_${title}.avi`;
+                }
+                else if (filter === "subboost") {
+                    ffmpeg.withAudioFilter(["asubboost"]);
+                    filename += `subboost)_${title}.avi`;
+                }
+                else if (filter === "superslow") {
+                    ffmpeg.withAudioFilter(["atempo=0.5"]);
+                    filename += `superslow)_${title}.avi`;
+                }
+                else if (filter === "superspeed") {
+                    ffmpeg.withAudioFilter(["atempo=3"]);
+                    filename += `superspeed)_${title}.avi`;
+                }
+                else if (filter === "surround") {
+                    ffmpeg.withAudioFilter(["surround"]);
+                    filename += `surround)_${title}.avi`;
+                }
+                else if (filter === "vaporwave") {
+                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    filename += `vaporwave)_${title}.avi`;
+                }
+                else if (filter === "vibrato") {
+                    ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+                    filename += `vibrato)_${title}.avi`;
+                }
+                else
+                    filename += `)_${title}.avi`;
                 switch (stream) {
                     case true:
                         return {
@@ -1391,10 +1472,29 @@ const qconf$6 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
+    filter: z$1
+        .enum([
+        "echo",
+        "slow",
+        "speed",
+        "phaser",
+        "flanger",
+        "panning",
+        "reverse",
+        "vibrato",
+        "subboost",
+        "surround",
+        "bassboost",
+        "nightcore",
+        "superslow",
+        "vaporwave",
+        "superspeed",
+    ])
+        .optional(),
 });
 async function AudioHighest(input) {
     try {
-        const { query, stream, verbose, output } = await qconf$6.parseAsync(input);
+        const { query, output, stream, verbose, filter } = await qconf$6.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1409,6 +1509,7 @@ async function AudioHighest(input) {
                 throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
             }
             else {
+                let filename = "yt-dlx-(AudioHighest_";
                 const ffmpeg = gpuffmpeg({
                     input: sortedData.AVDownload.mediaurl,
                     verbose,
@@ -1418,7 +1519,68 @@ async function AudioHighest(input) {
                     .addOutputOption("-map", "0:a:0")
                     .addOutputOption("-id3v2_version", "3")
                     .outputFormat("avi");
-                const filename = `yt-dlp-(AudioHighest)-${title}.avi`;
+                if (filter === "bassboost") {
+                    ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    filename += `bassboost)_${title}.avi`;
+                }
+                else if (filter === "echo") {
+                    ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    filename += `echo)_${title}.avi`;
+                }
+                else if (filter === "flanger") {
+                    ffmpeg.withAudioFilter(["flanger"]);
+                    filename += `flanger)_${title}.avi`;
+                }
+                else if (filter === "nightcore") {
+                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    filename += `nightcore)_${title}.avi`;
+                }
+                else if (filter === "panning") {
+                    ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+                    filename += `panning)_${title}.avi`;
+                }
+                else if (filter === "phaser") {
+                    ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    filename += `phaser)_${title}.avi`;
+                }
+                else if (filter === "reverse") {
+                    ffmpeg.withAudioFilter(["areverse"]);
+                    filename += `reverse)_${title}.avi`;
+                }
+                else if (filter === "slow") {
+                    ffmpeg.withAudioFilter(["atempo=0.8"]);
+                    filename += `slow)_${title}.avi`;
+                }
+                else if (filter === "speed") {
+                    ffmpeg.withAudioFilter(["atempo=2"]);
+                    filename += `speed)_${title}.avi`;
+                }
+                else if (filter === "subboost") {
+                    ffmpeg.withAudioFilter(["asubboost"]);
+                    filename += `subboost)_${title}.avi`;
+                }
+                else if (filter === "superslow") {
+                    ffmpeg.withAudioFilter(["atempo=0.5"]);
+                    filename += `superslow)_${title}.avi`;
+                }
+                else if (filter === "superspeed") {
+                    ffmpeg.withAudioFilter(["atempo=3"]);
+                    filename += `superspeed)_${title}.avi`;
+                }
+                else if (filter === "surround") {
+                    ffmpeg.withAudioFilter(["surround"]);
+                    filename += `surround)_${title}.avi`;
+                }
+                else if (filter === "vaporwave") {
+                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    filename += `vaporwave)_${title}.avi`;
+                }
+                else if (filter === "vibrato") {
+                    ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+                    filename += `vibrato)_${title}.avi`;
+                }
+                else
+                    filename += `)_${title}.avi`;
                 switch (stream) {
                     case true:
                         return {
@@ -1454,10 +1616,21 @@ const qconf$5 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
+    filter: z$1
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
 });
 async function VideoLowest(input) {
     try {
-        const { query, stream, verbose, output } = await qconf$5.parseAsync(input);
+        const { query, stream, verbose, output, filter } = await qconf$5.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1478,7 +1651,37 @@ async function VideoLowest(input) {
                 })
                     .addInput(engineData.metaTube.thumbnail)
                     .outputFormat("matroska");
-                const filename = `yt-dlp-(VideoLowest)-${title}.mkv`;
+                let filename = "yt-dlx-(VideoLowest_";
+                if (filter === "grayscale") {
+                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                }
+                else if (filter === "invert") {
+                    ffmpeg.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                }
+                else if (filter === "rotate90") {
+                    ffmpeg.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                }
+                else if (filter === "rotate180") {
+                    ffmpeg.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                }
+                else if (filter === "rotate270") {
+                    ffmpeg.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                }
+                else if (filter === "flipHorizontal") {
+                    ffmpeg.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                }
+                else if (filter === "flipVertical") {
+                    ffmpeg.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                }
+                else
+                    filename += `)_${title}.mkv`;
                 switch (stream) {
                     case true:
                         return {
@@ -1514,10 +1717,21 @@ const qconf$4 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
+    filter: z$1
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
 });
 async function VideoHighest(input) {
     try {
-        const { query, stream, verbose, output } = await qconf$4.parseAsync(input);
+        const { query, stream, verbose, output, filter } = await qconf$4.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1538,7 +1752,37 @@ async function VideoHighest(input) {
                 })
                     .addInput(engineData.metaTube.thumbnail)
                     .outputFormat("matroska");
-                const filename = `yt-dlp-(VideoHighest)-${title}.mkv`;
+                let filename = "yt-dlx-(VideoHighest_";
+                if (filter === "grayscale") {
+                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                }
+                else if (filter === "invert") {
+                    ffmpeg.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                }
+                else if (filter === "rotate90") {
+                    ffmpeg.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                }
+                else if (filter === "rotate180") {
+                    ffmpeg.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                }
+                else if (filter === "rotate270") {
+                    ffmpeg.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                }
+                else if (filter === "flipHorizontal") {
+                    ffmpeg.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                }
+                else if (filter === "flipVertical") {
+                    ffmpeg.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                }
+                else
+                    filename += `)_${title}.mkv`;
                 switch (stream) {
                     case true:
                         return {
@@ -1601,7 +1845,7 @@ async function AudioVideoLowest(input) {
                 })
                     .addInput(AmetaEntry.AVDownload.mediaurl)
                     .outputFormat("matroska");
-                const filename = `yt-dlp-(AudioVideoLowest)-${title}.mkv`;
+                const filename = `yt-dlx_(AudioVideoLowest)_${title}.mkv`;
                 switch (stream) {
                     case true:
                         return {
@@ -1664,7 +1908,7 @@ async function AudioVideoHighest(input) {
                 })
                     .addInput(AmetaEntry.AVDownload.mediaurl)
                     .outputFormat("matroska");
-                const filename = `yt-dlp-(AudioVideoHighest)-${title}.mkv`;
+                const filename = `yt-dlx_(AudioVideoHighest)_${title}.mkv`;
                 switch (stream) {
                     case true:
                         return {
@@ -1701,10 +1945,29 @@ const qconf$1 = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     quality: z$1.enum(["high", "medium", "low", "ultralow"]),
+    filter: z$1
+        .enum([
+        "echo",
+        "slow",
+        "speed",
+        "phaser",
+        "flanger",
+        "panning",
+        "reverse",
+        "vibrato",
+        "subboost",
+        "surround",
+        "bassboost",
+        "nightcore",
+        "superslow",
+        "vaporwave",
+        "superspeed",
+    ])
+        .optional(),
 });
 async function AudioQualityCustom(input) {
     try {
-        const { query, stream, verbose, output, quality } = await qconf$1.parseAsync(input);
+        const { query, stream, verbose, output, quality, filter } = await qconf$1.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1729,7 +1992,69 @@ async function AudioQualityCustom(input) {
                     .addOutputOption("-map", "0:a:0")
                     .addOutputOption("-id3v2_version", "3")
                     .outputFormat("avi");
-                const filename = `yt-dlp-(AudioQualityCustom_${quality})-${title}.avi`;
+                let filename = `yt-dlx-(AudioQualityCustom_${quality}_`;
+                if (filter === "bassboost") {
+                    ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    filename += `bassboost)_${title}.avi`;
+                }
+                else if (filter === "echo") {
+                    ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    filename += `echo)_${title}.avi`;
+                }
+                else if (filter === "flanger") {
+                    ffmpeg.withAudioFilter(["flanger"]);
+                    filename += `flanger)_${title}.avi`;
+                }
+                else if (filter === "nightcore") {
+                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    filename += `nightcore)_${title}.avi`;
+                }
+                else if (filter === "panning") {
+                    ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+                    filename += `panning)_${title}.avi`;
+                }
+                else if (filter === "phaser") {
+                    ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    filename += `phaser)_${title}.avi`;
+                }
+                else if (filter === "reverse") {
+                    ffmpeg.withAudioFilter(["areverse"]);
+                    filename += `reverse)_${title}.avi`;
+                }
+                else if (filter === "slow") {
+                    ffmpeg.withAudioFilter(["atempo=0.8"]);
+                    filename += `slow)_${title}.avi`;
+                }
+                else if (filter === "speed") {
+                    ffmpeg.withAudioFilter(["atempo=2"]);
+                    filename += `speed)_${title}.avi`;
+                }
+                else if (filter === "subboost") {
+                    ffmpeg.withAudioFilter(["asubboost"]);
+                    filename += `subboost)_${title}.avi`;
+                }
+                else if (filter === "superslow") {
+                    ffmpeg.withAudioFilter(["atempo=0.5"]);
+                    filename += `superslow)_${title}.avi`;
+                }
+                else if (filter === "superspeed") {
+                    ffmpeg.withAudioFilter(["atempo=3"]);
+                    filename += `superspeed)_${title}.avi`;
+                }
+                else if (filter === "surround") {
+                    ffmpeg.withAudioFilter(["surround"]);
+                    filename += `surround)_${title}.avi`;
+                }
+                else if (filter === "vaporwave") {
+                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    filename += `vaporwave)_${title}.avi`;
+                }
+                else if (filter === "vibrato") {
+                    ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+                    filename += `vibrato)_${title}.avi`;
+                }
+                else
+                    filename += `)_${title}.avi`;
                 switch (stream) {
                     case true:
                         return {
@@ -1766,10 +2091,21 @@ const qconf = z$1.object({
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
     quality: z$1.enum(["high", "medium", "low", "ultralow"]),
+    filter: z$1
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
 });
 async function VideoQualityCustom(input) {
     try {
-        const { query, stream, verbose, output, quality } = await qconf.parseAsync(input);
+        const { query, stream, verbose, output, quality, filter } = await qconf.parseAsync(input);
         const engineData = await Agent({ query, verbose });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -1791,7 +2127,37 @@ async function VideoQualityCustom(input) {
                 })
                     .addInput(engineData.metaTube.thumbnail)
                     .outputFormat("matroska");
-                const filename = `yt-dlp-(VideoQualityCustom_${quality})-${title}.mkv`;
+                let filename = `yt-dlx-(VideoQualityCustom_${quality}_`;
+                if (filter === "grayscale") {
+                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                }
+                else if (filter === "invert") {
+                    ffmpeg.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                }
+                else if (filter === "rotate90") {
+                    ffmpeg.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                }
+                else if (filter === "rotate180") {
+                    ffmpeg.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                }
+                else if (filter === "rotate270") {
+                    ffmpeg.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                }
+                else if (filter === "flipHorizontal") {
+                    ffmpeg.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                }
+                else if (filter === "flipVertical") {
+                    ffmpeg.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                }
+                else
+                    filename += `)_${title}.mkv`;
                 switch (stream) {
                     case true:
                         return {

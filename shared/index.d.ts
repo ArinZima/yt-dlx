@@ -209,6 +209,7 @@ declare function AudioLowest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
+    filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
@@ -219,6 +220,7 @@ declare function AudioHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
+    filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
@@ -229,6 +231,7 @@ declare function VideoLowest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
@@ -239,6 +242,7 @@ declare function VideoHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
@@ -270,6 +274,7 @@ declare function AudioQualityCustom(input: {
     stream?: boolean;
     verbose?: boolean;
     quality: "high" | "medium" | "low" | "ultralow";
+    filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
@@ -281,6 +286,7 @@ declare function VideoQualityCustom(input: {
     stream?: boolean;
     verbose?: boolean;
     quality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
