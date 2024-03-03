@@ -12,7 +12,21 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  quality: z.enum(["high", "medium", "low", "ultralow"]),
+  quality: z.enum([
+    "144p",
+    "240p",
+    "360p",
+    "480p",
+    "720p",
+    "1080p",
+    "1440p",
+    "2160p",
+    "2880p",
+    "4320p",
+    "5760p",
+    "8640p",
+    "12000p",
+  ]),
   filter: z
     .enum([
       "invert",
@@ -86,7 +100,7 @@ export default async function VideoQualityCustom(input: {
         })
           .addInput(engineData.metaTube.thumbnail)
           .outputFormat("matroska");
-        let filename: string = `yt-dlx-(VideoQualityCustom_${quality}`;
+        let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

@@ -58,8 +58,8 @@ export default async function AudioVideoHighest(input: {
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const [AmetaEntry, VmetaEntry] = await Promise.all([
-        bigEntry(engineData.AudioStore),
-        bigEntry(engineData.VideoStore),
+        await bigEntry(engineData.AudioStore),
+        await bigEntry(engineData.VideoStore),
       ]);
       if (AmetaEntry === undefined || VmetaEntry === undefined) {
         throw new Error(
@@ -72,7 +72,7 @@ export default async function AudioVideoHighest(input: {
         })
           .addInput(AmetaEntry.AVDownload.mediaurl)
           .outputFormat("matroska");
-        let filename: string = "yt-dlx-(AudioVideoHighest_";
+        let filename: string = "yt-dlx_(AudioVideoHighest_";
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

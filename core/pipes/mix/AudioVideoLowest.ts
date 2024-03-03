@@ -58,8 +58,8 @@ export default async function AudioVideoLowest(input: {
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const [AmetaEntry, VmetaEntry] = await Promise.all([
-        lowEntry(engineData.AudioStore),
-        lowEntry(engineData.VideoStore),
+        await lowEntry(engineData.AudioStore),
+        await lowEntry(engineData.VideoStore),
       ]);
       if (AmetaEntry === undefined || VmetaEntry === undefined) {
         throw new Error(
@@ -72,7 +72,7 @@ export default async function AudioVideoLowest(input: {
         })
           .addInput(AmetaEntry.AVDownload.mediaurl)
           .outputFormat("matroska");
-        let filename: string = "yt-dlx-(AudioVideoLowest_";
+        let filename: string = "yt-dlx_(AudioVideoLowest_";
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

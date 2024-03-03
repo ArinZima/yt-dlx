@@ -69,7 +69,7 @@ export default async function VideoLowest(input: {
         })
           .addInput(engineData.metaTube.thumbnail)
           .outputFormat("matroska");
-        let filename: string = "yt-dlx-(VideoLowest_";
+        let filename: string = "yt-dlx_(VideoLowest_";
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
