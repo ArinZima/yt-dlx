@@ -13,7 +13,7 @@
     "start": "node util/dev.mjs",
     "prepublishOnly": "yarn remake && npm pkg fix",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
-    "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*",
+    "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
     "clean": "yarn clean:base && yarn clean:client && yarn clean:deps",
     "clean:base": "rm -rf node_modules temp shared others",
     "clean:client": "cd client && rm -rf node_modules .next",
