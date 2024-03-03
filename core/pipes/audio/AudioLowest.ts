@@ -12,18 +12,55 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
+  filter: z
+    .enum([
+      "echo",
+      "slow",
+      "speed",
+      "phaser",
+      "flanger",
+      "panning",
+      "reverse",
+      "vibrato",
+      "subboost",
+      "surround",
+      "bassboost",
+      "nightcore",
+      "superslow",
+      "vaporwave",
+      "superspeed",
+    ])
+    .optional(),
 });
 export default async function AudioLowest(input: {
   query: string;
   output?: string;
   stream?: boolean;
   verbose?: boolean;
+  filter?:
+    | "echo"
+    | "slow"
+    | "speed"
+    | "phaser"
+    | "flanger"
+    | "panning"
+    | "reverse"
+    | "vibrato"
+    | "subboost"
+    | "surround"
+    | "bassboost"
+    | "nightcore"
+    | "superslow"
+    | "vaporwave"
+    | "superspeed";
 }): Promise<void | {
   filename: string;
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, output } = await qconf.parseAsync(input);
+    const { query, output, stream, verbose, filter } = await qconf.parseAsync(
+      input
+    );
     const engineData = await ytdlx({ query, verbose });
     if (engineData === undefined) {
       throw new Error(
@@ -42,6 +79,7 @@ export default async function AudioLowest(input: {
           colors.red("@error: ") + "unable to get response from youtube."
         );
       } else {
+        let filename: string = "yt-dlx-(AudioLowest_";
         const ffmpeg: gpuffmpegCommand = gpuffmpeg({
           input: sortedData.AVDownload.mediaurl,
           verbose,
@@ -51,7 +89,52 @@ export default async function AudioLowest(input: {
           .addOutputOption("-map", "0:a:0")
           .addOutputOption("-id3v2_version", "3")
           .outputFormat("avi");
-        const filename: string = `yt-dlp-(AudioLowest)-${title}.avi`;
+        if (filter === "bassboost") {
+          ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          filename += `bassboost)_${title}.avi`;
+        } else if (filter === "echo") {
+          ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          filename += `echo)_${title}.avi`;
+        } else if (filter === "flanger") {
+          ffmpeg.withAudioFilter(["flanger"]);
+          filename += `flanger)_${title}.avi`;
+        } else if (filter === "nightcore") {
+          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          filename += `nightcore)_${title}.avi`;
+        } else if (filter === "panning") {
+          ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+          filename += `panning)_${title}.avi`;
+        } else if (filter === "phaser") {
+          ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+          filename += `phaser)_${title}.avi`;
+        } else if (filter === "reverse") {
+          ffmpeg.withAudioFilter(["areverse"]);
+          filename += `reverse)_${title}.avi`;
+        } else if (filter === "slow") {
+          ffmpeg.withAudioFilter(["atempo=0.8"]);
+          filename += `slow)_${title}.avi`;
+        } else if (filter === "speed") {
+          ffmpeg.withAudioFilter(["atempo=2"]);
+          filename += `speed)_${title}.avi`;
+        } else if (filter === "subboost") {
+          ffmpeg.withAudioFilter(["asubboost"]);
+          filename += `subboost)_${title}.avi`;
+        } else if (filter === "superslow") {
+          ffmpeg.withAudioFilter(["atempo=0.5"]);
+          filename += `superslow)_${title}.avi`;
+        } else if (filter === "superspeed") {
+          ffmpeg.withAudioFilter(["atempo=3"]);
+          filename += `superspeed)_${title}.avi`;
+        } else if (filter === "surround") {
+          ffmpeg.withAudioFilter(["surround"]);
+          filename += `surround)_${title}.avi`;
+        } else if (filter === "vaporwave") {
+          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          filename += `vaporwave)_${title}.avi`;
+        } else if (filter === "vibrato") {
+          ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+          filename += `vibrato)_${title}.avi`;
+        } else filename += `)_${title}.avi`;
         switch (stream) {
           case true:
             return {
