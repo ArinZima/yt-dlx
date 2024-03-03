@@ -12,18 +12,39 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
+  filter: z
+    .enum([
+      "invert",
+      "rotate90",
+      "rotate270",
+      "grayscale",
+      "rotate180",
+      "flipVertical",
+      "flipHorizontal",
+    ])
+    .optional(),
 });
 export default async function AudioVideoLowest(input: {
   query: string;
   output?: string;
   stream?: boolean;
   verbose?: boolean;
+  filter?:
+    | "invert"
+    | "rotate90"
+    | "rotate270"
+    | "grayscale"
+    | "rotate180"
+    | "flipVertical"
+    | "flipHorizontal";
 }): Promise<void | {
   filename: string;
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, output } = await qconf.parseAsync(input);
+    const { query, stream, verbose, output, filter } = await qconf.parseAsync(
+      input
+    );
     const engineData = await ytdlx({ query, verbose });
     if (engineData === undefined) {
       throw new Error(
@@ -51,7 +72,31 @@ export default async function AudioVideoLowest(input: {
         })
           .addInput(AmetaEntry.AVDownload.mediaurl)
           .outputFormat("matroska");
-        const filename: string = `yt-dlx_(AudioVideoLowest)_${title}.mkv`;
+        let filename: string = "yt-dlx-(AudioVideoLowest_";
+        if (filter === "grayscale") {
+          ffmpeg.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+        } else if (filter === "invert") {
+          ffmpeg.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+        } else if (filter === "rotate90") {
+          ffmpeg.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+        } else if (filter === "rotate180") {
+          ffmpeg.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+        } else if (filter === "rotate270") {
+          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+        } else if (filter === "flipHorizontal") {
+          ffmpeg.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+        } else if (filter === "flipVertical") {
+          ffmpeg.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+        } else filename += `)_${title}.mkv`;
         switch (stream) {
           case true:
             return {
