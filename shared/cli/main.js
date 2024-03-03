@@ -1974,7 +1974,7 @@ async function AudioLowest(input) {
           colors28__default.default.red("@error: ") + "unable to get response from youtube."
         );
       } else {
-        let filename = "yt-dlx-(AudioLowest_";
+        let filename = "yt-dlx_(AudioLowest_";
         const ffmpeg = ffmpeg_default({
           input: sortedData.AVDownload.mediaurl,
           verbose
@@ -2134,7 +2134,7 @@ async function AudioHighest(input) {
           colors28__default.default.red("@error: ") + "unable to get response from youtube."
         );
       } else {
-        let filename = "yt-dlx-(AudioHighest_";
+        let filename = "yt-dlx_(AudioHighest_";
         const ffmpeg = ffmpeg_default({
           input: sortedData.AVDownload.mediaurl,
           verbose
@@ -2262,6 +2262,11 @@ async function AudioQualityCustom(input) {
       const customData = engineData.AudioStore.filter(
         (op) => op.AVDownload.formatnote === quality
       );
+      if (!customData) {
+        throw new Error(
+          colors28__default.default.red("@error: ") + quality + " not found in the video."
+        );
+      }
       const title = engineData.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"
@@ -2284,7 +2289,7 @@ async function AudioQualityCustom(input) {
         ffmpeg.addOutputOption("-map", "0:a:0");
         ffmpeg.addOutputOption("-id3v2_version", "3");
         ffmpeg.withOutputFormat("avi");
-        let filename = `yt-dlx-(AudioQualityCustom_${quality}`;
+        let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
         if (filter2 === "bassboost") {
           ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
           filename += `bassboost)_${title}.avi`;
@@ -2425,7 +2430,7 @@ async function ListAudioLowest(input) {
         );
         continue;
       }
-      let filename = "yt-dlx-(AudioLowest_";
+      let filename = "yt-dlx_(AudioLowest_";
       const ffmpeg = ffmpeg_default({
         input: sortedData.AVDownload.mediaurl,
         verbose
@@ -2570,7 +2575,7 @@ async function ListAudioHighest(input) {
         );
         continue;
       }
-      let filename = "yt-dlx-(AudioHighest_";
+      let filename = "yt-dlx_(AudioHighest_";
       const ffmpeg = ffmpeg_default({
         input: sortedData.AVDownload.mediaurl,
         verbose
@@ -2911,6 +2916,11 @@ async function VideoQualityCustom(input) {
       const customData = engineData.VideoStore.filter(
         (op) => op.AVDownload.formatnote === quality
       );
+      if (!customData) {
+        throw new Error(
+          colors28__default.default.red("@error: ") + quality + " not found in the video."
+        );
+      }
       const title = engineData.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "-"
