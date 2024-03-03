@@ -10,6 +10,8 @@ const colors = {
 };
 
 const core = {
+  upload: "yarn test && npm publish --force",
+  prepublishOnly: "yarn remake && npm pkg fix",
   remake: "yarn clean && yarn make && yarn update && yarn build",
   postinstall:
     "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
