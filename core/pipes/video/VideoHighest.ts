@@ -7,66 +7,72 @@ import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
-const VideoHighestZod = z.object({
+const qconf = z.object({
   query: z.string().min(1),
+  output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  folderName: z.string().optional(),
 });
 export default async function VideoHighest(input: {
   query: string;
+  output?: string;
   stream?: boolean;
   verbose?: boolean;
-  folderName?: string;
 }): Promise<void | {
   filename: string;
-  stream: gpuffmpegCommand;
+  ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, folderName } = VideoHighestZod.parse(input);
-
-    const metaBody = await ytdlx({ query, verbose });
-    if (!metaBody) throw new Error("Unable to get response from YouTube...");
-    const title: string = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    let metaName: string = "";
-    const metaFold = folderName
-      ? path.join(process.cwd(), folderName)
-      : process.cwd();
-    if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
-
-    const metaEntry = await bigEntry(metaBody.VideoStore);
-    if (metaEntry === undefined) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const ffmpeg: gpuffmpegCommand = gpuffmpeg(
-      metaEntry.AVDownload.mediaurl,
-      verbose
-    );
-    ffmpeg.outputFormat("matroska");
-    metaName = `yt-dlp_(VideoHighest)_${title}.mkv`;
-    ffmpeg.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      return {
-        stream: ffmpeg,
-        filename: folderName ? path.join(metaFold, metaName) : metaName,
-      };
+    const { query, stream, verbose, output } = await qconf.parseAsync(input);
+    const engineData = await ytdlx({ query, verbose });
+    if (engineData === undefined) {
+      throw new Error(
+        colors.red("@error: ") + "unable to get response from youtube."
+      );
     } else {
-      await new Promise<void>((resolve, reject) => {
-        ffmpeg.output(path.join(metaFold, metaName));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", reject);
-        ffmpeg.run();
-      });
+      const title: string = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const folder = output ? path.join(process.cwd(), output) : process.cwd();
+      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+      const sortedData = await bigEntry(engineData.VideoStore);
+      if (sortedData === undefined) {
+        throw new Error(
+          colors.red("@error: ") + "unable to get response from youtube."
+        );
+      } else {
+        const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+          input: sortedData.AVDownload.mediaurl,
+          verbose,
+        })
+          .addInput(engineData.metaTube.thumbnail)
+          .outputFormat("matroska");
+        const filename: string = `yt-dlp-(VideoHighest)-${title}.mkv`;
+        switch (stream) {
+          case true:
+            return {
+              ffmpeg,
+              filename: output ? path.join(folder, filename) : filename,
+            };
+          default:
+            await new Promise<void>(() => {
+              ffmpeg.output(path.join(folder, filename));
+              ffmpeg.run();
+            });
+            break;
+        }
+        console.log(
+          colors.green("@info:"),
+          "❣️ Thank you for using",
+          colors.green("yt-dlx."),
+          "If you enjoy the project, consider",
+          colors.green("🌟starring"),
+          "the github repo",
+          colors.green("https://github.com/yt-dlx")
+        );
+      }
     }
-    console.log(
-      colors.green("@info:"),
-      "❣️ Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
