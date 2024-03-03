@@ -2095,8 +2095,11 @@ async function AudioVideoQualityCustom(input) {
                 await bigEntry(ACustomData),
                 await bigEntry(VCustomData),
             ]);
-            if (AudioData === undefined || VideoData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            if (AudioData === undefined) {
+                throw new Error(colors.red("@error: ") + AQuality + " not found in the video.");
+            }
+            else if (VideoData === undefined) {
+                throw new Error(colors.red("@error: ") + VQuality + " not found in the video.");
             }
             else {
                 const ffmpeg = gpuffmpeg({
@@ -2207,7 +2210,7 @@ async function AudioQualityCustom(input) {
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(customData);
             if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+                throw new Error(colors.red("@error: ") + quality + " not found in the video.");
             }
             else {
                 const ffmpeg = gpuffmpeg({
@@ -2359,7 +2362,7 @@ async function VideoQualityCustom(input) {
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(customData);
             if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+                throw new Error(colors.red("@error: ") + quality + " not found in the video.");
             }
             else {
                 const ffmpeg = gpuffmpeg({

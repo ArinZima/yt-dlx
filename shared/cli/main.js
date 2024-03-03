@@ -2713,9 +2713,13 @@ async function AudioVideoQualityCustom(input) {
         await bigEntry(ACustomData),
         await bigEntry(VCustomData)
       ]);
-      if (AudioData === void 0 || VideoData === void 0) {
+      if (AudioData === void 0) {
         throw new Error(
-          colors24__default.default.red("@error: ") + "unable to get response from youtube."
+          colors24__default.default.red("@error: ") + AQuality + " not found in the video."
+        );
+      } else if (VideoData === void 0) {
+        throw new Error(
+          colors24__default.default.red("@error: ") + VQuality + " not found in the video."
         );
       } else {
         const ffmpeg = ffmpeg_default({
@@ -2831,7 +2835,7 @@ async function AudioQualityCustom(input) {
       const sortedData = await lowEntry(customData);
       if (sortedData === void 0) {
         throw new Error(
-          colors24__default.default.red("@error: ") + "unable to get response from youtube."
+          colors24__default.default.red("@error: ") + quality + " not found in the video."
         );
       } else {
         const ffmpeg = ffmpeg_default({
@@ -2978,7 +2982,7 @@ async function VideoQualityCustom(input) {
       const sortedData = await lowEntry(customData);
       if (sortedData === void 0) {
         throw new Error(
-          colors24__default.default.red("@error: ") + "unable to get response from youtube."
+          colors24__default.default.red("@error: ") + quality + " not found in the video."
         );
       } else {
         const ffmpeg = ffmpeg_default({
