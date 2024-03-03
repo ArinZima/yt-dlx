@@ -2,11 +2,11 @@
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 export default function VideoLowest(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
 }): Promise<void | {
     filename: string;
-    stream: gpuffmpegCommand;
+    ffmpeg: gpuffmpegCommand;
 }>;
 //# sourceMappingURL=VideoLowest.d.ts.map

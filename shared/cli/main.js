@@ -1832,7 +1832,10 @@ async function extract_playlist_videos({
       throw new Error(colors23__default.default.red("@error: ") + "internal server error");
   }
 }
-function gpuffmpeg(input, verbose) {
+function gpuffmpeg({
+  input,
+  verbose
+}) {
   let maxTries = 6;
   let currentDir = __dirname;
   let FfprobePath, FfmpegPath;
@@ -1919,61 +1922,63 @@ async function lowEntry(metaBody) {
 }
 
 // core/pipes/audio/AudioLowest.ts
-var AudioLowestZod = z4.z.object({
+var qconf = z4.z.object({
   query: z4.z.string().min(1),
+  output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
-  verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional()
+  verbose: z4.z.boolean().optional()
 });
 async function AudioLowest(input) {
   try {
-    const { query, stream, verbose, folderName } = AudioLowestZod.parse(input);
-    const metaBody = await Agent({ query, verbose });
-    if (!metaBody)
-      throw new Error("Unable to get response from YouTube...");
-    let metaName = "";
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await lowEntry(metaBody.AudioStore);
-    if (metaEntry === void 0) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const ffmpeg = ffmpeg_default(
-      metaEntry.AVDownload.mediaurl,
-      verbose
-    );
-    ffmpeg.addInput(metaBody.metaTube.thumbnail);
-    ffmpeg.addOutputOption("-map", "1:0");
-    ffmpeg.addOutputOption("-map", "0:a:0");
-    ffmpeg.addOutputOption("-id3v2_version", "3");
-    ffmpeg.outputFormat("avi");
-    ffmpeg.on("error", (error) => {
-      return error;
-    });
-    ffmpeg.withAudioFilter([]);
-    metaName = `yt-dlp-(AudioLowest)-${title}.avi`;
-    if (stream) {
-      return {
-        ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
-      };
+    const { query, stream, verbose, output } = await qconf.parseAsync(input);
+    const engineData = await Agent({ query, verbose });
+    if (engineData === void 0) {
+      throw new Error(
+        colors23__default.default.red("@error: ") + "unable to get response from youtube."
+      );
     } else {
-      await new Promise((resolve, reject2) => {
-        ffmpeg.output(path2__namespace.join(metaFold, metaName));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", reject2);
-        ffmpeg.run();
-      });
+      const title = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs__namespace.existsSync(folder))
+        fs__namespace.mkdirSync(folder, { recursive: true });
+      const sortedData = await lowEntry(engineData.AudioStore);
+      if (sortedData === void 0) {
+        throw new Error(
+          colors23__default.default.red("@error: ") + "unable to get response from youtube."
+        );
+      } else {
+        const ffmpeg = ffmpeg_default({
+          input: sortedData.AVDownload.mediaurl,
+          verbose
+        }).addInput(engineData.metaTube.thumbnail).addOutputOption("-map", "1:0").addOutputOption("-map", "0:a:0").addOutputOption("-id3v2_version", "3").outputFormat("avi");
+        const filename = `yt-dlp-(AudioLowest)-${title}.avi`;
+        switch (stream) {
+          case true:
+            return {
+              ffmpeg,
+              filename: output ? path2__namespace.join(folder, filename) : filename
+            };
+          default:
+            await new Promise(() => {
+              ffmpeg.output(path2__namespace.join(folder, filename));
+              ffmpeg.run();
+            });
+            break;
+        }
+        console.log(
+          colors23__default.default.green("@info:"),
+          "\u2763\uFE0F Thank you for using",
+          colors23__default.default.green("yt-dlx."),
+          "If you enjoy the project, consider",
+          colors23__default.default.green("\u{1F31F}starring"),
+          "the github repo",
+          colors23__default.default.green("https://github.com/yt-dlx")
+        );
+      }
     }
-    console.log(
-      colors23__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
@@ -2006,61 +2011,63 @@ async function bigEntry(metaBody) {
 }
 
 // core/pipes/audio/AudioHighest.ts
-var AudioHighestZod = z4.z.object({
+var qconf2 = z4.z.object({
   query: z4.z.string().min(1),
+  output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
-  verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional()
+  verbose: z4.z.boolean().optional()
 });
 async function AudioHighest(input) {
   try {
-    const { query, stream, verbose, folderName } = AudioHighestZod.parse(input);
-    const metaBody = await Agent({ query, verbose });
-    if (!metaBody)
-      throw new Error("Unable to get response from YouTube...");
-    let metaName = "";
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry(metaBody.AudioStore);
-    if (metaEntry === void 0) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const ffmpeg = ffmpeg_default(
-      metaEntry.AVDownload.mediaurl,
-      verbose
-    );
-    ffmpeg.addInput(metaBody.metaTube.thumbnail);
-    ffmpeg.addOutputOption("-map", "1:0");
-    ffmpeg.addOutputOption("-map", "0:a:0");
-    ffmpeg.addOutputOption("-id3v2_version", "3");
-    ffmpeg.outputFormat("avi");
-    ffmpeg.on("error", (error) => {
-      return error;
-    });
-    ffmpeg.withAudioFilter([]);
-    metaName = `yt-dlp-(AudioHighest)-${title}.avi`;
-    if (stream) {
-      return {
-        ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
-      };
+    const { query, stream, verbose, output } = await qconf2.parseAsync(input);
+    const engineData = await Agent({ query, verbose });
+    if (engineData === void 0) {
+      throw new Error(
+        colors23__default.default.red("@error: ") + "unable to get response from youtube."
+      );
     } else {
-      await new Promise((resolve, reject2) => {
-        ffmpeg.output(path2__namespace.join(metaFold, metaName));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", reject2);
-        ffmpeg.run();
-      });
+      const title = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs__namespace.existsSync(folder))
+        fs__namespace.mkdirSync(folder, { recursive: true });
+      const sortedData = await bigEntry(engineData.AudioStore);
+      if (sortedData === void 0) {
+        throw new Error(
+          colors23__default.default.red("@error: ") + "unable to get response from youtube."
+        );
+      } else {
+        const ffmpeg = ffmpeg_default({
+          input: sortedData.AVDownload.mediaurl,
+          verbose
+        }).addInput(engineData.metaTube.thumbnail).addOutputOption("-map", "1:0").addOutputOption("-map", "0:a:0").addOutputOption("-id3v2_version", "3").outputFormat("avi");
+        const filename = `yt-dlp-(AudioHighest)-${title}.avi`;
+        switch (stream) {
+          case true:
+            return {
+              ffmpeg,
+              filename: output ? path2__namespace.join(folder, filename) : filename
+            };
+          default:
+            await new Promise(() => {
+              ffmpeg.output(path2__namespace.join(folder, filename));
+              ffmpeg.run();
+            });
+            break;
+        }
+        console.log(
+          colors23__default.default.green("@info:"),
+          "\u2763\uFE0F Thank you for using",
+          colors23__default.default.green("yt-dlx."),
+          "If you enjoy the project, consider",
+          colors23__default.default.green("\u{1F31F}starring"),
+          "the github repo",
+          colors23__default.default.green("https://github.com/yt-dlx")
+        );
+      }
     }
-    console.log(
-      colors23__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
@@ -2072,56 +2079,63 @@ async function AudioHighest(input) {
       throw new Error(colors23__default.default.red("@error: ") + "internal server error");
   }
 }
-var VideoLowestZod = z4.z.object({
+var qconf3 = z4.z.object({
   query: z4.z.string().min(1),
+  output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
-  verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional()
+  verbose: z4.z.boolean().optional()
 });
 async function VideoLowest(input) {
   try {
-    const { query, stream, verbose, folderName } = VideoLowestZod.parse(input);
-    const metaBody = await Agent({ query, verbose });
-    if (!metaBody)
-      throw new Error("Unable to get response from YouTube...");
-    let metaName = "";
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await lowEntry(metaBody.VideoStore);
-    if (metaEntry === void 0) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const ffmpeg = ffmpeg_default(
-      metaEntry.AVDownload.mediaurl,
-      verbose
-    );
-    ffmpeg.outputFormat("matroska");
-    metaName = `yt-dlp_(VideoLowest)_${title}.mkv`;
-    ffmpeg.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      return {
-        stream: ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
-      };
+    const { query, stream, verbose, output } = await qconf3.parseAsync(input);
+    const engineData = await Agent({ query, verbose });
+    if (engineData === void 0) {
+      throw new Error(
+        colors23__default.default.red("@error: ") + "unable to get response from youtube."
+      );
     } else {
-      await new Promise((resolve, reject2) => {
-        ffmpeg.output(path2__namespace.join(metaFold, metaName));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", reject2);
-        ffmpeg.run();
-      });
+      const title = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs__namespace.existsSync(folder))
+        fs__namespace.mkdirSync(folder, { recursive: true });
+      const sortedData = await lowEntry(engineData.VideoStore);
+      if (sortedData === void 0) {
+        throw new Error(
+          colors23__default.default.red("@error: ") + "unable to get response from youtube."
+        );
+      } else {
+        const ffmpeg = ffmpeg_default({
+          input: sortedData.AVDownload.mediaurl,
+          verbose
+        }).addInput(engineData.metaTube.thumbnail).outputFormat("matroska");
+        const filename = `yt-dlp-(VideoLowest)-${title}.mkv`;
+        switch (stream) {
+          case true:
+            return {
+              ffmpeg,
+              filename: output ? path2__namespace.join(folder, filename) : filename
+            };
+          default:
+            await new Promise(() => {
+              ffmpeg.output(path2__namespace.join(folder, filename));
+              ffmpeg.run();
+            });
+            break;
+        }
+        console.log(
+          colors23__default.default.green("@info:"),
+          "\u2763\uFE0F Thank you for using",
+          colors23__default.default.green("yt-dlx."),
+          "If you enjoy the project, consider",
+          colors23__default.default.green("\u{1F31F}starring"),
+          "the github repo",
+          colors23__default.default.green("https://github.com/yt-dlx")
+        );
+      }
     }
-    console.log(
-      colors23__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
@@ -2133,56 +2147,63 @@ async function VideoLowest(input) {
       throw new Error(colors23__default.default.red("@error: ") + "internal server error");
   }
 }
-var VideoHighestZod = z4.z.object({
+var qconf4 = z4.z.object({
   query: z4.z.string().min(1),
+  output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
-  verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional()
+  verbose: z4.z.boolean().optional()
 });
 async function VideoHighest(input) {
   try {
-    const { query, stream, verbose, folderName } = VideoHighestZod.parse(input);
-    const metaBody = await Agent({ query, verbose });
-    if (!metaBody)
-      throw new Error("Unable to get response from YouTube...");
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    let metaName = "";
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry(metaBody.VideoStore);
-    if (metaEntry === void 0) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const ffmpeg = ffmpeg_default(
-      metaEntry.AVDownload.mediaurl,
-      verbose
-    );
-    ffmpeg.outputFormat("matroska");
-    metaName = `yt-dlp_(VideoHighest)_${title}.mkv`;
-    ffmpeg.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      return {
-        stream: ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
-      };
+    const { query, stream, verbose, output } = await qconf4.parseAsync(input);
+    const engineData = await Agent({ query, verbose });
+    if (engineData === void 0) {
+      throw new Error(
+        colors23__default.default.red("@error: ") + "unable to get response from youtube."
+      );
     } else {
-      await new Promise((resolve, reject2) => {
-        ffmpeg.output(path2__namespace.join(metaFold, metaName));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", reject2);
-        ffmpeg.run();
-      });
+      const title = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs__namespace.existsSync(folder))
+        fs__namespace.mkdirSync(folder, { recursive: true });
+      const sortedData = await bigEntry(engineData.VideoStore);
+      if (sortedData === void 0) {
+        throw new Error(
+          colors23__default.default.red("@error: ") + "unable to get response from youtube."
+        );
+      } else {
+        const ffmpeg = ffmpeg_default({
+          input: sortedData.AVDownload.mediaurl,
+          verbose
+        }).addInput(engineData.metaTube.thumbnail).outputFormat("matroska");
+        const filename = `yt-dlp-(VideoHighest)-${title}.mkv`;
+        switch (stream) {
+          case true:
+            return {
+              ffmpeg,
+              filename: output ? path2__namespace.join(folder, filename) : filename
+            };
+          default:
+            await new Promise(() => {
+              ffmpeg.output(path2__namespace.join(folder, filename));
+              ffmpeg.run();
+            });
+            break;
+        }
+        console.log(
+          colors23__default.default.green("@info:"),
+          "\u2763\uFE0F Thank you for using",
+          colors23__default.default.green("yt-dlx."),
+          "If you enjoy the project, consider",
+          colors23__default.default.green("\u{1F31F}starring"),
+          "the github repo",
+          colors23__default.default.green("https://github.com/yt-dlx")
+        );
+      }
     }
-    console.log(
-      colors23__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
@@ -2198,12 +2219,12 @@ var AudioVideoLowestZod = z4.z.object({
   query: z4.z.string().min(1),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional(),
+  output: z4.z.string().optional(),
   outputFormat: z4.z.enum(["webm", "avi", "mov"]).optional()
 });
 async function AudioVideoLowest(input) {
   try {
-    const { query, stream, verbose, folderName } = AudioVideoLowestZod.parse(input);
+    const { query, stream, verbose, output } = AudioVideoLowestZod.parse(input);
     const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
@@ -2211,7 +2232,7 @@ async function AudioVideoLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const [AmetaEntry, VmetaEntry] = await Promise.all([
@@ -2222,10 +2243,10 @@ async function AudioVideoLowest(input) {
       throw new Error("Unable to get response from YouTube...");
     }
     const metaName = `yt-dlp_(AudioVideoLowest)_${title}.mkv`;
-    const ffmpeg = ffmpeg_default(
-      VmetaEntry.AVDownload.mediaurl,
+    const ffmpeg = ffmpeg_default({
+      input: VmetaEntry.AVDownload.mediaurl,
       verbose
-    );
+    });
     ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
     ffmpeg.addOutputOption("-shortest");
     ffmpeg.outputFormat("matroska");
@@ -2235,7 +2256,7 @@ async function AudioVideoLowest(input) {
     if (stream) {
       return {
         stream: ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
+        filename: output ? path2__namespace.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
@@ -2264,11 +2285,11 @@ var AudioVideoHighestZod = z4.z.object({
   query: z4.z.string().min(1),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional()
+  output: z4.z.string().optional()
 });
 async function AudioVideoHighest(input) {
   try {
-    const { query, stream, verbose, folderName } = AudioVideoHighestZod.parse(input);
+    const { query, stream, verbose, output } = AudioVideoHighestZod.parse(input);
     const metaBody = await Agent({ query, verbose });
     if (!metaBody)
       throw new Error("Unable to get response from YouTube...");
@@ -2276,7 +2297,7 @@ async function AudioVideoHighest(input) {
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
+    const metaFold = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs__namespace.existsSync(metaFold))
       fs__namespace.mkdirSync(metaFold, { recursive: true });
     const metaName = `yt-dlp_(AudioVideoHighest)_${title}.mkv`;
@@ -2287,10 +2308,10 @@ async function AudioVideoHighest(input) {
     if (AmetaEntry === void 0 || VmetaEntry === void 0) {
       throw new Error("Unable to get response from YouTube...");
     }
-    const ffmpeg = ffmpeg_default(
-      VmetaEntry.AVDownload.mediaurl,
+    const ffmpeg = ffmpeg_default({
+      input: VmetaEntry.AVDownload.mediaurl,
       verbose
-    );
+    });
     ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
     ffmpeg.outputFormat("matroska");
     ffmpeg.addOption("-shortest");
@@ -2300,7 +2321,7 @@ async function AudioVideoHighest(input) {
     if (stream) {
       return {
         stream: ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
+        filename: output ? path2__namespace.join(metaFold, metaName) : metaName
       };
     } else {
       await new Promise((resolve, reject2) => {
@@ -2325,68 +2346,69 @@ async function AudioVideoHighest(input) {
       throw new Error(colors23__default.default.red("@error: ") + "internal server error");
   }
 }
-var AudioQualityCustomZod = z4.z.object({
+var qconf5 = z4.z.object({
   query: z4.z.string().min(1),
+  output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional(),
   quality: z4.z.enum(["high", "medium", "low", "ultralow"])
 });
 async function AudioQualityCustom(input) {
   try {
-    const { query, stream, verbose, quality, folderName } = AudioQualityCustomZod.parse(input);
-    const metaResp = await Agent({ query, verbose });
-    if (!metaResp) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const metaBody = metaResp.AudioStore.filter(
-      (op) => op.AVDownload.formatnote === quality
+    const { query, stream, verbose, output, quality } = await qconf5.parseAsync(
+      input
     );
-    if (!metaBody)
-      throw new Error("Unable to get response from YouTube...");
-    let metaName = "";
-    const title = metaResp.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
-    );
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry(metaBody);
-    if (metaEntry === void 0) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const ffmpeg = ffmpeg_default(
-      metaEntry.AVDownload.mediaurl,
-      verbose
-    );
-    ffmpeg.addInput(metaResp.metaTube.thumbnail);
-    ffmpeg.addOutputOption("-map", "1:0");
-    ffmpeg.addOutputOption("-map", "0:a:0");
-    ffmpeg.addOutputOption("-id3v2_version", "3");
-    ffmpeg.outputFormat("avi");
-    ffmpeg.withAudioFilter([]);
-    metaName = `yt-dlp-(AudioQualityCustom)-${title}.avi`;
-    ffmpeg.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      return {
-        ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
-      };
+    const engineData = await Agent({ query, verbose });
+    if (engineData === void 0) {
+      throw new Error(
+        colors23__default.default.red("@error: ") + "unable to get response from youtube."
+      );
     } else {
-      await new Promise((resolve, reject2) => {
-        ffmpeg.output(path2__namespace.join(metaFold, metaName));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", reject2);
-        ffmpeg.run();
-      });
+      const customData = engineData.AudioStore.filter(
+        (op) => op.AVDownload.formatnote === quality
+      );
+      const title = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs__namespace.existsSync(folder))
+        fs__namespace.mkdirSync(folder, { recursive: true });
+      const sortedData = await lowEntry(customData);
+      if (sortedData === void 0) {
+        throw new Error(
+          colors23__default.default.red("@error: ") + "unable to get response from youtube."
+        );
+      } else {
+        const ffmpeg = ffmpeg_default({
+          input: sortedData.AVDownload.mediaurl,
+          verbose
+        }).addInput(engineData.metaTube.thumbnail).addOutputOption("-map", "1:0").addOutputOption("-map", "0:a:0").addOutputOption("-id3v2_version", "3").outputFormat("avi");
+        const filename = `yt-dlp-(AudioQualityCustom)-${title}.avi`;
+        switch (stream) {
+          case true:
+            return {
+              ffmpeg,
+              filename: output ? path2__namespace.join(folder, filename) : filename
+            };
+          default:
+            await new Promise(() => {
+              ffmpeg.output(path2__namespace.join(folder, filename));
+              ffmpeg.run();
+            });
+            break;
+        }
+        console.log(
+          colors23__default.default.green("@info:"),
+          "\u2763\uFE0F Thank you for using",
+          colors23__default.default.green("yt-dlx."),
+          "If you enjoy the project, consider",
+          colors23__default.default.green("\u{1F31F}starring"),
+          "the github repo",
+          colors23__default.default.green("https://github.com/yt-dlx")
+        );
+      }
     }
-    console.log(
-      colors23__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
@@ -2398,56 +2420,69 @@ async function AudioQualityCustom(input) {
       throw new Error(colors23__default.default.red("@error: ") + "internal server error");
   }
 }
-var VideoLowestZod2 = z4.z.object({
+var qconf6 = z4.z.object({
   query: z4.z.string().min(1),
+  output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  folderName: z4.z.string().optional()
+  quality: z4.z.enum(["high", "medium", "low", "ultralow"])
 });
-async function VideoLowest2(input) {
+async function VideoQualityCustom(input) {
   try {
-    const { query, stream, verbose, folderName } = VideoLowestZod2.parse(input);
-    const metaBody = await Agent({ query, verbose });
-    if (!metaBody)
-      throw new Error("Unable to get response from YouTube...");
-    let metaName = "";
-    const title = metaBody.metaTube.title.replace(
-      /[^a-zA-Z0-9_]+/g,
-      "-"
+    const { query, stream, verbose, output, quality } = await qconf6.parseAsync(
+      input
     );
-    const metaFold = folderName ? path2__namespace.join(process.cwd(), folderName) : process.cwd();
-    if (!fs__namespace.existsSync(metaFold))
-      fs__namespace.mkdirSync(metaFold, { recursive: true });
-    const metaEntry = await bigEntry(metaBody.VideoStore);
-    if (metaEntry === void 0) {
-      throw new Error("Unable to get response from YouTube...");
-    }
-    const ffmpeg = ffmpeg_default(
-      metaEntry.AVDownload.mediaurl,
-      verbose
-    );
-    ffmpeg.outputFormat("matroska");
-    metaName = `yt-dlp_(VideoLowest)_${title}.mkv`;
-    ffmpeg.on("error", (error) => {
-      return error;
-    });
-    if (stream) {
-      return {
-        stream: ffmpeg,
-        filename: folderName ? path2__namespace.join(metaFold, metaName) : metaName
-      };
+    const engineData = await Agent({ query, verbose });
+    if (engineData === void 0) {
+      throw new Error(
+        colors23__default.default.red("@error: ") + "unable to get response from youtube."
+      );
     } else {
-      await new Promise((resolve, reject2) => {
-        ffmpeg.output(path2__namespace.join(metaFold, metaName));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", reject2);
-        ffmpeg.run();
-      });
+      const customData = engineData.VideoStore.filter(
+        (op) => op.AVDownload.formatnote === quality
+      );
+      const title = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "-"
+      );
+      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs__namespace.existsSync(folder))
+        fs__namespace.mkdirSync(folder, { recursive: true });
+      const sortedData = await lowEntry(customData);
+      if (sortedData === void 0) {
+        throw new Error(
+          colors23__default.default.red("@error: ") + "unable to get response from youtube."
+        );
+      } else {
+        const ffmpeg = ffmpeg_default({
+          input: sortedData.AVDownload.mediaurl,
+          verbose
+        }).addInput(engineData.metaTube.thumbnail).outputFormat("matroska");
+        const filename = `yt-dlp-(VideoQualityCustom)-${title}.mkv`;
+        switch (stream) {
+          case true:
+            return {
+              ffmpeg,
+              filename: output ? path2__namespace.join(folder, filename) : filename
+            };
+          default:
+            await new Promise(() => {
+              ffmpeg.output(path2__namespace.join(folder, filename));
+              ffmpeg.run();
+            });
+            break;
+        }
+        console.log(
+          colors23__default.default.green("@info:"),
+          "\u2763\uFE0F Thank you for using",
+          colors23__default.default.green("yt-dlx."),
+          "If you enjoy the project, consider",
+          colors23__default.default.green("\u{1F31F}starring"),
+          "the github repo",
+          colors23__default.default.green("https://github.com/yt-dlx")
+        );
+      }
     }
-    console.log(
-      colors23__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
-    );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
@@ -2481,7 +2516,7 @@ var ytdlx = {
   video: {
     lowest: VideoLowest,
     highest: VideoHighest,
-    custom: VideoLowest2
+    custom: VideoQualityCustom
   },
   audio_video: {
     lowest: AudioVideoLowest,

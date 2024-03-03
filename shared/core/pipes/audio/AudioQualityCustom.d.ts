@@ -2,9 +2,9 @@
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 export default function AudioQualityCustom(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
     quality: "high" | "medium" | "low" | "ultralow";
 }): Promise<void | {
     filename: string;

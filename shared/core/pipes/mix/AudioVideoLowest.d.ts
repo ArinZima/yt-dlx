@@ -4,7 +4,7 @@ export default function AudioVideoLowest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
+    output?: string;
 }): Promise<void | {
     filename: string;
     stream: gpuffmpegCommand;

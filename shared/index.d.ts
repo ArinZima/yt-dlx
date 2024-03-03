@@ -206,9 +206,9 @@ declare function extract_playlist_videos({ playlistUrls, }: {
 
 declare function AudioLowest(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
@@ -216,39 +216,39 @@ declare function AudioLowest(input: {
 
 declare function AudioHighest(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
 }>;
 
-declare function VideoLowest$1(input: {
+declare function VideoLowest(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
 }): Promise<void | {
     filename: string;
-    stream: FfmpegCommand;
+    ffmpeg: FfmpegCommand;
 }>;
 
 declare function VideoHighest(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
 }): Promise<void | {
     filename: string;
-    stream: FfmpegCommand;
+    ffmpeg: FfmpegCommand;
 }>;
 
 declare function AudioVideoLowest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
+    output?: string;
 }): Promise<void | {
     filename: string;
     stream: FfmpegCommand;
@@ -258,7 +258,7 @@ declare function AudioVideoHighest(input: {
     query: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
+    output?: string;
 }): Promise<void | {
     filename: string;
     stream: FfmpegCommand;
@@ -266,24 +266,24 @@ declare function AudioVideoHighest(input: {
 
 declare function AudioQualityCustom(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
     quality: "high" | "medium" | "low" | "ultralow";
 }): Promise<void | {
     filename: string;
     ffmpeg: FfmpegCommand;
 }>;
 
-declare function VideoLowest(input: {
+declare function VideoQualityCustom(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
     quality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
 }): Promise<void | {
     filename: string;
-    stream: FfmpegCommand;
+    ffmpeg: FfmpegCommand;
 }>;
 
 declare const ytdlx: {
@@ -304,9 +304,9 @@ declare const ytdlx: {
         custom: typeof AudioQualityCustom;
     };
     video: {
-        lowest: typeof VideoLowest$1;
+        lowest: typeof VideoLowest;
         highest: typeof VideoHighest;
-        custom: typeof VideoLowest;
+        custom: typeof VideoQualityCustom;
     };
     audio_video: {
         lowest: typeof AudioVideoLowest;

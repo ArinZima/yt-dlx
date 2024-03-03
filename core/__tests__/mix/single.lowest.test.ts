@@ -8,7 +8,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.lowest({
-        folderName: "temp/audio_video",
+        output: "temp/audio_video",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: false,
@@ -22,7 +22,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.lowest({
-        folderName: "temp/audio_video",
+        output: "temp/audio_video",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: true,

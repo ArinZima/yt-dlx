@@ -8,7 +8,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.video.highest({
-        folderName: "temp/video",
+        output: "temp/video",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: false,
@@ -22,7 +22,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.video.highest({
-        folderName: "temp/video",
+        output: "temp/video",
         query: "sQEgklEwhSo",
         verbose: false,
         stream: true,

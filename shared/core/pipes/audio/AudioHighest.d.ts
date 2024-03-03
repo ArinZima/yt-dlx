@@ -2,9 +2,9 @@
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 export default function AudioHighest(input: {
     query: string;
+    output?: string;
     stream?: boolean;
     verbose?: boolean;
-    folderName?: string;
 }): Promise<void | {
     filename: string;
     ffmpeg: gpuffmpegCommand;

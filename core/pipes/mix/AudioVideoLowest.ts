@@ -11,30 +11,27 @@ const AudioVideoLowestZod = z.object({
   query: z.string().min(1),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  folderName: z.string().optional(),
+  output: z.string().optional(),
   outputFormat: z.enum(["webm", "avi", "mov"]).optional(),
 });
 export default async function AudioVideoLowest(input: {
   query: string;
   stream?: boolean;
   verbose?: boolean;
-  folderName?: string;
+  output?: string;
 }): Promise<void | {
   filename: string;
   stream: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, folderName } =
-      AudioVideoLowestZod.parse(input);
+    const { query, stream, verbose, output } = AudioVideoLowestZod.parse(input);
     const metaBody = await ytdlx({ query, verbose });
     if (!metaBody) throw new Error("Unable to get response from YouTube...");
     const title: string = metaBody.metaTube.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "-"
     );
-    const metaFold = folderName
-      ? path.join(process.cwd(), folderName)
-      : process.cwd();
+    const metaFold = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(metaFold)) fs.mkdirSync(metaFold, { recursive: true });
     const [AmetaEntry, VmetaEntry] = await Promise.all([
       lowEntry(metaBody.AudioStore),
@@ -44,10 +41,10 @@ export default async function AudioVideoLowest(input: {
       throw new Error("Unable to get response from YouTube...");
     }
     const metaName: string = `yt-dlp_(AudioVideoLowest)_${title}.mkv`;
-    const ffmpeg: gpuffmpegCommand = gpuffmpeg(
-      VmetaEntry.AVDownload.mediaurl,
-      verbose
-    );
+    const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+      input: VmetaEntry.AVDownload.mediaurl,
+      verbose,
+    });
     ffmpeg.addInput(AmetaEntry.AVDownload.mediaurl);
     ffmpeg.addOutputOption("-shortest");
     ffmpeg.outputFormat("matroska");
@@ -57,7 +54,7 @@ export default async function AudioVideoLowest(input: {
     if (stream) {
       return {
         stream: ffmpeg,
-        filename: folderName ? path.join(metaFold, metaName) : metaName,
+        filename: output ? path.join(metaFold, metaName) : metaName,
       };
     } else {
       await new Promise<void>((resolve, reject) => {
