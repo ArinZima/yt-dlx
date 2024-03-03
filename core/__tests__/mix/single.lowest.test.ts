@@ -8,7 +8,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.lowest({
-        query: "https://www.youtube.com/watch?v=sQEgklEwhSo",
+        query: "https://www.youtube.com/watch?v=EUshgvt7I8U",
         output: "temp/audio_video",
         verbose: false,
         stream: false,
@@ -22,7 +22,7 @@ async.series([
   async () => {
     try {
       holder = await ytdlx.audio_video.lowest({
-        query: "https://www.youtube.com/watch?v=sQEgklEwhSo",
+        query: "https://www.youtube.com/watch?v=EUshgvt7I8U",
         output: "temp/audio_video",
         verbose: false,
         stream: true,
