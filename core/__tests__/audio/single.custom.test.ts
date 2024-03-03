@@ -15,8 +15,8 @@ async.series(
   quals.map((quality) => async () => {
     try {
       holder = await ytdlx.audio.custom({
+        query: "https://www.youtube.com/watch?v=7PIji8OubXU",
         output: "temp/audio",
-        query: "inyjMXHZyw4",
         verbose: false,
         stream: false,
         quality,
@@ -29,8 +29,8 @@ async.series(
   async () => {
     try {
       holder = await ytdlx.audio.custom({
+        query: "https://www.youtube.com/watch?v=7PIji8OubXU",
         output: "temp/audio",
-        query: "inyjMXHZyw4",
         quality: "medium",
         verbose: false,
         stream: true,
