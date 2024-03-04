@@ -10,6 +10,7 @@ const colors = {
 };
 
 const core = {
+  monit: "watch -n 1 nvidia-smi",
   remake: "yarn clean && yarn make && yarn update && yarn build",
   upload: "yarn test && yarn remake && npm pkg fix && npm publish --force",
   postinstall:
@@ -34,17 +35,17 @@ const core = {
   "test:cli":
     "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
   "test:scrape":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.mjs",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js",
   "test:spec":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/quick.spec.mjs",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/quick.spec.js",
   "test:full":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.mjs",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
   "test:audio":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.mjs",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js",
   "test:video":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.mjs",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.mjs",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
