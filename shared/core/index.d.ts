@@ -20,52 +20,52 @@ import AudioVideoQualityCustom from "./pipes/mix/AudioVideoQualityCustom.";
 import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 import ListAudioVideoLowest from "./pipes/mix/ListAudioVideoLowest";
 import ListAudioVideoQualityCustom from "./pipes/mix/ListAudioVideoQualityCustom";
-declare const ytdlx: {
-    search: {
+declare const ytdlx: () => {
+    search: () => {
+        VideoInfo: typeof import("./web/api/VideoInfo").default;
         PlaylistInfo: typeof import("./web/api/PlaylistInfo").default;
         SearchVideos: typeof import("./web/api/SearchVideos").default;
-        VideoInfo: typeof import("./web/api/VideoInfo").default;
     };
-    info: {
+    info: () => {
         help: typeof help;
         extract: typeof extract;
         list_formats: typeof list_formats;
         extract_playlist_videos: typeof extract_playlist_videos;
     };
-    audio: {
-        single: {
-            lowest: typeof AudioLowest;
-            highest: typeof AudioHighest;
-            custom: typeof AudioQualityCustom;
+    AudioOnly: () => {
+        Single: () => {
+            Lowest: typeof AudioLowest;
+            Highest: typeof AudioHighest;
+            Custom: typeof AudioQualityCustom;
         };
-        playlist: {
-            lowest: typeof ListAudioLowest;
-            highest: typeof ListAudioHighest;
-            custom: typeof ListAudioQualityCustom;
-        };
-    };
-    video: {
-        single: {
-            lowest: typeof VideoLowest;
-            highest: typeof VideoHighest;
-            custom: typeof VideoQualityCustom;
-        };
-        playlist: {
-            lowest: typeof ListVideoLowest;
-            highest: typeof ListVideoHighest;
-            custom: typeof ListVideoQualityCustom;
+        Playlist: () => {
+            Lowest: typeof ListAudioLowest;
+            Highest: typeof ListAudioHighest;
+            Custom: typeof ListAudioQualityCustom;
         };
     };
-    audio_video: {
-        single: {
-            lowest: typeof AudioVideoLowest;
-            highest: typeof AudioVideoHighest;
-            custom: typeof AudioVideoQualityCustom;
+    VideoOnly: () => {
+        Single: () => {
+            Lowest: typeof VideoLowest;
+            Highest: typeof VideoHighest;
+            Custom: typeof VideoQualityCustom;
         };
-        playlist: {
-            lowest: typeof ListAudioVideoHighest;
-            highest: typeof ListAudioVideoLowest;
-            custom: typeof ListAudioVideoQualityCustom;
+        Playlist: () => {
+            Lowest: typeof ListVideoLowest;
+            Highest: typeof ListVideoHighest;
+            Custom: typeof ListVideoQualityCustom;
+        };
+    };
+    AudioVideo: () => {
+        Single: () => {
+            Lowest: typeof AudioVideoLowest;
+            Highest: typeof AudioVideoHighest;
+            Custom: typeof AudioVideoQualityCustom;
+        };
+        Playlist: () => {
+            Lowest: typeof ListAudioVideoHighest;
+            Highest: typeof ListAudioVideoLowest;
+            Custom: typeof ListAudioVideoQualityCustom;
         };
     };
 };

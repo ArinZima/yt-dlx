@@ -59,7 +59,6 @@ function gpuffmpeg({
     .on("start", (command) => {
       if (verbose) console.log(colors.green("@ffmpeg:"), command);
     })
-    .withInputOption("-thread auto")
     .on("progress", (prog) => progressBar(prog, size))
     .on("end", () => console.log("\n"))
     .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
@@ -89,6 +88,8 @@ function gpuffmpeg({
         "defaulting to software processing."
       );
   }
+  ffmpeg.withInputOption("-re");
+  ffmpeg.withInputOption("-threads auto");
   return ffmpeg;
 }
 export default gpuffmpeg;

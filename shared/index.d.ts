@@ -4,22 +4,6 @@
  */
 import { FfmpegCommand } from 'fluent-ffmpeg';
 
-interface InputYouTube$1 {
-    query: string;
-    verbose?: boolean;
-    screenshot?: boolean;
-}
-interface VideoInfoType {
-    views: string;
-    title: string;
-    author: string;
-    videoId: string;
-    uploadOn: string;
-    videoLink: string;
-    thumbnailUrls: string[];
-}
-declare function VideoInfo(input: InputYouTube$1): Promise<VideoInfoType | undefined>;
-
 interface IpOp {
     query: string;
     verbose?: boolean;
@@ -50,7 +34,7 @@ interface TypeVideo {
 }
 declare function SearchVideos(input: IpOp): Promise<TypeVideo[] | TypePlaylist[] | undefined>;
 
-interface InputYouTube {
+interface InputYouTube$1 {
     query: string;
     verbose?: boolean;
     screenshot?: boolean;
@@ -71,7 +55,23 @@ interface PlaylistInfoType {
         thumbnailUrls: string[];
     }[];
 }
-declare function PlaylistInfo(input: InputYouTube): Promise<PlaylistInfoType | undefined>;
+declare function PlaylistInfo(input: InputYouTube$1): Promise<PlaylistInfoType | undefined>;
+
+interface InputYouTube {
+    query: string;
+    verbose?: boolean;
+    screenshot?: boolean;
+}
+interface VideoInfoType {
+    views: string;
+    title: string;
+    author: string;
+    videoId: string;
+    uploadOn: string;
+    videoLink: string;
+    thumbnailUrls: string[];
+}
+declare function VideoInfo(input: InputYouTube): Promise<VideoInfoType | undefined>;
 
 declare function help(): Promise<string>;
 
@@ -409,52 +409,52 @@ declare function ListAudioVideoQualityCustom(input: {
     ffmpeg: FfmpegCommand;
 }>;
 
-declare const ytdlx: {
-    search: {
+declare const ytdlx: () => {
+    search: () => {
+        VideoInfo: typeof VideoInfo;
         PlaylistInfo: typeof PlaylistInfo;
         SearchVideos: typeof SearchVideos;
-        VideoInfo: typeof VideoInfo;
     };
-    info: {
+    info: () => {
         help: typeof help;
         extract: typeof extract;
         list_formats: typeof list_formats;
         extract_playlist_videos: typeof extract_playlist_videos;
     };
-    audio: {
-        single: {
-            lowest: typeof AudioLowest;
-            highest: typeof AudioHighest;
-            custom: typeof AudioQualityCustom;
+    AudioOnly: () => {
+        Single: () => {
+            Lowest: typeof AudioLowest;
+            Highest: typeof AudioHighest;
+            Custom: typeof AudioQualityCustom;
         };
-        playlist: {
-            lowest: typeof ListAudioLowest;
-            highest: typeof ListAudioHighest;
-            custom: typeof ListAudioQualityCustom;
-        };
-    };
-    video: {
-        single: {
-            lowest: typeof VideoLowest;
-            highest: typeof VideoHighest;
-            custom: typeof VideoQualityCustom;
-        };
-        playlist: {
-            lowest: typeof ListVideoLowest;
-            highest: typeof ListVideoHighest;
-            custom: typeof ListVideoQualityCustom;
+        Playlist: () => {
+            Lowest: typeof ListAudioLowest;
+            Highest: typeof ListAudioHighest;
+            Custom: typeof ListAudioQualityCustom;
         };
     };
-    audio_video: {
-        single: {
-            lowest: typeof AudioVideoLowest;
-            highest: typeof AudioVideoHighest;
-            custom: typeof AudioVideoQualityCustom;
+    VideoOnly: () => {
+        Single: () => {
+            Lowest: typeof VideoLowest;
+            Highest: typeof VideoHighest;
+            Custom: typeof VideoQualityCustom;
         };
-        playlist: {
-            lowest: typeof ListAudioVideoHighest;
-            highest: typeof ListAudioVideoLowest;
-            custom: typeof ListAudioVideoQualityCustom;
+        Playlist: () => {
+            Lowest: typeof ListVideoLowest;
+            Highest: typeof ListVideoHighest;
+            Custom: typeof ListVideoQualityCustom;
+        };
+    };
+    AudioVideo: () => {
+        Single: () => {
+            Lowest: typeof AudioVideoLowest;
+            Highest: typeof AudioVideoHighest;
+            Custom: typeof AudioVideoQualityCustom;
+        };
+        Playlist: () => {
+            Lowest: typeof ListAudioVideoHighest;
+            Highest: typeof ListAudioVideoLowest;
+            Custom: typeof ListAudioVideoQualityCustom;
         };
     };
 };

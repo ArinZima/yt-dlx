@@ -1245,6 +1245,7 @@ const progressBar = (prog, size) => {
     const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
     let output = color("@prog: ") +
         sprog +
+        " " +
         prog.percent.toFixed(2) +
         "% | " +
         color("@timemark: ") +
@@ -1277,6 +1278,7 @@ function gpuffmpeg({ size, input, verbose, }) {
         if (verbose)
             console.log(colors.green("@ffmpeg:"), command);
     })
+        .withInputOption("-thread auto")
         .on("progress", (prog) => progressBar(prog, size))
         .on("end", () => console.log("\n"))
         .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
@@ -3561,55 +3563,55 @@ async function ListAudioVideoQualityCustom(input) {
     }
 }
 
-const ytdlx = {
-    search: {
+const ytdlx = () => ({
+    search: () => ({
+        VideoInfo: web.search.VideoInfo,
         PlaylistInfo: web.search.PlaylistInfo,
         SearchVideos: web.search.SearchVideos,
-        VideoInfo: web.search.VideoInfo,
-    },
-    info: {
+    }),
+    info: () => ({
         help,
         extract,
         list_formats,
         extract_playlist_videos,
-    },
-    audio: {
-        single: {
-            lowest: AudioLowest,
-            highest: AudioHighest,
-            custom: AudioQualityCustom,
-        },
-        playlist: {
-            lowest: ListAudioLowest,
-            highest: ListAudioHighest,
-            custom: ListAudioQualityCustom,
-        },
-    },
-    video: {
-        single: {
-            lowest: VideoLowest,
-            highest: VideoHighest,
-            custom: VideoQualityCustom,
-        },
-        playlist: {
-            lowest: ListVideoLowest,
-            highest: ListVideoHighest,
-            custom: ListVideoQualityCustom,
-        },
-    },
-    audio_video: {
-        single: {
-            lowest: AudioVideoLowest,
-            highest: AudioVideoHighest,
-            custom: AudioVideoQualityCustom,
-        },
-        playlist: {
-            lowest: ListAudioVideoHighest,
-            highest: ListAudioVideoLowest,
-            custom: ListAudioVideoQualityCustom,
-        },
-    },
-};
+    }),
+    AudioOnly: () => ({
+        Single: () => ({
+            Lowest: AudioLowest,
+            Highest: AudioHighest,
+            Custom: AudioQualityCustom,
+        }),
+        Playlist: () => ({
+            Lowest: ListAudioLowest,
+            Highest: ListAudioHighest,
+            Custom: ListAudioQualityCustom,
+        }),
+    }),
+    VideoOnly: () => ({
+        Single: () => ({
+            Lowest: VideoLowest,
+            Highest: VideoHighest,
+            Custom: VideoQualityCustom,
+        }),
+        Playlist: () => ({
+            Lowest: ListVideoLowest,
+            Highest: ListVideoHighest,
+            Custom: ListVideoQualityCustom,
+        }),
+    }),
+    AudioVideo: () => ({
+        Single: () => ({
+            Lowest: AudioVideoLowest,
+            Highest: AudioVideoHighest,
+            Custom: AudioVideoQualityCustom,
+        }),
+        Playlist: () => ({
+            Lowest: ListAudioVideoHighest,
+            Highest: ListAudioVideoLowest,
+            Custom: ListAudioVideoQualityCustom,
+        }),
+    }),
+});
 
 module.exports = ytdlx;
 /**

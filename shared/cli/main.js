@@ -1843,7 +1843,7 @@ var progressBar = (prog, size) => {
   const width = Math.floor(process.stdout.columns / 4);
   const scomp = Math.round(width * prog.percent / 100);
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
-  let output = color("@prog: ") + sprog + prog.percent.toFixed(2) + "% | " + color("@timemark: ") + prog.timemark;
+  let output = color("@prog: ") + sprog + " " + prog.percent.toFixed(2) + "% | " + color("@timemark: ") + prog.timemark;
   if (prog.frames !== 0 && !isNaN(prog.frames)) {
     output += " | " + color("@frames: ") + prog.frames;
   }
@@ -1873,7 +1873,7 @@ function gpuffmpeg({
   const ffmpeg = fluent__default.default(input).on("start", (command) => {
     if (verbose)
       console.log(colors28__default.default.green("@ffmpeg:"), command);
-  }).on("progress", (prog) => progressBar(prog, size)).on("end", () => console.log("\n")).on("error", (e) => console.error(colors28__default.default.red("\n@ffmpeg:"), e.message));
+  }).withInputOption("-thread auto").on("progress", (prog) => progressBar(prog, size)).on("end", () => console.log("\n")).on("error", (e) => console.error(colors28__default.default.red("\n@ffmpeg:"), e.message));
   while (maxTries > 0) {
     FfprobePath = path2__namespace.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
     FfmpegPath = path2__namespace.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
@@ -4210,55 +4210,55 @@ async function ListAudioVideoQualityCustom(input) {
 }
 
 // core/index.ts
-var ytdlx = {
-  search: {
+var ytdlx = () => ({
+  search: () => ({
+    VideoInfo: web_default.search.VideoInfo,
     PlaylistInfo: web_default.search.PlaylistInfo,
-    SearchVideos: web_default.search.SearchVideos,
-    VideoInfo: web_default.search.VideoInfo
-  },
-  info: {
+    SearchVideos: web_default.search.SearchVideos
+  }),
+  info: () => ({
     help,
     extract,
     list_formats,
     extract_playlist_videos
-  },
-  audio: {
-    single: {
-      lowest: AudioLowest,
-      highest: AudioHighest,
-      custom: AudioQualityCustom
-    },
-    playlist: {
-      lowest: ListAudioLowest,
-      highest: ListAudioHighest,
-      custom: ListAudioQualityCustom
-    }
-  },
-  video: {
-    single: {
-      lowest: VideoLowest,
-      highest: VideoHighest,
-      custom: VideoQualityCustom
-    },
-    playlist: {
-      lowest: ListVideoLowest,
-      highest: ListVideoHighest,
-      custom: ListVideoQualityCustom
-    }
-  },
-  audio_video: {
-    single: {
-      lowest: AudioVideoLowest,
-      highest: AudioVideoHighest,
-      custom: AudioVideoQualityCustom
-    },
-    playlist: {
-      lowest: ListAudioVideoHighest,
-      highest: ListAudioVideoLowest,
-      custom: ListAudioVideoQualityCustom
-    }
-  }
-};
+  }),
+  AudioOnly: () => ({
+    Single: () => ({
+      Lowest: AudioLowest,
+      Highest: AudioHighest,
+      Custom: AudioQualityCustom
+    }),
+    Playlist: () => ({
+      Lowest: ListAudioLowest,
+      Highest: ListAudioHighest,
+      Custom: ListAudioQualityCustom
+    })
+  }),
+  VideoOnly: () => ({
+    Single: () => ({
+      Lowest: VideoLowest,
+      Highest: VideoHighest,
+      Custom: VideoQualityCustom
+    }),
+    Playlist: () => ({
+      Lowest: ListVideoLowest,
+      Highest: ListVideoHighest,
+      Custom: ListVideoQualityCustom
+    })
+  }),
+  AudioVideo: () => ({
+    Single: () => ({
+      Lowest: AudioVideoLowest,
+      Highest: AudioVideoHighest,
+      Custom: AudioVideoQualityCustom
+    }),
+    Playlist: () => ({
+      Lowest: ListAudioVideoHighest,
+      Highest: ListAudioVideoLowest,
+      Custom: ListAudioVideoQualityCustom
+    })
+  })
+});
 var core_default = ytdlx;
 var proTube = minimist__default.default(process.argv.slice(2), {
   string: ["query", "format"],
@@ -4286,7 +4286,7 @@ var program = async () => {
       break;
     case "help":
     case "h":
-      core_default.info.help().then((data) => {
+      core_default().info().help().then((data) => {
         console.log(data);
         process.exit();
       }).catch((error) => {
@@ -4299,7 +4299,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.info.extract({
+        core_default().info().extract({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4314,7 +4314,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.info.list_formats({
+        core_default().info().list_formats({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4329,7 +4329,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.audio.single.highest({
+        core_default().AudioOnly().Single().Highest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4344,7 +4344,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.audio.single.lowest({
+        core_default().AudioOnly().Single().Lowest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4359,7 +4359,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.video.single.highest({
+        core_default().VideoOnly().Single().Highest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4374,7 +4374,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.video.single.lowest({
+        core_default().VideoOnly().Single().Lowest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4389,7 +4389,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.audio_video.single.highest({
+        core_default().AudioVideo().Single().Highest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4404,7 +4404,7 @@ var program = async () => {
       if (!proTube || !proTube.query || proTube.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
-        core_default.audio_video.single.lowest({
+        core_default().AudioVideo().Single().Lowest({
           query: proTube.query
         }).then((data) => {
           console.log(data);
@@ -4422,7 +4422,7 @@ var program = async () => {
       if (!proTube || !proTube.format || proTube.format.length === 0) {
         console.error(colors28__default.default.red("error: no format"));
       }
-      core_default.audio.single.custom({
+      core_default().AudioOnly().Single().Custom({
         query: proTube.query,
         quality: proTube.format
       }).then((data) => {
@@ -4441,7 +4441,7 @@ var program = async () => {
       if (!proTube || !proTube.format || proTube.format.length === 0) {
         console.error(colors28__default.default.red("error: no format"));
       }
-      core_default.video.single.custom({
+      core_default().VideoOnly().Single().Custom({
         query: proTube.query,
         quality: proTube.format
       }).then((data) => {
@@ -4453,7 +4453,7 @@ var program = async () => {
       });
       break;
     default:
-      core_default.info.help().then((data) => {
+      core_default().info().help().then((data) => {
         console.log(data);
         process.exit();
       }).catch((error) => {
@@ -4464,7 +4464,7 @@ var program = async () => {
   }
 };
 if (!proTube._[0]) {
-  core_default.info.help().then((data) => {
+  core_default().info().help().then((data) => {
     console.log(data);
     process.exit();
   }).catch((error) => {
