@@ -86,7 +86,8 @@
     "package.json"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=18",
+    "yarn": ">=1.22.21"
   },
   "author": {
     "name": "yt-dlx"
