@@ -11,9 +11,9 @@ function runTestFiles(folderPath: string) {
     if (lstatSync(filePath).isDirectory()) {
       if (file === "mix") runTestFiles(filePath);
     } else if (file.endsWith(".test.js")) {
-      console.log(colors.bold.yellow("\n\n@testing:"), filePath);
+      console.log(colors.yellow("@testing:"), filePath);
       const result = spawnSync("node", [filePath], { stdio: "inherit" });
-      if (result.error) console.error(colors.bold.red("@error:"), result.error);
+      if (result.error) console.error(colors.red("@error:"), result.error);
     }
   });
 }
