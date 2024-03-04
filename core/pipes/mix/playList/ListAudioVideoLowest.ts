@@ -1,19 +1,48 @@
 import * as fs from "fs";
-import web from "../../../web";
 import colors from "colors";
 import * as path from "path";
+import web from "../../../web";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
 import gpuffmpeg from "../../../base/ffmpeg";
 import lowEntry from "../../../base/lowEntry";
+import YouTubeID from "../../../web/YouTubeId";
 import { sizeFormat } from "../../../base/Engine";
 import type { gpuffmpegCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
-  query: z.string().min(1),
   output: z.string().optional(),
   verbose: z.boolean().optional(),
   torproxy: z.string().min(1).optional(),
+  query: z
+    .array(
+      z
+        .string()
+        .min(1)
+        .refine(
+          async (input) => {
+            switch (true) {
+              case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+                input
+              ):
+                const resultLink = await YouTubeID(input);
+                if (resultLink !== undefined) return true;
+                break;
+              default:
+                const resultId = await YouTubeID(
+                  `https://www.youtube.com/playlist?list=${input}`
+                );
+                if (resultId !== undefined) return true;
+                break;
+            }
+            return false;
+          },
+          {
+            message: "Query must be a valid YouTube Playlist Link or ID.",
+          }
+        )
+    )
+    .min(1),
   filter: z
     .enum([
       "invert",
@@ -47,79 +76,83 @@ export default async function ListAudioVideoLowest(input: {
     const { query, verbose, output, filter, torproxy } = await qconf.parseAsync(
       input
     );
-    const playlistData = await web.search.PlaylistInfo({ query });
-    if (playlistData === undefined) {
-      throw new Error(
-        colors.red("@error: ") + "unable to get response from youtube."
-      );
-    }
-    for (const video of playlistData.playlistVideos) {
-      const engineData = await ytdlx({
-        query: video.videoLink,
-        torproxy,
-        verbose,
-      });
-      if (engineData === undefined) {
-        console.log(
-          colors.red("@error:"),
-          "unable to get response from youtube."
+    for (const pURL of query) {
+      const playlistData = await web.search.PlaylistInfo({ query: pURL });
+      if (playlistData === undefined) {
+        throw new Error(
+          colors.red("@error: ") + "unable to get response from youtube."
         );
-        continue;
       }
-      const title: string = engineData.metaTube.title.replace(
-        /[^a-zA-Z0-9_]+/g,
-        "_"
-      );
-      const folder = output ? path.join(process.cwd(), output) : process.cwd();
-      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const [AudioData, VideoData] = await Promise.all([
-        await lowEntry(engineData.AudioStore),
-        await lowEntry(engineData.VideoStore),
-      ]);
-      let filename: string = "yt-dlx_(AudioVideoLowest_";
-      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-        size: sizeFormat(
-          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-        ).toString(),
-        input: VideoData.AVDownload.mediaurl,
-        verbose,
-      });
-      ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-      ffmpeg.addInputOption("-threads", "auto");
-      ffmpeg.addInputOption("-re");
-      ffmpeg.withOutputFormat("matroska");
-      if (filter === "grayscale") {
-        ffmpeg.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        filename += `grayscale)_${title}.mkv`;
-      } else if (filter === "invert") {
-        ffmpeg.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
-      } else if (filter === "rotate90") {
-        ffmpeg.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
-      } else if (filter === "rotate180") {
-        ffmpeg.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
-      } else if (filter === "rotate270") {
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
-      } else if (filter === "flipHorizontal") {
-        ffmpeg.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
-      } else if (filter === "flipVertical") {
-        ffmpeg.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
-      } else filename += `)_${title}.mkv`;
-      await new Promise<void>((resolve, _reject) => {
-        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", (error) => {
-          throw new Error(colors.red("@error: ") + error.message);
+      for (const video of playlistData.playlistVideos) {
+        const engineData = await ytdlx({
+          query: video.videoLink,
+          torproxy,
+          verbose,
         });
-        ffmpeg.run();
-      });
+        if (engineData === undefined) {
+          console.log(
+            colors.red("@error:"),
+            "unable to get response from youtube."
+          );
+          continue;
+        }
+        const title: string = engineData.metaTube.title.replace(
+          /[^a-zA-Z0-9_]+/g,
+          "_"
+        );
+        const folder = output
+          ? path.join(process.cwd(), output)
+          : process.cwd();
+        if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+        const [AudioData, VideoData] = await Promise.all([
+          await lowEntry(engineData.AudioStore),
+          await lowEntry(engineData.VideoStore),
+        ]);
+        let filename: string = "yt-dlx_(AudioVideoLowest_";
+        const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+          size: sizeFormat(
+            AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+          ).toString(),
+          input: VideoData.AVDownload.mediaurl,
+          verbose,
+        });
+        ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+        ffmpeg.addInputOption("-threads", "auto");
+        ffmpeg.addInputOption("-re");
+        ffmpeg.withOutputFormat("matroska");
+        if (filter === "grayscale") {
+          ffmpeg.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+        } else if (filter === "invert") {
+          ffmpeg.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+        } else if (filter === "rotate90") {
+          ffmpeg.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+        } else if (filter === "rotate180") {
+          ffmpeg.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+        } else if (filter === "rotate270") {
+          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+        } else if (filter === "flipHorizontal") {
+          ffmpeg.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+        } else if (filter === "flipVertical") {
+          ffmpeg.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+        } else filename += `)_${title}.mkv`;
+        await new Promise<void>((resolve, _reject) => {
+          ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg.on("end", () => resolve());
+          ffmpeg.on("error", (error) => {
+            throw new Error(colors.red("@error: ") + error.message);
+          });
+          ffmpeg.run();
+        });
+      }
     }
     console.log(
       colors.green("@info:"),
