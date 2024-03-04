@@ -24,7 +24,7 @@ const quals = [
         await ytdlx.video.single.custom({
           quality: q,
           stream: false,
-          verbose: false,
+          verbose: true,
           output: "public/video",
           query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
         });
