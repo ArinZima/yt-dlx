@@ -2,65 +2,25 @@ console.clear();
 import proTube from "..";
 import async from "async";
 
+const options = {
+  stream: false,
+  verbose: false,
+  output: "public",
+  torproxy: "socks5://127.0.0.1:9050",
+  query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+};
+
 async.series(
   [
     // =================================[AUDIO-ONLY]=================================
-    async () => {
-      await proTube().audio().single().highest({
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-        torproxy: "socks5://127.0.0.1:9050",
-        output: "public/audio",
-        verbose: false,
-        stream: false,
-      });
-    },
-    async () => {
-      await proTube().audio().single().lowest({
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-        torproxy: "socks5://127.0.0.1:9050",
-        output: "public/audio",
-        verbose: false,
-        stream: false,
-      });
-    },
+    async () => await proTube().audio().single().lowest(options),
+    async () => await proTube().audio().single().highest(options),
     // =================================[VIDEO-ONLY]=================================
-    async () => {
-      await proTube().video().single().highest({
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-        torproxy: "socks5://127.0.0.1:9050",
-        output: "public/video",
-        verbose: false,
-        stream: false,
-      });
-    },
-    async () => {
-      await proTube().video().single().lowest({
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-        torproxy: "socks5://127.0.0.1:9050",
-        output: "public/video",
-        verbose: false,
-        stream: false,
-      });
-    },
+    async () => await proTube().video().single().lowest(options),
+    async () => await proTube().video().single().highest(options),
     // =================================[AUDIO_VIDEO]=================================
-    async () => {
-      await proTube().audio_video().single().highest({
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-        torproxy: "socks5://127.0.0.1:9050",
-        output: "public/mix",
-        verbose: false,
-        stream: false,
-      });
-    },
-    async () => {
-      await proTube().audio_video().single().lowest({
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-        torproxy: "socks5://127.0.0.1:9050",
-        output: "public/mix",
-        verbose: false,
-        stream: false,
-      });
-    },
+    async () => await proTube().audio_video().single().lowest(options),
+    async () => await proTube().audio_video().single().highest(options),
   ],
-  (err) => console.error("@error:", err)
+  (error) => console.error("@error:", error)
 );
