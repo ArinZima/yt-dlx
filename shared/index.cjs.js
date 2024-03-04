@@ -1311,21 +1311,15 @@ function gpuffmpeg({ input, verbose, }) {
 }
 
 async function lowEntry(metaBody) {
-    if (!metaBody || metaBody.length === 0) {
-        console.log(colors.red("@error:"), "sorry no downloadable data found");
-        return undefined;
-    }
-    if (metaBody.length === 1)
-        return metaBody[0];
     const validEntries = metaBody.filter((entry) => entry.AVInfo.filesizebytes !== null &&
         entry.AVInfo.filesizebytes !== undefined &&
         !isNaN(entry.AVInfo.filesizebytes));
-    if (validEntries.length === 0) {
-        console.log(colors.red("@error:"), "sorry no downloadable data found");
-        return undefined;
-    }
     const sortedByFileSize = [...validEntries].sort((a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes);
-    return sortedByFileSize[0];
+    if (!sortedByFileSize[0]) {
+        throw new Error(colors.red("@error: ") + "sorry no downloadable data found");
+    }
+    else
+        return sortedByFileSize[0];
 }
 
 const qconf$h = z.z.object({
@@ -1367,104 +1361,99 @@ async function AudioLowest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(engineData.AudioStore);
-            if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            let filename = "yt-dlx_(AudioLowest_";
+            const ffmpeg = gpuffmpeg({
+                input: sortedData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.addOutputOption("-map", "1:0");
+            ffmpeg.addOutputOption("-map", "0:a:0");
+            ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.withOutputFormat("avi");
+            if (filter === "bassboost") {
+                ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                filename += `bassboost)_${title}.avi`;
+            }
+            else if (filter === "echo") {
+                ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                filename += `echo)_${title}.avi`;
+            }
+            else if (filter === "flanger") {
+                ffmpeg.withAudioFilter(["flanger"]);
+                filename += `flanger)_${title}.avi`;
+            }
+            else if (filter === "nightcore") {
+                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                filename += `nightcore)_${title}.avi`;
+            }
+            else if (filter === "panning") {
+                ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+                filename += `panning)_${title}.avi`;
+            }
+            else if (filter === "phaser") {
+                ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+                filename += `phaser)_${title}.avi`;
+            }
+            else if (filter === "reverse") {
+                ffmpeg.withAudioFilter(["areverse"]);
+                filename += `reverse)_${title}.avi`;
+            }
+            else if (filter === "slow") {
+                ffmpeg.withAudioFilter(["atempo=0.8"]);
+                filename += `slow)_${title}.avi`;
+            }
+            else if (filter === "speed") {
+                ffmpeg.withAudioFilter(["atempo=2"]);
+                filename += `speed)_${title}.avi`;
+            }
+            else if (filter === "subboost") {
+                ffmpeg.withAudioFilter(["asubboost"]);
+                filename += `subboost)_${title}.avi`;
+            }
+            else if (filter === "superslow") {
+                ffmpeg.withAudioFilter(["atempo=0.5"]);
+                filename += `superslow)_${title}.avi`;
+            }
+            else if (filter === "superspeed") {
+                ffmpeg.withAudioFilter(["atempo=3"]);
+                filename += `superspeed)_${title}.avi`;
+            }
+            else if (filter === "surround") {
+                ffmpeg.withAudioFilter(["surround"]);
+                filename += `surround)_${title}.avi`;
+            }
+            else if (filter === "vaporwave") {
+                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                filename += `vaporwave)_${title}.avi`;
+            }
+            else if (filter === "vibrato") {
+                ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+                filename += `vibrato)_${title}.avi`;
+            }
+            else
+                filename += `)_${title}.avi`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                let filename = "yt-dlx_(AudioLowest_";
-                const ffmpeg = gpuffmpeg({
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(engineData.metaTube.thumbnail);
-                ffmpeg.addOutputOption("-map", "1:0");
-                ffmpeg.addOutputOption("-map", "0:a:0");
-                ffmpeg.addOutputOption("-id3v2_version", "3");
-                ffmpeg.withOutputFormat("avi");
-                if (filter === "bassboost") {
-                    ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                    filename += `bassboost)_${title}.avi`;
-                }
-                else if (filter === "echo") {
-                    ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                    filename += `echo)_${title}.avi`;
-                }
-                else if (filter === "flanger") {
-                    ffmpeg.withAudioFilter(["flanger"]);
-                    filename += `flanger)_${title}.avi`;
-                }
-                else if (filter === "nightcore") {
-                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                    filename += `nightcore)_${title}.avi`;
-                }
-                else if (filter === "panning") {
-                    ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-                    filename += `panning)_${title}.avi`;
-                }
-                else if (filter === "phaser") {
-                    ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-                    filename += `phaser)_${title}.avi`;
-                }
-                else if (filter === "reverse") {
-                    ffmpeg.withAudioFilter(["areverse"]);
-                    filename += `reverse)_${title}.avi`;
-                }
-                else if (filter === "slow") {
-                    ffmpeg.withAudioFilter(["atempo=0.8"]);
-                    filename += `slow)_${title}.avi`;
-                }
-                else if (filter === "speed") {
-                    ffmpeg.withAudioFilter(["atempo=2"]);
-                    filename += `speed)_${title}.avi`;
-                }
-                else if (filter === "subboost") {
-                    ffmpeg.withAudioFilter(["asubboost"]);
-                    filename += `subboost)_${title}.avi`;
-                }
-                else if (filter === "superslow") {
-                    ffmpeg.withAudioFilter(["atempo=0.5"]);
-                    filename += `superslow)_${title}.avi`;
-                }
-                else if (filter === "superspeed") {
-                    ffmpeg.withAudioFilter(["atempo=3"]);
-                    filename += `superspeed)_${title}.avi`;
-                }
-                else if (filter === "surround") {
-                    ffmpeg.withAudioFilter(["surround"]);
-                    filename += `surround)_${title}.avi`;
-                }
-                else if (filter === "vaporwave") {
-                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                    filename += `vaporwave)_${title}.avi`;
-                }
-                else if (filter === "vibrato") {
-                    ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-                    filename += `vibrato)_${title}.avi`;
-                }
-                else
-                    filename += `)_${title}.avi`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -1481,21 +1470,15 @@ async function AudioLowest(input) {
 }
 
 async function bigEntry(metaBody) {
-    if (!metaBody || metaBody.length === 0) {
-        console.log(colors.red("@error:"), "sorry no downloadable data found");
-        return undefined;
-    }
-    if (metaBody.length === 1)
-        return metaBody[0];
     const validEntries = metaBody.filter((entry) => entry.AVInfo.filesizebytes !== null &&
         entry.AVInfo.filesizebytes !== undefined &&
         !isNaN(entry.AVInfo.filesizebytes));
-    if (validEntries.length === 0) {
-        console.log(colors.red("@error:"), "sorry no downloadable data found");
-        return undefined;
-    }
     const sortedByFileSize = [...validEntries].sort((a, b) => b.AVInfo.filesizebytes - a.AVInfo.filesizebytes);
-    return sortedByFileSize[0];
+    if (!sortedByFileSize[0]) {
+        throw new Error(colors.red("@error: ") + "sorry no downloadable data found");
+    }
+    else
+        return sortedByFileSize[0];
 }
 
 const qconf$g = z.z.object({
@@ -1537,104 +1520,99 @@ async function AudioHighest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await bigEntry(engineData.AudioStore);
-            if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            let filename = "yt-dlx_(AudioHighest_";
+            const ffmpeg = gpuffmpeg({
+                input: sortedData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.addOutputOption("-map", "1:0");
+            ffmpeg.addOutputOption("-map", "0:a:0");
+            ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.withOutputFormat("avi");
+            if (filter === "bassboost") {
+                ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                filename += `bassboost)_${title}.avi`;
+            }
+            else if (filter === "echo") {
+                ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                filename += `echo)_${title}.avi`;
+            }
+            else if (filter === "flanger") {
+                ffmpeg.withAudioFilter(["flanger"]);
+                filename += `flanger)_${title}.avi`;
+            }
+            else if (filter === "nightcore") {
+                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                filename += `nightcore)_${title}.avi`;
+            }
+            else if (filter === "panning") {
+                ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+                filename += `panning)_${title}.avi`;
+            }
+            else if (filter === "phaser") {
+                ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+                filename += `phaser)_${title}.avi`;
+            }
+            else if (filter === "reverse") {
+                ffmpeg.withAudioFilter(["areverse"]);
+                filename += `reverse)_${title}.avi`;
+            }
+            else if (filter === "slow") {
+                ffmpeg.withAudioFilter(["atempo=0.8"]);
+                filename += `slow)_${title}.avi`;
+            }
+            else if (filter === "speed") {
+                ffmpeg.withAudioFilter(["atempo=2"]);
+                filename += `speed)_${title}.avi`;
+            }
+            else if (filter === "subboost") {
+                ffmpeg.withAudioFilter(["asubboost"]);
+                filename += `subboost)_${title}.avi`;
+            }
+            else if (filter === "superslow") {
+                ffmpeg.withAudioFilter(["atempo=0.5"]);
+                filename += `superslow)_${title}.avi`;
+            }
+            else if (filter === "superspeed") {
+                ffmpeg.withAudioFilter(["atempo=3"]);
+                filename += `superspeed)_${title}.avi`;
+            }
+            else if (filter === "surround") {
+                ffmpeg.withAudioFilter(["surround"]);
+                filename += `surround)_${title}.avi`;
+            }
+            else if (filter === "vaporwave") {
+                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                filename += `vaporwave)_${title}.avi`;
+            }
+            else if (filter === "vibrato") {
+                ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+                filename += `vibrato)_${title}.avi`;
+            }
+            else
+                filename += `)_${title}.avi`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                let filename = "yt-dlx_(AudioHighest_";
-                const ffmpeg = gpuffmpeg({
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(engineData.metaTube.thumbnail);
-                ffmpeg.addOutputOption("-map", "1:0");
-                ffmpeg.addOutputOption("-map", "0:a:0");
-                ffmpeg.addOutputOption("-id3v2_version", "3");
-                ffmpeg.withOutputFormat("avi");
-                if (filter === "bassboost") {
-                    ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                    filename += `bassboost)_${title}.avi`;
-                }
-                else if (filter === "echo") {
-                    ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                    filename += `echo)_${title}.avi`;
-                }
-                else if (filter === "flanger") {
-                    ffmpeg.withAudioFilter(["flanger"]);
-                    filename += `flanger)_${title}.avi`;
-                }
-                else if (filter === "nightcore") {
-                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                    filename += `nightcore)_${title}.avi`;
-                }
-                else if (filter === "panning") {
-                    ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-                    filename += `panning)_${title}.avi`;
-                }
-                else if (filter === "phaser") {
-                    ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-                    filename += `phaser)_${title}.avi`;
-                }
-                else if (filter === "reverse") {
-                    ffmpeg.withAudioFilter(["areverse"]);
-                    filename += `reverse)_${title}.avi`;
-                }
-                else if (filter === "slow") {
-                    ffmpeg.withAudioFilter(["atempo=0.8"]);
-                    filename += `slow)_${title}.avi`;
-                }
-                else if (filter === "speed") {
-                    ffmpeg.withAudioFilter(["atempo=2"]);
-                    filename += `speed)_${title}.avi`;
-                }
-                else if (filter === "subboost") {
-                    ffmpeg.withAudioFilter(["asubboost"]);
-                    filename += `subboost)_${title}.avi`;
-                }
-                else if (filter === "superslow") {
-                    ffmpeg.withAudioFilter(["atempo=0.5"]);
-                    filename += `superslow)_${title}.avi`;
-                }
-                else if (filter === "superspeed") {
-                    ffmpeg.withAudioFilter(["atempo=3"]);
-                    filename += `superspeed)_${title}.avi`;
-                }
-                else if (filter === "surround") {
-                    ffmpeg.withAudioFilter(["surround"]);
-                    filename += `surround)_${title}.avi`;
-                }
-                else if (filter === "vaporwave") {
-                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                    filename += `vaporwave)_${title}.avi`;
-                }
-                else if (filter === "vibrato") {
-                    ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-                    filename += `vibrato)_${title}.avi`;
-                }
-                else
-                    filename += `)_${title}.avi`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -1694,104 +1672,99 @@ async function AudioQualityCustom(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(customData);
-            if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + quality + " not found in the video.");
+            const ffmpeg = gpuffmpeg({
+                input: sortedData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.addOutputOption("-map", "1:0");
+            ffmpeg.addOutputOption("-map", "0:a:0");
+            ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.withOutputFormat("avi");
+            let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
+            if (filter === "bassboost") {
+                ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                filename += `bassboost)_${title}.avi`;
+            }
+            else if (filter === "echo") {
+                ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                filename += `echo)_${title}.avi`;
+            }
+            else if (filter === "flanger") {
+                ffmpeg.withAudioFilter(["flanger"]);
+                filename += `flanger)_${title}.avi`;
+            }
+            else if (filter === "nightcore") {
+                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                filename += `nightcore)_${title}.avi`;
+            }
+            else if (filter === "panning") {
+                ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+                filename += `panning)_${title}.avi`;
+            }
+            else if (filter === "phaser") {
+                ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+                filename += `phaser)_${title}.avi`;
+            }
+            else if (filter === "reverse") {
+                ffmpeg.withAudioFilter(["areverse"]);
+                filename += `reverse)_${title}.avi`;
+            }
+            else if (filter === "slow") {
+                ffmpeg.withAudioFilter(["atempo=0.8"]);
+                filename += `slow)_${title}.avi`;
+            }
+            else if (filter === "speed") {
+                ffmpeg.withAudioFilter(["atempo=2"]);
+                filename += `speed)_${title}.avi`;
+            }
+            else if (filter === "subboost") {
+                ffmpeg.withAudioFilter(["asubboost"]);
+                filename += `subboost)_${title}.avi`;
+            }
+            else if (filter === "superslow") {
+                ffmpeg.withAudioFilter(["atempo=0.5"]);
+                filename += `superslow)_${title}.avi`;
+            }
+            else if (filter === "superspeed") {
+                ffmpeg.withAudioFilter(["atempo=3"]);
+                filename += `superspeed)_${title}.avi`;
+            }
+            else if (filter === "surround") {
+                ffmpeg.withAudioFilter(["surround"]);
+                filename += `surround)_${title}.avi`;
+            }
+            else if (filter === "vaporwave") {
+                ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                filename += `vaporwave)_${title}.avi`;
+            }
+            else if (filter === "vibrato") {
+                ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+                filename += `vibrato)_${title}.avi`;
+            }
+            else
+                filename += `)_${title}.avi`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                const ffmpeg = gpuffmpeg({
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(engineData.metaTube.thumbnail);
-                ffmpeg.addOutputOption("-map", "1:0");
-                ffmpeg.addOutputOption("-map", "0:a:0");
-                ffmpeg.addOutputOption("-id3v2_version", "3");
-                ffmpeg.withOutputFormat("avi");
-                let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
-                if (filter === "bassboost") {
-                    ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                    filename += `bassboost)_${title}.avi`;
-                }
-                else if (filter === "echo") {
-                    ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                    filename += `echo)_${title}.avi`;
-                }
-                else if (filter === "flanger") {
-                    ffmpeg.withAudioFilter(["flanger"]);
-                    filename += `flanger)_${title}.avi`;
-                }
-                else if (filter === "nightcore") {
-                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                    filename += `nightcore)_${title}.avi`;
-                }
-                else if (filter === "panning") {
-                    ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-                    filename += `panning)_${title}.avi`;
-                }
-                else if (filter === "phaser") {
-                    ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-                    filename += `phaser)_${title}.avi`;
-                }
-                else if (filter === "reverse") {
-                    ffmpeg.withAudioFilter(["areverse"]);
-                    filename += `reverse)_${title}.avi`;
-                }
-                else if (filter === "slow") {
-                    ffmpeg.withAudioFilter(["atempo=0.8"]);
-                    filename += `slow)_${title}.avi`;
-                }
-                else if (filter === "speed") {
-                    ffmpeg.withAudioFilter(["atempo=2"]);
-                    filename += `speed)_${title}.avi`;
-                }
-                else if (filter === "subboost") {
-                    ffmpeg.withAudioFilter(["asubboost"]);
-                    filename += `subboost)_${title}.avi`;
-                }
-                else if (filter === "superslow") {
-                    ffmpeg.withAudioFilter(["atempo=0.5"]);
-                    filename += `superslow)_${title}.avi`;
-                }
-                else if (filter === "superspeed") {
-                    ffmpeg.withAudioFilter(["atempo=3"]);
-                    filename += `superspeed)_${title}.avi`;
-                }
-                else if (filter === "surround") {
-                    ffmpeg.withAudioFilter(["surround"]);
-                    filename += `surround)_${title}.avi`;
-                }
-                else if (filter === "vaporwave") {
-                    ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                    filename += `vaporwave)_${title}.avi`;
-                }
-                else if (filter === "vibrato") {
-                    ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-                    filename += `vibrato)_${title}.avi`;
-                }
-                else
-                    filename += `)_${title}.avi`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -1854,10 +1827,6 @@ async function ListAudioLowest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(engineData.AudioStore);
-            if (sortedData === undefined) {
-                console.log(colors.red("@error:"), "unable to get response from youtube.");
-                continue;
-            }
             let filename = "yt-dlx_(AudioLowest_";
             const ffmpeg = gpuffmpeg({
                 input: sortedData.AVDownload.mediaurl,
@@ -2002,10 +1971,6 @@ async function ListAudioHighest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await bigEntry(engineData.AudioStore);
-            if (sortedData === undefined) {
-                console.log(colors.red("@error:"), "unable to get response from youtube.");
-                continue;
-            }
             let filename = "yt-dlx_(AudioHighest_";
             const ffmpeg = gpuffmpeg({
                 input: sortedData.AVDownload.mediaurl,
@@ -2156,10 +2121,6 @@ async function ListAudioQualityCustom(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await bigEntry(customData);
-            if (sortedData === undefined) {
-                console.log(colors.red("@error:"), "unable to get response from youtube.");
-                continue;
-            }
             let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
             const ffmpeg = gpuffmpeg({
                 input: sortedData.AVDownload.mediaurl,
@@ -2288,69 +2249,64 @@ async function VideoLowest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(engineData.VideoStore);
-            if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            const ffmpeg = gpuffmpeg({
+                input: sortedData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.withOutputFormat("matroska");
+            let filename = "yt-dlx_(VideoLowest_";
+            if (filter === "grayscale") {
+                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                filename += `grayscale)_${title}.mkv`;
+            }
+            else if (filter === "invert") {
+                ffmpeg.withVideoFilter("negate");
+                filename += `invert)_${title}.mkv`;
+            }
+            else if (filter === "rotate90") {
+                ffmpeg.withVideoFilter("rotate=PI/2");
+                filename += `rotate90)_${title}.mkv`;
+            }
+            else if (filter === "rotate180") {
+                ffmpeg.withVideoFilter("rotate=PI");
+                filename += `rotate180)_${title}.mkv`;
+            }
+            else if (filter === "rotate270") {
+                ffmpeg.withVideoFilter("rotate=3*PI/2");
+                filename += `rotate270)_${title}.mkv`;
+            }
+            else if (filter === "flipHorizontal") {
+                ffmpeg.withVideoFilter("hflip");
+                filename += `flipHorizontal)_${title}.mkv`;
+            }
+            else if (filter === "flipVertical") {
+                ffmpeg.withVideoFilter("vflip");
+                filename += `flipVertical)_${title}.mkv`;
+            }
+            else
+                filename += `)_${title}.mkv`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                const ffmpeg = gpuffmpeg({
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(engineData.metaTube.thumbnail);
-                ffmpeg.withOutputFormat("matroska");
-                let filename = "yt-dlx_(VideoLowest_";
-                if (filter === "grayscale") {
-                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                    filename += `grayscale)_${title}.mkv`;
-                }
-                else if (filter === "invert") {
-                    ffmpeg.withVideoFilter("negate");
-                    filename += `invert)_${title}.mkv`;
-                }
-                else if (filter === "rotate90") {
-                    ffmpeg.withVideoFilter("rotate=PI/2");
-                    filename += `rotate90)_${title}.mkv`;
-                }
-                else if (filter === "rotate180") {
-                    ffmpeg.withVideoFilter("rotate=PI");
-                    filename += `rotate180)_${title}.mkv`;
-                }
-                else if (filter === "rotate270") {
-                    ffmpeg.withVideoFilter("rotate=3*PI/2");
-                    filename += `rotate270)_${title}.mkv`;
-                }
-                else if (filter === "flipHorizontal") {
-                    ffmpeg.withVideoFilter("hflip");
-                    filename += `flipHorizontal)_${title}.mkv`;
-                }
-                else if (filter === "flipVertical") {
-                    ffmpeg.withVideoFilter("vflip");
-                    filename += `flipVertical)_${title}.mkv`;
-                }
-                else
-                    filename += `)_${title}.mkv`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -2397,69 +2353,64 @@ async function VideoHighest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await bigEntry(engineData.VideoStore);
-            if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            const ffmpeg = gpuffmpeg({
+                input: sortedData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.withOutputFormat("matroska");
+            let filename = "yt-dlx_(VideoHighest_";
+            if (filter === "grayscale") {
+                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                filename += `grayscale)_${title}.mkv`;
+            }
+            else if (filter === "invert") {
+                ffmpeg.withVideoFilter("negate");
+                filename += `invert)_${title}.mkv`;
+            }
+            else if (filter === "rotate90") {
+                ffmpeg.withVideoFilter("rotate=PI/2");
+                filename += `rotate90)_${title}.mkv`;
+            }
+            else if (filter === "rotate180") {
+                ffmpeg.withVideoFilter("rotate=PI");
+                filename += `rotate180)_${title}.mkv`;
+            }
+            else if (filter === "rotate270") {
+                ffmpeg.withVideoFilter("rotate=3*PI/2");
+                filename += `rotate270)_${title}.mkv`;
+            }
+            else if (filter === "flipHorizontal") {
+                ffmpeg.withVideoFilter("hflip");
+                filename += `flipHorizontal)_${title}.mkv`;
+            }
+            else if (filter === "flipVertical") {
+                ffmpeg.withVideoFilter("vflip");
+                filename += `flipVertical)_${title}.mkv`;
+            }
+            else
+                filename += `)_${title}.mkv`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                const ffmpeg = gpuffmpeg({
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(engineData.metaTube.thumbnail);
-                ffmpeg.withOutputFormat("matroska");
-                let filename = "yt-dlx_(VideoHighest_";
-                if (filter === "grayscale") {
-                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                    filename += `grayscale)_${title}.mkv`;
-                }
-                else if (filter === "invert") {
-                    ffmpeg.withVideoFilter("negate");
-                    filename += `invert)_${title}.mkv`;
-                }
-                else if (filter === "rotate90") {
-                    ffmpeg.withVideoFilter("rotate=PI/2");
-                    filename += `rotate90)_${title}.mkv`;
-                }
-                else if (filter === "rotate180") {
-                    ffmpeg.withVideoFilter("rotate=PI");
-                    filename += `rotate180)_${title}.mkv`;
-                }
-                else if (filter === "rotate270") {
-                    ffmpeg.withVideoFilter("rotate=3*PI/2");
-                    filename += `rotate270)_${title}.mkv`;
-                }
-                else if (filter === "flipHorizontal") {
-                    ffmpeg.withVideoFilter("hflip");
-                    filename += `flipHorizontal)_${title}.mkv`;
-                }
-                else if (filter === "flipVertical") {
-                    ffmpeg.withVideoFilter("vflip");
-                    filename += `flipVertical)_${title}.mkv`;
-                }
-                else
-                    filename += `)_${title}.mkv`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -2525,69 +2476,64 @@ async function VideoQualityCustom(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(customData);
-            if (sortedData === undefined) {
-                throw new Error(colors.red("@error: ") + quality + " not found in the video.");
+            const ffmpeg = gpuffmpeg({
+                input: sortedData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.withOutputFormat("matroska");
+            let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
+            if (filter === "grayscale") {
+                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                filename += `grayscale)_${title}.mkv`;
+            }
+            else if (filter === "invert") {
+                ffmpeg.withVideoFilter("negate");
+                filename += `invert)_${title}.mkv`;
+            }
+            else if (filter === "rotate90") {
+                ffmpeg.withVideoFilter("rotate=PI/2");
+                filename += `rotate90)_${title}.mkv`;
+            }
+            else if (filter === "rotate180") {
+                ffmpeg.withVideoFilter("rotate=PI");
+                filename += `rotate180)_${title}.mkv`;
+            }
+            else if (filter === "rotate270") {
+                ffmpeg.withVideoFilter("rotate=3*PI/2");
+                filename += `rotate270)_${title}.mkv`;
+            }
+            else if (filter === "flipHorizontal") {
+                ffmpeg.withVideoFilter("hflip");
+                filename += `flipHorizontal)_${title}.mkv`;
+            }
+            else if (filter === "flipVertical") {
+                ffmpeg.withVideoFilter("vflip");
+                filename += `flipVertical)_${title}.mkv`;
+            }
+            else
+                filename += `)_${title}.mkv`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                const ffmpeg = gpuffmpeg({
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(engineData.metaTube.thumbnail);
-                ffmpeg.withOutputFormat("matroska");
-                let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
-                if (filter === "grayscale") {
-                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                    filename += `grayscale)_${title}.mkv`;
-                }
-                else if (filter === "invert") {
-                    ffmpeg.withVideoFilter("negate");
-                    filename += `invert)_${title}.mkv`;
-                }
-                else if (filter === "rotate90") {
-                    ffmpeg.withVideoFilter("rotate=PI/2");
-                    filename += `rotate90)_${title}.mkv`;
-                }
-                else if (filter === "rotate180") {
-                    ffmpeg.withVideoFilter("rotate=PI");
-                    filename += `rotate180)_${title}.mkv`;
-                }
-                else if (filter === "rotate270") {
-                    ffmpeg.withVideoFilter("rotate=3*PI/2");
-                    filename += `rotate270)_${title}.mkv`;
-                }
-                else if (filter === "flipHorizontal") {
-                    ffmpeg.withVideoFilter("hflip");
-                    filename += `flipHorizontal)_${title}.mkv`;
-                }
-                else if (filter === "flipVertical") {
-                    ffmpeg.withVideoFilter("vflip");
-                    filename += `flipVertical)_${title}.mkv`;
-                }
-                else
-                    filename += `)_${title}.mkv`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -2642,10 +2588,6 @@ async function ListVideoLowest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(engineData.VideoStore);
-            if (sortedData === undefined) {
-                console.log(colors.red("@error:"), "unable to get response from youtube.");
-                continue;
-            }
             let filename = "yt-dlx_(VideoLowest_";
             const ffmpeg = gpuffmpeg({
                 input: sortedData.AVDownload.mediaurl,
@@ -2746,10 +2688,6 @@ async function ListVideoHighest(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await bigEntry(engineData.VideoStore);
-            if (sortedData === undefined) {
-                console.log(colors.red("@error:"), "unable to get response from youtube.");
-                continue;
-            }
             let filename = "yt-dlx_(VideoHighest_";
             const ffmpeg = gpuffmpeg({
                 input: sortedData.AVDownload.mediaurl,
@@ -2870,10 +2808,6 @@ async function ListVideoQualityCustom(input) {
             if (!fs__namespace.existsSync(folder))
                 fs__namespace.mkdirSync(folder, { recursive: true });
             const sortedData = await bigEntry(customData);
-            if (sortedData === undefined) {
-                console.log(colors.red("@error:"), "unable to get response from youtube.");
-                continue;
-            }
             let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
             const ffmpeg = gpuffmpeg({
                 input: sortedData.AVDownload.mediaurl,
@@ -2969,69 +2903,64 @@ async function AudioVideoLowest(input) {
                 await lowEntry(engineData.AudioStore),
                 await lowEntry(engineData.VideoStore),
             ]);
-            if (AudioData === undefined || VideoData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            const ffmpeg = gpuffmpeg({
+                input: VideoData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.withOutputFormat("matroska");
+            let filename = "yt-dlx_(AudioVideoLowest_";
+            if (filter === "grayscale") {
+                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                filename += `grayscale)_${title}.mkv`;
+            }
+            else if (filter === "invert") {
+                ffmpeg.withVideoFilter("negate");
+                filename += `invert)_${title}.mkv`;
+            }
+            else if (filter === "rotate90") {
+                ffmpeg.withVideoFilter("rotate=PI/2");
+                filename += `rotate90)_${title}.mkv`;
+            }
+            else if (filter === "rotate180") {
+                ffmpeg.withVideoFilter("rotate=PI");
+                filename += `rotate180)_${title}.mkv`;
+            }
+            else if (filter === "rotate270") {
+                ffmpeg.withVideoFilter("rotate=3*PI/2");
+                filename += `rotate270)_${title}.mkv`;
+            }
+            else if (filter === "flipHorizontal") {
+                ffmpeg.withVideoFilter("hflip");
+                filename += `flipHorizontal)_${title}.mkv`;
+            }
+            else if (filter === "flipVertical") {
+                ffmpeg.withVideoFilter("vflip");
+                filename += `flipVertical)_${title}.mkv`;
+            }
+            else
+                filename += `)_${title}.mkv`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                const ffmpeg = gpuffmpeg({
-                    input: VideoData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-                ffmpeg.withOutputFormat("matroska");
-                let filename = "yt-dlx_(AudioVideoLowest_";
-                if (filter === "grayscale") {
-                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                    filename += `grayscale)_${title}.mkv`;
-                }
-                else if (filter === "invert") {
-                    ffmpeg.withVideoFilter("negate");
-                    filename += `invert)_${title}.mkv`;
-                }
-                else if (filter === "rotate90") {
-                    ffmpeg.withVideoFilter("rotate=PI/2");
-                    filename += `rotate90)_${title}.mkv`;
-                }
-                else if (filter === "rotate180") {
-                    ffmpeg.withVideoFilter("rotate=PI");
-                    filename += `rotate180)_${title}.mkv`;
-                }
-                else if (filter === "rotate270") {
-                    ffmpeg.withVideoFilter("rotate=3*PI/2");
-                    filename += `rotate270)_${title}.mkv`;
-                }
-                else if (filter === "flipHorizontal") {
-                    ffmpeg.withVideoFilter("hflip");
-                    filename += `flipHorizontal)_${title}.mkv`;
-                }
-                else if (filter === "flipVertical") {
-                    ffmpeg.withVideoFilter("vflip");
-                    filename += `flipVertical)_${title}.mkv`;
-                }
-                else
-                    filename += `)_${title}.mkv`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -3081,69 +3010,64 @@ async function AudioVideoHighest(input) {
                 await bigEntry(engineData.AudioStore),
                 await bigEntry(engineData.VideoStore),
             ]);
-            if (AudioData === undefined || VideoData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
+            const ffmpeg = gpuffmpeg({
+                input: VideoData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.withOutputFormat("matroska");
+            let filename = "yt-dlx_(AudioVideoHighest_";
+            if (filter === "grayscale") {
+                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                filename += `grayscale)_${title}.mkv`;
+            }
+            else if (filter === "invert") {
+                ffmpeg.withVideoFilter("negate");
+                filename += `invert)_${title}.mkv`;
+            }
+            else if (filter === "rotate90") {
+                ffmpeg.withVideoFilter("rotate=PI/2");
+                filename += `rotate90)_${title}.mkv`;
+            }
+            else if (filter === "rotate180") {
+                ffmpeg.withVideoFilter("rotate=PI");
+                filename += `rotate180)_${title}.mkv`;
+            }
+            else if (filter === "rotate270") {
+                ffmpeg.withVideoFilter("rotate=3*PI/2");
+                filename += `rotate270)_${title}.mkv`;
+            }
+            else if (filter === "flipHorizontal") {
+                ffmpeg.withVideoFilter("hflip");
+                filename += `flipHorizontal)_${title}.mkv`;
+            }
+            else if (filter === "flipVertical") {
+                ffmpeg.withVideoFilter("vflip");
+                filename += `flipVertical)_${title}.mkv`;
+            }
+            else
+                filename += `)_${title}.mkv`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                const ffmpeg = gpuffmpeg({
-                    input: VideoData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-                ffmpeg.withOutputFormat("matroska");
-                let filename = "yt-dlx_(AudioVideoHighest_";
-                if (filter === "grayscale") {
-                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                    filename += `grayscale)_${title}.mkv`;
-                }
-                else if (filter === "invert") {
-                    ffmpeg.withVideoFilter("negate");
-                    filename += `invert)_${title}.mkv`;
-                }
-                else if (filter === "rotate90") {
-                    ffmpeg.withVideoFilter("rotate=PI/2");
-                    filename += `rotate90)_${title}.mkv`;
-                }
-                else if (filter === "rotate180") {
-                    ffmpeg.withVideoFilter("rotate=PI");
-                    filename += `rotate180)_${title}.mkv`;
-                }
-                else if (filter === "rotate270") {
-                    ffmpeg.withVideoFilter("rotate=3*PI/2");
-                    filename += `rotate270)_${title}.mkv`;
-                }
-                else if (filter === "flipHorizontal") {
-                    ffmpeg.withVideoFilter("hflip");
-                    filename += `flipHorizontal)_${title}.mkv`;
-                }
-                else if (filter === "flipVertical") {
-                    ffmpeg.withVideoFilter("vflip");
-                    filename += `flipVertical)_${title}.mkv`;
-                }
-                else
-                    filename += `)_${title}.mkv`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -3211,72 +3135,64 @@ async function AudioVideoQualityCustom(input) {
                 await bigEntry(ACustomData),
                 await bigEntry(VCustomData),
             ]);
-            if (AudioData === undefined) {
-                throw new Error(colors.red("@error: ") + AQuality + " not found in the video.");
+            const ffmpeg = gpuffmpeg({
+                input: VideoData.AVDownload.mediaurl,
+                verbose,
+            });
+            ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.withOutputFormat("matroska");
+            let filename = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
+            if (filter === "grayscale") {
+                ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                filename += `grayscale)_${title}.mkv`;
             }
-            else if (VideoData === undefined) {
-                throw new Error(colors.red("@error: ") + VQuality + " not found in the video.");
+            else if (filter === "invert") {
+                ffmpeg.withVideoFilter("negate");
+                filename += `invert)_${title}.mkv`;
+            }
+            else if (filter === "rotate90") {
+                ffmpeg.withVideoFilter("rotate=PI/2");
+                filename += `rotate90)_${title}.mkv`;
+            }
+            else if (filter === "rotate180") {
+                ffmpeg.withVideoFilter("rotate=PI");
+                filename += `rotate180)_${title}.mkv`;
+            }
+            else if (filter === "rotate270") {
+                ffmpeg.withVideoFilter("rotate=3*PI/2");
+                filename += `rotate270)_${title}.mkv`;
+            }
+            else if (filter === "flipHorizontal") {
+                ffmpeg.withVideoFilter("hflip");
+                filename += `flipHorizontal)_${title}.mkv`;
+            }
+            else if (filter === "flipVertical") {
+                ffmpeg.withVideoFilter("vflip");
+                filename += `flipVertical)_${title}.mkv`;
+            }
+            else
+                filename += `)_${title}.mkv`;
+            if (stream) {
+                return {
+                    ffmpeg,
+                    filename: output
+                        ? path__namespace.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
+                };
             }
             else {
-                const ffmpeg = gpuffmpeg({
-                    input: VideoData.AVDownload.mediaurl,
-                    verbose,
-                });
-                ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-                ffmpeg.withOutputFormat("matroska");
-                let filename = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
-                if (filter === "grayscale") {
-                    ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                    filename += `grayscale)_${title}.mkv`;
-                }
-                else if (filter === "invert") {
-                    ffmpeg.withVideoFilter("negate");
-                    filename += `invert)_${title}.mkv`;
-                }
-                else if (filter === "rotate90") {
-                    ffmpeg.withVideoFilter("rotate=PI/2");
-                    filename += `rotate90)_${title}.mkv`;
-                }
-                else if (filter === "rotate180") {
-                    ffmpeg.withVideoFilter("rotate=PI");
-                    filename += `rotate180)_${title}.mkv`;
-                }
-                else if (filter === "rotate270") {
-                    ffmpeg.withVideoFilter("rotate=3*PI/2");
-                    filename += `rotate270)_${title}.mkv`;
-                }
-                else if (filter === "flipHorizontal") {
-                    ffmpeg.withVideoFilter("hflip");
-                    filename += `flipHorizontal)_${title}.mkv`;
-                }
-                else if (filter === "flipVertical") {
-                    ffmpeg.withVideoFilter("vflip");
-                    filename += `flipVertical)_${title}.mkv`;
-                }
-                else
-                    filename += `)_${title}.mkv`;
-                if (stream) {
-                    return {
-                        ffmpeg,
-                        filename: output
-                            ? path__namespace.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    };
-                }
-                else {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
-                        ffmpeg.on("end", () => {
-                            resolve();
-                        });
-                        ffmpeg.on("error", (err) => {
-                            reject(err);
-                        });
-                        ffmpeg.run();
+                await new Promise((resolve, reject) => {
+                    ffmpeg.output(path__namespace.join(folder, filename.replace("_)_", ")_")));
+                    ffmpeg.on("end", () => {
+                        resolve();
                     });
-                }
-                console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
+                    ffmpeg.on("error", (err) => {
+                        reject(err);
+                    });
+                    ffmpeg.run();
+                });
             }
+            console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
         }
     }
     catch (error) {
@@ -3334,14 +3250,12 @@ async function ListAudioVideoHighest(input) {
                 await bigEntry(engineData.AudioStore),
                 await bigEntry(engineData.VideoStore),
             ]);
-            if (AudioData === undefined || VideoData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
-            }
             let filename = "yt-dlx_(AudioVideoHighest_";
             const ffmpeg = gpuffmpeg({
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
+            ffmpeg.addInput(AudioData.AVDownload.mediaurl);
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 filename += `grayscale)_${title}.mkv`;
@@ -3439,14 +3353,12 @@ async function ListAudioVideoLowest(input) {
                 await lowEntry(engineData.AudioStore),
                 await lowEntry(engineData.VideoStore),
             ]);
-            if (AudioData === undefined || VideoData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
-            }
             let filename = "yt-dlx_(AudioVideoLowest_";
             const ffmpeg = gpuffmpeg({
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
+            ffmpeg.addInput(AudioData.AVDownload.mediaurl);
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 filename += `grayscale)_${title}.mkv`;
@@ -3562,14 +3474,12 @@ async function ListAudioVideoQualityCustom(input) {
                 await bigEntry(ACustomData),
                 await bigEntry(VCustomData),
             ]);
-            if (AudioData === undefined || VideoData === undefined) {
-                throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
-            }
             let filename = "yt-dlx_(AudioVideoQualityCustom_";
             const ffmpeg = gpuffmpeg({
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
+            ffmpeg.addInput(AudioData.AVDownload.mediaurl);
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 filename += `grayscale)_${title}.mkv`;

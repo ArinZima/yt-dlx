@@ -109,13 +109,6 @@ export default async function ListVideoQualityCustom(input: {
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const sortedData = await bigEntry(customData);
-      if (sortedData === undefined) {
-        console.log(
-          colors.red("@error:"),
-          "unable to get response from youtube."
-        );
-        continue;
-      }
       let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         input: sortedData.AVDownload.mediaurl,

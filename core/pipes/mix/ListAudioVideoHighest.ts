@@ -75,16 +75,12 @@ export default async function ListAudioVideoHighest(input: {
         await bigEntry(engineData.AudioStore),
         await bigEntry(engineData.VideoStore),
       ]);
-      if (AudioData === undefined || VideoData === undefined) {
-        throw new Error(
-          colors.red("@error: ") + "unable to get response from youtube."
-        );
-      }
       let filename: string = "yt-dlx_(AudioVideoHighest_";
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         input: VideoData.AVDownload.mediaurl,
         verbose,
       });
+      ffmpeg.addInput(AudioData.AVDownload.mediaurl);
       if (filter === "grayscale") {
         ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

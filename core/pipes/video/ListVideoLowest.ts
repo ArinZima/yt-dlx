@@ -72,13 +72,6 @@ export default async function ListVideoLowest(input: {
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const sortedData = await lowEntry(engineData.VideoStore);
-      if (sortedData === undefined) {
-        console.log(
-          colors.red("@error:"),
-          "unable to get response from youtube."
-        );
-        continue;
-      }
       let filename: string = "yt-dlx_(VideoLowest_";
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         input: sortedData.AVDownload.mediaurl,
