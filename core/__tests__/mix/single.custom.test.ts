@@ -66,7 +66,7 @@ VQuals.map((VQuality) => async () => {
     try {
       await ytdlx().audio_video().single().custom({
         query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-        output: "temp/audio_video",
+        output: "public/audio_video",
         verbose: false,
         stream: false,
         AQuality,

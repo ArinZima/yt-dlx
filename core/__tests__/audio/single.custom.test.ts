@@ -12,7 +12,7 @@ quals.map((quality) => async () => {
   try {
     await ytdlx().audio().single().custom({
       query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-      output: "temp/audio",
+      output: "public/audio",
       verbose: false,
       stream: false,
       quality,

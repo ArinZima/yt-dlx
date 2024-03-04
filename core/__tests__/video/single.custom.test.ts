@@ -38,7 +38,7 @@ async.series(
     try {
       holder = await ytdlx().video().single().custom({
         query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-        output: "temp/video",
+        output: "public/video",
         verbose: false,
         stream: false,
         quality,
@@ -52,7 +52,7 @@ async.series(
     try {
       holder = await ytdlx().video().single().custom({
         query: "https://www.youtube.com/watch?v=7PIji8OubXU",
-        output: "temp/video",
+        output: "public/video",
         quality: "720p",
         verbose: false,
         stream: true,

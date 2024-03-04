@@ -5,7 +5,7 @@ import colors from "colors";
   try {
     await ytdlx().audio_video().single().highest({
       query: "https://www.youtube.com/watch?v=EUshgvt7I8U",
-      output: "temp/audio_video",
+      output: "public/audio_video",
       verbose: false,
       stream: false,
     });
