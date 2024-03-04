@@ -2,10 +2,10 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytdlx from "../../base/Agent";
-import gpuffmpeg from "../../base/ffmpeg";
-import lowEntry from "../../base/lowEntry";
-import type { gpuffmpegCommand } from "../../base/ffmpeg";
+import ytdlx from "../../../base/Agent";
+import gpuffmpeg from "../../../base/ffmpeg";
+import bigEntry from "../../../base/bigEntry";
+import type { gpuffmpegCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -13,21 +13,6 @@ const qconf = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   torproxy: z.string().min(1).optional(),
-  quality: z.enum([
-    "144p",
-    "240p",
-    "360p",
-    "480p",
-    "720p",
-    "1080p",
-    "1440p",
-    "2160p",
-    "2880p",
-    "4320p",
-    "5760p",
-    "8640p",
-    "12000p",
-  ]),
   filter: z
     .enum([
       "invert",
@@ -40,26 +25,12 @@ const qconf = z.object({
     ])
     .optional(),
 });
-export default async function VideoQualityCustom(input: {
+export default async function VideoHighest(input: {
   query: string;
   output?: string;
   stream?: boolean;
   verbose?: boolean;
   torproxy?: string;
-  quality:
-    | "144p"
-    | "240p"
-    | "360p"
-    | "480p"
-    | "720p"
-    | "1080p"
-    | "1440p"
-    | "2160p"
-    | "2880p"
-    | "4320p"
-    | "5760p"
-    | "8640p"
-    | "12000p";
   filter?:
     | "invert"
     | "rotate90"
@@ -73,7 +44,7 @@ export default async function VideoQualityCustom(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, output, quality, filter, torproxy } =
+    const { query, stream, verbose, output, filter, torproxy } =
       await qconf.parseAsync(input);
     const engineData = await ytdlx({ query, verbose, torproxy });
     if (engineData === undefined) {
@@ -81,21 +52,13 @@ export default async function VideoQualityCustom(input: {
         colors.red("@error: ") + "unable to get response from youtube."
       );
     } else {
-      const customData = engineData.VideoStore.filter(
-        (op) => op.AVDownload.formatnote === quality
-      );
-      if (!customData) {
-        throw new Error(
-          colors.red("@error: ") + quality + " not found in the video."
-        );
-      }
       const title: string = engineData.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const sortedData = await lowEntry(customData);
+      const sortedData = await bigEntry(engineData.VideoStore);
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
@@ -105,7 +68,7 @@ export default async function VideoQualityCustom(input: {
       ffmpeg.addInputOption("-threads", "auto");
       ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
-      let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
+      let filename: string = "yt-dlx_(VideoHighest_";
       if (filter === "grayscale") {
         ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"

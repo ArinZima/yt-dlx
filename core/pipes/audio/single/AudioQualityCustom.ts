@@ -1,18 +1,19 @@
 import * as fs from "fs";
-import web from "../../web";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytdlx from "../../base/Agent";
-import gpuffmpeg from "../../base/ffmpeg";
-import bigEntry from "../../base/bigEntry";
-import type { gpuffmpegCommand } from "../../base/ffmpeg";
+import ytdlx from "../../../base/Agent";
+import gpuffmpeg from "../../../base/ffmpeg";
+import lowEntry from "../../../base/lowEntry";
+import type { gpuffmpegCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
   output: z.string().optional(),
+  stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   torproxy: z.string().min(1).optional(),
+  quality: z.enum(["high", "medium", "low", "ultralow"]),
   filter: z
     .enum([
       "echo",
@@ -33,12 +34,13 @@ const qconf = z.object({
     ])
     .optional(),
 });
-
-export default async function ListAudioHighest(input: {
+export default async function AudioQualityCustom(input: {
   query: string;
   output?: string;
+  stream?: boolean;
   verbose?: boolean;
   torproxy?: string;
+  quality: "high" | "medium" | "low" | "ultralow";
   filter?:
     | "echo"
     | "slow"
@@ -55,29 +57,26 @@ export default async function ListAudioHighest(input: {
     | "superslow"
     | "vaporwave"
     | "superspeed";
-}): Promise<void> {
+}): Promise<void | {
+  filename: string;
+  ffmpeg: gpuffmpegCommand;
+}> {
   try {
-    const { query, output, verbose, filter, torproxy } = await qconf.parseAsync(
-      input
-    );
-    const playlistData = await web.search.PlaylistInfo({ query });
-    if (playlistData === undefined) {
+    const { query, stream, verbose, output, quality, filter, torproxy } =
+      await qconf.parseAsync(input);
+    const engineData = await ytdlx({ query, verbose, torproxy });
+    if (engineData === undefined) {
       throw new Error(
         colors.red("@error: ") + "unable to get response from youtube."
       );
-    }
-    for (const video of playlistData.playlistVideos) {
-      const engineData = await ytdlx({
-        query: video.videoLink,
-        torproxy,
-        verbose,
-      });
-      if (engineData === undefined) {
-        console.log(
-          colors.red("@error:"),
-          "unable to get response from youtube."
+    } else {
+      const customData = engineData.AudioStore.filter(
+        (op) => op.AVDownload.formatnote === quality
+      );
+      if (!customData) {
+        throw new Error(
+          colors.red("@error: ") + quality + " not found in the video."
         );
-        continue;
       }
       const title: string = engineData.metaTube.title.replace(
         /[^a-zA-Z0-9_]+/g,
@@ -85,8 +84,7 @@ export default async function ListAudioHighest(input: {
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const sortedData = await bigEntry(engineData.AudioStore);
-      let filename: string = "yt-dlx_(AudioHighest_";
+      const sortedData = await lowEntry(customData);
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
@@ -99,6 +97,7 @@ export default async function ListAudioHighest(input: {
       ffmpeg.addInputOption("-threads", "auto");
       ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
+      let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
       if (filter === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         filename += `bassboost)_${title}.avi`;
@@ -145,24 +144,33 @@ export default async function ListAudioHighest(input: {
         ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
         filename += `vibrato)_${title}.avi`;
       } else filename += `)_${title}.avi`;
-      await new Promise<void>((resolve, _reject) => {
-        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", (error) => {
-          throw new Error(colors.red("@error: ") + error.message);
+      if (stream) {
+        return {
+          ffmpeg,
+          filename: output
+            ? path.join(folder, filename)
+            : filename.replace("_)_", ")_"),
+        };
+      } else {
+        await new Promise<void>((resolve, _reject) => {
+          ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg.on("end", () => resolve());
+          ffmpeg.on("error", (error) => {
+            throw new Error(colors.red("@error: ") + error.message);
+          });
+          ffmpeg.run();
         });
-        ffmpeg.run();
-      });
+      }
+      console.log(
+        colors.green("@info:"),
+        "❣️ Thank you for using",
+        colors.green("yt-dlx."),
+        "If you enjoy the project, consider",
+        colors.green("🌟starring"),
+        "the github repo",
+        colors.green("https://github.com/yt-dlx")
+      );
     }
-    console.log(
-      colors.green("@info:"),
-      "❣️ Thank you for using",
-      colors.green("yt-dlx."),
-      "If you enjoy the project, consider",
-      colors.green("🌟starring"),
-      "the github repo",
-      colors.green("https://github.com/yt-dlx")
-    );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(

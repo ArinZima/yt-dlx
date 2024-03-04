@@ -1,13 +1,13 @@
 import * as fs from "fs";
-import web from "../../web";
+import web from "../../../web";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytdlx from "../../base/Agent";
-import gpuffmpeg from "../../base/ffmpeg";
-import bigEntry from "../../base/bigEntry";
-import { sizeFormat } from "../../base/Engine";
-import type { gpuffmpegCommand } from "../../base/ffmpeg";
+import ytdlx from "../../../base/Agent";
+import gpuffmpeg from "../../../base/ffmpeg";
+import bigEntry from "../../../base/bigEntry";
+import { sizeFormat } from "../../../base/Engine";
+import type { gpuffmpegCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),

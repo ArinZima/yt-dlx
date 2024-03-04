@@ -1,12 +1,12 @@
 import * as fs from "fs";
-import web from "../../web";
+import web from "../../../web";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytdlx from "../../base/Agent";
-import gpuffmpeg from "../../base/ffmpeg";
-import lowEntry from "../../base/lowEntry";
-import type { gpuffmpegCommand } from "../../base/ffmpeg";
+import ytdlx from "../../../base/Agent";
+import gpuffmpeg from "../../../base/ffmpeg";
+import bigEntry from "../../../base/bigEntry";
+import type { gpuffmpegCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -25,7 +25,7 @@ const qconf = z.object({
     ])
     .optional(),
 });
-export default async function ListVideoLowest(input: {
+export default async function ListVideoHighest(input: {
   query: string;
   output?: string;
   verbose?: boolean;
@@ -43,7 +43,7 @@ export default async function ListVideoLowest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, output, verbose, filter, torproxy } = await qconf.parseAsync(
+    const { query, verbose, output, filter, torproxy } = await qconf.parseAsync(
       input
     );
     const playlistData = await web.search.PlaylistInfo({ query });
@@ -71,8 +71,8 @@ export default async function ListVideoLowest(input: {
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const sortedData = await lowEntry(engineData.VideoStore);
-      let filename: string = "yt-dlx_(VideoLowest_";
+      const sortedData = await bigEntry(engineData.VideoStore);
+      let filename: string = "yt-dlx_(VideoHighest_";
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,

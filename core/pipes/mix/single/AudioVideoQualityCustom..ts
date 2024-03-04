@@ -2,11 +2,11 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ytdlx from "../../base/Agent";
-import gpuffmpeg from "../../base/ffmpeg";
-import bigEntry from "../../base/bigEntry";
-import { sizeFormat } from "../../base/Engine";
-import type { gpuffmpegCommand } from "../../base/ffmpeg";
+import ytdlx from "../../../base/Agent";
+import gpuffmpeg from "../../../base/ffmpeg";
+import bigEntry from "../../../base/bigEntry";
+import { sizeFormat } from "../../../base/Engine";
+import type { gpuffmpegCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -14,6 +14,22 @@ const qconf = z.object({
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   torproxy: z.string().min(1).optional(),
+  AQuality: z.enum(["high", "medium", "low", "ultralow"]),
+  VQuality: z.enum([
+    "144p",
+    "240p",
+    "360p",
+    "480p",
+    "720p",
+    "1080p",
+    "1440p",
+    "2160p",
+    "2880p",
+    "4320p",
+    "5760p",
+    "8640p",
+    "12000p",
+  ]),
   filter: z
     .enum([
       "invert",
@@ -26,12 +42,27 @@ const qconf = z.object({
     ])
     .optional(),
 });
-export default async function AudioVideoHighest(input: {
+export default async function AudioVideoQualityCustom(input: {
   query: string;
   output?: string;
   stream?: boolean;
   verbose?: boolean;
   torproxy?: string;
+  AQuality: "high" | "medium" | "low" | "ultralow";
+  VQuality:
+    | "144p"
+    | "240p"
+    | "360p"
+    | "480p"
+    | "720p"
+    | "1080p"
+    | "1440p"
+    | "2160p"
+    | "2880p"
+    | "4320p"
+    | "5760p"
+    | "8640p"
+    | "12000p";
   filter?:
     | "invert"
     | "rotate90"
@@ -45,8 +76,16 @@ export default async function AudioVideoHighest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, output, filter, torproxy } =
-      await qconf.parseAsync(input);
+    const {
+      query,
+      stream,
+      verbose,
+      output,
+      VQuality,
+      AQuality,
+      filter,
+      torproxy,
+    } = await qconf.parseAsync(input);
     const engineData = await ytdlx({ query, verbose, torproxy });
     if (engineData === undefined) {
       throw new Error(
@@ -59,9 +98,15 @@ export default async function AudioVideoHighest(input: {
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+      const ACustomData = engineData.AudioStore.filter(
+        (op) => op.AVDownload.formatnote === AQuality
+      );
+      const VCustomData = engineData.VideoStore.filter(
+        (op) => op.AVDownload.formatnote === VQuality
+      );
       const [AudioData, VideoData] = await Promise.all([
-        await bigEntry(engineData.AudioStore),
-        await bigEntry(engineData.VideoStore),
+        await bigEntry(ACustomData),
+        await bigEntry(VCustomData),
       ]);
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         size: sizeFormat(
@@ -74,7 +119,7 @@ export default async function AudioVideoHighest(input: {
       ffmpeg.addInputOption("-threads", "auto");
       ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
-      let filename: string = "yt-dlx_(AudioVideoHighest_";
+      let filename: string = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
       if (filter === "grayscale") {
         ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
