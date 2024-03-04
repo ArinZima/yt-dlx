@@ -6,7 +6,7 @@ import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
-const progressBar = (prog: any) => {
+const progressBar = (prog: any, size: string) => {
   if (prog.timemark === undefined || prog.percent === undefined) return;
   if (prog.percent < 1 && prog.timemark.includes("-")) return;
   readline.cursorTo(process.stdout, 0);
@@ -30,14 +30,17 @@ const progressBar = (prog: any) => {
   if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
     output += " | " + color("@fps: ") + prog.currentFps;
   }
+  output += " | " + color("@size: ") + size;
   process.stdout.write(output);
   if (prog.timemark.includes("-")) process.stdout.write("\n\n");
 };
 
 function gpuffmpeg({
+  size,
   input,
   verbose,
 }: {
+  size: string;
   input: string;
   verbose?: boolean;
 }): FfmpegCommand {
@@ -55,7 +58,7 @@ function gpuffmpeg({
     .on("start", (command) => {
       if (verbose) console.log(colors.green("@ffmpeg:"), command);
     })
-    .on("progress", (prog) => progressBar(prog))
+    .on("progress", (prog) => progressBar(prog, size))
     .on("end", () => console.log("\n"))
     .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
   while (maxTries > 0) {

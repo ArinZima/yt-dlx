@@ -60,6 +60,7 @@ export default async function VideoHighest(input: {
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const sortedData = await bigEntry(engineData.VideoStore);
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });

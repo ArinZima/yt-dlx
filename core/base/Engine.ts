@@ -7,7 +7,7 @@ import type TubeConfig from "../interface/TubeConfig";
 import type TubeFormat from "../interface/TubeFormat";
 import type EngineResult from "../interface/EngineResult";
 
-function sizeFormat(filesize: number) {
+export function sizeFormat(filesize: number) {
   if (isNaN(filesize) || filesize < 0) return filesize;
   const bytesPerMegabyte = 1024 * 1024;
   const bytesPerGigabyte = bytesPerMegabyte * 1024;

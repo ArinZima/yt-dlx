@@ -60,6 +60,7 @@ export default async function VideoLowest(input: {
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const sortedData = await lowEntry(engineData.VideoStore);
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });

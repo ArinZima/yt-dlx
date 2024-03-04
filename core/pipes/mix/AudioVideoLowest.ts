@@ -5,6 +5,7 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import gpuffmpeg from "../../base/ffmpeg";
 import lowEntry from "../../base/lowEntry";
+import { sizeFormat } from "../../base/Engine";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
@@ -63,6 +64,9 @@ export default async function AudioVideoLowest(input: {
         await lowEntry(engineData.VideoStore),
       ]);
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose,
       });

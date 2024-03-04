@@ -5,6 +5,7 @@ import { z, ZodError } from "zod";
 import ytdlx from "../../base/Agent";
 import gpuffmpeg from "../../base/ffmpeg";
 import bigEntry from "../../base/bigEntry";
+import { sizeFormat } from "../../base/Engine";
 import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
@@ -108,6 +109,9 @@ export default async function AudioVideoQualityCustom(input: {
         await bigEntry(VCustomData),
       ]);
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose,
       });

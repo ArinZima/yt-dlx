@@ -74,6 +74,7 @@ export default async function ListVideoLowest(input: {
       const sortedData = await lowEntry(engineData.VideoStore);
       let filename: string = "yt-dlx_(VideoLowest_";
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });

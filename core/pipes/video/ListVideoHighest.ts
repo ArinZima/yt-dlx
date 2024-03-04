@@ -74,6 +74,7 @@ export default async function ListVideoHighest(input: {
       const sortedData = await bigEntry(engineData.VideoStore);
       let filename: string = "yt-dlx_(VideoHighest_";
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });

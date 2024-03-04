@@ -111,6 +111,7 @@ export default async function ListVideoQualityCustom(input: {
       const sortedData = await bigEntry(customData);
       let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });

@@ -98,6 +98,7 @@ export default async function ListAudioQualityCustom(input: {
       const sortedData = await bigEntry(customData);
       let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
       const ffmpeg: gpuffmpegCommand = gpuffmpeg({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });
