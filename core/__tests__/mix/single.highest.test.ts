@@ -4,7 +4,7 @@ import colors from "colors";
 (async () => {
   try {
     await ytdlx().audio_video().single().highest({
-      query: "https://www.youtube.com/watch?v=EUshgvt7I8U",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       output: "public/audio_video",
       verbose: false,
       stream: false,
