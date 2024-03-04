@@ -2,7 +2,7 @@ console.clear();
 import proTube from "..";
 
 (async () => {
-  // =========================================[AUDIO-ONLY]=========================================
+  // =================================[AUDIO-ONLY]=================================
   await proTube().audio().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
@@ -15,7 +15,7 @@ import proTube from "..";
     output: "public/audio",
     verbose: false,
   });
-  // =========================================[VIDEO-ONLY]=========================================
+  // =================================[VIDEO-ONLY]=================================
   await proTube().video().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
@@ -28,7 +28,7 @@ import proTube from "..";
     output: "public/video",
     verbose: false,
   });
-  // =========================================[AUDIO_VIDEO]=========================================
+  // =================================[AUDIO_VIDEO]=================================
   await proTube().audio_video().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",

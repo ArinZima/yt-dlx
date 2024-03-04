@@ -36,7 +36,7 @@ const quals: (
 async.series(
   quals.map((quality) => async () => {
     try {
-      holder = await ytdlx.video.single.custom({
+      holder = await ytdlx().video().single().custom({
         query: "https://www.youtube.com/watch?v=7PIji8OubXU",
         output: "temp/video",
         verbose: false,
@@ -50,7 +50,7 @@ async.series(
   }),
   async () => {
     try {
-      holder = await ytdlx.video.single.custom({
+      holder = await ytdlx().video().single().custom({
         query: "https://www.youtube.com/watch?v=7PIji8OubXU",
         output: "temp/video",
         quality: "720p",

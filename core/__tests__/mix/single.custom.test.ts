@@ -64,7 +64,7 @@ const VQuals: (
 VQuals.map((VQuality) => async () => {
   AQuals.map((AQuality) => async () => {
     try {
-      await ytdlx.audio_video.custom({
+      await ytdlx().audio_video().single().custom({
         query: "https://www.youtube.com/watch?v=7PIji8OubXU",
         output: "temp/audio_video",
         verbose: false,
