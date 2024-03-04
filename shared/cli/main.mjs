@@ -1847,7 +1847,7 @@ function gpuffmpeg({
   const ffmpeg = fluent(input).on("start", (command) => {
     if (verbose)
       console.log(colors28.green("@ffmpeg:"), command);
-  }).withInputOption("-thread auto").on("progress", (prog) => progressBar(prog, size)).on("end", () => console.log("\n")).on("error", (e) => console.error(colors28.red("\n@ffmpeg:"), e.message));
+  }).on("progress", (prog) => progressBar(prog, size)).on("end", () => console.log("\n")).on("error", (e) => console.error(colors28.red("\n@ffmpeg:"), e.message));
   while (maxTries > 0) {
     FfprobePath = path3.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
     FfmpegPath = path3.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
@@ -1874,6 +1874,8 @@ function gpuffmpeg({
         "defaulting to software processing."
       );
   }
+  ffmpeg.withInputOption("-re");
+  ffmpeg.withInputOption("-threads auto");
   return ffmpeg;
 }
 var ffmpeg_default = gpuffmpeg;
@@ -1892,7 +1894,7 @@ async function lowEntry(metaBody) {
     return sortedByFileSize[0];
 }
 
-// core/pipes/audio/AudioLowest.ts
+// core/pipes/audio/single/AudioLowest.ts
 var qconf = z.object({
   query: z.string().min(1),
   output: z.string().optional(),
@@ -2045,7 +2047,7 @@ async function bigEntry(metaBody) {
     return sortedByFileSize[0];
 }
 
-// core/pipes/audio/AudioHighest.ts
+// core/pipes/audio/single/AudioHighest.ts
 var qconf2 = z.object({
   query: z.string().min(1),
   output: z.string().optional(),

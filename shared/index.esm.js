@@ -1256,7 +1256,6 @@ function gpuffmpeg({ size, input, verbose, }) {
         if (verbose)
             console.log(colors.green("@ffmpeg:"), command);
     })
-        .withInputOption("-thread auto")
         .on("progress", (prog) => progressBar(prog, size))
         .on("end", () => console.log("\n"))
         .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
@@ -1283,6 +1282,8 @@ function gpuffmpeg({ size, input, verbose, }) {
         default:
             console.log(colors.yellow("@ffmpeg:"), "GPU vendor not recognized.", "defaulting to software processing.");
     }
+    ffmpeg.withInputOption("-re");
+    ffmpeg.withInputOption("-threads auto");
     return ffmpeg;
 }
 
