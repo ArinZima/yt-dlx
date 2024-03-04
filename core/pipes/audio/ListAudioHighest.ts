@@ -96,6 +96,8 @@ export default async function ListAudioHighest(input: {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       if (filter === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);

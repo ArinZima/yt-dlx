@@ -78,6 +78,8 @@ export default async function ListVideoHighest(input: {
         input: sortedData.AVDownload.mediaurl,
         verbose,
       });
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       if (filter === "grayscale") {
         ffmpeg.withVideoFilter(

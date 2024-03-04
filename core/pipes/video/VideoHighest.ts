@@ -65,6 +65,8 @@ export default async function VideoHighest(input: {
         verbose,
       });
       ffmpeg.addInput(engineData.metaTube.thumbnail);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename: string = "yt-dlx_(VideoHighest_";
       if (filter === "grayscale") {
