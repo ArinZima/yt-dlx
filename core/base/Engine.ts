@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import colors from "colors";
 import * as path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
@@ -47,11 +46,7 @@ export default async function Engine({
       proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` --dump-single-json '${query}'`;
-    } else {
-      throw new Error(
-        colors.red("@error: ") + "could not find the engine file."
-      );
-    }
+    } else throw new Error("could not find the engine file.");
     const result = await promisify(exec)(proLoc);
     const metaTube = await JSON.parse(result.stdout.toString());
     await metaTube.formats.forEach((io: TubeFormat) => {
@@ -152,11 +147,8 @@ export default async function Engine({
           .map((item: { reTube: any }) => item.reTube)[0] || undefined,
     };
   } catch (error: any) {
-    if (error instanceof Error) {
-      throw new Error(colors.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors.red("@error: ") + "internal server error");
-    }
+    if (error instanceof Error) throw new Error(error.message);
+    else throw new Error("internal server error");
   }
 }
 

@@ -1,4 +1,3 @@
-import colors from "colors";
 import type TubeConfig from "../interface/TubeConfig";
 
 export default async function bigEntry(
@@ -14,8 +13,6 @@ export default async function bigEntry(
     (a, b) => b.AVInfo.filesizebytes - a.AVInfo.filesizebytes
   );
   if (!sortedByFileSize[0]) {
-    throw new Error(
-      colors.red("@error: ") + "sorry no downloadable data found"
-    );
+    throw new Error("sorry no downloadable data found");
   } else return sortedByFileSize[0]!;
 }

@@ -1,4 +1,3 @@
-import colors from "colors";
 import { Browser, Page } from "puppeteer";
 
 export default async function closers(browser: Browser) {
@@ -7,6 +6,6 @@ export default async function closers(browser: Browser) {
     await Promise.all(pages.map((page: Page) => page.close()));
     await browser.close();
   } catch (error) {
-    console.error(colors.red("@error:"), error);
+    console.error(error);
   }
 }

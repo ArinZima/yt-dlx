@@ -42,9 +42,7 @@ export default async function Agent({
         query,
       })) as TypeVideo[];
       if (!TubeBody[0]) {
-        throw new Error(
-          colors.red("@error: ") + "Unable to get response from YouTube..."
-        );
+        throw new Error("Unable to get response from YouTube...");
       } else {
         console.log(
           colors.green("@info:"),
@@ -59,9 +57,7 @@ export default async function Agent({
         query,
       })) as VideoInfoType;
       if (!TubeBody) {
-        throw new Error(
-          colors.red("@error: ") + "Unable to get response from YouTube..."
-        );
+        throw new Error("Unable to get response from YouTube...");
       } else {
         console.log(
           colors.green("@info:"),
@@ -72,15 +68,10 @@ export default async function Agent({
       }
     }
     if (respEngine === undefined) {
-      throw new Error(
-        colors.red("@error: ") + "Unable to get response from YouTube..."
-      );
+      throw new Error("Unable to get response from YouTube...");
     } else return respEngine;
   } catch (error: any) {
-    if (error instanceof Error) {
-      throw new Error(colors.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors.red("@error: ") + "internal server error");
-    }
+    if (error instanceof Error) throw new Error(error.message);
+    else throw new Error("internal server error");
   }
 }

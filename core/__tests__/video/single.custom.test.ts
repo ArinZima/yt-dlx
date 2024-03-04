@@ -21,6 +21,7 @@ const quals = [
   try {
     for (const q of quals) {
       try {
+        console.log(colors.blue("@test:"), "custom video", q);
         await ytdlx.video.single.custom({
           quality: q,
           stream: false,
@@ -28,7 +29,7 @@ const quals = [
           output: "public/video",
           query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
         });
-        console.log(colors.bold.green("@pass:"), true);
+        console.log(colors.green("@pass:"), true);
       } catch (error: any) {
         console.error(colors.red(error));
       }

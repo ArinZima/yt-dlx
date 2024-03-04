@@ -1,5 +1,4 @@
 import puppeteer, { Browser, Page } from "puppeteer";
-import colors from "colors";
 export let browser: Browser;
 export let page: Page;
 
@@ -25,9 +24,9 @@ export default async function crawler(verbose?: boolean) {
     if (browser) await browser.close();
     switch (true) {
       case error instanceof Error:
-        throw new Error(colors.red("@error: ") + error.message);
+        throw new Error(error.message);
       default:
-        throw new Error(colors.red("@error: ") + "internal server error");
+        throw new Error("internal server error");
     }
   }
 }
