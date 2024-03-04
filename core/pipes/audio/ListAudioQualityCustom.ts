@@ -155,13 +155,12 @@ export default async function ListAudioQualityCustom(input: {
         ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
         filename += `vibrato)_${title}.avi`;
       } else filename += `)_${title}.avi`;
-      await new Promise<void>((resolve, reject) => {
+      await new Promise<void>((resolve, _reject) => {
         ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-        ffmpeg.on("error", (err) => {
-          console.error("FFmpeg error:", err);
-          reject(err);
-        });
         ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", (error) => {
+          throw new Error(colors.red("@error: ") + error.message);
+        });
         ffmpeg.run();
       });
     }

@@ -152,13 +152,11 @@ export default async function AudioVideoQualityCustom(input: {
             : filename.replace("_)_", ")_"),
         };
       } else {
-        await new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve, _reject) => {
           ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => {
-            resolve();
-          });
-          ffmpeg.on("error", (err) => {
-            reject(err);
+          ffmpeg.on("end", () => resolve());
+          ffmpeg.on("error", (error) => {
+            throw new Error(colors.red("@error: ") + error.message);
           });
           ffmpeg.run();
         });
