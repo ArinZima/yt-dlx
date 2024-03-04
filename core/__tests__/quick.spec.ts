@@ -1,44 +1,44 @@
 console.clear();
-import ytDlx from "..";
+import proTube from "..";
 
 (async () => {
   // =========================================[AUDIO-ONLY]=========================================
-  await ytDlx().audio().single().highest({
+  await proTube().audio().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
+    output: "public/audio",
     verbose: false,
-    output: "temp",
   });
-  await ytDlx().audio().single().lowest({
+  await proTube().audio().single().lowest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
+    output: "public/audio",
     verbose: false,
-    output: "temp",
   });
   // =========================================[VIDEO-ONLY]=========================================
-  await ytDlx().video().single().highest({
+  await proTube().video().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
+    output: "public/video",
     verbose: false,
-    output: "temp",
   });
-  await ytDlx().video().single().lowest({
+  await proTube().video().single().lowest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
+    output: "public/video",
     verbose: false,
-    output: "temp",
   });
   // =========================================[AUDIO_VIDEO]=========================================
-  await ytDlx().audio_video().single().highest({
+  await proTube().audio_video().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
+    output: "public/mix",
     verbose: false,
-    output: "temp",
   });
-  await ytDlx().audio_video().single().lowest({
+  await proTube().audio_video().single().lowest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
+    output: "public/mix",
     verbose: false,
-    output: "temp",
   });
 })();
