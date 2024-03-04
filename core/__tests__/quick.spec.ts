@@ -1,6 +1,5 @@
 console.clear();
 import proTube from "..";
-import async from "async";
 
 const options = {
   stream: false,
@@ -10,17 +9,14 @@ const options = {
   query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
 };
 
-async.series(
-  [
-    // =================================[AUDIO-ONLY]=================================
-    async () => await proTube().audio().single().lowest(options),
-    async () => await proTube().audio().single().highest(options),
-    // =================================[VIDEO-ONLY]=================================
-    async () => await proTube().video().single().lowest(options),
-    async () => await proTube().video().single().highest(options),
-    // =================================[AUDIO_VIDEO]=================================
-    async () => await proTube().audio_video().single().lowest(options),
-    async () => await proTube().audio_video().single().highest(options),
-  ],
-  (error) => console.error("@error:", error)
-);
+async () => {
+  // [AUDIO-ONLY]
+  await proTube.audio.single.lowest(options);
+  await proTube.audio.single.highest(options);
+  // [VIDEO-ONLY]
+  await proTube.video.single.lowest(options);
+  await proTube.video.single.highest(options);
+  // [AUDIO_VIDEO]
+  await proTube.audio_video.single.lowest(options);
+  await proTube.audio_video.single.highest(options);
+};

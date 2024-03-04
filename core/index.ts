@@ -25,109 +25,54 @@ import ListAudioVideoHighest from "./pipes/mix/ListAudioVideoHighest";
 import ListAudioVideoLowest from "./pipes/mix/ListAudioVideoLowest";
 import ListAudioVideoQualityCustom from "./pipes/mix/ListAudioVideoQualityCustom";
 
-// const ytdlx = {
-// search: {
-// PlaylistInfo: web.search.PlaylistInfo,
-// SearchVideos: web.search.SearchVideos,
-// VideoInfo: web.search.VideoInfo,
-// },
-// info: {
-// help,
-// extract,
-// list_formats,
-// extract_playlist_videos,
-// },
-// audio: {
-// single: {
-// lowest: AudioLowest,
-// highest: AudioHighest,
-// custom: AudioQualityCustom,
-// },
-// playlist: {
-// lowest: ListAudioLowest,
-// highest: ListAudioHighest,
-// custom: ListAudioQualityCustom,
-// },
-// },
-// video: {
-// single: {
-// lowest: VideoLowest,
-// highest: VideoHighest,
-// custom: VideoQualityCustom,
-// },
-// playlist: {
-// lowest: ListVideoLowest,
-// highest: ListVideoHighest,
-// custom: ListVideoQualityCustom,
-// },
-// },
-// audio_video: {
-// single: {
-// lowest: AudioVideoLowest,
-// highest: AudioVideoHighest,
-// custom: AudioVideoQualityCustom,
-// },
-// playlist: {
-// lowest: ListAudioVideoHighest,
-// highest: ListAudioVideoLowest,
-// custom: ListAudioVideoQualityCustom,
-// },
-// },
-// };
-
-// export default ytdlx;
-
-const ytdlx = () => {
-  const ytDlx = {
-    search: () => ({
-      PlaylistInfo: web.search.PlaylistInfo,
-      SearchVideos: web.search.SearchVideos,
-      VideoInfo: web.search.VideoInfo,
-    }),
-    info: () => ({
-      help,
-      extract,
-      list_formats,
-      extract_playlist_videos,
-    }),
-    audio: () => ({
-      single: () => ({
-        lowest: AudioLowest,
-        highest: AudioHighest,
-        custom: AudioQualityCustom,
-      }),
-      playlist: () => ({
-        lowest: ListAudioLowest,
-        highest: ListAudioHighest,
-        custom: ListAudioQualityCustom,
-      }),
-    }),
-    video: () => ({
-      single: () => ({
-        lowest: VideoLowest,
-        highest: VideoHighest,
-        custom: VideoQualityCustom,
-      }),
-      playlist: () => ({
-        lowest: ListVideoLowest,
-        highest: ListVideoHighest,
-        custom: ListVideoQualityCustom,
-      }),
-    }),
-    audio_video: () => ({
-      single: () => ({
-        lowest: AudioVideoLowest,
-        highest: AudioVideoHighest,
-        custom: AudioVideoQualityCustom,
-      }),
-      playlist: () => ({
-        lowest: ListAudioVideoHighest,
-        highest: ListAudioVideoLowest,
-        custom: ListAudioVideoQualityCustom,
-      }),
-    }),
-  };
-  return ytDlx;
+const ytdlx = {
+  search: {
+    PlaylistInfo: web.search.PlaylistInfo,
+    SearchVideos: web.search.SearchVideos,
+    VideoInfo: web.search.VideoInfo,
+  },
+  info: {
+    help,
+    extract,
+    list_formats,
+    extract_playlist_videos,
+  },
+  audio: {
+    single: {
+      lowest: AudioLowest,
+      highest: AudioHighest,
+      custom: AudioQualityCustom,
+    },
+    playlist: {
+      lowest: ListAudioLowest,
+      highest: ListAudioHighest,
+      custom: ListAudioQualityCustom,
+    },
+  },
+  video: {
+    single: {
+      lowest: VideoLowest,
+      highest: VideoHighest,
+      custom: VideoQualityCustom,
+    },
+    playlist: {
+      lowest: ListVideoLowest,
+      highest: ListVideoHighest,
+      custom: ListVideoQualityCustom,
+    },
+  },
+  audio_video: {
+    single: {
+      lowest: AudioVideoLowest,
+      highest: AudioVideoHighest,
+      custom: AudioVideoQualityCustom,
+    },
+    playlist: {
+      lowest: ListAudioVideoHighest,
+      highest: ListAudioVideoLowest,
+      custom: ListAudioVideoQualityCustom,
+    },
+  },
 };
 
 export default ytdlx;

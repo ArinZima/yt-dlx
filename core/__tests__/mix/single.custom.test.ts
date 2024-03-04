@@ -6,29 +6,29 @@ const AQuals: (
   | "medium"
   | "low"
   | "ultralow"
-  | "high"
-  | "high"
-  | "high"
-  | "high"
-  | "high"
-  | "high"
-  | "high"
-  | "high"
-  | "high"
+  | "medium"
+  | "medium"
+  | "medium"
+  | "medium"
+  | "medium"
+  | "medium"
+  | "medium"
+  | "medium"
+  | "medium"
 )[] = [
   "high",
   "medium",
   "low",
   "ultralow",
-  "high",
-  "high",
-  "high",
-  "high",
-  "high",
-  "high",
-  "high",
-  "high",
-  "high",
+  "medium",
+  "medium",
+  "medium",
+  "medium",
+  "medium",
+  "medium",
+  "medium",
+  "medium",
+  "medium",
 ];
 
 const VQuals: (
@@ -64,7 +64,7 @@ const VQuals: (
 VQuals.map((VQuality) => async () => {
   AQuals.map((AQuality) => async () => {
     try {
-      await ytdlx().audio_video().single().custom({
+      await ytdlx.audio_video.single.custom({
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
         output: "public/audio_video",
         verbose: false,
