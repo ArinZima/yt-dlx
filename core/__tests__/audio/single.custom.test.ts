@@ -7,8 +7,8 @@ const quals = ["high", "medium", "low", "ultralow"] as const;
   try {
     for (const q of quals) {
       try {
-        console.log(colors.blue("@test:"), "custom audio", q);
-        await ytdlx.audio.single.custom({
+        console.log(colors.blue("@test:"), "Custom audio", q);
+        await ytdlx().AudioOnly().Single().Custom({
           quality: q,
           stream: false,
           verbose: false,

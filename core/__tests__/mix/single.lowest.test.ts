@@ -3,8 +3,8 @@ import colors from "colors";
 
 (async () => {
   try {
-    console.log(colors.blue("@test:"), "lowest audio_video");
-    await ytdlx.audio_video.single.lowest({
+    console.log(colors.blue("@test:"), "Lowest audio_video");
+    await ytdlx().AudioVideo().Single().Lowest({
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       output: "public/audio_video",
       verbose: false,

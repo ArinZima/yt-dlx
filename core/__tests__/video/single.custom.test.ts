@@ -21,8 +21,8 @@ const quals = [
   try {
     for (const q of quals) {
       try {
-        console.log(colors.blue("@test:"), "custom video", q);
-        await ytdlx.video.single.custom({
+        console.log(colors.blue("@test:"), "Custom video", q);
+        await ytdlx().VideoOnly().Single().Custom({
           quality: q,
           stream: false,
           verbose: false,
