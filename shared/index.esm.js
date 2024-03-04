@@ -1419,13 +1419,11 @@ async function AudioLowest(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -1581,13 +1579,11 @@ async function AudioHighest(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -1736,13 +1732,11 @@ async function AudioQualityCustom(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -1885,13 +1879,12 @@ async function ListAudioLowest(input) {
             }
             else
                 filename += `)_${title}.avi`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -2032,13 +2025,12 @@ async function ListAudioHighest(input) {
             }
             else
                 filename += `)_${title}.avi`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -2185,13 +2177,12 @@ async function ListAudioQualityCustom(input) {
             }
             else
                 filename += `)_${title}.avi`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -2290,13 +2281,11 @@ async function VideoLowest(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -2397,13 +2386,11 @@ async function VideoHighest(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -2523,13 +2510,11 @@ async function VideoQualityCustom(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -2628,13 +2613,12 @@ async function ListVideoLowest(input) {
             }
             else
                 filename += `)_${title}.mkv`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -2731,13 +2715,12 @@ async function ListVideoHighest(input) {
             }
             else
                 filename += `)_${title}.mkv`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -2854,13 +2837,12 @@ async function ListVideoQualityCustom(input) {
             }
             else
                 filename += `)_${title}.mkv`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -2962,13 +2944,11 @@ async function AudioVideoLowest(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -3072,13 +3052,11 @@ async function AudioVideoHighest(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -3200,13 +3178,11 @@ async function AudioVideoQualityCustom(input) {
                 };
             }
             else {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve, _reject) => {
                     ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ffmpeg.on("end", () => {
-                        resolve();
-                    });
-                    ffmpeg.on("error", (err) => {
-                        reject(err);
+                    ffmpeg.on("end", () => resolve());
+                    ffmpeg.on("error", (error) => {
+                        throw new Error(colors.red("@error: ") + error.message);
                     });
                     ffmpeg.run();
                 });
@@ -3309,13 +3285,12 @@ async function ListAudioVideoHighest(input) {
             }
             else
                 filename += `)_${title}.mkv`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -3416,13 +3391,12 @@ async function ListAudioVideoLowest(input) {
             }
             else
                 filename += `)_${title}.mkv`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
@@ -3541,13 +3515,12 @@ async function ListAudioVideoQualityCustom(input) {
             }
             else
                 filename += `)_${title}.mkv`;
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve, _reject) => {
                 ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                ffmpeg.on("error", (err) => {
-                    console.error("FFmpeg error:", err);
-                    reject(err);
-                });
                 ffmpeg.on("end", () => resolve());
+                ffmpeg.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
                 ffmpeg.run();
             });
         }
