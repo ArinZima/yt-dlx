@@ -1,11 +1,9 @@
 console.clear();
-import ListAudioQualityCustom from "../pipes/audio/ListAudioQualityCustom";
+import ytDlx from "..";
 
 (async () => {
-  await ListAudioQualityCustom({
-    query:
-      "https://youtube.com/playlist?list=PLOGXbfrrYmuHaKdTvngShVfcfWDq3E6VR&si=FtaCNRNWtUtW00Fc",
-    quality: "high",
+  await ytDlx.video.single.highest({
+    query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     verbose: false,
     output: "temp",
   });

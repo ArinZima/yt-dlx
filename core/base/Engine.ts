@@ -44,9 +44,9 @@ export default async function Engine({
     }
     if (proLoc !== "") {
       if (torproxy) proLoc += ` --proxy ${torproxy}`;
-      proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
+      proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
-      proLoc += ` '${query}'`;
+      proLoc += ` --dump-single-json '${query}'`;
     } else {
       throw new Error(
         colors.red("@error: ") + "could not find the engine file."

@@ -10,9 +10,9 @@ import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
-  torproxy: z.string().min(1),
   output: z.string().optional(),
   verbose: z.boolean().optional(),
+  torproxy: z.string().min(1).optional(),
   filter: z
     .enum([
       "invert",
