@@ -20,8 +20,6 @@ const progressBar = (prog: any) => {
   let output =
     color("@prog: ") +
     sprog +
-    " | " +
-    color("@percent: ") +
     prog.percent.toFixed(2) +
     "% | " +
     color("@timemark: ") +
@@ -30,7 +28,7 @@ const progressBar = (prog: any) => {
     output += " | " + color("@frames: ") + prog.frames;
   }
   if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
-    output += " | " + color("@currentFps: ") + prog.currentFps;
+    output += " | " + color("@fps: ") + prog.currentFps;
   }
   process.stdout.write(output);
   if (prog.timemark.includes("-")) process.stdout.write("\n\n");
