@@ -65,7 +65,7 @@ const qconf = z.object({
 });
 
 export default async function ListAudioQualityCustom(input: {
-  query: string;
+  query: string[];
   output?: string;
   verbose?: boolean;
   torproxy?: string;

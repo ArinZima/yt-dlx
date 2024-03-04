@@ -70,7 +70,7 @@ const qconf = z.object({
     .optional(),
 });
 export default async function ListVideoQualityCustom(input: {
-  query: string;
+  query: string[];
   output?: string;
   verbose?: boolean;
   torproxy?: string;

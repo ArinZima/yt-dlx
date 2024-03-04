@@ -55,7 +55,7 @@ const qconf = z.object({
     .optional(),
 });
 export default async function ListVideoLowest(input: {
-  query: string;
+  query: string[];
   output?: string;
   verbose?: boolean;
   torproxy?: string;
