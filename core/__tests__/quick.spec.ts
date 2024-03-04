@@ -1,11 +1,11 @@
 console.clear();
-import ListVideoQualityCustom from "../pipes/video/ListVideoQualityCustom";
+import ListAudioQualityCustom from "../pipes/audio/ListAudioQualityCustom";
 
 (async () => {
-  await ListVideoQualityCustom({
+  await ListAudioQualityCustom({
     query:
       "https://youtube.com/playlist?list=PLOGXbfrrYmuHaKdTvngShVfcfWDq3E6VR&si=FtaCNRNWtUtW00Fc",
-    quality: "1080p",
+    quality: "high",
     verbose: false,
     output: "temp",
   });
