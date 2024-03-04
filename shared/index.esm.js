@@ -26,7 +26,7 @@ async function closers(browser) {
         await browser.close();
     }
     catch (error) {
-        console.error(colors.red("@error:"), error);
+        console.error(error);
     }
 }
 
@@ -85,9 +85,9 @@ async function crawler(verbose) {
             await browser.close();
         switch (true) {
             case error instanceof Error:
-                throw new Error(colors.red("@error: ") + error.message);
+                throw new Error(error.message);
             default:
-                throw new Error(colors.red("@error: ") + "internal server error");
+                throw new Error("internal server error");
         }
     }
 }
@@ -719,9 +719,8 @@ async function Engine({ query, torproxy, }) {
             proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
             proLoc += ` --dump-single-json '${query}'`;
         }
-        else {
-            throw new Error(colors.red("@error: ") + "could not find the engine file.");
-        }
+        else
+            throw new Error("could not find the engine file.");
         const result = await promisify(exec)(proLoc);
         const metaTube = await JSON.parse(result.stdout.toString());
         await metaTube.formats.forEach((io) => {
@@ -820,12 +819,10 @@ async function Engine({ query, torproxy, }) {
         };
     }
     catch (error) {
-        if (error instanceof Error) {
-            throw new Error(colors.red("@error: ") + error.message);
-        }
-        else {
-            throw new Error(colors.red("@error: ") + "internal server error");
-        }
+        if (error instanceof Error)
+            throw new Error(error.message);
+        else
+            throw new Error("internal server error");
     }
 }
 // import * as bun from "bun";
@@ -990,7 +987,7 @@ async function Agent({ query, verbose, torproxy, }) {
                 query,
             }));
             if (!TubeBody[0]) {
-                throw new Error(colors.red("@error: ") + "Unable to get response from YouTube...");
+                throw new Error("Unable to get response from YouTube...");
             }
             else {
                 console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody[0].title));
@@ -1003,7 +1000,7 @@ async function Agent({ query, verbose, torproxy, }) {
                 query,
             }));
             if (!TubeBody) {
-                throw new Error(colors.red("@error: ") + "Unable to get response from YouTube...");
+                throw new Error("Unable to get response from YouTube...");
             }
             else {
                 console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody.title));
@@ -1011,18 +1008,16 @@ async function Agent({ query, verbose, torproxy, }) {
             }
         }
         if (respEngine === undefined) {
-            throw new Error(colors.red("@error: ") + "Unable to get response from YouTube...");
+            throw new Error("Unable to get response from YouTube...");
         }
         else
             return respEngine;
     }
     catch (error) {
-        if (error instanceof Error) {
-            throw new Error(colors.red("@error: ") + error.message);
-        }
-        else {
-            throw new Error(colors.red("@error: ") + "internal server error");
-        }
+        if (error instanceof Error)
+            throw new Error(error.message);
+        else
+            throw new Error("internal server error");
     }
 }
 
@@ -1210,7 +1205,7 @@ async function extract_playlist_videos({ playlistUrls, }) {
     }
 }
 
-const progressBar = (prog) => {
+const progressBar = (prog, size) => {
     if (prog.timemark === undefined || prog.percent === undefined)
         return;
     if (prog.percent < 1 && prog.timemark.includes("-"))
@@ -1238,11 +1233,12 @@ const progressBar = (prog) => {
     if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
         output += " | " + color("@fps: ") + prog.currentFps;
     }
+    output += " | " + color("@size: ") + size;
     process.stdout.write(output);
     if (prog.timemark.includes("-"))
         process.stdout.write("\n\n");
 };
-function gpuffmpeg({ input, verbose, }) {
+function gpuffmpeg({ size, input, verbose, }) {
     let maxTries = 6;
     let currentDir = __dirname;
     let FfprobePath, FfmpegPath;
@@ -1259,7 +1255,7 @@ function gpuffmpeg({ input, verbose, }) {
         if (verbose)
             console.log(colors.green("@ffmpeg:"), command);
     })
-        .on("progress", (prog) => progressBar(prog))
+        .on("progress", (prog) => progressBar(prog, size))
         .on("end", () => console.log("\n"))
         .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
     while (maxTries > 0) {
@@ -1294,7 +1290,7 @@ async function lowEntry(metaBody) {
         !isNaN(entry.AVInfo.filesizebytes));
     const sortedByFileSize = [...validEntries].sort((a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes);
     if (!sortedByFileSize[0]) {
-        throw new Error(colors.red("@error: ") + "sorry no downloadable data found");
+        throw new Error("sorry no downloadable data found");
     }
     else
         return sortedByFileSize[0];
@@ -1341,6 +1337,7 @@ async function AudioLowest(input) {
             const sortedData = await lowEntry(engineData.AudioStore);
             let filename = "yt-dlx_(AudioLowest_";
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
@@ -1348,6 +1345,8 @@ async function AudioLowest(input) {
             ffmpeg.addOutputOption("-map", "1:0");
             ffmpeg.addOutputOption("-map", "0:a:0");
             ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("avi");
             if (filter === "bassboost") {
                 ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -1453,7 +1452,7 @@ async function bigEntry(metaBody) {
         !isNaN(entry.AVInfo.filesizebytes));
     const sortedByFileSize = [...validEntries].sort((a, b) => b.AVInfo.filesizebytes - a.AVInfo.filesizebytes);
     if (!sortedByFileSize[0]) {
-        throw new Error(colors.red("@error: ") + "sorry no downloadable data found");
+        throw new Error("sorry no downloadable data found");
     }
     else
         return sortedByFileSize[0];
@@ -1500,6 +1499,7 @@ async function AudioHighest(input) {
             const sortedData = await bigEntry(engineData.AudioStore);
             let filename = "yt-dlx_(AudioHighest_";
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
@@ -1507,6 +1507,8 @@ async function AudioHighest(input) {
             ffmpeg.addOutputOption("-map", "1:0");
             ffmpeg.addOutputOption("-map", "0:a:0");
             ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("avi");
             if (filter === "bassboost") {
                 ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -1651,6 +1653,7 @@ async function AudioQualityCustom(input) {
                 fs.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(customData);
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
@@ -1658,6 +1661,8 @@ async function AudioQualityCustom(input) {
             ffmpeg.addOutputOption("-map", "1:0");
             ffmpeg.addOutputOption("-map", "0:a:0");
             ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("avi");
             let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
             if (filter === "bassboost") {
@@ -1807,6 +1812,7 @@ async function ListAudioLowest(input) {
             const sortedData = await lowEntry(engineData.AudioStore);
             let filename = "yt-dlx_(AudioLowest_";
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
@@ -1814,6 +1820,8 @@ async function ListAudioLowest(input) {
             ffmpeg.addOutputOption("-map", "1:0");
             ffmpeg.addOutputOption("-map", "0:a:0");
             ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("avi");
             if (filter === "bassboost") {
                 ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -1951,6 +1959,7 @@ async function ListAudioHighest(input) {
             const sortedData = await bigEntry(engineData.AudioStore);
             let filename = "yt-dlx_(AudioHighest_";
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
@@ -1958,6 +1967,8 @@ async function ListAudioHighest(input) {
             ffmpeg.addOutputOption("-map", "1:0");
             ffmpeg.addOutputOption("-map", "0:a:0");
             ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("avi");
             if (filter === "bassboost") {
                 ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2101,6 +2112,7 @@ async function ListAudioQualityCustom(input) {
             const sortedData = await bigEntry(customData);
             let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
@@ -2108,6 +2120,8 @@ async function ListAudioQualityCustom(input) {
             ffmpeg.addOutputOption("-map", "1:0");
             ffmpeg.addOutputOption("-map", "0:a:0");
             ffmpeg.addOutputOption("-id3v2_version", "3");
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("avi");
             if (filter === "bassboost") {
                 ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2228,10 +2242,13 @@ async function VideoLowest(input) {
                 fs.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(engineData.VideoStore);
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             let filename = "yt-dlx_(VideoLowest_";
             if (filter === "grayscale") {
@@ -2332,10 +2349,13 @@ async function VideoHighest(input) {
                 fs.mkdirSync(folder, { recursive: true });
             const sortedData = await bigEntry(engineData.VideoStore);
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             let filename = "yt-dlx_(VideoHighest_";
             if (filter === "grayscale") {
@@ -2455,10 +2475,13 @@ async function VideoQualityCustom(input) {
                 fs.mkdirSync(folder, { recursive: true });
             const sortedData = await lowEntry(customData);
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
             if (filter === "grayscale") {
@@ -2568,9 +2591,12 @@ async function ListVideoLowest(input) {
             const sortedData = await lowEntry(engineData.VideoStore);
             let filename = "yt-dlx_(VideoLowest_";
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -2668,9 +2694,12 @@ async function ListVideoHighest(input) {
             const sortedData = await bigEntry(engineData.VideoStore);
             let filename = "yt-dlx_(VideoHighest_";
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -2788,9 +2817,12 @@ async function ListVideoQualityCustom(input) {
             const sortedData = await bigEntry(customData);
             let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
             const ffmpeg = gpuffmpeg({
+                size: sortedData.AVInfo.filesizeformatted.toString(),
                 input: sortedData.AVDownload.mediaurl,
                 verbose,
             });
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -2882,10 +2914,13 @@ async function AudioVideoLowest(input) {
                 await lowEntry(engineData.VideoStore),
             ]);
             const ffmpeg = gpuffmpeg({
+                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             let filename = "yt-dlx_(AudioVideoLowest_";
             if (filter === "grayscale") {
@@ -2989,10 +3024,13 @@ async function AudioVideoHighest(input) {
                 await bigEntry(engineData.VideoStore),
             ]);
             const ffmpeg = gpuffmpeg({
+                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             let filename = "yt-dlx_(AudioVideoHighest_";
             if (filter === "grayscale") {
@@ -3114,10 +3152,13 @@ async function AudioVideoQualityCustom(input) {
                 await bigEntry(VCustomData),
             ]);
             const ffmpeg = gpuffmpeg({
+                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
             ffmpeg.withOutputFormat("matroska");
             let filename = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
             if (filter === "grayscale") {
@@ -3230,10 +3271,14 @@ async function ListAudioVideoHighest(input) {
             ]);
             let filename = "yt-dlx_(AudioVideoHighest_";
             const ffmpeg = gpuffmpeg({
+                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
+            ffmpeg.withOutputFormat("matroska");
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 filename += `grayscale)_${title}.mkv`;
@@ -3333,10 +3378,14 @@ async function ListAudioVideoLowest(input) {
             ]);
             let filename = "yt-dlx_(AudioVideoLowest_";
             const ffmpeg = gpuffmpeg({
+                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
+            ffmpeg.withOutputFormat("matroska");
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 filename += `grayscale)_${title}.mkv`;
@@ -3454,10 +3503,14 @@ async function ListAudioVideoQualityCustom(input) {
             ]);
             let filename = "yt-dlx_(AudioVideoQualityCustom_";
             const ffmpeg = gpuffmpeg({
+                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
                 input: VideoData.AVDownload.mediaurl,
                 verbose,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+            ffmpeg.addInputOption("-threads", "auto");
+            ffmpeg.addInputOption("-re");
+            ffmpeg.withOutputFormat("matroska");
             if (filter === "grayscale") {
                 ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
                 filename += `grayscale)_${title}.mkv`;

@@ -1,5 +1,6 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-declare function gpuffmpeg({ input, verbose, }: {
+declare function gpuffmpeg({ size, input, verbose, }: {
+    size: string;
     input: string;
     verbose?: boolean;
 }): FfmpegCommand;

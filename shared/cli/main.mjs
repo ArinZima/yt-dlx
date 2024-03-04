@@ -4,7 +4,7 @@ import * as path3 from 'path';
 import path3__default from 'path';
 import * as fs from 'fs';
 import fs__default from 'fs';
-import colors33 from 'colors';
+import colors28 from 'colors';
 import { load } from 'cheerio';
 import retry from 'async-retry';
 import puppeteer from 'puppeteer';
@@ -27,7 +27,7 @@ async function closers(browser2) {
     await Promise.all(pages.map((page2) => page2.close()));
     await browser2.close();
   } catch (error) {
-    console.error(colors33.red("@error:"), error);
+    console.error(error);
   }
 }
 
@@ -86,9 +86,9 @@ async function crawler(verbose) {
       await browser.close();
     switch (true) {
       case error instanceof Error:
-        throw new Error(colors33.red("@error: ") + error.message);
+        throw new Error(error.message);
       default:
-        throw new Error(colors33.red("@error: ") + "internal server error");
+        throw new Error("internal server error");
     }
   }
 }
@@ -127,7 +127,7 @@ async function SearchVideos(input) {
     let TubeResp;
     let snapshot;
     spinnies.add(spin, {
-      text: colors33.green("@scrape: ") + "booting chromium..."
+      text: colors28.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
@@ -138,7 +138,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors33.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -146,7 +146,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
-              text: colors33.yellow("@scrape: ") + "took snapshot..."
+              text: colors28.yellow("@scrape: ") + "took snapshot..."
             });
           }
           content = await page.content();
@@ -185,7 +185,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors33.green("@info: ") + colors33.white("scrapping done for ") + query
+            text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
           });
           return metaTube;
         }, retryOptions);
@@ -199,7 +199,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors33.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -207,7 +207,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
-              text: colors33.yellow("@scrape: ") + "took snapshot..."
+              text: colors28.yellow("@scrape: ") + "took snapshot..."
             });
           }
           const content2 = await page.content();
@@ -226,7 +226,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors33.green("@info: ") + colors33.white("scrapping done for ") + query
+            text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
           });
           return playlistMeta;
         }, retryOptions);
@@ -234,7 +234,7 @@ async function SearchVideos(input) {
         return TubeResp;
       default:
         spinnies.fail(spin, {
-          text: colors33.red("@error: ") + colors33.white("wrong filter type provided.")
+          text: colors28.red("@error: ") + colors28.white("wrong filter type provided.")
         });
         await closers(browser);
         return void 0;
@@ -244,12 +244,12 @@ async function SearchVideos(input) {
     switch (true) {
       case error instanceof ZodError:
         throw new Error(
-          colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+          colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
         );
       case error instanceof Error:
-        throw new Error(colors33.red("@error: ") + error.message);
+        throw new Error(colors28.red("@error: ") + error.message);
       default:
-        throw new Error(colors33.red("@error: ") + "internal server error");
+        throw new Error(colors28.red("@error: ") + "internal server error");
     }
   }
 }
@@ -306,14 +306,14 @@ async function PlaylistInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors33.green("@scrape: ") + "booting chromium..."
+        text: colors28.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors33.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -321,7 +321,7 @@ async function PlaylistInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors33.yellow("@scrape: ") + "took snapshot..."
+          text: colors28.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const content = await page.content();
@@ -361,7 +361,7 @@ async function PlaylistInfo(input) {
         });
       });
       spinnies.succeed(spin, {
-        text: colors33.green("@info: ") + colors33.white("scrapping done for ") + query
+        text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
       });
       return {
         playlistVideos: metaTube,
@@ -437,14 +437,14 @@ async function VideoInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors33.green("@scrape: ") + "booting chromium..."
+        text: colors28.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors33.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -452,7 +452,7 @@ async function VideoInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors33.yellow("@scrape: ") + "took snapshot..."
+          text: colors28.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const videoId = await YouTubeID(query);
@@ -499,7 +499,7 @@ async function VideoInfo(input) {
         videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
       spinnies.succeed(spin, {
-        text: colors33.green("@info: ") + colors33.white("scrapping done for ") + query
+        text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
       });
       return metaTube;
     }, retryOptions);
@@ -533,7 +533,7 @@ var web = {
 var web_default = web;
 function help() {
   return Promise.resolve(
-    colors33.bold.white(`
+    colors28.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -701,11 +701,8 @@ async function Engine({
       proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` --dump-single-json '${query}'`;
-    } else {
-      throw new Error(
-        colors33.red("@error: ") + "could not find the engine file."
-      );
-    }
+    } else
+      throw new Error("could not find the engine file.");
     const result = await promisify(exec)(proLoc);
     const metaTube = await JSON.parse(result.stdout.toString());
     await metaTube.formats.forEach((io) => {
@@ -790,11 +787,10 @@ async function Engine({
       metaTube: pushTube.filter((item) => item.Tube === "metaTube").map((item) => item.reTube)[0] || void 0
     };
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors33.red("@error: ") + "internal server error");
-    }
+    if (error instanceof Error)
+      throw new Error(error.message);
+    else
+      throw new Error("internal server error");
   }
 }
 
@@ -812,11 +808,11 @@ async function Agent({
     let videoId = await YouTubeID(query);
     let TubeBody;
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "using",
-      colors33.green("yt-dlx"),
+      colors28.green("yt-dlx"),
       "version",
-      colors33.green(version)
+      colors28.green(version)
     );
     if (!videoId) {
       TubeBody = await web_default.search.SearchVideos({
@@ -825,14 +821,12 @@ async function Agent({
         query
       });
       if (!TubeBody[0]) {
-        throw new Error(
-          colors33.red("@error: ") + "Unable to get response from YouTube..."
-        );
+        throw new Error("Unable to get response from YouTube...");
       } else {
         console.log(
-          colors33.green("@info:"),
+          colors28.green("@info:"),
           `preparing payload for`,
-          colors33.green(TubeBody[0].title)
+          colors28.green(TubeBody[0].title)
         );
         respEngine = await Engine({ query: TubeBody[0].videoLink, torproxy });
       }
@@ -842,30 +836,25 @@ async function Agent({
         query
       });
       if (!TubeBody) {
-        throw new Error(
-          colors33.red("@error: ") + "Unable to get response from YouTube..."
-        );
+        throw new Error("Unable to get response from YouTube...");
       } else {
         console.log(
-          colors33.green("@info:"),
+          colors28.green("@info:"),
           `preparing payload for`,
-          colors33.green(TubeBody.title)
+          colors28.green(TubeBody.title)
         );
         respEngine = await Engine({ query: TubeBody.videoLink, torproxy });
       }
     }
     if (respEngine === void 0) {
-      throw new Error(
-        colors33.red("@error: ") + "Unable to get response from YouTube..."
-      );
+      throw new Error("Unable to get response from YouTube...");
     } else
       return respEngine;
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
-    } else {
-      throw new Error(colors33.red("@error: ") + "internal server error");
-    }
+    if (error instanceof Error)
+      throw new Error(error.message);
+    else
+      throw new Error("internal server error");
   }
 }
 
@@ -967,7 +956,7 @@ async function extract({
       }
     };
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
     );
     return payload;
@@ -1012,7 +1001,7 @@ function list_formats({
       };
       resolve(EnBody);
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
       );
     } catch (error) {
@@ -1758,7 +1747,7 @@ async function extract_playlist_videos({
       const query = await YouTubeID(listLink);
       if (query === void 0) {
         console.error(
-          colors33.bold.red("@error: "),
+          colors28.bold.red("@error: "),
           "invalid youtube playlist url:",
           listLink
         );
@@ -1769,16 +1758,16 @@ async function extract_playlist_videos({
         });
         if (resp === void 0) {
           console.error(
-            colors33.bold.red("@error: "),
+            colors28.bold.red("@error: "),
             "unable to get response from youtube for",
             query
           );
           return;
         } else {
           console.log(
-            colors33.green("@info:"),
+            colors28.green("@info:"),
             "total videos in playlist",
-            colors33.green(resp.playlistTitle),
+            colors28.green(resp.playlistTitle),
             resp.playlistVideoCount
           );
           await eachSeries$1(resp.playlistVideos, async (vid) => {
@@ -1787,7 +1776,7 @@ async function extract_playlist_videos({
             });
             counter++;
             console.log(
-              colors33.green("@info:"),
+              colors28.green("@info:"),
               "added",
               counter + "/" + resp.playlistVideoCount
             );
@@ -1797,34 +1786,34 @@ async function extract_playlist_videos({
       }
     });
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
     );
     return metaTubeArr;
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
-var progressBar = (prog) => {
+var progressBar = (prog, size) => {
   if (prog.timemark === void 0 || prog.percent === void 0)
     return;
   if (prog.percent < 1 && prog.timemark.includes("-"))
     return;
   readline.cursorTo(process.stdout, 0);
-  let color = colors33.green;
+  let color = colors28.green;
   if (prog.percent > 98)
     prog.percent = 100;
   if (prog.percent < 25)
-    color = colors33.red;
+    color = colors28.red;
   else if (prog.percent < 50)
-    color = colors33.yellow;
+    color = colors28.yellow;
   const width = Math.floor(process.stdout.columns / 4);
   const scomp = Math.round(width * prog.percent / 100);
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -1835,11 +1824,13 @@ var progressBar = (prog) => {
   if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
     output += " | " + color("@fps: ") + prog.currentFps;
   }
+  output += " | " + color("@size: ") + size;
   process.stdout.write(output);
   if (prog.timemark.includes("-"))
     process.stdout.write("\n\n");
 };
 function gpuffmpeg({
+  size,
   input,
   verbose
 }) {
@@ -1855,8 +1846,8 @@ function gpuffmpeg({
   };
   const ffmpeg = fluent(input).on("start", (command) => {
     if (verbose)
-      console.log(colors33.green("@ffmpeg:"), command);
-  }).on("progress", (prog) => progressBar(prog)).on("end", () => console.log("\n")).on("error", (e) => console.error(colors33.red("\n@ffmpeg:"), e.message));
+      console.log(colors28.green("@ffmpeg:"), command);
+  }).on("progress", (prog) => progressBar(prog, size)).on("end", () => console.log("\n")).on("error", (e) => console.error(colors28.red("\n@ffmpeg:"), e.message));
   while (maxTries > 0) {
     FfprobePath = path3.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
     FfmpegPath = path3.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
@@ -1872,13 +1863,13 @@ function gpuffmpeg({
   const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
   switch (true) {
     case (vendor && vendor.includes("NVIDIA")):
-      console.log(colors33.green("@ffmpeg:"), "using GPU", colors33.green(vendor));
+      console.log(colors28.green("@ffmpeg:"), "using GPU", colors28.green(vendor));
       ffmpeg.withInputOption("-hwaccel cuda");
       ffmpeg.withVideoCodec("h264_nvenc");
       break;
     default:
       console.log(
-        colors33.yellow("@ffmpeg:"),
+        colors28.yellow("@ffmpeg:"),
         "GPU vendor not recognized.",
         "defaulting to software processing."
       );
@@ -1886,6 +1877,8 @@ function gpuffmpeg({
   return ffmpeg;
 }
 var ffmpeg_default = gpuffmpeg;
+
+// core/base/lowEntry.ts
 async function lowEntry(metaBody) {
   const validEntries = metaBody.filter(
     (entry) => entry.AVInfo.filesizebytes !== null && entry.AVInfo.filesizebytes !== void 0 && !isNaN(entry.AVInfo.filesizebytes)
@@ -1894,9 +1887,7 @@ async function lowEntry(metaBody) {
     (a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes
   );
   if (!sortedByFileSize[0]) {
-    throw new Error(
-      colors33.red("@error: ") + "sorry no downloadable data found"
-    );
+    throw new Error("sorry no downloadable data found");
   } else
     return sortedByFileSize[0];
 }
@@ -1932,7 +1923,7 @@ async function AudioLowest(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -1945,6 +1936,7 @@ async function AudioLowest(input) {
       const sortedData = await lowEntry(engineData.AudioStore);
       let filename = "yt-dlx_(AudioLowest_";
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
@@ -1952,6 +1944,8 @@ async function AudioLowest(input) {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       if (filter2 === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2018,26 +2012,28 @@ async function AudioLowest(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
+
+// core/base/bigEntry.ts
 async function bigEntry(metaBody) {
   const validEntries = metaBody.filter(
     (entry) => entry.AVInfo.filesizebytes !== null && entry.AVInfo.filesizebytes !== void 0 && !isNaN(entry.AVInfo.filesizebytes)
@@ -2046,9 +2042,7 @@ async function bigEntry(metaBody) {
     (a, b) => b.AVInfo.filesizebytes - a.AVInfo.filesizebytes
   );
   if (!sortedByFileSize[0]) {
-    throw new Error(
-      colors33.red("@error: ") + "sorry no downloadable data found"
-    );
+    throw new Error("sorry no downloadable data found");
   } else
     return sortedByFileSize[0];
 }
@@ -2084,7 +2078,7 @@ async function AudioHighest(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -2097,6 +2091,7 @@ async function AudioHighest(input) {
       const sortedData = await bigEntry(engineData.AudioStore);
       let filename = "yt-dlx_(AudioHighest_";
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
@@ -2104,6 +2099,8 @@ async function AudioHighest(input) {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       if (filter2 === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2170,24 +2167,24 @@ async function AudioHighest(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf3 = z.object({
@@ -2221,7 +2218,7 @@ async function AudioQualityCustom(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const customData = engineData.AudioStore.filter(
@@ -2229,7 +2226,7 @@ async function AudioQualityCustom(input) {
       );
       if (!customData) {
         throw new Error(
-          colors33.red("@error: ") + quality + " not found in the video."
+          colors28.red("@error: ") + quality + " not found in the video."
         );
       }
       const title = engineData.metaTube.title.replace(
@@ -2241,6 +2238,7 @@ async function AudioQualityCustom(input) {
         fs.mkdirSync(folder, { recursive: true });
       const sortedData = await lowEntry(customData);
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
@@ -2248,6 +2246,8 @@ async function AudioQualityCustom(input) {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
       if (filter2 === "bassboost") {
@@ -2315,24 +2315,24 @@ async function AudioQualityCustom(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf4 = z.object({
@@ -2366,7 +2366,7 @@ async function ListAudioLowest(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -2377,7 +2377,7 @@ async function ListAudioLowest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -2392,6 +2392,7 @@ async function ListAudioLowest(input) {
       const sortedData = await lowEntry(engineData.AudioStore);
       let filename = "yt-dlx_(AudioLowest_";
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
@@ -2399,6 +2400,8 @@ async function ListAudioLowest(input) {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       if (filter2 === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2458,23 +2461,23 @@ async function ListAudioLowest(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf5 = z.object({
@@ -2508,7 +2511,7 @@ async function ListAudioHighest(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -2519,7 +2522,7 @@ async function ListAudioHighest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -2534,6 +2537,7 @@ async function ListAudioHighest(input) {
       const sortedData = await bigEntry(engineData.AudioStore);
       let filename = "yt-dlx_(AudioHighest_";
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
@@ -2541,6 +2545,8 @@ async function ListAudioHighest(input) {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       if (filter2 === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2600,23 +2606,23 @@ async function ListAudioHighest(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf6 = z.object({
@@ -2649,7 +2655,7 @@ async function ListAudioQualityCustom(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -2660,7 +2666,7 @@ async function ListAudioQualityCustom(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -2670,7 +2676,7 @@ async function ListAudioQualityCustom(input) {
       );
       if (!customData) {
         console.log(
-          colors33.red("@error: ") + quality + " not found in the video."
+          colors28.red("@error: ") + quality + " not found in the video."
         );
         continue;
       }
@@ -2684,6 +2690,7 @@ async function ListAudioQualityCustom(input) {
       const sortedData = await bigEntry(customData);
       let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
@@ -2691,6 +2698,8 @@ async function ListAudioQualityCustom(input) {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       if (filter2 === "bassboost") {
         ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
@@ -2750,23 +2759,23 @@ async function ListAudioQualityCustom(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf7 = z.object({
@@ -2791,7 +2800,7 @@ async function VideoLowest(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -2803,10 +2812,13 @@ async function VideoLowest(input) {
         fs.mkdirSync(folder, { recursive: true });
       const sortedData = await lowEntry(engineData.VideoStore);
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(engineData.metaTube.thumbnail);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename = "yt-dlx_(VideoLowest_";
       if (filter2 === "grayscale") {
@@ -2852,24 +2864,24 @@ async function VideoLowest(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf8 = z.object({
@@ -2894,7 +2906,7 @@ async function VideoHighest(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -2906,10 +2918,13 @@ async function VideoHighest(input) {
         fs.mkdirSync(folder, { recursive: true });
       const sortedData = await bigEntry(engineData.VideoStore);
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(engineData.metaTube.thumbnail);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename = "yt-dlx_(VideoHighest_";
       if (filter2 === "grayscale") {
@@ -2955,24 +2970,24 @@ async function VideoHighest(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf9 = z.object({
@@ -3012,7 +3027,7 @@ async function VideoQualityCustom(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const customData = engineData.VideoStore.filter(
@@ -3020,7 +3035,7 @@ async function VideoQualityCustom(input) {
       );
       if (!customData) {
         throw new Error(
-          colors33.red("@error: ") + quality + " not found in the video."
+          colors28.red("@error: ") + quality + " not found in the video."
         );
       }
       const title = engineData.metaTube.title.replace(
@@ -3032,10 +3047,13 @@ async function VideoQualityCustom(input) {
         fs.mkdirSync(folder, { recursive: true });
       const sortedData = await lowEntry(customData);
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(engineData.metaTube.thumbnail);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
       if (filter2 === "grayscale") {
@@ -3081,24 +3099,24 @@ async function VideoQualityCustom(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf10 = z.object({
@@ -3124,7 +3142,7 @@ async function ListVideoLowest(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -3135,7 +3153,7 @@ async function ListVideoLowest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -3150,9 +3168,12 @@ async function ListVideoLowest(input) {
       const sortedData = await lowEntry(engineData.VideoStore);
       let filename = "yt-dlx_(VideoLowest_";
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       if (filter2 === "grayscale") {
         ffmpeg.withVideoFilter(
@@ -3190,23 +3211,23 @@ async function ListVideoLowest(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf11 = z.object({
@@ -3232,7 +3253,7 @@ async function ListVideoHighest(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -3243,7 +3264,7 @@ async function ListVideoHighest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -3258,9 +3279,12 @@ async function ListVideoHighest(input) {
       const sortedData = await bigEntry(engineData.VideoStore);
       let filename = "yt-dlx_(VideoHighest_";
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       if (filter2 === "grayscale") {
         ffmpeg.withVideoFilter(
@@ -3298,23 +3322,23 @@ async function ListVideoHighest(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf12 = z.object({
@@ -3353,7 +3377,7 @@ async function ListVideoQualityCustom(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -3364,7 +3388,7 @@ async function ListVideoQualityCustom(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -3374,7 +3398,7 @@ async function ListVideoQualityCustom(input) {
       );
       if (!customData) {
         console.log(
-          colors33.red("@error: ") + quality + " not found in the video."
+          colors28.red("@error: ") + quality + " not found in the video."
         );
         continue;
       }
@@ -3388,9 +3412,12 @@ async function ListVideoQualityCustom(input) {
       const sortedData = await bigEntry(customData);
       let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
       const ffmpeg = ffmpeg_default({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
         input: sortedData.AVDownload.mediaurl,
         verbose
       });
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       if (filter2 === "grayscale") {
         ffmpeg.withVideoFilter(
@@ -3428,23 +3455,23 @@ async function ListVideoQualityCustom(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf13 = z.object({
@@ -3469,7 +3496,7 @@ async function AudioVideoLowest(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3484,10 +3511,15 @@ async function AudioVideoLowest(input) {
         await lowEntry(engineData.VideoStore)
       ]);
       const ffmpeg = ffmpeg_default({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename = "yt-dlx_(AudioVideoLowest_";
       if (filter2 === "grayscale") {
@@ -3533,24 +3565,24 @@ async function AudioVideoLowest(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf14 = z.object({
@@ -3575,7 +3607,7 @@ async function AudioVideoHighest(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3590,10 +3622,15 @@ async function AudioVideoHighest(input) {
         await bigEntry(engineData.VideoStore)
       ]);
       const ffmpeg = ffmpeg_default({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename = "yt-dlx_(AudioVideoHighest_";
       if (filter2 === "grayscale") {
@@ -3639,24 +3676,24 @@ async function AudioVideoHighest(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf15 = z.object({
@@ -3706,7 +3743,7 @@ async function AudioVideoQualityCustom(input) {
     const engineData = await Agent({ query, verbose, torproxy });
     if (engineData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3727,10 +3764,15 @@ async function AudioVideoQualityCustom(input) {
         await bigEntry(VCustomData)
       ]);
       const ffmpeg = ffmpeg_default({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
       if (filter2 === "grayscale") {
@@ -3776,24 +3818,24 @@ async function AudioVideoQualityCustom(input) {
         });
       }
       console.log(
-        colors33.green("@info:"),
+        colors28.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors33.green("yt-dlx."),
+        colors28.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors33.green("\u{1F31F}starring"),
+        colors28.green("\u{1F31F}starring"),
         "the github repo",
-        colors33.green("https://github.com/yt-dlx")
+        colors28.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf16 = z.object({
@@ -3819,7 +3861,7 @@ async function ListAudioVideoHighest(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -3830,7 +3872,7 @@ async function ListAudioVideoHighest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -3848,10 +3890,16 @@ async function ListAudioVideoHighest(input) {
       ]);
       let filename = "yt-dlx_(AudioVideoHighest_";
       const ffmpeg = ffmpeg_default({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
+      ffmpeg.withOutputFormat("matroska");
       if (filter2 === "grayscale") {
         ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
@@ -3888,23 +3936,23 @@ async function ListAudioVideoHighest(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf17 = z.object({
@@ -3930,7 +3978,7 @@ async function ListAudioVideoLowest(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -3941,7 +3989,7 @@ async function ListAudioVideoLowest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -3959,10 +4007,16 @@ async function ListAudioVideoLowest(input) {
       ]);
       let filename = "yt-dlx_(AudioVideoLowest_";
       const ffmpeg = ffmpeg_default({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
+      ffmpeg.withOutputFormat("matroska");
       if (filter2 === "grayscale") {
         ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
@@ -3999,23 +4053,23 @@ async function ListAudioVideoLowest(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 var qconf18 = z.object({
@@ -4055,7 +4109,7 @@ async function ListAudioVideoQualityCustom(input) {
     const playlistData = await web_default.search.PlaylistInfo({ query });
     if (playlistData === void 0) {
       throw new Error(
-        colors33.red("@error: ") + "unable to get response from youtube."
+        colors28.red("@error: ") + "unable to get response from youtube."
       );
     }
     for (const video of playlistData.playlistVideos) {
@@ -4066,7 +4120,7 @@ async function ListAudioVideoQualityCustom(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors33.red("@error:"),
+          colors28.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -4090,10 +4144,16 @@ async function ListAudioVideoQualityCustom(input) {
       ]);
       let filename = "yt-dlx_(AudioVideoQualityCustom_";
       const ffmpeg = ffmpeg_default({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
         input: VideoData.AVDownload.mediaurl,
         verbose
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg.addInputOption("-threads", "auto");
+      ffmpeg.addInputOption("-re");
+      ffmpeg.withOutputFormat("matroska");
       if (filter2 === "grayscale") {
         ffmpeg.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
@@ -4130,23 +4190,23 @@ async function ListAudioVideoQualityCustom(input) {
       });
     }
     console.log(
-      colors33.green("@info:"),
+      colors28.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors33.green("yt-dlx."),
+      colors28.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors33.green("\u{1F31F}starring"),
+      colors28.green("\u{1F31F}starring"),
       "the github repo",
-      colors33.green("https://github.com/yt-dlx")
+      colors28.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors33.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors33.red("@error: ") + error.message);
+      throw new Error(colors28.red("@error: ") + error.message);
     } else
-      throw new Error(colors33.red("@error: ") + "internal server error");
+      throw new Error(colors28.red("@error: ") + "internal server error");
   }
 }
 
@@ -4223,7 +4283,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors33.green("Installed Version: yt-dlx@" + version));
+      console.error(colors28.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -4231,14 +4291,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors33.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.info.extract({
           query: proTube.query
@@ -4246,14 +4306,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.info.list_formats({
           query: proTube.query
@@ -4261,14 +4321,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.audio.single.highest({
           query: proTube.query
@@ -4276,14 +4336,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.audio.single.lowest({
           query: proTube.query
@@ -4291,14 +4351,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.video.single.highest({
           query: proTube.query
@@ -4306,14 +4366,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.video.single.lowest({
           query: proTube.query
@@ -4321,14 +4381,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.audio_video.single.highest({
           query: proTube.query
@@ -4336,14 +4396,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       } else
         core_default.audio_video.single.lowest({
           query: proTube.query
@@ -4351,17 +4411,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors33.red(error));
+          console.error(colors28.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors33.red("error: no format"));
+        console.error(colors28.red("error: no format"));
       }
       core_default.audio.single.custom({
         query: proTube.query,
@@ -4370,17 +4430,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors33.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors33.red("error: no query"));
+        console.error(colors28.red("error: no query"));
       }
       if (!proTube || !proTube.format || proTube.format.length === 0) {
-        console.error(colors33.red("error: no format"));
+        console.error(colors28.red("error: no format"));
       }
       core_default.video.single.custom({
         query: proTube.query,
@@ -4389,7 +4449,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors33.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
@@ -4398,7 +4458,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors33.red(error));
+        console.error(colors28.red(error));
         process.exit();
       });
       break;
@@ -4409,7 +4469,7 @@ if (!proTube._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors33.red(error));
+    console.error(colors28.red(error));
     process.exit();
   });
 } else
