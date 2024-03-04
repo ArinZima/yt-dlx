@@ -10,7 +10,6 @@ import colors from "colors";
       verbose: false,
       stream: false,
     });
-    console.log(colors.green("@pass:"), true);
   } catch (error: any) {
     console.error(colors.red(error));
   }

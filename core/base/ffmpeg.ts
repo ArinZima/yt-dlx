@@ -20,6 +20,7 @@ const progressBar = (prog: any, size: string) => {
   let output =
     color("@prog: ") +
     sprog +
+    " " +
     prog.percent.toFixed(2) +
     "% | " +
     color("@timemark: ") +
@@ -58,6 +59,7 @@ function gpuffmpeg({
     .on("start", (command) => {
       if (verbose) console.log(colors.green("@ffmpeg:"), command);
     })
+    .withInputOption("-thread auto")
     .on("progress", (prog) => progressBar(prog, size))
     .on("end", () => console.log("\n"))
     .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));

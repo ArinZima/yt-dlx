@@ -25,11 +25,10 @@ const quals = [
         await ytdlx.video.single.custom({
           quality: q,
           stream: false,
-          verbose: true,
+          verbose: false,
           output: "public/video",
           query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
         });
-        console.log(colors.green("@pass:"), true);
       } catch (error: any) {
         console.error(colors.red(error));
       }

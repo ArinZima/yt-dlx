@@ -35,9 +35,9 @@ const core = {
   "test:cli":
     "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
   "test:scrape":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/scrape.spec.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/other/scrape.spec.js",
   "test:spec":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/quick.spec.js",
+    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/other/quick.spec.js",
   "test:full":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
   "test:audio":

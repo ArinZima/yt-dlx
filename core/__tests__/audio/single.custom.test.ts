@@ -15,7 +15,6 @@ const quals = ["high", "medium", "low", "ultralow"] as const;
           output: "public/audio",
           query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
         });
-        console.log(colors.green("@pass:"), true);
       } catch (error: any) {
         console.error(colors.red(error));
       }

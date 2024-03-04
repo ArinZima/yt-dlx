@@ -1,12 +1,12 @@
 console.clear();
-import web from "../web";
+import web from "../../web";
 import colors from "colors";
 import type {
   PlaylistInfoType,
   VideoInfoType,
   TypePlaylist,
   TypeVideo,
-} from "../web";
+} from "../../web";
 
 (async () => {
   try {
