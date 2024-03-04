@@ -2,6 +2,7 @@ console.clear();
 import ytDlx from "..";
 
 (async () => {
+  // =========================================[AUDIO-ONLY]=========================================
   await ytDlx().audio().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
@@ -14,7 +15,7 @@ import ytDlx from "..";
     verbose: false,
     output: "temp",
   });
-
+  // =========================================[VIDEO-ONLY]=========================================
   await ytDlx().video().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
@@ -27,7 +28,7 @@ import ytDlx from "..";
     verbose: false,
     output: "temp",
   });
-
+  // =========================================[AUDIO_VIDEO]=========================================
   await ytDlx().audio_video().single().highest({
     query: "https://www.youtube.com/watch?v=7PIji8OubXU",
     torproxy: "socks5://127.0.0.1:9050",
@@ -41,5 +42,3 @@ import ytDlx from "..";
     output: "temp",
   });
 })();
-
-// torproxy: "socks5://127.0.0.1:9050",
