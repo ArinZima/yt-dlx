@@ -73,11 +73,6 @@ function runScript() {
     }${formatBytes(os.totalmem())}${colors.reset}`
   );
   console.log(
-    `${colors.green}@system:${colors.reset} free memory: ${
-      colors.red
-    }${formatBytes(os.freemem())}${colors.reset}`
-  );
-  console.log(
     `${colors.green}@system:${colors.reset} home directory: ${
       colors.red
     }${os.homedir()}${colors.reset}`
