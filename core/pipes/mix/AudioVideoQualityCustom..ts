@@ -9,6 +9,7 @@ import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
+  torproxy: z.string().min(1),
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -45,6 +46,7 @@ export default async function AudioVideoQualityCustom(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
+  torproxy?: string;
   AQuality: "high" | "medium" | "low" | "ultralow";
   VQuality:
     | "144p"
@@ -73,9 +75,17 @@ export default async function AudioVideoQualityCustom(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, stream, verbose, output, VQuality, AQuality, filter } =
-      await qconf.parseAsync(input);
-    const engineData = await ytdlx({ query, verbose });
+    const {
+      query,
+      stream,
+      verbose,
+      output,
+      VQuality,
+      AQuality,
+      filter,
+      torproxy,
+    } = await qconf.parseAsync(input);
+    const engineData = await ytdlx({ query, verbose, torproxy });
     if (engineData === undefined) {
       throw new Error(
         colors.red("@error: ") + "unable to get response from youtube."

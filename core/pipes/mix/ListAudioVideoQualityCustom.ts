@@ -10,6 +10,7 @@ import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
+  torproxy: z.string().min(1),
   output: z.string().optional(),
   verbose: z.boolean().optional(),
   AQuality: z.enum(["high", "medium", "low", "ultralow"]),
@@ -44,6 +45,7 @@ export default async function ListAudioVideoQualityCustom(input: {
   query: string;
   output?: string;
   verbose?: boolean;
+  torproxy?: string;
   AQuality: "high" | "medium" | "low" | "ultralow";
   VQuality:
     | "144p"
@@ -72,7 +74,7 @@ export default async function ListAudioVideoQualityCustom(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, verbose, output, VQuality, AQuality, filter } =
+    const { query, verbose, output, VQuality, AQuality, filter, torproxy } =
       await qconf.parseAsync(input);
     const playlistData = await web.search.PlaylistInfo({ query });
     if (playlistData === undefined) {
@@ -83,6 +85,7 @@ export default async function ListAudioVideoQualityCustom(input: {
     for (const video of playlistData.playlistVideos) {
       const engineData = await ytdlx({
         query: video.videoLink,
+        torproxy,
         verbose,
       });
       if (engineData === undefined) {

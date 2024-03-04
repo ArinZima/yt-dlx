@@ -20,7 +20,13 @@ function sizeFormat(filesize: number) {
   } else return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
 }
 
-export default async function Engine(query: string): Promise<EngineResult> {
+export default async function Engine({
+  query,
+  torproxy,
+}: {
+  query: string;
+  torproxy?: string;
+}): Promise<EngineResult> {
   try {
     let pushTube: any[] = [];
     let proLoc: string = "";
@@ -37,6 +43,7 @@ export default async function Engine(query: string): Promise<EngineResult> {
       }
     }
     if (proLoc !== "") {
+      if (torproxy) proLoc += ` --proxy ${torproxy}`;
       proLoc += ` --dump-single-json --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` '${query}'`;

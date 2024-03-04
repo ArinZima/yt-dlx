@@ -10,6 +10,7 @@ import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
+  torproxy: z.string().min(1),
   output: z.string().optional(),
   verbose: z.boolean().optional(),
   filter: z
@@ -28,6 +29,7 @@ export default async function ListVideoHighest(input: {
   query: string;
   output?: string;
   verbose?: boolean;
+  torproxy?: string;
   filter?:
     | "invert"
     | "rotate90"
@@ -41,7 +43,9 @@ export default async function ListVideoHighest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, verbose, output, filter } = await qconf.parseAsync(input);
+    const { query, verbose, output, filter, torproxy } = await qconf.parseAsync(
+      input
+    );
     const playlistData = await web.search.PlaylistInfo({ query });
     if (playlistData === undefined) {
       throw new Error(
@@ -51,6 +55,7 @@ export default async function ListVideoHighest(input: {
     for (const video of playlistData.playlistVideos) {
       const engineData = await ytdlx({
         query: video.videoLink,
+        torproxy,
         verbose,
       });
       if (engineData === undefined) {

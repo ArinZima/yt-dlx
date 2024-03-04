@@ -9,6 +9,7 @@ import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
+  torproxy: z.string().min(1),
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -37,6 +38,7 @@ export default async function AudioHighest(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
+  torproxy?: string;
   filter?:
     | "echo"
     | "slow"
@@ -58,10 +60,9 @@ export default async function AudioHighest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
-    const { query, output, stream, verbose, filter } = await qconf.parseAsync(
-      input
-    );
-    const engineData = await ytdlx({ query, verbose });
+    const { query, output, stream, verbose, filter, torproxy } =
+      await qconf.parseAsync(input);
+    const engineData = await ytdlx({ query, verbose, torproxy });
     if (engineData === undefined) {
       throw new Error(
         colors.red("@error: ") + "unable to get response from youtube."

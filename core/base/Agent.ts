@@ -14,9 +14,11 @@ import type EngineResult from "../interface/EngineResult";
 export default async function Agent({
   query,
   verbose,
+  torproxy,
 }: {
   query: string;
   verbose?: boolean;
+  torproxy?: string;
 }): Promise<EngineResult> {
   try {
     let respEngine: EngineResult | undefined = undefined;
@@ -49,7 +51,7 @@ export default async function Agent({
           `preparing payload for`,
           colors.green(TubeBody[0].title as string)
         );
-        respEngine = await Engine(TubeBody[0].videoLink);
+        respEngine = await Engine({ query: TubeBody[0].videoLink, torproxy });
       }
     } else {
       TubeBody = (await core.search.VideoInfo({
@@ -66,7 +68,7 @@ export default async function Agent({
           `preparing payload for`,
           colors.green(TubeBody.title)
         );
-        respEngine = await Engine(TubeBody.videoLink);
+        respEngine = await Engine({ query: TubeBody.videoLink, torproxy });
       }
     }
     if (respEngine === undefined) {

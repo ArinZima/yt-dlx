@@ -10,6 +10,7 @@ import type { gpuffmpegCommand } from "../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
+  torproxy: z.string().min(1),
   output: z.string().optional(),
   verbose: z.boolean().optional(),
   filter: z
@@ -37,6 +38,7 @@ export default async function ListAudioHighest(input: {
   query: string;
   output?: string;
   verbose?: boolean;
+  torproxy?: string;
   filter?:
     | "echo"
     | "slow"
@@ -55,7 +57,9 @@ export default async function ListAudioHighest(input: {
     | "superspeed";
 }): Promise<void> {
   try {
-    const { query, output, verbose, filter } = await qconf.parseAsync(input);
+    const { query, output, verbose, filter, torproxy } = await qconf.parseAsync(
+      input
+    );
     const playlistData = await web.search.PlaylistInfo({ query });
     if (playlistData === undefined) {
       throw new Error(
@@ -65,6 +69,7 @@ export default async function ListAudioHighest(input: {
     for (const video of playlistData.playlistVideos) {
       const engineData = await ytdlx({
         query: video.videoLink,
+        torproxy,
         verbose,
       });
       if (engineData === undefined) {
