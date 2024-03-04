@@ -2036,18 +2036,22 @@ async function AudioLowest(input) {
           filename += `vibrato)_${title}.avi`;
         } else
           filename += `)_${title}.avi`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -2195,18 +2199,22 @@ async function AudioHighest(input) {
           filename += `vibrato)_${title}.avi`;
         } else
           filename += `)_${title}.avi`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -2342,18 +2350,22 @@ async function AudioQualityCustom(input) {
           filename += `vibrato)_${title}.avi`;
         } else
           filename += `)_${title}.avi`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -2902,18 +2914,22 @@ async function VideoLowest(input) {
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -3007,18 +3023,22 @@ async function VideoHighest(input) {
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -3135,18 +3155,22 @@ async function VideoQualityCustom(input) {
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -3610,18 +3634,22 @@ async function AudioVideoLowest(input) {
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -3718,18 +3746,22 @@ async function AudioVideoHighest(input) {
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),
@@ -3861,18 +3893,22 @@ async function AudioVideoQualityCustom(input) {
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
-            };
-          default:
-            await new Promise(() => {
-              ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          };
+        } else {
+          await new Promise((resolve, reject2) => {
+            ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject2(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors33__default.default.green("@info:"),

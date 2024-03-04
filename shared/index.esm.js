@@ -1421,20 +1421,25 @@ async function AudioLowest(input) {
                 }
                 else
                     filename += `)_${title}.avi`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -1586,20 +1591,25 @@ async function AudioHighest(input) {
                 }
                 else
                     filename += `)_${title}.avi`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -1738,20 +1748,25 @@ async function AudioQualityCustom(input) {
                 }
                 else
                     filename += `)_${title}.avi`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -2292,20 +2307,25 @@ async function VideoLowest(input) {
                 }
                 else
                     filename += `)_${title}.mkv`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -2396,20 +2416,25 @@ async function VideoHighest(input) {
                 }
                 else
                     filename += `)_${title}.mkv`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -2519,20 +2544,25 @@ async function VideoQualityCustom(input) {
                 }
                 else
                     filename += `)_${title}.mkv`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -2958,20 +2988,25 @@ async function AudioVideoLowest(input) {
                 }
                 else
                     filename += `)_${title}.mkv`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -3065,20 +3100,25 @@ async function AudioVideoHighest(input) {
                 }
                 else
                     filename += `)_${title}.mkv`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }
@@ -3193,20 +3233,25 @@ async function AudioVideoQualityCustom(input) {
                 }
                 else
                     filename += `)_${title}.mkv`;
-                switch (stream) {
-                    case true:
-                        return {
-                            ffmpeg,
-                            filename: output
-                                ? path.join(folder, filename)
-                                : filename.replace("_)_", ")_"),
-                        };
-                    default:
-                        await new Promise(() => {
-                            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-                            ffmpeg.run();
+                if (stream) {
+                    return {
+                        ffmpeg,
+                        filename: output
+                            ? path.join(folder, filename)
+                            : filename.replace("_)_", ")_"),
+                    };
+                }
+                else {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+                        ffmpeg.on("end", () => {
+                            resolve();
                         });
-                        break;
+                        ffmpeg.on("error", (err) => {
+                            reject(err);
+                        });
+                        ffmpeg.run();
+                    });
                 }
                 console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "If you enjoy the project, consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx"));
             }

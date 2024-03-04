@@ -146,20 +146,24 @@ export default async function AudioQualityCustom(input: {
           ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
           filename += `vibrato)_${title}.avi`;
         } else filename += `)_${title}.avi`;
-        switch (stream) {
-          case true:
-            return {
-              ffmpeg,
-              filename: output
-                ? path.join(folder, filename)
-                : filename.replace("_)_", ")_"),
-            };
-          default:
-            await new Promise<void>(() => {
-              ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.run();
+        if (stream) {
+          return {
+            ffmpeg,
+            filename: output
+              ? path.join(folder, filename)
+              : filename.replace("_)_", ")_"),
+          };
+        } else {
+          await new Promise<void>((resolve, reject) => {
+            ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+            ffmpeg.on("end", () => {
+              resolve();
             });
-            break;
+            ffmpeg.on("error", (err) => {
+              reject(err);
+            });
+            ffmpeg.run();
+          });
         }
         console.log(
           colors.green("@info:"),
