@@ -10,6 +10,7 @@ const colors = {
 };
 
 const core = {
+  prepublishOnly: "yarn clean:deps",
   remake: "yarn clean && yarn make && yarn update && yarn build",
   upload: "yarn test && yarn remake && npm pkg fix && npm publish --force",
   postinstall:
