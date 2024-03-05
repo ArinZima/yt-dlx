@@ -1,115 +1,61 @@
 console.clear();
+import * as path from "path";
 import * as async from "async";
+import ffmpeg from "fluent-ffmpeg";
+import Agent from "../../base/Agent";
+import bigEntry from "../../base/bigEntry";
+import { progressBar } from "../../base/ffmpeg";
+import type TubeConfig from "../../interface/TubeConfig";
+import type EngineResult from "../../interface/EngineResult";
 
-import ListVideoLowest from "../../pipes/video/playList/ListVideoLowest";
-import ListAudioLowest from "../../pipes/audio/playList/ListAudioLowest";
-import ListAudioVideoLowest from "../../pipes/mix/playList/ListAudioVideoLowest";
-import ListVideoHighest from "../../pipes/video/playList/ListVideoHighest";
-import ListAudioHighest from "../../pipes/audio/playList/ListAudioHighest";
-import ListAudioVideoHighest from "../../pipes/mix/playList/ListAudioVideoHighest";
-
-async.waterfall(
-  [
-    (callback: any) => {
-      async.series(
-        [
-          async () => {
-            try {
-              await ListAudioVideoHighest({
-                verbose: false,
-                output: "public/audio",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-          async () => {
-            try {
-              await ListAudioHighest({
-                verbose: false,
-                output: "public/audio",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-          async () => {
-            try {
-              await ListVideoHighest({
-                verbose: false,
-                output: "public/video",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-        ],
-        (error) => callback(error)
-      );
-    },
-    (callback: any) => {
-      async.series(
-        [
-          async () => {
-            try {
-              await ListAudioVideoLowest({
-                verbose: false,
-                output: "public/audio",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-          async () => {
-            try {
-              await ListAudioLowest({
-                verbose: false,
-                output: "public/audio",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-          async () => {
-            try {
-              await ListVideoLowest({
-                verbose: false,
-                output: "public/video",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-        ],
-        (error) => callback(error)
-      );
-    },
-  ],
-  (error) => {
-    if (error) console.error(error);
-  }
-);
+async.waterfall([
+  async () => {
+    const EngineData = Agent({
+      verbose: false,
+      torproxy: "socks5://127.0.0.1:9050",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+    });
+    return EngineData;
+  },
+  async (EngineData: EngineResult) => {
+    const [AudioData, VideoData] = await Promise.all([
+      await bigEntry(EngineData.AudioStore),
+      await bigEntry(EngineData.VideoStore),
+    ]);
+    return { EngineData, AudioData, VideoData };
+  },
+  async ({
+    EngineData,
+    AudioData,
+    VideoData,
+  }: {
+    EngineData: EngineResult;
+    AudioData: TubeConfig;
+    VideoData: TubeConfig;
+  }) => {
+    const fluent = ffmpeg();
+    fluent.addInput(VideoData.AVDownload.mediaurl);
+    fluent.withVideoCodec("copy");
+    fluent.addInput(AudioData.AVDownload.mediaurl);
+    fluent.withAudioCodec("copy");
+    fluent.addOutputOption(["-map 0:v:0", "-map 1:a:0"]);
+    fluent.addInput(EngineData.metaTube.thumbnail);
+    fluent.addOutputOption([
+      "-id3v2_version",
+      "3",
+      "-metadata",
+      `title=${EngineData.metaTube.title}`,
+      "-metadata",
+      `description=${EngineData.metaTube.description.trim()}`,
+    ]);
+    fluent.outputFormat("webm");
+    fluent.output(path.resolve(__dirname, EngineData.metaTube.title + ".webm"));
+    fluent.on("start", (command) => console.info(command));
+    fluent.on("progress", (progress) => {
+      progressBar(progress, VideoData.AVInfo.filesizeformatted.toString());
+    });
+    fluent.on("end", () => process.stdout.write("\n"));
+    fluent.on("error", (error) => console.error(error.message));
+    fluent.run();
+  },
+]);

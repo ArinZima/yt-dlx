@@ -6,7 +6,7 @@ import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
-const progressBar = (prog: any, size: string) => {
+export function progressBar(prog: any, size: string) {
   if (prog.timemark === undefined || prog.percent === undefined) return;
   if (prog.percent < 1 && prog.timemark.includes("-")) return;
   readline.cursorTo(process.stdout, 0);
@@ -34,7 +34,7 @@ const progressBar = (prog: any, size: string) => {
   output += " | " + color("@size: ") + size;
   process.stdout.write(output);
   if (prog.timemark.includes("-")) process.stdout.write("\n\n");
-};
+}
 
 function gpuffmpeg({
   size,
