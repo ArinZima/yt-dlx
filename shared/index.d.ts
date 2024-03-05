@@ -6,6 +6,7 @@ import { FfmpegCommand } from 'fluent-ffmpeg';
 
 interface IpOp {
     query: string;
+    torproxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
     type: keyof {
@@ -36,6 +37,7 @@ declare function SearchVideos(input: IpOp): Promise<TypeVideo[] | TypePlaylist[]
 
 interface InputYouTube$1 {
     query: string;
+    torproxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
 }
@@ -59,6 +61,7 @@ declare function PlaylistInfo(input: InputYouTube$1): Promise<PlaylistInfoType |
 
 interface InputYouTube {
     query: string;
+    torproxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
 }
@@ -199,7 +202,8 @@ interface EngineResult {
     HDRVideoStore: TubeConfig[];
 }
 
-declare function extract_playlist_videos({ playlistUrls, }: {
+declare function extract_playlist_videos({ torproxy, playlistUrls, }: {
+    torproxy?: string;
     playlistUrls: string[];
 }): Promise<EngineResult[]>;
 

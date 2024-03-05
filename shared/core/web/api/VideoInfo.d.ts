@@ -1,5 +1,6 @@
 export interface InputYouTube {
     query: string;
+    torproxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
 }

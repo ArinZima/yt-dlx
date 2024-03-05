@@ -68,7 +68,6 @@ async function proTube({
   try {
     const { AudioStore, VideoStore, metaTube } = (await Agent({
       verbose: false,
-      torproxy: "socks5://127.0.0.1:9050",
       query: "https://youtu.be/6POZlJAZsok?si=owoDFiB9laKgC_oU",
     })) as EngineResult;
     const [adata, vdata] = await Promise.all([

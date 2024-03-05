@@ -62,10 +62,8 @@ function YouTubeID(videoLink) {
 }
 var browser;
 var page;
-async function crawler(verbose, torprox) {
+async function crawler(verbose, torproxy) {
   try {
-    if (torprox)
-      console.log(torprox);
     browser = await puppeteer.launch({
       headless: verbose ? false : true,
       userDataDir: "others",
@@ -75,7 +73,7 @@ async function crawler(verbose, torprox) {
         "--no-sandbox",
         "--enable-automation",
         "--disable-dev-shm-usage",
-        `--proxy-server=socks5://127.0.0.1:9050`
+        `--proxy-server=${torproxy}`
       ]
     });
     page = await browser.newPage();
@@ -109,11 +107,12 @@ async function SearchVideos(input) {
           message: "Query must not be a YouTube video/Playlist link"
         }
       ),
+      torproxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional()
     });
-    const { query, screenshot, verbose } = await QuerySchema.parseAsync(input);
-    await crawler(verbose);
+    const { query, screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
+    await crawler(verbose, torproxy);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -293,11 +292,14 @@ async function PlaylistInfo(input) {
           message: "Query must be a valid YouTube Playlist Link or ID."
         }
       ),
+      torproxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional()
     });
-    const { screenshot, verbose } = await QuerySchema.parseAsync(input);
-    await crawler(verbose);
+    const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(
+      input
+    );
+    await crawler(verbose, torproxy);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -425,11 +427,14 @@ async function VideoInfo(input) {
           message: "Query must be a valid YouTube video Link or ID."
         }
       ),
+      torproxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional()
     });
-    const { screenshot, verbose } = await QuerySchema.parseAsync(input);
-    await crawler(verbose);
+    const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(
+      input
+    );
+    await crawler(verbose, torproxy);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -820,6 +825,7 @@ async function Agent({
     if (!videoId) {
       TubeBody = await web_default.search.SearchVideos({
         type: "video",
+        torproxy,
         verbose,
         query
       });
@@ -835,6 +841,7 @@ async function Agent({
       }
     } else {
       TubeBody = await web_default.search.VideoInfo({
+        torproxy,
         verbose,
         query
       });
@@ -1741,6 +1748,7 @@ function waterfall(tasks, callback) {
 }
 awaitify(waterfall);
 async function extract_playlist_videos({
+  torproxy,
   playlistUrls
 }) {
   try {
@@ -1757,7 +1765,8 @@ async function extract_playlist_videos({
         return;
       } else {
         const resp = await web_default.search.PlaylistInfo({
-          query
+          query,
+          torproxy
         });
         if (resp === void 0) {
           console.error(
@@ -2383,7 +2392,7 @@ async function ListAudioLowest(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -2574,7 +2583,7 @@ async function ListAudioHighest(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -2764,7 +2773,7 @@ async function ListAudioQualityCustom(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -3284,7 +3293,7 @@ async function ListVideoLowest(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -3440,7 +3449,7 @@ async function ListVideoHighest(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -3609,7 +3618,7 @@ async function ListVideoQualityCustom(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -4126,7 +4135,7 @@ async function ListAudioVideoHighest(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -4288,7 +4297,7 @@ async function ListAudioVideoLowest(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),
@@ -4464,7 +4473,7 @@ async function ListAudioVideoQualityCustom(input) {
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === void 0) {
           console.log(
             colors28.red("@error:"),

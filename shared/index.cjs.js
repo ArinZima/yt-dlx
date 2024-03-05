@@ -84,10 +84,8 @@ function YouTubeID(videoLink) {
 
 let browser;
 let page;
-async function crawler(verbose, torprox) {
+async function crawler(verbose, torproxy) {
     try {
-        if (torprox)
-            console.log(torprox);
         browser = await puppeteer.launch({
             headless: verbose ? false : true,
             userDataDir: "others",
@@ -97,7 +95,7 @@ async function crawler(verbose, torprox) {
                 "--no-sandbox",
                 "--enable-automation",
                 "--disable-dev-shm-usage",
-                `--proxy-server=socks5://127.0.0.1:9050`,
+                `--proxy-server=${torproxy}`,
             ],
         });
         page = await browser.newPage();
@@ -129,11 +127,12 @@ async function SearchVideos(input) {
             }, {
                 message: "Query must not be a YouTube video/Playlist link",
             }),
+            torproxy: z.z.string().optional(),
             verbose: z.z.boolean().optional(),
             screenshot: z.z.boolean().optional(),
         });
-        const { query, screenshot, verbose } = await QuerySchema.parseAsync(input);
-        await crawler(verbose);
+        const { query, screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
+        await crawler(verbose, torproxy);
         const retryOptions = {
             maxTimeout: 6000,
             minTimeout: 1000,
@@ -338,11 +337,12 @@ async function PlaylistInfo(input) {
             }, {
                 message: "Query must be a valid YouTube Playlist Link or ID.",
             }),
+            torproxy: z.z.string().optional(),
             verbose: z.z.boolean().optional(),
             screenshot: z.z.boolean().optional(),
         });
-        const { screenshot, verbose } = await QuerySchema.parseAsync(input);
-        await crawler(verbose);
+        const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
+        await crawler(verbose, torproxy);
         const retryOptions = {
             maxTimeout: 6000,
             minTimeout: 1000,
@@ -475,11 +475,12 @@ async function VideoInfo(input) {
             }, {
                 message: "Query must be a valid YouTube video Link or ID.",
             }),
+            torproxy: z.z.string().optional(),
             verbose: z.z.boolean().optional(),
             screenshot: z.z.boolean().optional(),
         });
-        const { screenshot, verbose } = await QuerySchema.parseAsync(input);
-        await crawler(verbose);
+        const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
+        await crawler(verbose, torproxy);
         const retryOptions = {
             maxTimeout: 6000,
             minTimeout: 1000,
@@ -1008,6 +1009,7 @@ async function Agent({ query, verbose, torproxy, }) {
         if (!videoId) {
             TubeBody = (await web.search.SearchVideos({
                 type: "video",
+                torproxy,
                 verbose,
                 query,
             }));
@@ -1021,6 +1023,7 @@ async function Agent({ query, verbose, torproxy, }) {
         }
         else {
             TubeBody = (await web.search.VideoInfo({
+                torproxy,
                 verbose,
                 query,
             }));
@@ -1183,7 +1186,7 @@ function list_formats({ query, verbose, }) {
     });
 }
 
-async function extract_playlist_videos({ playlistUrls, }) {
+async function extract_playlist_videos({ torproxy, playlistUrls, }) {
     try {
         let counter = 0;
         const metaTubeArr = [];
@@ -1196,6 +1199,7 @@ async function extract_playlist_videos({ playlistUrls, }) {
             else {
                 const resp = await web.search.PlaylistInfo({
                     query,
+                    torproxy,
                 });
                 if (resp === undefined) {
                     console.error(colors.bold.red("@error: "), "unable to get response from youtube for", query);
@@ -1830,7 +1834,7 @@ async function ListAudioLowest(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2016,7 +2020,7 @@ async function ListAudioHighest(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2203,7 +2207,7 @@ async function ListAudioQualityCustom(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2714,7 +2718,7 @@ async function ListVideoLowest(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2856,7 +2860,7 @@ async function ListVideoHighest(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -3013,7 +3017,7 @@ async function ListVideoQualityCustom(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -3496,7 +3500,7 @@ async function ListAudioVideoHighest(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -3642,7 +3646,7 @@ async function ListAudioVideoLowest(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -3804,7 +3808,7 @@ async function ListAudioVideoQualityCustom(input) {
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;

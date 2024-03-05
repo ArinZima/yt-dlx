@@ -1,6 +1,5 @@
-interface get_playlistOC {
+export default function get_playlist({ torproxy, playlistUrls, }: {
+    torproxy?: string;
     playlistUrls: string[];
-}
-export default function get_playlist({ playlistUrls, }: get_playlistOC): Promise<any>;
-export {};
+}): Promise<any>;
 //# sourceMappingURL=get_playlist.d.ts.map
