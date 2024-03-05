@@ -1,5 +1,4 @@
 console.clear();
-import * as path from "path";
 import * as async from "async";
 import ffmpeg from "fluent-ffmpeg";
 import Agent from "../../base/Agent";
@@ -25,20 +24,20 @@ async.waterfall([
     return { EngineData, AudioData, VideoData };
   },
   async ({
-    EngineData,
     AudioData,
     VideoData,
+    EngineData,
   }: {
-    EngineData: EngineResult;
     AudioData: TubeConfig;
     VideoData: TubeConfig;
+    EngineData: EngineResult;
   }) => {
     const fluent = ffmpeg();
     fluent.addInput(VideoData.AVDownload.mediaurl);
-    fluent.withVideoCodec("copy");
     fluent.addInput(AudioData.AVDownload.mediaurl);
-    fluent.withAudioCodec("copy");
     fluent.addOutputOption(["-map 0:v:0", "-map 1:a:0"]);
+    fluent.withVideoCodec("copy");
+    fluent.withAudioCodec("copy");
     fluent.addInput(EngineData.metaTube.thumbnail);
     fluent.addOutputOption([
       "-id3v2_version",
@@ -49,8 +48,7 @@ async.waterfall([
       `description=${EngineData.metaTube.description.trim()}`,
     ]);
     fluent.outputFormat("webm");
-    fluent.output(path.resolve(__dirname, EngineData.metaTube.title + ".webm"));
-    fluent.on("start", (command) => console.info(command));
+    fluent.output(EngineData.metaTube.title + ".webm");
     fluent.on("progress", (progress) => {
       progressBar(progress, VideoData.AVInfo.filesizeformatted.toString());
     });
