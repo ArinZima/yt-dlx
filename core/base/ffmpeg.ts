@@ -88,9 +88,7 @@ function gpuffmpeg({
         "defaulting to software processing."
       );
   }
-  ffmpeg.withInputOption("-re");
   ffmpeg.withOutputOption("-shortest");
-  ffmpeg.withInputOption("-threads auto");
   return ffmpeg;
 }
 export default gpuffmpeg;

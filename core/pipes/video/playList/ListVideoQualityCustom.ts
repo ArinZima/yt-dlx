@@ -173,8 +173,6 @@ export default async function ListVideoQualityCustom(input: {
           input: sortedData.AVDownload.mediaurl,
           verbose,
         });
-        ffmpeg.addInputOption("-threads", "auto");
-        ffmpeg.addInputOption("-re");
         ffmpeg.withOutputFormat("matroska");
         if (filter === "grayscale") {
           ffmpeg.withVideoFilter(

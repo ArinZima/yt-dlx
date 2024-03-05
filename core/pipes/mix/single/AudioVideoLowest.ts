@@ -71,8 +71,6 @@ export default async function AudioVideoLowest(input: {
         verbose,
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-      ffmpeg.addInputOption("-threads", "auto");
-      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("matroska");
       let filename: string = "yt-dlx_(AudioVideoLowest_";
       if (filter === "grayscale") {

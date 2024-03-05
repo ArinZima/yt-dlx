@@ -94,8 +94,6 @@ export default async function AudioQualityCustom(input: {
       ffmpeg.addOutputOption("-map", "1:0");
       ffmpeg.addOutputOption("-map", "0:a:0");
       ffmpeg.addOutputOption("-id3v2_version", "3");
-      ffmpeg.addInputOption("-threads", "auto");
-      ffmpeg.addInputOption("-re");
       ffmpeg.withOutputFormat("avi");
       let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
       if (filter === "bassboost") {
