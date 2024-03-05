@@ -4,7 +4,7 @@ import type {
   VideoInfoType,
   PlaylistInfoType,
 } from "../web";
-import core from "../web";
+import web from "../web";
 import colors from "colors";
 import Engine from "./Engine";
 import YouTubeID from "../web/YouTubeId";
@@ -36,7 +36,7 @@ export default async function Agent({
       colors.green(version)
     );
     if (!videoId) {
-      TubeBody = (await core.search.SearchVideos({
+      TubeBody = (await web.search.SearchVideos({
         type: "video",
         verbose,
         query,
@@ -52,7 +52,7 @@ export default async function Agent({
         respEngine = await Engine({ query: TubeBody[0].videoLink, torproxy });
       }
     } else {
-      TubeBody = (await core.search.VideoInfo({
+      TubeBody = (await web.search.VideoInfo({
         verbose,
         query,
       })) as VideoInfoType;

@@ -4,7 +4,6 @@ export let page: Page;
 
 export default async function crawler(verbose?: boolean, torprox?: string) {
   try {
-    if (torprox) console.log(torprox);
     browser = await puppeteer.launch({
       headless: verbose ? false : true,
       userDataDir: "others",
@@ -14,7 +13,7 @@ export default async function crawler(verbose?: boolean, torprox?: string) {
         "--no-sandbox",
         "--enable-automation",
         "--disable-dev-shm-usage",
-        `--proxy-server=socks5://127.0.0.1:9050`,
+        `--proxy-server=${torprox}`,
       ],
     });
     page = await browser.newPage();
