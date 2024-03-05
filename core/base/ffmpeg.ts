@@ -89,6 +89,7 @@ function gpuffmpeg({
       );
   }
   ffmpeg.withInputOption("-re");
+  ffmpeg.withOutputOption("-shortest");
   ffmpeg.withInputOption("-threads auto");
   return ffmpeg;
 }
