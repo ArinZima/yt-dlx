@@ -2,15 +2,13 @@ import os
 import time
 import subprocess
 
-
 try:
-
     import requests
-except Exception:
-    print("[+] python3 requests is not installed")
+except ImportError:
+    print("[+] python requests is not installed")
     os.system("pip install requests")
     os.system("pip install requests[socks]")
-    print("[!] python3 requests is installed ")
+    print("[!] python requests is installed ")
 try:
 
     check_tor = subprocess.check_output("which tor", shell=True)
@@ -49,8 +47,6 @@ print(
                 V 2.1
 """
 )
-print("\033[1;40;31m http://facebook.com/ninja.hackerz.kurdish/\n")
-
 os.system("service tor start")
 
 
