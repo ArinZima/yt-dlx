@@ -24,7 +24,6 @@ run_command() {
         log_error "$error_message"
     fi
 }
-
 clear
 if [ -x "$(command -v sudo)" ]; then
     use_sudo=true

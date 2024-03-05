@@ -11,8 +11,10 @@
   },
   "scripts": {
     "start": "node util/dev.mjs",
-    "monit": "watch -n 1 nvidia-smi",
     "prepublishOnly": "yarn clean:deps",
+    "torprox": "chmod +x ./torprox.sh && ./torprox.sh",
+    "monit:torprox": "yarn torprox && nyx",
+    "monit:nvidia": "watch -n 1 nvidia-smi",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
     "upload": "yarn test && yarn remake && npm pkg fix && npm publish --force",
     "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
