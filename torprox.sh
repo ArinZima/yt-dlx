@@ -16,14 +16,13 @@ run_command() {
     local command="$1"
     local error_message="$2"
     if [ "$use_sudo" = true ]; then
-        echo "Enter your password for sudo:"
-        sudo -v || { log_error "Failed to obtain sudo privileges."; exit 1; }
         command="sudo $command"
     fi
     if ! eval "$command"; then
         log_error "$error_message"
     fi
 }
+
 clear
 if [ -x "$(command -v sudo)" ]; then
     use_sudo=true
