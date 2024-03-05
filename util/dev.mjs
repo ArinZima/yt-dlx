@@ -10,9 +10,7 @@ const colors = {
 };
 
 const core = {
-  torprox: "chmod +x ./torprox.sh && ./torprox.sh",
-  "monit:torprox": "yarn torprox && sudo nyx",
-  "monit:nvidia": "watch -n 1 nvidia-smi",
+  monit: "watch -n 1 nvidia-smi",
   remake: "yarn clean && yarn make && yarn update && yarn build",
   upload: "yarn test && yarn remake && npm pkg fix && npm publish --force",
   postinstall:
