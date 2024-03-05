@@ -39,7 +39,7 @@ if [ -x "$(command -v apt-get)" ]; then
     run_command "systemctl enable --now tor" "Failed to enable and start Tor service"
     run_command 'sh -c "echo \"MaxCircuitDirtiness 60\" >> /etc/tor/torrc"' "Failed to modify torrc file"
     run_command "systemctl restart tor" "Failed to restart Tor service"
-    run_command 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/.nyx/config"' "Failed to configure Nyx"
+    run_command 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/.nyx/config && nyx"' "Failed to configure Nyx"
 elif [ -x "$(command -v pacman)" ]; then
     log_info "Detected Arch-based system"
     run_command "pacman -Syyu --noconfirm tor nyx" "Failed to update and install Tor and Nyx"
@@ -48,5 +48,5 @@ elif [ -x "$(command -v pacman)" ]; then
     run_command "systemctl enable --now tor" "Failed to enable and start Tor service"
     run_command 'sh -c "echo \"MaxCircuitDirtiness 60\" >> /etc/tor/torrc"' "Failed to modify torrc file"
     run_command "systemctl restart tor" "Failed to restart Tor service"
-    run_command 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/.nyx/config"' "Failed to configure Nyx"
+    run_command 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/.nyx/config && nyx"' "Failed to configure Nyx"
 fi
