@@ -20,17 +20,10 @@ RUN npm i -g yarn
 WORKDIR /app
 COPY . .
 RUN apt update && apt install -y tor nyx
-RUN apt update && sudo apt install -y tor nyx
-RUN sh -c 'sed -i "s/#ControlPort 9051/ControlPort 9051/" /etc/tor/torrc'
-RUN sh -c 'echo -e "\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1" >> /etc/tor/torrc'
-RUN systemctl enable --now tor
-RUN sh -c 'echo "MaxCircuitDirtiness 60" >> /etc/tor/torrc'
-RUN systemctl restart tor
-RUN sh -c 'echo -e "redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log" > ~/.nyx/config && nyx'
+RUN yarn torprox
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
 RUN yarn remake
 CMD ["node", "util/wakeLock.mjs"]
-
 
 # USE THESE COMMANDS TO AUTO SET-UP TOR PROXY IN ARCH BASED SYSTEM USIGN PACMAN
 # sudo pacman -Sy --noconfirm tor nyx
