@@ -2,9 +2,6 @@ import * as z from "zod";
 import colors from "colors";
 import web from "../../web";
 
-interface get_playlistOC {
-  playlistUrls: string[];
-}
 interface metaVideo {
   thumbnailUrls: string[];
   videoLink: string;
@@ -15,8 +12,12 @@ interface metaVideo {
   views: string;
 }
 export default async function get_playlist({
+  torproxy,
   playlistUrls,
-}: get_playlistOC): Promise<any> {
+}: {
+  torproxy?: string;
+  playlistUrls: string[];
+}): Promise<any> {
   try {
     const proTubeArr: metaVideo[] = [];
     const preTube = new Set<string>();
@@ -32,6 +33,7 @@ export default async function get_playlist({
       }
       const resp = await web.search.PlaylistInfo({
         query: ispUrl[1],
+        torproxy,
       });
       if (resp === undefined) {
         console.error(

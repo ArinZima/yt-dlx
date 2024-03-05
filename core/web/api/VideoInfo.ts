@@ -11,7 +11,7 @@ import crawler, { browser, page } from "../crawler";
 
 export interface InputYouTube {
   query: string;
-  torprox?: string;
+  torproxy?: string;
   verbose?: boolean;
   screenshot?: boolean;
 }
@@ -62,14 +62,14 @@ export default async function VideoInfo(
             message: "Query must be a valid YouTube video Link or ID.",
           }
         ),
-      torprox: z.string().optional(),
+      torproxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional(),
     });
-    const { screenshot, verbose, torprox } = await QuerySchema.parseAsync(
+    const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(
       input
     );
-    await crawler(verbose, torprox);
+    await crawler(verbose, torproxy);
     const retryOptions = {
       maxTimeout: 6000,
       minTimeout: 1000,

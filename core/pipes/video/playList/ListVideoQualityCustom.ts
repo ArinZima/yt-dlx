@@ -115,7 +115,7 @@ export default async function ListVideoQualityCustom(input: {
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.search.PlaylistInfo({ query: pURL });
+        const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === undefined) {
           console.log(
             colors.red("@error:"),

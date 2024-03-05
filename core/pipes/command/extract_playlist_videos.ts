@@ -8,8 +8,10 @@ import type { PlaylistInfoType } from "../../web/";
 import type EngineResult from "../../interface/EngineResult";
 
 export default async function extract_playlist_videos({
+  torproxy,
   playlistUrls,
 }: {
+  torproxy?: string;
   playlistUrls: string[];
 }): Promise<EngineResult[]> {
   try {
@@ -28,6 +30,7 @@ export default async function extract_playlist_videos({
         const resp: PlaylistInfoType | undefined =
           await web.search.PlaylistInfo({
             query,
+            torproxy,
           });
         if (resp === undefined) {
           console.error(

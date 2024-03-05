@@ -38,6 +38,7 @@ export default async function Agent({
     if (!videoId) {
       TubeBody = (await web.search.SearchVideos({
         type: "video",
+        torproxy,
         verbose,
         query,
       })) as TypeVideo[];
@@ -53,6 +54,7 @@ export default async function Agent({
       }
     } else {
       TubeBody = (await web.search.VideoInfo({
+        torproxy,
         verbose,
         query,
       })) as VideoInfoType;
