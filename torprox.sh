@@ -30,7 +30,7 @@ fi
 if [ -x "$(command -v apt-get)" ]; then
     log_info "Detected Debian-based system"
     RUN "rm -rf ~/.nyx" "Failed to remove Nyx config"
-    RUN "rm /etc/tor/torrc" "Failed tto remve Tor config"
+    RUN "rm -rf /etc/tor/torrc" "Failed tto remve Tor config"
     RUN "apt update && sudo apt install -y tor nyx" "Failed to update and install Tor and Nyx"
     RUN 'sh -c "sed -i s/#ControlPort\ 9051/ControlPort\ 9051/ /etc/tor/torrc"' "Failed to modify torrc file"
     RUN 'sh -c "echo -e \"\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1\" >> /etc/tor/torrc"' "Failed to append to torrc file"
@@ -41,7 +41,7 @@ if [ -x "$(command -v apt-get)" ]; then
 elif [ -x "$(command -v pacman)" ]; then
     log_info "Detected Arch-based system"
     RUN "rm -rf ~/.nyx" "Failed to remove Nyx config"
-    RUN "rm /etc/tor/torrc" "Failed tto remve Tor config"
+    RUN "rm -rf /etc/tor/torrc" "Failed tto remve Tor config"
     RUN "pacman -Syyu --noconfirm tor nyx" "Failed to update and install Tor and Nyx"
     RUN 'sh -c "sed -i s/#ControlPort\ 9051/ControlPort\ 9051/ /etc/tor/torrc"' "Failed to modify torrc file"
     RUN 'sh -c "echo -e \"\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1\" >> /etc/tor/torrc"' "Failed to append to torrc file"

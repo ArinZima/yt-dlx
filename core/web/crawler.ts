@@ -2,7 +2,7 @@ import puppeteer, { Browser, Page } from "puppeteer";
 export let browser: Browser;
 export let page: Page;
 
-export default async function crawler(verbose?: boolean, torproxy?: string) {
+export default async function crawler(verbose?: boolean, torprox?: string) {
   try {
     browser = await puppeteer.launch({
       headless: verbose ? false : true,
@@ -13,7 +13,6 @@ export default async function crawler(verbose?: boolean, torproxy?: string) {
         "--no-sandbox",
         "--enable-automation",
         "--disable-dev-shm-usage",
-        `--proxy-server=${torproxy}`,
       ],
     });
     page = await browser.newPage();
