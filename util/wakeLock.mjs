@@ -76,5 +76,5 @@ function reproc() {
 
 app.listen(port, () => {
   console.log(colors.green("@server:"), "started on port", port);
-  cron.schedule("*/30 * * * *", () => reproc());
+  cron.schedule("0 * * * *", () => reproc());
 });
