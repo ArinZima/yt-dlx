@@ -106,14 +106,40 @@ export default async function ListAudioVideoQualityCustom(input: {
   try {
     const { query, verbose, output, VQuality, AQuality, filter, torproxy } =
       await qconf.parseAsync(input);
+    const vDATA = new Set<{
+      ago: string;
+      title: string;
+      views: string;
+      author: string;
+      videoId: string;
+      videoLink: string;
+      authorUrl: string;
+      thumbnailUrls: string[];
+    }>();
     for (const pURL of query) {
-      const playlistData = await web.search.PlaylistInfo({ query: pURL });
-      if (playlistData === undefined) {
-        throw new Error(
-          colors.red("@error: ") + "unable to get response from youtube."
-        );
+      try {
+        const pDATA = await web.search.PlaylistInfo({ query: pURL });
+        if (pDATA === undefined) {
+          console.log(
+            colors.red("@error:"),
+            "unable to get response from youtube for",
+            pURL
+          );
+          continue;
+        }
+        for (const video of pDATA.playlistVideos) vDATA.add(video);
+      } catch (error) {
+        console.log(colors.red("@error:"), error);
+        continue;
       }
-      for (const video of playlistData.playlistVideos) {
+    }
+    console.log(
+      colors.green("@info:"),
+      "total number of uncommon videos:",
+      colors.yellow(vDATA.size.toString())
+    );
+    for (const video of vDATA) {
+      try {
         const engineData = await ytdlx({
           query: video.videoLink,
           torproxy,
@@ -188,6 +214,9 @@ export default async function ListAudioVideoQualityCustom(input: {
           });
           ffmpeg.run();
         });
+      } catch (error) {
+        console.log(colors.red("@error:"), error);
+        continue;
       }
     }
     console.log(
