@@ -15,55 +15,6 @@ async.waterfall(
         [
           async () => {
             try {
-              await ListAudioVideoLowest({
-                verbose: true,
-                output: "public/audio",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-          async () => {
-            try {
-              await ListAudioLowest({
-                verbose: false,
-                output: "public/audio",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-          async () => {
-            try {
-              await ListVideoLowest({
-                verbose: false,
-                output: "public/video",
-                query: [
-                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
-                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
-                ],
-              });
-            } catch (error) {
-              callback(error);
-            }
-          },
-        ],
-        (error) => callback(error)
-      );
-    },
-    (callback: any) => {
-      async.series(
-        [
-          async () => {
-            try {
               await ListAudioVideoHighest({
                 verbose: false,
                 output: "public/audio",
@@ -93,6 +44,55 @@ async.waterfall(
           async () => {
             try {
               await ListVideoHighest({
+                verbose: false,
+                output: "public/video",
+                query: [
+                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
+                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
+                ],
+              });
+            } catch (error) {
+              callback(error);
+            }
+          },
+        ],
+        (error) => callback(error)
+      );
+    },
+    (callback: any) => {
+      async.series(
+        [
+          async () => {
+            try {
+              await ListAudioVideoLowest({
+                verbose: false,
+                output: "public/audio",
+                query: [
+                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
+                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
+                ],
+              });
+            } catch (error) {
+              callback(error);
+            }
+          },
+          async () => {
+            try {
+              await ListAudioLowest({
+                verbose: false,
+                output: "public/audio",
+                query: [
+                  "https://youtube.com/playlist?list=PLO7-VO1D0_6N2ePPlPE9NKCgUBA15aOk2&si=HgNC2GBt2KgAUk-t",
+                  "https://youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj&si=RP6NCtGFUkrKyDMo",
+                ],
+              });
+            } catch (error) {
+              callback(error);
+            }
+          },
+          async () => {
+            try {
+              await ListVideoLowest({
                 verbose: false,
                 output: "public/video",
                 query: [
