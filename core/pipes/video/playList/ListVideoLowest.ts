@@ -73,9 +73,10 @@ export default async function ListVideoLowest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
+    const { query, output, verbose, filter, torproxy } = await qconf.parseAsync(
+      input
+    );
     const response = await runFunc(async () => {
-      const { query, output, verbose, filter, torproxy } =
-        await qconf.parseAsync(input);
       const vDATA = new Set<{
         ago: string;
         title: string;

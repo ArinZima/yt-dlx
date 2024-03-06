@@ -86,9 +86,10 @@ export default async function ListAudioLowest(input: {
     | "superspeed";
 }): Promise<void> {
   try {
+    const { query, output, verbose, filter, torproxy } = await qconf.parseAsync(
+      input
+    );
     const response = await runFunc(async () => {
-      const { query, output, verbose, filter, torproxy } =
-        await qconf.parseAsync(input);
       const vDATA = new Set<{
         ago: string;
         title: string;

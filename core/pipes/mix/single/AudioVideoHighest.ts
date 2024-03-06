@@ -46,13 +46,13 @@ export default async function AudioVideoHighest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
+    const { query, stream, verbose, output, filter, torproxy } =
+      await qconf.parseAsync(input);
     const response = await runFunc(
       async (): Promise<void | {
         filename: string;
         ffmpeg: gpuffmpegCommand;
       }> => {
-        const { query, stream, verbose, output, filter, torproxy } =
-          await qconf.parseAsync(input);
         const engineData = await ytdlx({ query, verbose, torproxy });
         if (engineData === undefined) {
           throw new Error(

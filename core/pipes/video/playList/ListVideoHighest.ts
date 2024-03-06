@@ -73,9 +73,10 @@ export default async function ListVideoHighest(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
+    const { query, verbose, output, filter, torproxy } = await qconf.parseAsync(
+      input
+    );
     const response = await runFunc(async () => {
-      const { query, verbose, output, filter, torproxy } =
-        await qconf.parseAsync(input);
       const vDATA = new Set<{
         ago: string;
         title: string;

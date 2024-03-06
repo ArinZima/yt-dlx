@@ -89,9 +89,9 @@ export default async function ListAudioQualityCustom(input: {
     | "superspeed";
 }): Promise<void> {
   try {
+    const { query, output, verbose, quality, filter, torproxy } =
+      await qconf.parseAsync(input);
     const response = await runFunc(async () => {
-      const { query, output, verbose, quality, filter, torproxy } =
-        await qconf.parseAsync(input);
       const vDATA = new Set<{
         ago: string;
         title: string;

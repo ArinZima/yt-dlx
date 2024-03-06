@@ -105,9 +105,9 @@ export default async function ListAudioVideoQualityCustom(input: {
   ffmpeg: gpuffmpegCommand;
 }> {
   try {
+    const { query, verbose, output, VQuality, AQuality, filter, torproxy } =
+      await qconf.parseAsync(input);
     const response = await runFunc(async () => {
-      const { query, verbose, output, VQuality, AQuality, filter, torproxy } =
-        await qconf.parseAsync(input);
       const vDATA = new Set<{
         ago: string;
         title: string;
