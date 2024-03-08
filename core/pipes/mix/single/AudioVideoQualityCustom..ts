@@ -7,7 +7,6 @@ import gpuffmpeg from "../../../base/ffmpeg";
 import bigEntry from "../../../base/bigEntry";
 import { sizeFormat } from "../../../base/Engine";
 import type { gpuffmpegCommand } from "../../../base/ffmpeg";
-import runFunc from "../../../base/runFunc";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -87,99 +86,89 @@ export default async function AudioVideoQualityCustom(input: {
       filter,
       torproxy,
     } = await qconf.parseAsync(input);
-    const response = await runFunc(
-      async (): Promise<void | {
-        filename: string;
-        ffmpeg: gpuffmpegCommand;
-      }> => {
-        const engineData = await ytdlx({ query, verbose, torproxy });
-        if (engineData === undefined) {
-          throw new Error(
-            colors.red("@error: ") + "unable to get response from youtube."
-          );
-        } else {
-          const title: string = engineData.metaTube.title.replace(
-            /[^a-zA-Z0-9_]+/g,
-            "_"
-          );
-          const folder = output
-            ? path.join(process.cwd(), output)
-            : process.cwd();
-          if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-          const ACustomData = engineData.AudioStore.filter(
-            (op) => op.AVDownload.formatnote === AQuality
-          );
-          const VCustomData = engineData.VideoStore.filter(
-            (op) => op.AVDownload.formatnote === VQuality
-          );
-          const [AudioData, VideoData] = await Promise.all([
-            await bigEntry(ACustomData),
-            await bigEntry(VCustomData),
-          ]);
-          const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
-            size: sizeFormat(
-              AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-            ).toString(),
-            input: VideoData.AVDownload.mediaurl,
-            verbose,
+    const engineData = await ytdlx({ query, verbose, torproxy });
+    if (engineData === undefined) {
+      throw new Error(
+        colors.red("@error: ") + "unable to get response from youtube."
+      );
+    } else {
+      const title: string = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path.join(process.cwd(), output) : process.cwd();
+      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+      const ACustomData = engineData.AudioStore.filter(
+        (op) => op.AVDownload.formatnote === AQuality
+      );
+      const VCustomData = engineData.VideoStore.filter(
+        (op) => op.AVDownload.formatnote === VQuality
+      );
+      const [AudioData, VideoData] = await Promise.all([
+        await bigEntry(ACustomData),
+        await bigEntry(VCustomData),
+      ]);
+      const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
+        size: sizeFormat(
+          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
+        ).toString(),
+        input: VideoData.AVDownload.mediaurl,
+        verbose,
+      });
+      ffmpeg.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg.withOutputFormat("matroska");
+      let filename: string = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
+      if (filter === "grayscale") {
+        ffmpeg.withVideoFilter(
+          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+        );
+        filename += `grayscale)_${title}.mkv`;
+      } else if (filter === "invert") {
+        ffmpeg.withVideoFilter("negate");
+        filename += `invert)_${title}.mkv`;
+      } else if (filter === "rotate90") {
+        ffmpeg.withVideoFilter("rotate=PI/2");
+        filename += `rotate90)_${title}.mkv`;
+      } else if (filter === "rotate180") {
+        ffmpeg.withVideoFilter("rotate=PI");
+        filename += `rotate180)_${title}.mkv`;
+      } else if (filter === "rotate270") {
+        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        filename += `rotate270)_${title}.mkv`;
+      } else if (filter === "flipHorizontal") {
+        ffmpeg.withVideoFilter("hflip");
+        filename += `flipHorizontal)_${title}.mkv`;
+      } else if (filter === "flipVertical") {
+        ffmpeg.withVideoFilter("vflip");
+        filename += `flipVertical)_${title}.mkv`;
+      } else filename += `)_${title}.mkv`;
+      if (stream) {
+        return {
+          ffmpeg,
+          filename: output
+            ? path.join(folder, filename)
+            : filename.replace("_)_", ")_"),
+        };
+      } else {
+        await new Promise<void>((resolve, _reject) => {
+          ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg.on("end", () => resolve());
+          ffmpeg.on("error", (error) => {
+            throw new Error(colors.red("@error: ") + error.message);
           });
-          ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-          ffmpeg.withOutputFormat("matroska");
-          let filename: string = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
-          if (filter === "grayscale") {
-            ffmpeg.withVideoFilter(
-              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-            );
-            filename += `grayscale)_${title}.mkv`;
-          } else if (filter === "invert") {
-            ffmpeg.withVideoFilter("negate");
-            filename += `invert)_${title}.mkv`;
-          } else if (filter === "rotate90") {
-            ffmpeg.withVideoFilter("rotate=PI/2");
-            filename += `rotate90)_${title}.mkv`;
-          } else if (filter === "rotate180") {
-            ffmpeg.withVideoFilter("rotate=PI");
-            filename += `rotate180)_${title}.mkv`;
-          } else if (filter === "rotate270") {
-            ffmpeg.withVideoFilter("rotate=3*PI/2");
-            filename += `rotate270)_${title}.mkv`;
-          } else if (filter === "flipHorizontal") {
-            ffmpeg.withVideoFilter("hflip");
-            filename += `flipHorizontal)_${title}.mkv`;
-          } else if (filter === "flipVertical") {
-            ffmpeg.withVideoFilter("vflip");
-            filename += `flipVertical)_${title}.mkv`;
-          } else filename += `)_${title}.mkv`;
-          if (stream) {
-            return {
-              ffmpeg,
-              filename: output
-                ? path.join(folder, filename)
-                : filename.replace("_)_", ")_"),
-            };
-          } else {
-            await new Promise<void>((resolve, _reject) => {
-              ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.on("end", () => resolve());
-              ffmpeg.on("error", (error) => {
-                throw new Error(colors.red("@error: ") + error.message);
-              });
-              ffmpeg.run();
-            });
-          }
-          console.log(
-            colors.green("@info:"),
-            "❣️ Thank you for using",
-            colors.green("yt-dlx."),
-            "If you enjoy the project, consider",
-            colors.green("🌟starring"),
-            "the github repo",
-            colors.green("https://github.com/yt-dlx")
-          );
-        }
+          ffmpeg.run();
+        });
       }
-    );
-    return response;
+      console.log(
+        colors.green("@info:"),
+        "❣️ Thank you for using",
+        colors.green("yt-dlx."),
+        "If you enjoy the project, consider",
+        colors.green("🌟starring"),
+        "the github repo",
+        colors.green("https://github.com/yt-dlx")
+      );
+    }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(

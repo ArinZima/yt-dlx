@@ -6,7 +6,6 @@ import ytdlx from "../../../base/Agent";
 import gpuffmpeg from "../../../base/ffmpeg";
 import lowEntry from "../../../base/lowEntry";
 import type { gpuffmpegCommand } from "../../../base/ffmpeg";
-import runFunc from "../../../base/runFunc";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -76,96 +75,86 @@ export default async function VideoQualityCustom(input: {
   try {
     const { query, stream, verbose, output, quality, filter, torproxy } =
       await qconf.parseAsync(input);
-    const response = await runFunc(
-      async (): Promise<void | {
-        filename: string;
-        ffmpeg: gpuffmpegCommand;
-      }> => {
-        const engineData = await ytdlx({ query, verbose, torproxy });
-        if (engineData === undefined) {
-          throw new Error(
-            colors.red("@error: ") + "unable to get response from youtube."
-          );
-        } else {
-          const customData = engineData.VideoStore.filter(
-            (op) => op.AVDownload.formatnote === quality
-          );
-          if (!customData) {
-            throw new Error(
-              colors.red("@error: ") + quality + " not found in the video."
-            );
-          }
-          const title: string = engineData.metaTube.title.replace(
-            /[^a-zA-Z0-9_]+/g,
-            "_"
-          );
-          const folder = output
-            ? path.join(process.cwd(), output)
-            : process.cwd();
-          if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-          const sortedData = await lowEntry(customData);
-          const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
-            size: sortedData.AVInfo.filesizeformatted.toString(),
-            input: sortedData.AVDownload.mediaurl,
-            verbose,
-          });
-          ffmpeg.addInput(engineData.metaTube.thumbnail);
-          ffmpeg.withOutputFormat("matroska");
-          let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
-          if (filter === "grayscale") {
-            ffmpeg.withVideoFilter(
-              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-            );
-            filename += `grayscale)_${title}.mkv`;
-          } else if (filter === "invert") {
-            ffmpeg.withVideoFilter("negate");
-            filename += `invert)_${title}.mkv`;
-          } else if (filter === "rotate90") {
-            ffmpeg.withVideoFilter("rotate=PI/2");
-            filename += `rotate90)_${title}.mkv`;
-          } else if (filter === "rotate180") {
-            ffmpeg.withVideoFilter("rotate=PI");
-            filename += `rotate180)_${title}.mkv`;
-          } else if (filter === "rotate270") {
-            ffmpeg.withVideoFilter("rotate=3*PI/2");
-            filename += `rotate270)_${title}.mkv`;
-          } else if (filter === "flipHorizontal") {
-            ffmpeg.withVideoFilter("hflip");
-            filename += `flipHorizontal)_${title}.mkv`;
-          } else if (filter === "flipVertical") {
-            ffmpeg.withVideoFilter("vflip");
-            filename += `flipVertical)_${title}.mkv`;
-          } else filename += `)_${title}.mkv`;
-          if (stream) {
-            return {
-              ffmpeg,
-              filename: output
-                ? path.join(folder, filename)
-                : filename.replace("_)_", ")_"),
-            };
-          } else {
-            await new Promise<void>((resolve, _reject) => {
-              ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-              ffmpeg.on("end", () => resolve());
-              ffmpeg.on("error", (error) => {
-                throw new Error(colors.red("@error: ") + error.message);
-              });
-              ffmpeg.run();
-            });
-          }
-          console.log(
-            colors.green("@info:"),
-            "❣️ Thank you for using",
-            colors.green("yt-dlx."),
-            "If you enjoy the project, consider",
-            colors.green("🌟starring"),
-            "the github repo",
-            colors.green("https://github.com/yt-dlx")
-          );
-        }
+    const engineData = await ytdlx({ query, verbose, torproxy });
+    if (engineData === undefined) {
+      throw new Error(
+        colors.red("@error: ") + "unable to get response from youtube."
+      );
+    } else {
+      const customData = engineData.VideoStore.filter(
+        (op) => op.AVDownload.formatnote === quality
+      );
+      if (!customData) {
+        throw new Error(
+          colors.red("@error: ") + quality + " not found in the video."
+        );
       }
-    );
-    return response;
+      const title: string = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path.join(process.cwd(), output) : process.cwd();
+      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+      const sortedData = await lowEntry(customData);
+      const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
+        size: sortedData.AVInfo.filesizeformatted.toString(),
+        input: sortedData.AVDownload.mediaurl,
+        verbose,
+      });
+      ffmpeg.addInput(engineData.metaTube.thumbnail);
+      ffmpeg.withOutputFormat("matroska");
+      let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
+      if (filter === "grayscale") {
+        ffmpeg.withVideoFilter(
+          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+        );
+        filename += `grayscale)_${title}.mkv`;
+      } else if (filter === "invert") {
+        ffmpeg.withVideoFilter("negate");
+        filename += `invert)_${title}.mkv`;
+      } else if (filter === "rotate90") {
+        ffmpeg.withVideoFilter("rotate=PI/2");
+        filename += `rotate90)_${title}.mkv`;
+      } else if (filter === "rotate180") {
+        ffmpeg.withVideoFilter("rotate=PI");
+        filename += `rotate180)_${title}.mkv`;
+      } else if (filter === "rotate270") {
+        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        filename += `rotate270)_${title}.mkv`;
+      } else if (filter === "flipHorizontal") {
+        ffmpeg.withVideoFilter("hflip");
+        filename += `flipHorizontal)_${title}.mkv`;
+      } else if (filter === "flipVertical") {
+        ffmpeg.withVideoFilter("vflip");
+        filename += `flipVertical)_${title}.mkv`;
+      } else filename += `)_${title}.mkv`;
+      if (stream) {
+        return {
+          ffmpeg,
+          filename: output
+            ? path.join(folder, filename)
+            : filename.replace("_)_", ")_"),
+        };
+      } else {
+        await new Promise<void>((resolve, _reject) => {
+          ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg.on("end", () => resolve());
+          ffmpeg.on("error", (error) => {
+            throw new Error(colors.red("@error: ") + error.message);
+          });
+          ffmpeg.run();
+        });
+      }
+      console.log(
+        colors.green("@info:"),
+        "❣️ Thank you for using",
+        colors.green("yt-dlx."),
+        "If you enjoy the project, consider",
+        colors.green("🌟starring"),
+        "the github repo",
+        colors.green("https://github.com/yt-dlx")
+      );
+    }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(

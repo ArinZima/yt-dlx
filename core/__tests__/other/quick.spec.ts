@@ -95,35 +95,16 @@
 // }
 // })();
 
-import colors from "colors";
-
-export default async function runFunc<T extends () => Promise<any>>(
-  runLogic: T
-) {
-  let retry = 0;
-  while (retry < 6) {
-    try {
-      const response = await runLogic();
-      return response;
-    } catch (error: any) {
-      retry++;
-      console.error(colors.red("@error:"), error.message);
-      console.log(colors.yellow("@retry:"), `${retry}/6.`);
-      if (retry >= 6) throw new Error("Internal Server Error...");
-      const timeout = Math.min(6000, Math.max(1000, retry * 1000));
-      await new Promise((resolve) => setTimeout(resolve, timeout));
-    }
+import AudioHighest from "../../pipes/audio/single/AudioHighest";
+(async () => {
+  try {
+    await AudioHighest({
+      output: "public/audio",
+      verbose: false,
+      stream: false,
+      query: "Husn",
+    });
+  } catch (error) {
+    console.error(error);
   }
-}
-
-runFunc(async function myLogic(): Promise<string> {
-  return "Data";
-})
-  .then((response) => console.log("@response:", response))
-  .catch((error) => console.error("@error:", error));
-
-runFunc(async function myLogic() {
-  throw new Error("Custom error for testing");
-})
-  .then((response) => console.log("@response:", response))
-  .catch((error) => console.error("@error:", error.message));
+})();

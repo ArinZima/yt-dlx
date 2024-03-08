@@ -5,7 +5,6 @@ import readline from "readline";
 import fluent from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import type { FfmpegCommand } from "fluent-ffmpeg";
-import runFunc from "./runFunc";
 
 export function progressBar(prog: any, size: string) {
   if (prog.timemark === undefined || prog.percent === undefined) return;
@@ -46,58 +45,51 @@ async function gpuffmpeg({
   input: string;
   verbose?: boolean;
 }): Promise<FfmpegCommand> {
-  const response = await runFunc(async () => {
-    let maxTries: number = 6;
-    let currentDir: string = __dirname;
-    let FfprobePath: string, FfmpegPath: string;
-    const getTerm = (command: string) => {
-      try {
-        return execSync(command).toString().trim();
-      } catch {
-        return undefined;
-      }
-    };
-    const ffmpeg: FfmpegCommand = fluent(input)
-      .on("start", (command) => {
-        if (verbose) console.log(colors.green("@ffmpeg:"), command);
-      })
-      .on("progress", (prog) => progressBar(prog, size))
-      .on("end", () => console.log("\n"))
-      .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
-    while (maxTries > 0) {
-      FfprobePath = path.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
-      FfmpegPath = path.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
-      if (fs.existsSync(FfprobePath) && fs.existsSync(FfmpegPath)) {
-        ffmpeg.setFfprobePath(FfprobePath);
-        ffmpeg.setFfmpegPath(FfmpegPath);
-        break;
-      } else {
-        currentDir = path.join(currentDir, "..");
-        maxTries--;
-      }
+  let maxTries: number = 6;
+  let currentDir: string = __dirname;
+  let FfprobePath: string, FfmpegPath: string;
+  const getTerm = (command: string) => {
+    try {
+      return execSync(command).toString().trim();
+    } catch {
+      return undefined;
     }
-    const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
-    switch (true) {
-      case vendor && vendor.includes("NVIDIA"):
-        console.log(
-          colors.green("@ffmpeg:"),
-          "using GPU",
-          colors.green(vendor)
-        );
-        ffmpeg.withInputOption("-hwaccel cuda");
-        ffmpeg.withVideoCodec("h264_nvenc");
-        break;
-      default:
-        console.log(
-          colors.yellow("@ffmpeg:"),
-          "GPU vendor not recognized.",
-          "defaulting to software processing."
-        );
+  };
+  const ffmpeg: FfmpegCommand = fluent(input)
+    .on("start", (command) => {
+      if (verbose) console.log(colors.green("@ffmpeg:"), command);
+    })
+    .on("progress", (prog) => progressBar(prog, size))
+    .on("end", () => console.log("\n"))
+    .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
+  while (maxTries > 0) {
+    FfprobePath = path.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
+    FfmpegPath = path.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
+    if (fs.existsSync(FfprobePath) && fs.existsSync(FfmpegPath)) {
+      ffmpeg.setFfprobePath(FfprobePath);
+      ffmpeg.setFfmpegPath(FfmpegPath);
+      break;
+    } else {
+      currentDir = path.join(currentDir, "..");
+      maxTries--;
     }
-    ffmpeg.withOutputOption("-shortest");
-    return ffmpeg;
-  });
-  return response;
+  }
+  const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
+  switch (true) {
+    case vendor && vendor.includes("NVIDIA"):
+      console.log(colors.green("@ffmpeg:"), "using GPU", colors.green(vendor));
+      ffmpeg.withInputOption("-hwaccel cuda");
+      ffmpeg.withVideoCodec("h264_nvenc");
+      break;
+    default:
+      console.log(
+        colors.yellow("@ffmpeg:"),
+        "GPU vendor not recognized.",
+        "defaulting to software processing."
+      );
+  }
+  ffmpeg.withOutputOption("-shortest");
+  return ffmpeg;
 }
 export default gpuffmpeg;
 export type { FfmpegCommand as gpuffmpegCommand };
