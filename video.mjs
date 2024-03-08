@@ -1,24 +1,25 @@
-// =======================================================================================
 import puppeteer from "puppeteer";
 const proTube = async (videoUrl) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
   const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    if (req.url().includes("youtube.com/get_video_info")) req.abort();
+    else req.continue();
+  });
   await page.goto(videoUrl);
-  await page.waitForSelector("script");
   const videoSrc = await page.evaluate(() => {
-    const ytInitialPlayerResponse = window.ytInitialPlayerResponse;
-    if (ytInitialPlayerResponse && ytInitialPlayerResponse.streamingData) {
-      const streamingData = ytInitialPlayerResponse.streamingData;
-      const formats = streamingData.formats || [];
-      const adaptiveFormats = streamingData.adaptiveFormats || [];
-      const allFormats = formats.concat(adaptiveFormats);
-      return allFormats.map((format) => decodeURIComponent(format.url));
-    }
-    return null;
+    const ytplayer = window.ytplayer;
+    const config = ytplayer && ytplayer.config;
+    const args = config && config.args;
+    const playerResponse = args && args.player_response;
+    const streamingData = playerResponse && playerResponse.streamingData;
+    const formats = streamingData && streamingData.formats;
+    return formats && formats.map((format) => format.url);
   });
   if (videoSrc) console.log(videoSrc);
   else console.log("@error: failed to extract URLs.");
-  if (page) await page.close();
-  if (browser) await browser.close();
+  await page.close();
+  await browser.close();
 };
 proTube("https://www.youtube.com/watch?v=AbFnsaDQMYQ");
