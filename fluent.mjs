@@ -1,8 +1,21 @@
 import ffmpeg from "fluent-ffmpeg";
 import puppeteer from "puppeteer";
 async function proTube({ videoUrl }) {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    userDataDir: "others",
+    headless: true,
+    args: [
+      "--no-zygote",
+      "--incognito",
+      "--no-sandbox",
+      "--enable-automation",
+      "--disable-dev-shm-usage",
+    ],
+  });
   const page = await browser.newPage();
+  await page.setUserAgent(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
+  );
   await page.goto(videoUrl);
   await page.waitForSelector("script");
   const metaTube = await page.evaluate(() => {
@@ -10,8 +23,8 @@ async function proTube({ videoUrl }) {
     if (ytInitialPlayerResponse && ytInitialPlayerResponse.streamingData) {
       const streamingData = ytInitialPlayerResponse.streamingData;
       const formats = streamingData.formats || [];
-      const allFormats = formats.concat(streamingData.adaptiveFormats || []);
-      return allFormats.map((format) => format);
+      const pops = formats.concat(streamingData.adaptiveFormats || []);
+      return pops.map((ipop) => ipop);
     } else return null;
   });
   if (page) await page.close();
@@ -26,7 +39,7 @@ async function proTube({ videoUrl }) {
   });
   if (YouTube) {
     const fluent = ffmpeg(YouTube[0].url);
-    fluent.output("public/music.mkv");
+    fluent.output("temp/music.mkv");
     fluent.format("matroska");
     fluent.run();
   }
