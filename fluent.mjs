@@ -66,26 +66,34 @@ function procTube(metaTube) {
   const AudioStore = [];
   const VideoStore = [];
   for (const Tube of metaTube) {
-    if (Tube.mimeType && Tube.mimeType.includes("audio")) {
-      const codec = Tube.mimeType
-        ? Tube.mimeType.split(";")[1]?.trim()
+    const {
+      initRange,
+      colorInfo,
+      indexRange,
+      lastModified,
+      projectionType,
+      ...nTube
+    } = Tube;
+    if (nTube.mimeType && nTube.mimeType.includes("audio")) {
+      const codec = nTube.mimeType
+        ? nTube.mimeType.split(";")[1]?.trim()
         : undefined;
       AudioStore.push({
-        ...Tube,
+        ...nTube,
         codec: codec ? codec.split("=")[1].replace(/"/g, "").trim() : undefined,
-        mimeType: Tube.mimeType
-          ? Tube.mimeType.split(";")[0].trim()
+        mimeType: nTube.mimeType
+          ? nTube.mimeType.split(";")[0].trim()
           : undefined,
       });
-    } else if (Tube.mimeType && Tube.mimeType.includes("video")) {
-      const codec = Tube.mimeType
-        ? Tube.mimeType.split(";")[1]?.trim()
+    } else if (nTube.mimeType && nTube.mimeType.includes("video")) {
+      const codec = nTube.mimeType
+        ? nTube.mimeType.split(";")[1]?.trim()
         : undefined;
       VideoStore.push({
-        ...Tube,
+        ...nTube,
         codec: codec ? codec.split("=")[1].replace(/"/g, "").trim() : undefined,
-        mimeType: Tube.mimeType
-          ? Tube.mimeType.split(";")[0].trim()
+        mimeType: nTube.mimeType
+          ? nTube.mimeType.split(";")[0].trim()
           : undefined,
       });
     }
