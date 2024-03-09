@@ -1,5 +1,7 @@
-import ffmpeg from "fluent-ffmpeg";
+import * as async from "async";
 import puppeteer from "puppeteer";
+import ffmpeg from "fluent-ffmpeg";
+
 async function proTube({ videoUrl }) {
   const browser = await puppeteer.launch({
     userDataDir: "others",
@@ -33,14 +35,20 @@ async function proTube({ videoUrl }) {
   else return undefined;
 }
 
-(async () => {
-  const YouTube = await proTube({
-    videoUrl: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-  });
-  if (YouTube) {
-    const fluent = ffmpeg(YouTube[0].url);
+async.waterfall([
+  async () => {
+    const metaTube = await proTube({
+      videoUrl: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+    });
+    return metaTube;
+  },
+  async (metaTube) => {
+    const fluent = ffmpeg(metaTube[0].url);
+    return fluent;
+  },
+  async (fluent) => {
     fluent.output("temp/music.mkv");
     fluent.format("matroska");
     fluent.run();
-  }
-})();
+  },
+]);
