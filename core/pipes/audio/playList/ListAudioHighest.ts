@@ -100,10 +100,7 @@ export default async function ListAudioHighest(input: {
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.search.PlaylistInfo({
-          query: pURL,
-          torproxy,
-        });
+        const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === undefined) {
           console.log(
             colors.red("@error:"),
@@ -148,7 +145,7 @@ export default async function ListAudioHighest(input: {
         if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
         const sortedData = await bigEntry(engineData.AudioStore);
         let filename: string = "yt-dlx_(AudioHighest_";
-        const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
+        const ffmpeg: gpuffmpegCommand = gpuffmpeg({
           size: sortedData.AVInfo.filesizeformatted.toString(),
           input: sortedData.AVDownload.mediaurl,
           verbose,

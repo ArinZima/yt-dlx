@@ -63,7 +63,7 @@ export default async function AudioVideoHighest(input: {
         await bigEntry(engineData.AudioStore),
         await bigEntry(engineData.VideoStore),
       ]);
-      const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
+      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         size: sizeFormat(
           AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
         ).toString(),

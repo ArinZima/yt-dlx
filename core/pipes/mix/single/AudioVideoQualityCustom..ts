@@ -108,7 +108,7 @@ export default async function AudioVideoQualityCustom(input: {
         await bigEntry(ACustomData),
         await bigEntry(VCustomData),
       ]);
-      const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
+      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         size: sizeFormat(
           AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
         ).toString(),

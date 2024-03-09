@@ -88,10 +88,7 @@ export default async function ListAudioVideoHighest(input: {
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.search.PlaylistInfo({
-          query: pURL,
-          torproxy,
-        });
+        const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
         if (pDATA === undefined) {
           console.log(
             colors.red("@error:"),
@@ -138,7 +135,7 @@ export default async function ListAudioVideoHighest(input: {
           await bigEntry(engineData.VideoStore),
         ]);
         let filename: string = "yt-dlx_(AudioVideoHighest_";
-        const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
+        const ffmpeg: gpuffmpegCommand = gpuffmpeg({
           size: sizeFormat(
             AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
           ).toString(),

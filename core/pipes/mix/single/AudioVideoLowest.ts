@@ -63,7 +63,7 @@ export default async function AudioVideoLowest(input: {
         await lowEntry(engineData.AudioStore),
         await lowEntry(engineData.VideoStore),
       ]);
-      const ffmpeg: gpuffmpegCommand = await gpuffmpeg({
+      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
         size: sizeFormat(
           AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
         ).toString(),

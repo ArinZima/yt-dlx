@@ -36,7 +36,7 @@ export function progressBar(prog: any, size: string) {
   if (prog.timemark.includes("-")) process.stdout.write("\n\n");
 }
 
-async function gpuffmpeg({
+function gpuffmpeg({
   size,
   input,
   verbose,
@@ -44,7 +44,7 @@ async function gpuffmpeg({
   size: string;
   input: string;
   verbose?: boolean;
-}): Promise<FfmpegCommand> {
+}): FfmpegCommand {
   let maxTries: number = 6;
   let currentDir: string = __dirname;
   let FfprobePath: string, FfmpegPath: string;
