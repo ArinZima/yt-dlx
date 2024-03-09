@@ -64,11 +64,8 @@ function procData(metaTube) {
       const codec = Tube.mimeType
         ? Tube.mimeType.split(";")[1]?.trim()
         : undefined;
-      const qualityLabel = Tube.qualityLabel || undefined;
-      if (!AudioStore[qualityLabel]) AudioStore[qualityLabel] = [];
-      AudioStore[qualityLabel].push({
+      AudioStore.push({
         ...Tube,
-        resolution: qualityLabel,
         codec: codec ? codec.split("=")[1].replace(/"/g, "").trim() : undefined,
         mimeType: Tube.mimeType
           ? Tube.mimeType.split(";")[0].trim()
@@ -78,11 +75,8 @@ function procData(metaTube) {
       const codec = Tube.mimeType
         ? Tube.mimeType.split(";")[1]?.trim()
         : undefined;
-      const qualityLabel = Tube.qualityLabel || undefined;
-      if (!VideoStore[qualityLabel]) VideoStore[qualityLabel] = [];
-      VideoStore[qualityLabel].push({
+      VideoStore.push({
         ...Tube,
-        resolution: qualityLabel,
         codec: codec ? codec.split("=")[1].replace(/"/g, "").trim() : undefined,
         mimeType: Tube.mimeType
           ? Tube.mimeType.split(";")[0].trim()
