@@ -23,7 +23,7 @@ async function proTube({ videoUrl }) {
     await page.goto(videoUrl);
     await page.waitForSelector("script");
     spinner.update("proTube", { text: "grabbing content." });
-    const metaTube = await page.evaluate((window) => {
+    const metaTube = await page.evaluate(() => {
       const ytInitialPlayerResponse = window.ytInitialPlayerResponse;
       if (ytInitialPlayerResponse && ytInitialPlayerResponse.streamingData) {
         const streamingData = ytInitialPlayerResponse.streamingData;
@@ -37,10 +37,37 @@ async function proTube({ videoUrl }) {
     if (metaTube) {
       spinner.update("proTube", { text: "preparing payload." });
       const AudioStore = [];
+      const UnStore = [];
       const VideoStore = [];
-      for (const p of metaTube) {
-        if (p.mimeType && p.mimeType.includes("audio")) AudioStore.push(p);
-        else if (p.mimeType && p.mimeType.includes("video")) VideoStore.push(p);
+      for (const Tube of metaTube) {
+        if (Tube.mimeType && Tube.mimeType.includes("audio")) {
+          const codec = Tube.mimeType
+            ? Tube.mimeType.split(";")[1]?.trim()
+            : null;
+          AudioStore.push({
+            ...Tube,
+            codec: codec ? codec.split("=")[1].replace(/"/g, "").trim() : null,
+            mimeType: Tube.mimeType ? Tube.mimeType.split(";")[0].trim() : null,
+          });
+        } else if (Tube.mimeType && Tube.mimeType.includes("video")) {
+          const codec = Tube.mimeType
+            ? Tube.mimeType.split(";")[1]?.trim()
+            : null;
+          VideoStore.push({
+            ...Tube,
+            codec: codec ? codec.split("=")[1].replace(/"/g, "").trim() : null,
+            mimeType: Tube.mimeType ? Tube.mimeType.split(";")[0].trim() : null,
+          });
+        } else {
+          const codec = Tube.mimeType
+            ? Tube.mimeType.split(";")[1]?.trim()
+            : null;
+          UnStore.push({
+            ...Tube,
+            codec: codec ? codec.split("=")[1].replace(/"/g, "").trim() : null,
+            mimeType: Tube.mimeType ? Tube.mimeType.split(";")[0].trim() : null,
+          });
+        }
       }
       spinner.succeed("proTube", { text: "payload sent." });
       return { AudioStore, VideoStore };
@@ -58,7 +85,7 @@ async function proTube({ videoUrl }) {
     if (metaTube) {
       console.log(metaTube.VideoStore);
       console.log(metaTube.AudioStore);
-    }
+    } else process.exit(1);
   } catch (error) {
     console.error(error);
   }
