@@ -1,4 +1,3 @@
-console.clear();
 import * as fs from "fs";
 import SpinClient from "spinnies";
 import puppeteer from "puppeteer";
@@ -9,11 +8,16 @@ async function proTube({ videoUrl }) {
   const vid = new URL(videoUrl).searchParams.get("v");
   spinner.add("proTube", { text: "browser spinning for " + vid });
   try {
+    let payloadObject = {};
     if (fs.existsSync(fsfile)) {
-      const metaTube = fs.readFileSync(fsfile, "utf-8");
-      const { AudioStore, VideoStore } = procData(JSON.parse(metaTube));
-      spinner.succeed("proTube", { text: "payload sent for " + vid });
-      return { AudioStore, VideoStore };
+      const existingPayload = fs.readFileSync(fsfile, "utf-8");
+      payloadObject = JSON.parse(existingPayload);
+      if (payloadObject[vid]) {
+        spinner.succeed("proTube", {
+          text: "payload already exists for " + vid,
+        });
+        return payloadObject[vid];
+      }
     } else {
       const browser = await puppeteer.launch({
         headless: true,
@@ -45,10 +49,12 @@ async function proTube({ videoUrl }) {
       if (browser) await browser.close();
       if (metaTube) {
         spinner.update("proTube", { text: "preparing payload for " + vid });
-        const { AudioStore, VideoStore } = procData(metaTube);
+        const { AudioStore, VideoStore } = procTube(metaTube);
         spinner.succeed("proTube", { text: "payload sent for " + vid });
-        fs.writeFileSync(fsfile, JSON.stringify(metaTube, null, 2));
-        return { AudioStore, VideoStore };
+        const payLoad = { AudioStore, VideoStore };
+        payloadObject[vid] = payLoad;
+        fs.writeFileSync(fsfile, JSON.stringify(payloadObject, null, 2));
+        return payLoad;
       } else return undefined;
     }
   } catch (error) {
@@ -56,7 +62,7 @@ async function proTube({ videoUrl }) {
   }
 }
 
-function procData(metaTube) {
+function procTube(metaTube) {
   const AudioStore = [];
   const VideoStore = [];
   for (const Tube of metaTube) {
