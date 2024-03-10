@@ -12,7 +12,6 @@ export default async function lowEntry(
   const sortedByFileSize = [...validEntries].sort(
     (a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes
   );
-  if (!sortedByFileSize[0]) {
-    throw new Error("sorry no downloadable data found");
-  } else return sortedByFileSize[0]!;
+  if (!sortedByFileSize[0]) throw new Error("sorry no downloadable data found");
+  else return sortedByFileSize[0]!;
 }
