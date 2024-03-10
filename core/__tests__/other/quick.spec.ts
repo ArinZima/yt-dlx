@@ -35,14 +35,12 @@ async function proTube({
         max--;
     }
   }
-
   if (vdata && !adata) {
   }
   if (adata && !vdata) {
   }
   if (adata && vdata) {
   }
-
   fluent.addInput(vdata.AVDownload.mediaurl);
   fluent.addInput(adata.AVDownload.mediaurl);
   fluent.withOutputOptions(["-map 0:v:0", "-map 1:a:0"]);
