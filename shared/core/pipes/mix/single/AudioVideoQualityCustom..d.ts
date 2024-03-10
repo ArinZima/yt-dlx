@@ -1,5 +1,5 @@
 /// <reference types="fluent-ffmpeg" />
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 export default function AudioVideoQualityCustom(input: {
     query: string;
     output?: string;
@@ -11,6 +11,6 @@ export default function AudioVideoQualityCustom(input: {
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
-    ffmpeg: gpuffmpegCommand;
+    ffmpeg: proTubeCommand;
 }>;
 //# sourceMappingURL=AudioVideoQualityCustom..d.ts.map

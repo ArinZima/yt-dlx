@@ -1,10 +1,10 @@
+import ffmpeg from "fluent-ffmpeg";
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export declare function progressBar(prog: any, size: string): void;
-declare function gpuffmpeg({ size, input, verbose, }: {
-    size: string;
-    input: string;
-    verbose?: boolean;
-}): FfmpegCommand;
-export default gpuffmpeg;
-export type { FfmpegCommand as gpuffmpegCommand };
+import type TubeConfig from "../interface/TubeConfig";
+export declare function progressBar(prog: any): void;
+export default function proTube({ adata, vdata, }: {
+    adata?: TubeConfig;
+    vdata?: TubeConfig;
+}): Promise<ffmpeg.FfmpegCommand>;
+export type { FfmpegCommand as proTubeCommand };
 //# sourceMappingURL=ffmpeg.d.ts.map

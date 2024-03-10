@@ -1,5 +1,5 @@
 /// <reference types="fluent-ffmpeg" />
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 export default function ListAudioVideoHighest(input: {
     query: string[];
     output?: string;
@@ -8,6 +8,6 @@ export default function ListAudioVideoHighest(input: {
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
-    ffmpeg: gpuffmpegCommand;
+    ffmpeg: proTubeCommand;
 }>;
 //# sourceMappingURL=ListAudioVideoHighest.d.ts.map

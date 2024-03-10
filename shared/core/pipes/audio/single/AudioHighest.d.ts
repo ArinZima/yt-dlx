@@ -1,5 +1,5 @@
 /// <reference types="fluent-ffmpeg" />
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 export default function AudioHighest(input: {
     query: string;
     output?: string;
@@ -9,6 +9,6 @@ export default function AudioHighest(input: {
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;
-    ffmpeg: gpuffmpegCommand;
+    ffmpeg: proTubeCommand;
 }>;
 //# sourceMappingURL=AudioHighest.d.ts.map

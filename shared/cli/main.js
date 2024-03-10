@@ -13,7 +13,7 @@ var path2 = require('path');
 var util = require('util');
 var child_process = require('child_process');
 var readline = require('readline');
-var fluent = require('fluent-ffmpeg');
+var ffmpeg = require('fluent-ffmpeg');
 var minimist = require('minimist');
 
 function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
@@ -44,7 +44,7 @@ var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
 var z4__namespace = /*#__PURE__*/_interopNamespace(z4);
 var path2__namespace = /*#__PURE__*/_interopNamespace(path2);
 var readline__default = /*#__PURE__*/_interopDefault(readline);
-var fluent__default = /*#__PURE__*/_interopDefault(fluent);
+var ffmpeg__default = /*#__PURE__*/_interopDefault(ffmpeg);
 var minimist__default = /*#__PURE__*/_interopDefault(minimist);
 
 async function closers(browser2) {
@@ -1840,7 +1840,7 @@ async function extract_playlist_videos({
       throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
-function progressBar(prog, size) {
+function progressBar(prog) {
   if (prog.timemark === void 0 || prog.percent === void 0)
     return;
   if (prog.percent < 1 && prog.timemark.includes("-"))
@@ -1863,60 +1863,72 @@ function progressBar(prog, size) {
   if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
     output += " | " + color("@fps: ") + prog.currentFps;
   }
-  output += " | " + color("@size: ") + size;
   process.stdout.write(output);
   if (prog.timemark.includes("-"))
     process.stdout.write("\n\n");
 }
-function gpuffmpeg({
-  size,
-  input,
-  verbose
+async function proTube({
+  adata,
+  vdata
 }) {
-  let maxTries = 6;
-  let currentDir = __dirname;
-  let FfprobePath, FfmpegPath;
-  const getTerm = (command) => {
-    try {
-      return child_process.execSync(command).toString().trim();
-    } catch {
-      return void 0;
-    }
-  };
-  const ffmpeg = fluent__default.default(input).on("start", (command) => {
-    if (verbose)
-      console.log(colors28__default.default.green("@ffmpeg:"), command);
-  }).on("progress", (prog) => progressBar(prog, size)).on("end", () => console.log("\n")).on("error", (e) => console.error(colors28__default.default.red("\n@ffmpeg:"), e.message));
-  while (maxTries > 0) {
-    FfprobePath = path2__namespace.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
-    FfmpegPath = path2__namespace.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
-    if (fs__namespace.existsSync(FfprobePath) && fs__namespace.existsSync(FfmpegPath)) {
-      ffmpeg.setFfprobePath(FfprobePath);
-      ffmpeg.setFfmpegPath(FfmpegPath);
-      break;
-    } else {
-      currentDir = path2__namespace.join(currentDir, "..");
-      maxTries--;
+  let max = 6;
+  let dirC = __dirname;
+  const ff = ffmpeg__default.default();
+  let ffprobepath, ffmpegpath;
+  while (max > 0) {
+    ffprobepath = path2__namespace.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
+    ffmpegpath = path2__namespace.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
+    switch (true) {
+      case (fs__namespace.existsSync(ffprobepath) && fs__namespace.existsSync(ffmpegpath)):
+        ff.setFfprobePath(ffprobepath);
+        ff.setFfmpegPath(ffmpegpath);
+        max = 0;
+        break;
+      default:
+        dirC = path2__namespace.join(dirC, "..");
+        max--;
     }
   }
-  const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
-  switch (true) {
-    case (vendor && vendor.includes("NVIDIA")):
-      console.log(colors28__default.default.green("@ffmpeg:"), "using GPU", colors28__default.default.green(vendor));
-      ffmpeg.withInputOption("-hwaccel cuda");
-      ffmpeg.withVideoCodec("h264_nvenc");
-      break;
-    default:
-      console.log(
-        colors28__default.default.yellow("@ffmpeg:"),
-        "GPU vendor not recognized.",
-        "defaulting to software processing."
-      );
+  if (vdata && !adata) {
+    ff.addInput(vdata.AVDownload.mediaurl);
+    ff.withVideoCodec("copy");
+    if (vdata.AVInfo.framespersecond)
+      ff.withFPS(vdata.AVInfo.framespersecond);
+    if (vdata.Video.aspectratio)
+      ff.withAspectRatio(vdata.Video.aspectratio);
+    if (vdata.Video.bitrate)
+      ff.withVideoBitrate(vdata.Video.bitrate);
+  } else if (adata && !vdata) {
+    ff.addInput(adata.AVDownload.mediaurl);
+    ff.withAudioCodec("copy");
+    if (adata.Audio.channels)
+      ff.withAudioChannels(adata.Audio.channels);
+    if (adata.Audio.bitrate)
+      ff.withAudioBitrate(adata.Audio.bitrate);
+  } else if (adata && vdata) {
+    ff.addInput(vdata.AVDownload.mediaurl);
+    ff.addInput(adata.AVDownload.mediaurl);
+    ff.withOutputOptions(["-map 0:v:0", "-map 1:a:0"]);
+    ff.withVideoCodec("copy");
+    ff.withAudioCodec("copy");
+    if (vdata.AVInfo.framespersecond)
+      ff.withFPS(vdata.AVInfo.framespersecond);
+    if (vdata.Video.aspectratio)
+      ff.withAspectRatio(vdata.Video.aspectratio);
+    if (adata.Audio.channels)
+      ff.withAudioChannels(adata.Audio.channels);
+    if (vdata.Video.bitrate)
+      ff.withVideoBitrate(vdata.Video.bitrate);
+    if (adata.Audio.bitrate)
+      ff.withAudioBitrate(adata.Audio.bitrate);
   }
-  ffmpeg.withOutputOption("-shortest");
-  return ffmpeg;
+  ff.on("progress", (progress) => progressBar(progress));
+  ff.on("end", () => process.stdout.write("\n"));
+  ff.on("error", (error) => {
+    throw new Error(error.message);
+  });
+  return ff;
 }
-var ffmpeg_default = gpuffmpeg;
 
 // core/base/lowEntry.ts
 async function lowEntry(metaBody) {
@@ -1973,78 +1985,75 @@ async function AudioLowest(input) {
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
-      const sortedData = await lowEntry(engineData.AudioStore);
       let filename = "yt-dlx_(AudioLowest_";
-      const ffmpeg = ffmpeg_default({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        adata: await lowEntry(engineData.AudioStore)
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.addOutputOption("-map", "1:0");
-      ffmpeg.addOutputOption("-map", "0:a:0");
-      ffmpeg.addOutputOption("-id3v2_version", "3");
-      ffmpeg.withOutputFormat("avi");
+      ffmpeg2.addInput(engineData.metaTube.thumbnail);
+      ffmpeg2.addOutputOption("-map", "1:0");
+      ffmpeg2.addOutputOption("-map", "0:a:0");
+      ffmpeg2.addOutputOption("-id3v2_version", "3");
+      ffmpeg2.withOutputFormat("avi");
       if (filter2 === "bassboost") {
-        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         filename += `bassboost)_${title}.avi`;
       } else if (filter2 === "echo") {
-        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         filename += `echo)_${title}.avi`;
       } else if (filter2 === "flanger") {
-        ffmpeg.withAudioFilter(["flanger"]);
+        ffmpeg2.withAudioFilter(["flanger"]);
         filename += `flanger)_${title}.avi`;
       } else if (filter2 === "nightcore") {
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         filename += `nightcore)_${title}.avi`;
       } else if (filter2 === "panning") {
-        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+        ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
         filename += `panning)_${title}.avi`;
       } else if (filter2 === "phaser") {
-        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
         filename += `phaser)_${title}.avi`;
       } else if (filter2 === "reverse") {
-        ffmpeg.withAudioFilter(["areverse"]);
+        ffmpeg2.withAudioFilter(["areverse"]);
         filename += `reverse)_${title}.avi`;
       } else if (filter2 === "slow") {
-        ffmpeg.withAudioFilter(["atempo=0.8"]);
+        ffmpeg2.withAudioFilter(["atempo=0.8"]);
         filename += `slow)_${title}.avi`;
       } else if (filter2 === "speed") {
-        ffmpeg.withAudioFilter(["atempo=2"]);
+        ffmpeg2.withAudioFilter(["atempo=2"]);
         filename += `speed)_${title}.avi`;
       } else if (filter2 === "subboost") {
-        ffmpeg.withAudioFilter(["asubboost"]);
+        ffmpeg2.withAudioFilter(["asubboost"]);
         filename += `subboost)_${title}.avi`;
       } else if (filter2 === "superslow") {
-        ffmpeg.withAudioFilter(["atempo=0.5"]);
+        ffmpeg2.withAudioFilter(["atempo=0.5"]);
         filename += `superslow)_${title}.avi`;
       } else if (filter2 === "superspeed") {
-        ffmpeg.withAudioFilter(["atempo=3"]);
+        ffmpeg2.withAudioFilter(["atempo=3"]);
         filename += `superspeed)_${title}.avi`;
       } else if (filter2 === "surround") {
-        ffmpeg.withAudioFilter(["surround"]);
+        ffmpeg2.withAudioFilter(["surround"]);
         filename += `surround)_${title}.avi`;
       } else if (filter2 === "vaporwave") {
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         filename += `vaporwave)_${title}.avi`;
       } else if (filter2 === "vibrato") {
-        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+        ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
         filename += `vibrato)_${title}.avi`;
       } else
         filename += `)_${title}.avi`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -2124,78 +2133,75 @@ async function AudioHighest(input) {
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
-      const sortedData = await bigEntry(engineData.AudioStore);
       let filename = "yt-dlx_(AudioHighest_";
-      const ffmpeg = ffmpeg_default({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        adata: await bigEntry(engineData.AudioStore)
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.addOutputOption("-map", "1:0");
-      ffmpeg.addOutputOption("-map", "0:a:0");
-      ffmpeg.addOutputOption("-id3v2_version", "3");
-      ffmpeg.withOutputFormat("avi");
+      ffmpeg2.addInput(engineData.metaTube.thumbnail);
+      ffmpeg2.addOutputOption("-map", "1:0");
+      ffmpeg2.addOutputOption("-map", "0:a:0");
+      ffmpeg2.addOutputOption("-id3v2_version", "3");
+      ffmpeg2.withOutputFormat("avi");
       if (filter2 === "bassboost") {
-        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         filename += `bassboost)_${title}.avi`;
       } else if (filter2 === "echo") {
-        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         filename += `echo)_${title}.avi`;
       } else if (filter2 === "flanger") {
-        ffmpeg.withAudioFilter(["flanger"]);
+        ffmpeg2.withAudioFilter(["flanger"]);
         filename += `flanger)_${title}.avi`;
       } else if (filter2 === "nightcore") {
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         filename += `nightcore)_${title}.avi`;
       } else if (filter2 === "panning") {
-        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+        ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
         filename += `panning)_${title}.avi`;
       } else if (filter2 === "phaser") {
-        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
         filename += `phaser)_${title}.avi`;
       } else if (filter2 === "reverse") {
-        ffmpeg.withAudioFilter(["areverse"]);
+        ffmpeg2.withAudioFilter(["areverse"]);
         filename += `reverse)_${title}.avi`;
       } else if (filter2 === "slow") {
-        ffmpeg.withAudioFilter(["atempo=0.8"]);
+        ffmpeg2.withAudioFilter(["atempo=0.8"]);
         filename += `slow)_${title}.avi`;
       } else if (filter2 === "speed") {
-        ffmpeg.withAudioFilter(["atempo=2"]);
+        ffmpeg2.withAudioFilter(["atempo=2"]);
         filename += `speed)_${title}.avi`;
       } else if (filter2 === "subboost") {
-        ffmpeg.withAudioFilter(["asubboost"]);
+        ffmpeg2.withAudioFilter(["asubboost"]);
         filename += `subboost)_${title}.avi`;
       } else if (filter2 === "superslow") {
-        ffmpeg.withAudioFilter(["atempo=0.5"]);
+        ffmpeg2.withAudioFilter(["atempo=0.5"]);
         filename += `superslow)_${title}.avi`;
       } else if (filter2 === "superspeed") {
-        ffmpeg.withAudioFilter(["atempo=3"]);
+        ffmpeg2.withAudioFilter(["atempo=3"]);
         filename += `superspeed)_${title}.avi`;
       } else if (filter2 === "surround") {
-        ffmpeg.withAudioFilter(["surround"]);
+        ffmpeg2.withAudioFilter(["surround"]);
         filename += `surround)_${title}.avi`;
       } else if (filter2 === "vaporwave") {
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         filename += `vaporwave)_${title}.avi`;
       } else if (filter2 === "vibrato") {
-        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+        ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
         filename += `vibrato)_${title}.avi`;
       } else
         filename += `)_${title}.avi`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -2268,78 +2274,75 @@ async function AudioQualityCustom(input) {
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
-      const sortedData = await lowEntry(customData);
-      const ffmpeg = ffmpeg_default({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        adata: await bigEntry(customData)
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.addOutputOption("-map", "1:0");
-      ffmpeg.addOutputOption("-map", "0:a:0");
-      ffmpeg.addOutputOption("-id3v2_version", "3");
-      ffmpeg.withOutputFormat("avi");
+      ffmpeg2.addInput(engineData.metaTube.thumbnail);
+      ffmpeg2.addOutputOption("-map", "1:0");
+      ffmpeg2.addOutputOption("-map", "0:a:0");
+      ffmpeg2.addOutputOption("-id3v2_version", "3");
+      ffmpeg2.withOutputFormat("avi");
       let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
       if (filter2 === "bassboost") {
-        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         filename += `bassboost)_${title}.avi`;
       } else if (filter2 === "echo") {
-        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         filename += `echo)_${title}.avi`;
       } else if (filter2 === "flanger") {
-        ffmpeg.withAudioFilter(["flanger"]);
+        ffmpeg2.withAudioFilter(["flanger"]);
         filename += `flanger)_${title}.avi`;
       } else if (filter2 === "nightcore") {
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         filename += `nightcore)_${title}.avi`;
       } else if (filter2 === "panning") {
-        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+        ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
         filename += `panning)_${title}.avi`;
       } else if (filter2 === "phaser") {
-        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
         filename += `phaser)_${title}.avi`;
       } else if (filter2 === "reverse") {
-        ffmpeg.withAudioFilter(["areverse"]);
+        ffmpeg2.withAudioFilter(["areverse"]);
         filename += `reverse)_${title}.avi`;
       } else if (filter2 === "slow") {
-        ffmpeg.withAudioFilter(["atempo=0.8"]);
+        ffmpeg2.withAudioFilter(["atempo=0.8"]);
         filename += `slow)_${title}.avi`;
       } else if (filter2 === "speed") {
-        ffmpeg.withAudioFilter(["atempo=2"]);
+        ffmpeg2.withAudioFilter(["atempo=2"]);
         filename += `speed)_${title}.avi`;
       } else if (filter2 === "subboost") {
-        ffmpeg.withAudioFilter(["asubboost"]);
+        ffmpeg2.withAudioFilter(["asubboost"]);
         filename += `subboost)_${title}.avi`;
       } else if (filter2 === "superslow") {
-        ffmpeg.withAudioFilter(["atempo=0.5"]);
+        ffmpeg2.withAudioFilter(["atempo=0.5"]);
         filename += `superslow)_${title}.avi`;
       } else if (filter2 === "superspeed") {
-        ffmpeg.withAudioFilter(["atempo=3"]);
+        ffmpeg2.withAudioFilter(["atempo=3"]);
         filename += `superspeed)_${title}.avi`;
       } else if (filter2 === "surround") {
-        ffmpeg.withAudioFilter(["surround"]);
+        ffmpeg2.withAudioFilter(["surround"]);
         filename += `surround)_${title}.avi`;
       } else if (filter2 === "vaporwave") {
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         filename += `vaporwave)_${title}.avi`;
       } else if (filter2 === "vibrato") {
-        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+        ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
         filename += `vibrato)_${title}.avi`;
       } else
         filename += `)_${title}.avi`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -2462,72 +2465,69 @@ async function ListAudioLowest(input) {
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
-        const sortedData = await lowEntry(engineData.AudioStore);
         let filename = "yt-dlx_(AudioLowest_";
-        const ffmpeg = ffmpeg_default({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          adata: await lowEntry(engineData.AudioStore)
         });
-        ffmpeg.addInput(engineData.metaTube.thumbnail);
-        ffmpeg.addOutputOption("-map", "1:0");
-        ffmpeg.addOutputOption("-map", "0:a:0");
-        ffmpeg.addOutputOption("-id3v2_version", "3");
-        ffmpeg.withOutputFormat("avi");
+        ffmpeg2.addInput(engineData.metaTube.thumbnail);
+        ffmpeg2.addOutputOption("-map", "1:0");
+        ffmpeg2.addOutputOption("-map", "0:a:0");
+        ffmpeg2.addOutputOption("-id3v2_version", "3");
+        ffmpeg2.withOutputFormat("avi");
         if (filter2 === "bassboost") {
-          ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
           filename += `bassboost)_${title}.avi`;
         } else if (filter2 === "echo") {
-          ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
           filename += `echo)_${title}.avi`;
         } else if (filter2 === "flanger") {
-          ffmpeg.withAudioFilter(["flanger"]);
+          ffmpeg2.withAudioFilter(["flanger"]);
           filename += `flanger)_${title}.avi`;
         } else if (filter2 === "nightcore") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
           filename += `nightcore)_${title}.avi`;
         } else if (filter2 === "panning") {
-          ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
           filename += `panning)_${title}.avi`;
         } else if (filter2 === "phaser") {
-          ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
           filename += `phaser)_${title}.avi`;
         } else if (filter2 === "reverse") {
-          ffmpeg.withAudioFilter(["areverse"]);
+          ffmpeg2.withAudioFilter(["areverse"]);
           filename += `reverse)_${title}.avi`;
         } else if (filter2 === "slow") {
-          ffmpeg.withAudioFilter(["atempo=0.8"]);
+          ffmpeg2.withAudioFilter(["atempo=0.8"]);
           filename += `slow)_${title}.avi`;
         } else if (filter2 === "speed") {
-          ffmpeg.withAudioFilter(["atempo=2"]);
+          ffmpeg2.withAudioFilter(["atempo=2"]);
           filename += `speed)_${title}.avi`;
         } else if (filter2 === "subboost") {
-          ffmpeg.withAudioFilter(["asubboost"]);
+          ffmpeg2.withAudioFilter(["asubboost"]);
           filename += `subboost)_${title}.avi`;
         } else if (filter2 === "superslow") {
-          ffmpeg.withAudioFilter(["atempo=0.5"]);
+          ffmpeg2.withAudioFilter(["atempo=0.5"]);
           filename += `superslow)_${title}.avi`;
         } else if (filter2 === "superspeed") {
-          ffmpeg.withAudioFilter(["atempo=3"]);
+          ffmpeg2.withAudioFilter(["atempo=3"]);
           filename += `superspeed)_${title}.avi`;
         } else if (filter2 === "surround") {
-          ffmpeg.withAudioFilter(["surround"]);
+          ffmpeg2.withAudioFilter(["surround"]);
           filename += `surround)_${title}.avi`;
         } else if (filter2 === "vaporwave") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
           filename += `vaporwave)_${title}.avi`;
         } else if (filter2 === "vibrato") {
-          ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
           filename += `vibrato)_${title}.avi`;
         } else
           filename += `)_${title}.avi`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -2653,72 +2653,69 @@ async function ListAudioHighest(input) {
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
-        const sortedData = await bigEntry(engineData.AudioStore);
         let filename = "yt-dlx_(AudioHighest_";
-        const ffmpeg = ffmpeg_default({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          adata: await bigEntry(engineData.AudioStore)
         });
-        ffmpeg.addInput(engineData.metaTube.thumbnail);
-        ffmpeg.addOutputOption("-map", "1:0");
-        ffmpeg.addOutputOption("-map", "0:a:0");
-        ffmpeg.addOutputOption("-id3v2_version", "3");
-        ffmpeg.withOutputFormat("avi");
+        ffmpeg2.addInput(engineData.metaTube.thumbnail);
+        ffmpeg2.addOutputOption("-map", "1:0");
+        ffmpeg2.addOutputOption("-map", "0:a:0");
+        ffmpeg2.addOutputOption("-id3v2_version", "3");
+        ffmpeg2.withOutputFormat("avi");
         if (filter2 === "bassboost") {
-          ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
           filename += `bassboost)_${title}.avi`;
         } else if (filter2 === "echo") {
-          ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
           filename += `echo)_${title}.avi`;
         } else if (filter2 === "flanger") {
-          ffmpeg.withAudioFilter(["flanger"]);
+          ffmpeg2.withAudioFilter(["flanger"]);
           filename += `flanger)_${title}.avi`;
         } else if (filter2 === "nightcore") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
           filename += `nightcore)_${title}.avi`;
         } else if (filter2 === "panning") {
-          ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
           filename += `panning)_${title}.avi`;
         } else if (filter2 === "phaser") {
-          ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
           filename += `phaser)_${title}.avi`;
         } else if (filter2 === "reverse") {
-          ffmpeg.withAudioFilter(["areverse"]);
+          ffmpeg2.withAudioFilter(["areverse"]);
           filename += `reverse)_${title}.avi`;
         } else if (filter2 === "slow") {
-          ffmpeg.withAudioFilter(["atempo=0.8"]);
+          ffmpeg2.withAudioFilter(["atempo=0.8"]);
           filename += `slow)_${title}.avi`;
         } else if (filter2 === "speed") {
-          ffmpeg.withAudioFilter(["atempo=2"]);
+          ffmpeg2.withAudioFilter(["atempo=2"]);
           filename += `speed)_${title}.avi`;
         } else if (filter2 === "subboost") {
-          ffmpeg.withAudioFilter(["asubboost"]);
+          ffmpeg2.withAudioFilter(["asubboost"]);
           filename += `subboost)_${title}.avi`;
         } else if (filter2 === "superslow") {
-          ffmpeg.withAudioFilter(["atempo=0.5"]);
+          ffmpeg2.withAudioFilter(["atempo=0.5"]);
           filename += `superslow)_${title}.avi`;
         } else if (filter2 === "superspeed") {
-          ffmpeg.withAudioFilter(["atempo=3"]);
+          ffmpeg2.withAudioFilter(["atempo=3"]);
           filename += `superspeed)_${title}.avi`;
         } else if (filter2 === "surround") {
-          ffmpeg.withAudioFilter(["surround"]);
+          ffmpeg2.withAudioFilter(["surround"]);
           filename += `surround)_${title}.avi`;
         } else if (filter2 === "vaporwave") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
           filename += `vaporwave)_${title}.avi`;
         } else if (filter2 === "vibrato") {
-          ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
           filename += `vibrato)_${title}.avi`;
         } else
           filename += `)_${title}.avi`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -2851,72 +2848,69 @@ async function ListAudioQualityCustom(input) {
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
-        const sortedData = await bigEntry(customData);
         let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
-        const ffmpeg = ffmpeg_default({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          adata: await bigEntry(customData)
         });
-        ffmpeg.addInput(engineData.metaTube.thumbnail);
-        ffmpeg.addOutputOption("-map", "1:0");
-        ffmpeg.addOutputOption("-map", "0:a:0");
-        ffmpeg.addOutputOption("-id3v2_version", "3");
-        ffmpeg.withOutputFormat("avi");
+        ffmpeg2.addInput(engineData.metaTube.thumbnail);
+        ffmpeg2.addOutputOption("-map", "1:0");
+        ffmpeg2.addOutputOption("-map", "0:a:0");
+        ffmpeg2.addOutputOption("-id3v2_version", "3");
+        ffmpeg2.withOutputFormat("avi");
         if (filter2 === "bassboost") {
-          ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
           filename += `bassboost)_${title}.avi`;
         } else if (filter2 === "echo") {
-          ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
           filename += `echo)_${title}.avi`;
         } else if (filter2 === "flanger") {
-          ffmpeg.withAudioFilter(["flanger"]);
+          ffmpeg2.withAudioFilter(["flanger"]);
           filename += `flanger)_${title}.avi`;
         } else if (filter2 === "nightcore") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
           filename += `nightcore)_${title}.avi`;
         } else if (filter2 === "panning") {
-          ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
           filename += `panning)_${title}.avi`;
         } else if (filter2 === "phaser") {
-          ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
           filename += `phaser)_${title}.avi`;
         } else if (filter2 === "reverse") {
-          ffmpeg.withAudioFilter(["areverse"]);
+          ffmpeg2.withAudioFilter(["areverse"]);
           filename += `reverse)_${title}.avi`;
         } else if (filter2 === "slow") {
-          ffmpeg.withAudioFilter(["atempo=0.8"]);
+          ffmpeg2.withAudioFilter(["atempo=0.8"]);
           filename += `slow)_${title}.avi`;
         } else if (filter2 === "speed") {
-          ffmpeg.withAudioFilter(["atempo=2"]);
+          ffmpeg2.withAudioFilter(["atempo=2"]);
           filename += `speed)_${title}.avi`;
         } else if (filter2 === "subboost") {
-          ffmpeg.withAudioFilter(["asubboost"]);
+          ffmpeg2.withAudioFilter(["asubboost"]);
           filename += `subboost)_${title}.avi`;
         } else if (filter2 === "superslow") {
-          ffmpeg.withAudioFilter(["atempo=0.5"]);
+          ffmpeg2.withAudioFilter(["atempo=0.5"]);
           filename += `superslow)_${title}.avi`;
         } else if (filter2 === "superspeed") {
-          ffmpeg.withAudioFilter(["atempo=3"]);
+          ffmpeg2.withAudioFilter(["atempo=3"]);
           filename += `superspeed)_${title}.avi`;
         } else if (filter2 === "surround") {
-          ffmpeg.withAudioFilter(["surround"]);
+          ffmpeg2.withAudioFilter(["surround"]);
           filename += `surround)_${title}.avi`;
         } else if (filter2 === "vaporwave") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
           filename += `vaporwave)_${title}.avi`;
         } else if (filter2 === "vibrato") {
-          ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
           filename += `vibrato)_${title}.avi`;
         } else
           filename += `)_${title}.avi`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -2975,53 +2969,50 @@ async function VideoLowest(input) {
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
-      const sortedData = await lowEntry(engineData.VideoStore);
-      const ffmpeg = ffmpeg_default({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        vdata: await lowEntry(engineData.VideoStore)
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.withOutputFormat("matroska");
+      ffmpeg2.addInput(engineData.metaTube.thumbnail);
+      ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(VideoLowest_";
       if (filter2 === "grayscale") {
-        ffmpeg.withVideoFilter(
+        ffmpeg2.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         filename += `grayscale)_${title}.mkv`;
       } else if (filter2 === "invert") {
-        ffmpeg.withVideoFilter("negate");
+        ffmpeg2.withVideoFilter("negate");
         filename += `invert)_${title}.mkv`;
       } else if (filter2 === "rotate90") {
-        ffmpeg.withVideoFilter("rotate=PI/2");
+        ffmpeg2.withVideoFilter("rotate=PI/2");
         filename += `rotate90)_${title}.mkv`;
       } else if (filter2 === "rotate180") {
-        ffmpeg.withVideoFilter("rotate=PI");
+        ffmpeg2.withVideoFilter("rotate=PI");
         filename += `rotate180)_${title}.mkv`;
       } else if (filter2 === "rotate270") {
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        ffmpeg2.withVideoFilter("rotate=3*PI/2");
         filename += `rotate270)_${title}.mkv`;
       } else if (filter2 === "flipHorizontal") {
-        ffmpeg.withVideoFilter("hflip");
+        ffmpeg2.withVideoFilter("hflip");
         filename += `flipHorizontal)_${title}.mkv`;
       } else if (filter2 === "flipVertical") {
-        ffmpeg.withVideoFilter("vflip");
+        ffmpeg2.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
       } else
         filename += `)_${title}.mkv`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -3077,53 +3068,50 @@ async function VideoHighest(input) {
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
-      const sortedData = await bigEntry(engineData.VideoStore);
-      const ffmpeg = ffmpeg_default({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        vdata: await bigEntry(engineData.VideoStore)
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.withOutputFormat("matroska");
+      ffmpeg2.addInput(engineData.metaTube.thumbnail);
+      ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(VideoHighest_";
       if (filter2 === "grayscale") {
-        ffmpeg.withVideoFilter(
+        ffmpeg2.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         filename += `grayscale)_${title}.mkv`;
       } else if (filter2 === "invert") {
-        ffmpeg.withVideoFilter("negate");
+        ffmpeg2.withVideoFilter("negate");
         filename += `invert)_${title}.mkv`;
       } else if (filter2 === "rotate90") {
-        ffmpeg.withVideoFilter("rotate=PI/2");
+        ffmpeg2.withVideoFilter("rotate=PI/2");
         filename += `rotate90)_${title}.mkv`;
       } else if (filter2 === "rotate180") {
-        ffmpeg.withVideoFilter("rotate=PI");
+        ffmpeg2.withVideoFilter("rotate=PI");
         filename += `rotate180)_${title}.mkv`;
       } else if (filter2 === "rotate270") {
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        ffmpeg2.withVideoFilter("rotate=3*PI/2");
         filename += `rotate270)_${title}.mkv`;
       } else if (filter2 === "flipHorizontal") {
-        ffmpeg.withVideoFilter("hflip");
+        ffmpeg2.withVideoFilter("hflip");
         filename += `flipHorizontal)_${title}.mkv`;
       } else if (filter2 === "flipVertical") {
-        ffmpeg.withVideoFilter("vflip");
+        ffmpeg2.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
       } else
         filename += `)_${title}.mkv`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -3202,53 +3190,50 @@ async function VideoQualityCustom(input) {
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
-      const sortedData = await lowEntry(customData);
-      const ffmpeg = ffmpeg_default({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        vdata: await lowEntry(customData)
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.withOutputFormat("matroska");
+      ffmpeg2.addInput(engineData.metaTube.thumbnail);
+      ffmpeg2.withOutputFormat("matroska");
       let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
       if (filter2 === "grayscale") {
-        ffmpeg.withVideoFilter(
+        ffmpeg2.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         filename += `grayscale)_${title}.mkv`;
       } else if (filter2 === "invert") {
-        ffmpeg.withVideoFilter("negate");
+        ffmpeg2.withVideoFilter("negate");
         filename += `invert)_${title}.mkv`;
       } else if (filter2 === "rotate90") {
-        ffmpeg.withVideoFilter("rotate=PI/2");
+        ffmpeg2.withVideoFilter("rotate=PI/2");
         filename += `rotate90)_${title}.mkv`;
       } else if (filter2 === "rotate180") {
-        ffmpeg.withVideoFilter("rotate=PI");
+        ffmpeg2.withVideoFilter("rotate=PI");
         filename += `rotate180)_${title}.mkv`;
       } else if (filter2 === "rotate270") {
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        ffmpeg2.withVideoFilter("rotate=3*PI/2");
         filename += `rotate270)_${title}.mkv`;
       } else if (filter2 === "flipHorizontal") {
-        ffmpeg.withVideoFilter("hflip");
+        ffmpeg2.withVideoFilter("hflip");
         filename += `flipHorizontal)_${title}.mkv`;
       } else if (filter2 === "flipVertical") {
-        ffmpeg.withVideoFilter("vflip");
+        ffmpeg2.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
       } else
         filename += `)_${title}.mkv`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -3362,46 +3347,43 @@ async function ListVideoLowest(input) {
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
-        const sortedData = await lowEntry(engineData.VideoStore);
         let filename = "yt-dlx_(VideoLowest_";
-        const ffmpeg = ffmpeg_default({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          vdata: await lowEntry(engineData.VideoStore)
         });
-        ffmpeg.withOutputFormat("matroska");
+        ffmpeg2.withOutputFormat("matroska");
         if (filter2 === "grayscale") {
-          ffmpeg.withVideoFilter(
+          ffmpeg2.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
           );
           filename += `grayscale)_${title}.mkv`;
         } else if (filter2 === "invert") {
-          ffmpeg.withVideoFilter("negate");
+          ffmpeg2.withVideoFilter("negate");
           filename += `invert)_${title}.mkv`;
         } else if (filter2 === "rotate90") {
-          ffmpeg.withVideoFilter("rotate=PI/2");
+          ffmpeg2.withVideoFilter("rotate=PI/2");
           filename += `rotate90)_${title}.mkv`;
         } else if (filter2 === "rotate180") {
-          ffmpeg.withVideoFilter("rotate=PI");
+          ffmpeg2.withVideoFilter("rotate=PI");
           filename += `rotate180)_${title}.mkv`;
         } else if (filter2 === "rotate270") {
-          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
           filename += `rotate270)_${title}.mkv`;
         } else if (filter2 === "flipHorizontal") {
-          ffmpeg.withVideoFilter("hflip");
+          ffmpeg2.withVideoFilter("hflip");
           filename += `flipHorizontal)_${title}.mkv`;
         } else if (filter2 === "flipVertical") {
-          ffmpeg.withVideoFilter("vflip");
+          ffmpeg2.withVideoFilter("vflip");
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -3518,46 +3500,43 @@ async function ListVideoHighest(input) {
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
-        const sortedData = await bigEntry(engineData.VideoStore);
         let filename = "yt-dlx_(VideoHighest_";
-        const ffmpeg = ffmpeg_default({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          vdata: await bigEntry(engineData.VideoStore)
         });
-        ffmpeg.withOutputFormat("matroska");
+        ffmpeg2.withOutputFormat("matroska");
         if (filter2 === "grayscale") {
-          ffmpeg.withVideoFilter(
+          ffmpeg2.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
           );
           filename += `grayscale)_${title}.mkv`;
         } else if (filter2 === "invert") {
-          ffmpeg.withVideoFilter("negate");
+          ffmpeg2.withVideoFilter("negate");
           filename += `invert)_${title}.mkv`;
         } else if (filter2 === "rotate90") {
-          ffmpeg.withVideoFilter("rotate=PI/2");
+          ffmpeg2.withVideoFilter("rotate=PI/2");
           filename += `rotate90)_${title}.mkv`;
         } else if (filter2 === "rotate180") {
-          ffmpeg.withVideoFilter("rotate=PI");
+          ffmpeg2.withVideoFilter("rotate=PI");
           filename += `rotate180)_${title}.mkv`;
         } else if (filter2 === "rotate270") {
-          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
           filename += `rotate270)_${title}.mkv`;
         } else if (filter2 === "flipHorizontal") {
-          ffmpeg.withVideoFilter("hflip");
+          ffmpeg2.withVideoFilter("hflip");
           filename += `flipHorizontal)_${title}.mkv`;
         } else if (filter2 === "flipVertical") {
-          ffmpeg.withVideoFilter("vflip");
+          ffmpeg2.withVideoFilter("vflip");
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -3696,46 +3675,43 @@ async function ListVideoQualityCustom(input) {
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
-        const sortedData = await bigEntry(customData);
         let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
-        const ffmpeg = ffmpeg_default({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          vdata: await bigEntry(customData)
         });
-        ffmpeg.withOutputFormat("matroska");
+        ffmpeg2.withOutputFormat("matroska");
         if (filter2 === "grayscale") {
-          ffmpeg.withVideoFilter(
+          ffmpeg2.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
           );
           filename += `grayscale)_${title}.mkv`;
         } else if (filter2 === "invert") {
-          ffmpeg.withVideoFilter("negate");
+          ffmpeg2.withVideoFilter("negate");
           filename += `invert)_${title}.mkv`;
         } else if (filter2 === "rotate90") {
-          ffmpeg.withVideoFilter("rotate=PI/2");
+          ffmpeg2.withVideoFilter("rotate=PI/2");
           filename += `rotate90)_${title}.mkv`;
         } else if (filter2 === "rotate180") {
-          ffmpeg.withVideoFilter("rotate=PI");
+          ffmpeg2.withVideoFilter("rotate=PI");
           filename += `rotate180)_${title}.mkv`;
         } else if (filter2 === "rotate270") {
-          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
           filename += `rotate270)_${title}.mkv`;
         } else if (filter2 === "flipHorizontal") {
-          ffmpeg.withVideoFilter("hflip");
+          ffmpeg2.withVideoFilter("hflip");
           filename += `flipHorizontal)_${title}.mkv`;
         } else if (filter2 === "flipVertical") {
-          ffmpeg.withVideoFilter("vflip");
+          ffmpeg2.withVideoFilter("vflip");
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -3795,57 +3771,54 @@ async function AudioVideoLowest(input) {
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
       const [AudioData, VideoData] = await Promise.all([
-        await lowEntry(engineData.AudioStore),
-        await lowEntry(engineData.VideoStore)
+        lowEntry(engineData.AudioStore),
+        lowEntry(engineData.VideoStore)
       ]);
-      const ffmpeg = ffmpeg_default({
-        size: sizeFormat(
-          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-        ).toString(),
-        input: VideoData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        adata: AudioData,
+        vdata: VideoData
       });
-      ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-      ffmpeg.withOutputFormat("matroska");
+      ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(AudioVideoLowest_";
       if (filter2 === "grayscale") {
-        ffmpeg.withVideoFilter(
+        ffmpeg2.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         filename += `grayscale)_${title}.mkv`;
       } else if (filter2 === "invert") {
-        ffmpeg.withVideoFilter("negate");
+        ffmpeg2.withVideoFilter("negate");
         filename += `invert)_${title}.mkv`;
       } else if (filter2 === "rotate90") {
-        ffmpeg.withVideoFilter("rotate=PI/2");
+        ffmpeg2.withVideoFilter("rotate=PI/2");
         filename += `rotate90)_${title}.mkv`;
       } else if (filter2 === "rotate180") {
-        ffmpeg.withVideoFilter("rotate=PI");
+        ffmpeg2.withVideoFilter("rotate=PI");
         filename += `rotate180)_${title}.mkv`;
       } else if (filter2 === "rotate270") {
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        ffmpeg2.withVideoFilter("rotate=3*PI/2");
         filename += `rotate270)_${title}.mkv`;
       } else if (filter2 === "flipHorizontal") {
-        ffmpeg.withVideoFilter("hflip");
+        ffmpeg2.withVideoFilter("hflip");
         filename += `flipHorizontal)_${title}.mkv`;
       } else if (filter2 === "flipVertical") {
-        ffmpeg.withVideoFilter("vflip");
+        ffmpeg2.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
       } else
         filename += `)_${title}.mkv`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -3902,57 +3875,54 @@ async function AudioVideoHighest(input) {
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
       const [AudioData, VideoData] = await Promise.all([
-        await bigEntry(engineData.AudioStore),
-        await bigEntry(engineData.VideoStore)
+        bigEntry(engineData.AudioStore),
+        bigEntry(engineData.VideoStore)
       ]);
-      const ffmpeg = ffmpeg_default({
-        size: sizeFormat(
-          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-        ).toString(),
-        input: VideoData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        adata: AudioData,
+        vdata: VideoData
       });
-      ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-      ffmpeg.withOutputFormat("matroska");
+      ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(AudioVideoHighest_";
       if (filter2 === "grayscale") {
-        ffmpeg.withVideoFilter(
+        ffmpeg2.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         filename += `grayscale)_${title}.mkv`;
       } else if (filter2 === "invert") {
-        ffmpeg.withVideoFilter("negate");
+        ffmpeg2.withVideoFilter("negate");
         filename += `invert)_${title}.mkv`;
       } else if (filter2 === "rotate90") {
-        ffmpeg.withVideoFilter("rotate=PI/2");
+        ffmpeg2.withVideoFilter("rotate=PI/2");
         filename += `rotate90)_${title}.mkv`;
       } else if (filter2 === "rotate180") {
-        ffmpeg.withVideoFilter("rotate=PI");
+        ffmpeg2.withVideoFilter("rotate=PI");
         filename += `rotate180)_${title}.mkv`;
       } else if (filter2 === "rotate270") {
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        ffmpeg2.withVideoFilter("rotate=3*PI/2");
         filename += `rotate270)_${title}.mkv`;
       } else if (filter2 === "flipHorizontal") {
-        ffmpeg.withVideoFilter("hflip");
+        ffmpeg2.withVideoFilter("hflip");
         filename += `flipHorizontal)_${title}.mkv`;
       } else if (filter2 === "flipVertical") {
-        ffmpeg.withVideoFilter("vflip");
+        ffmpeg2.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
       } else
         filename += `)_${title}.mkv`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -4040,57 +4010,54 @@ async function AudioVideoQualityCustom(input) {
         (op) => op.AVDownload.formatnote === VQuality
       );
       const [AudioData, VideoData] = await Promise.all([
-        await bigEntry(ACustomData),
-        await bigEntry(VCustomData)
+        bigEntry(ACustomData),
+        bigEntry(VCustomData)
       ]);
-      const ffmpeg = ffmpeg_default({
-        size: sizeFormat(
-          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-        ).toString(),
-        input: VideoData.AVDownload.mediaurl,
-        verbose
+      const ffmpeg2 = await proTube({
+        adata: AudioData,
+        vdata: VideoData
       });
-      ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-      ffmpeg.withOutputFormat("matroska");
+      ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
+      ffmpeg2.withOutputFormat("matroska");
       let filename = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
       if (filter2 === "grayscale") {
-        ffmpeg.withVideoFilter(
+        ffmpeg2.withVideoFilter(
           "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
         );
         filename += `grayscale)_${title}.mkv`;
       } else if (filter2 === "invert") {
-        ffmpeg.withVideoFilter("negate");
+        ffmpeg2.withVideoFilter("negate");
         filename += `invert)_${title}.mkv`;
       } else if (filter2 === "rotate90") {
-        ffmpeg.withVideoFilter("rotate=PI/2");
+        ffmpeg2.withVideoFilter("rotate=PI/2");
         filename += `rotate90)_${title}.mkv`;
       } else if (filter2 === "rotate180") {
-        ffmpeg.withVideoFilter("rotate=PI");
+        ffmpeg2.withVideoFilter("rotate=PI");
         filename += `rotate180)_${title}.mkv`;
       } else if (filter2 === "rotate270") {
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        ffmpeg2.withVideoFilter("rotate=3*PI/2");
         filename += `rotate270)_${title}.mkv`;
       } else if (filter2 === "flipHorizontal") {
-        ffmpeg.withVideoFilter("hflip");
+        ffmpeg2.withVideoFilter("hflip");
         filename += `flipHorizontal)_${title}.mkv`;
       } else if (filter2 === "flipVertical") {
-        ffmpeg.withVideoFilter("vflip");
+        ffmpeg2.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
       } else
         filename += `)_${title}.mkv`;
       if (stream) {
         return {
-          ffmpeg,
+          ffmpeg: ffmpeg2,
           filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       }
       console.log(
@@ -4205,51 +4172,47 @@ async function ListAudioVideoHighest(input) {
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
         const [AudioData, VideoData] = await Promise.all([
-          await bigEntry(engineData.AudioStore),
-          await bigEntry(engineData.VideoStore)
+          bigEntry(engineData.AudioStore),
+          bigEntry(engineData.VideoStore)
         ]);
         let filename = "yt-dlx_(AudioVideoHighest_";
-        const ffmpeg = ffmpeg_default({
-          size: sizeFormat(
-            AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-          ).toString(),
-          input: VideoData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          adata: AudioData,
+          vdata: VideoData
         });
-        ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-        ffmpeg.withOutputFormat("matroska");
+        ffmpeg2.withOutputFormat("matroska");
         if (filter2 === "grayscale") {
-          ffmpeg.withVideoFilter(
+          ffmpeg2.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
           );
           filename += `grayscale)_${title}.mkv`;
         } else if (filter2 === "invert") {
-          ffmpeg.withVideoFilter("negate");
+          ffmpeg2.withVideoFilter("negate");
           filename += `invert)_${title}.mkv`;
         } else if (filter2 === "rotate90") {
-          ffmpeg.withVideoFilter("rotate=PI/2");
+          ffmpeg2.withVideoFilter("rotate=PI/2");
           filename += `rotate90)_${title}.mkv`;
         } else if (filter2 === "rotate180") {
-          ffmpeg.withVideoFilter("rotate=PI");
+          ffmpeg2.withVideoFilter("rotate=PI");
           filename += `rotate180)_${title}.mkv`;
         } else if (filter2 === "rotate270") {
-          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
           filename += `rotate270)_${title}.mkv`;
         } else if (filter2 === "flipHorizontal") {
-          ffmpeg.withVideoFilter("hflip");
+          ffmpeg2.withVideoFilter("hflip");
           filename += `flipHorizontal)_${title}.mkv`;
         } else if (filter2 === "flipVertical") {
-          ffmpeg.withVideoFilter("vflip");
+          ffmpeg2.withVideoFilter("vflip");
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -4367,51 +4330,48 @@ async function ListAudioVideoLowest(input) {
         if (!fs__namespace.existsSync(folder))
           fs__namespace.mkdirSync(folder, { recursive: true });
         const [AudioData, VideoData] = await Promise.all([
-          await lowEntry(engineData.AudioStore),
-          await lowEntry(engineData.VideoStore)
+          lowEntry(engineData.AudioStore),
+          lowEntry(engineData.VideoStore)
         ]);
         let filename = "yt-dlx_(AudioVideoLowest_";
-        const ffmpeg = ffmpeg_default({
-          size: sizeFormat(
-            AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-          ).toString(),
-          input: VideoData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          adata: AudioData,
+          vdata: VideoData
         });
-        ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-        ffmpeg.withOutputFormat("matroska");
+        ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
+        ffmpeg2.withOutputFormat("matroska");
         if (filter2 === "grayscale") {
-          ffmpeg.withVideoFilter(
+          ffmpeg2.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
           );
           filename += `grayscale)_${title}.mkv`;
         } else if (filter2 === "invert") {
-          ffmpeg.withVideoFilter("negate");
+          ffmpeg2.withVideoFilter("negate");
           filename += `invert)_${title}.mkv`;
         } else if (filter2 === "rotate90") {
-          ffmpeg.withVideoFilter("rotate=PI/2");
+          ffmpeg2.withVideoFilter("rotate=PI/2");
           filename += `rotate90)_${title}.mkv`;
         } else if (filter2 === "rotate180") {
-          ffmpeg.withVideoFilter("rotate=PI");
+          ffmpeg2.withVideoFilter("rotate=PI");
           filename += `rotate180)_${title}.mkv`;
         } else if (filter2 === "rotate270") {
-          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
           filename += `rotate270)_${title}.mkv`;
         } else if (filter2 === "flipHorizontal") {
-          ffmpeg.withVideoFilter("hflip");
+          ffmpeg2.withVideoFilter("hflip");
           filename += `flipHorizontal)_${title}.mkv`;
         } else if (filter2 === "flipVertical") {
-          ffmpeg.withVideoFilter("vflip");
+          ffmpeg2.withVideoFilter("vflip");
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -4549,51 +4509,48 @@ async function ListAudioVideoQualityCustom(input) {
           (op) => op.AVDownload.formatnote === VQuality
         );
         const [AudioData, VideoData] = await Promise.all([
-          await bigEntry(ACustomData),
-          await bigEntry(VCustomData)
+          bigEntry(ACustomData),
+          bigEntry(VCustomData)
         ]);
         let filename = "yt-dlx_(AudioVideoQualityCustom_";
-        const ffmpeg = ffmpeg_default({
-          size: sizeFormat(
-            AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-          ).toString(),
-          input: VideoData.AVDownload.mediaurl,
-          verbose
+        const ffmpeg2 = await proTube({
+          adata: AudioData,
+          vdata: VideoData
         });
-        ffmpeg.addInput(AudioData.AVDownload.mediaurl);
-        ffmpeg.withOutputFormat("matroska");
+        ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
+        ffmpeg2.withOutputFormat("matroska");
         if (filter2 === "grayscale") {
-          ffmpeg.withVideoFilter(
+          ffmpeg2.withVideoFilter(
             "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
           );
           filename += `grayscale)_${title}.mkv`;
         } else if (filter2 === "invert") {
-          ffmpeg.withVideoFilter("negate");
+          ffmpeg2.withVideoFilter("negate");
           filename += `invert)_${title}.mkv`;
         } else if (filter2 === "rotate90") {
-          ffmpeg.withVideoFilter("rotate=PI/2");
+          ffmpeg2.withVideoFilter("rotate=PI/2");
           filename += `rotate90)_${title}.mkv`;
         } else if (filter2 === "rotate180") {
-          ffmpeg.withVideoFilter("rotate=PI");
+          ffmpeg2.withVideoFilter("rotate=PI");
           filename += `rotate180)_${title}.mkv`;
         } else if (filter2 === "rotate270") {
-          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
           filename += `rotate270)_${title}.mkv`;
         } else if (filter2 === "flipHorizontal") {
-          ffmpeg.withVideoFilter("hflip");
+          ffmpeg2.withVideoFilter("hflip");
           filename += `flipHorizontal)_${title}.mkv`;
         } else if (filter2 === "flipVertical") {
-          ffmpeg.withVideoFilter("vflip");
+          ffmpeg2.withVideoFilter("vflip");
           filename += `flipVertical)_${title}.mkv`;
         } else
           filename += `)_${title}.mkv`;
         await new Promise((resolve, _reject) => {
-          ffmpeg.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
+          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.on("end", () => resolve());
+          ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
-          ffmpeg.run();
+          ffmpeg2.run();
         });
       } catch (error) {
         console.log(colors28__default.default.red("@error:"), error);
@@ -4672,7 +4629,7 @@ var ytdlx = () => ({
   })
 });
 var core_default = ytdlx;
-var proTube = minimist__default.default(process.argv.slice(2), {
+var proTube2 = minimist__default.default(process.argv.slice(2), {
   string: ["query", "format"],
   alias: {
     h: "help",
@@ -4690,7 +4647,7 @@ var proTube = minimist__default.default(process.argv.slice(2), {
   }
 });
 var program = async () => {
-  const command = proTube._[0];
+  const command = proTube2._[0];
   switch (command) {
     case "version":
     case "v":
@@ -4708,11 +4665,11 @@ var program = async () => {
       break;
     case "extract":
     case "e":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().info().extract({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4723,11 +4680,11 @@ var program = async () => {
       break;
     case "list-formats":
     case "f":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().info().list_formats({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4738,11 +4695,11 @@ var program = async () => {
       break;
     case "audio-highest":
     case "ah":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioOnly().Single().Highest({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4753,11 +4710,11 @@ var program = async () => {
       break;
     case "audio-lowest":
     case "al":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioOnly().Single().Lowest({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4768,11 +4725,11 @@ var program = async () => {
       break;
     case "video_highest":
     case "vh":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().VideoOnly().Single().Highest({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4783,11 +4740,11 @@ var program = async () => {
       break;
     case "video-lowest":
     case "vl":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().VideoOnly().Single().Lowest({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4798,11 +4755,11 @@ var program = async () => {
       break;
     case "audio-video-highest":
     case "avh":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioVideo().Single().Highest({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4813,11 +4770,11 @@ var program = async () => {
       break;
     case "audio-video-lowest":
     case "avl":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioVideo().Single().Lowest({
-          query: proTube.query
+          query: proTube2.query
         }).then((data) => {
           console.log(data);
           process.exit();
@@ -4828,15 +4785,15 @@ var program = async () => {
       break;
     case "audio-quality-custom":
     case "aqc":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       }
-      if (!proTube || !proTube.format || proTube.format.length === 0) {
+      if (!proTube2 || !proTube2.format || proTube2.format.length === 0) {
         console.error(colors28__default.default.red("error: no format"));
       }
       core_default().AudioOnly().Single().Custom({
-        query: proTube.query,
-        quality: proTube.format
+        query: proTube2.query,
+        quality: proTube2.format
       }).then((data) => {
         console.log(data);
         process.exit();
@@ -4847,15 +4804,15 @@ var program = async () => {
       break;
     case "video-quality-custom":
     case "vqc":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
+      if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
         console.error(colors28__default.default.red("error: no query"));
       }
-      if (!proTube || !proTube.format || proTube.format.length === 0) {
+      if (!proTube2 || !proTube2.format || proTube2.format.length === 0) {
         console.error(colors28__default.default.red("error: no format"));
       }
       core_default().VideoOnly().Single().Custom({
-        query: proTube.query,
-        quality: proTube.format
+        query: proTube2.query,
+        quality: proTube2.format
       }).then((data) => {
         console.log(data);
         process.exit();
@@ -4875,7 +4832,7 @@ var program = async () => {
       break;
   }
 };
-if (!proTube._[0]) {
+if (!proTube2._[0]) {
   core_default().info().help().then((data) => {
     console.log(data);
     process.exit();

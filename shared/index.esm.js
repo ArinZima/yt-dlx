@@ -14,10 +14,10 @@ import { z as z$1, ZodError } from 'zod';
 import { randomUUID } from 'crypto';
 import * as path from 'path';
 import { promisify } from 'util';
-import { exec, execSync } from 'child_process';
+import { exec } from 'child_process';
 import * as async from 'async';
 import readline from 'readline';
-import fluent from 'fluent-ffmpeg';
+import ffmpeg from 'fluent-ffmpeg';
 
 async function closers(browser) {
     try {
@@ -1213,7 +1213,7 @@ async function extract_playlist_videos({ torproxy, playlistUrls, }) {
     }
 }
 
-function progressBar(prog, size) {
+function progressBar(prog) {
     if (prog.timemark === undefined || prog.percent === undefined)
         return;
     if (prog.percent < 1 && prog.timemark.includes("-"))
@@ -1242,56 +1242,70 @@ function progressBar(prog, size) {
     if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
         output += " | " + color("@fps: ") + prog.currentFps;
     }
-    output += " | " + color("@size: ") + size;
     process.stdout.write(output);
     if (prog.timemark.includes("-"))
         process.stdout.write("\n\n");
 }
-function gpuffmpeg({ size, input, verbose, }) {
-    let maxTries = 6;
-    let currentDir = __dirname;
-    let FfprobePath, FfmpegPath;
-    const getTerm = (command) => {
-        try {
-            return execSync(command).toString().trim();
-        }
-        catch {
-            return undefined;
-        }
-    };
-    const ffmpeg = fluent(input)
-        .on("start", (command) => {
-        if (verbose)
-            console.log(colors.green("@ffmpeg:"), command);
-    })
-        .on("progress", (prog) => progressBar(prog, size))
-        .on("end", () => console.log("\n"))
-        .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
-    while (maxTries > 0) {
-        FfprobePath = path.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
-        FfmpegPath = path.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
-        if (fs.existsSync(FfprobePath) && fs.existsSync(FfmpegPath)) {
-            ffmpeg.setFfprobePath(FfprobePath);
-            ffmpeg.setFfmpegPath(FfmpegPath);
-            break;
-        }
-        else {
-            currentDir = path.join(currentDir, "..");
-            maxTries--;
+async function proTube({ adata, vdata, }) {
+    let max = 6;
+    let dirC = __dirname;
+    const ff = ffmpeg();
+    let ffprobepath, ffmpegpath;
+    while (max > 0) {
+        ffprobepath = path.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
+        ffmpegpath = path.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
+        switch (true) {
+            case fs.existsSync(ffprobepath) && fs.existsSync(ffmpegpath):
+                ff.setFfprobePath(ffprobepath);
+                ff.setFfmpegPath(ffmpegpath);
+                max = 0;
+                break;
+            default:
+                dirC = path.join(dirC, "..");
+                max--;
         }
     }
-    const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
-    switch (true) {
-        case vendor && vendor.includes("NVIDIA"):
-            console.log(colors.green("@ffmpeg:"), "using GPU", colors.green(vendor));
-            ffmpeg.withInputOption("-hwaccel cuda");
-            ffmpeg.withVideoCodec("h264_nvenc");
-            break;
-        default:
-            console.log(colors.yellow("@ffmpeg:"), "GPU vendor not recognized.", "defaulting to software processing.");
+    if (vdata && !adata) {
+        ff.addInput(vdata.AVDownload.mediaurl);
+        ff.withVideoCodec("copy");
+        if (vdata.AVInfo.framespersecond)
+            ff.withFPS(vdata.AVInfo.framespersecond);
+        if (vdata.Video.aspectratio)
+            ff.withAspectRatio(vdata.Video.aspectratio);
+        if (vdata.Video.bitrate)
+            ff.withVideoBitrate(vdata.Video.bitrate);
     }
-    ffmpeg.withOutputOption("-shortest");
-    return ffmpeg;
+    else if (adata && !vdata) {
+        ff.addInput(adata.AVDownload.mediaurl);
+        ff.withAudioCodec("copy");
+        if (adata.Audio.channels)
+            ff.withAudioChannels(adata.Audio.channels);
+        if (adata.Audio.bitrate)
+            ff.withAudioBitrate(adata.Audio.bitrate);
+    }
+    else if (adata && vdata) {
+        ff.addInput(vdata.AVDownload.mediaurl);
+        ff.addInput(adata.AVDownload.mediaurl);
+        ff.withOutputOptions(["-map 0:v:0", "-map 1:a:0"]);
+        ff.withVideoCodec("copy");
+        ff.withAudioCodec("copy");
+        if (vdata.AVInfo.framespersecond)
+            ff.withFPS(vdata.AVInfo.framespersecond);
+        if (vdata.Video.aspectratio)
+            ff.withAspectRatio(vdata.Video.aspectratio);
+        if (adata.Audio.channels)
+            ff.withAudioChannels(adata.Audio.channels);
+        if (vdata.Video.bitrate)
+            ff.withVideoBitrate(vdata.Video.bitrate);
+        if (adata.Audio.bitrate)
+            ff.withAudioBitrate(adata.Audio.bitrate);
+    }
+    ff.on("progress", (progress) => progressBar(progress));
+    ff.on("end", () => process.stdout.write("\n"));
+    ff.on("error", (error) => {
+        throw new Error(error.message);
+    });
+    return ff;
 }
 
 async function lowEntry(metaBody) {
@@ -1344,12 +1358,9 @@ async function AudioLowest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const sortedData = await lowEntry(engineData.AudioStore);
             let filename = "yt-dlx_(AudioLowest_";
-            const ffmpeg = gpuffmpeg({
-                size: sortedData.AVInfo.filesizeformatted.toString(),
-                input: sortedData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                adata: await lowEntry(engineData.AudioStore),
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
             ffmpeg.addOutputOption("-map", "1:0");
@@ -1502,12 +1513,9 @@ async function AudioHighest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const sortedData = await bigEntry(engineData.AudioStore);
             let filename = "yt-dlx_(AudioHighest_";
-            const ffmpeg = gpuffmpeg({
-                size: sortedData.AVInfo.filesizeformatted.toString(),
-                input: sortedData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                adata: await bigEntry(engineData.AudioStore),
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
             ffmpeg.addOutputOption("-map", "1:0");
@@ -1653,11 +1661,8 @@ async function AudioQualityCustom(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const sortedData = await lowEntry(customData);
-            const ffmpeg = gpuffmpeg({
-                size: sortedData.AVInfo.filesizeformatted.toString(),
-                input: sortedData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                adata: await bigEntry(customData),
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
             ffmpeg.addOutputOption("-map", "1:0");
@@ -1844,12 +1849,9 @@ async function ListAudioLowest(input) {
                     : process.cwd();
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
-                const sortedData = await lowEntry(engineData.AudioStore);
                 let filename = "yt-dlx_(AudioLowest_";
-                const ffmpeg = gpuffmpeg({
-                    size: sortedData.AVInfo.filesizeformatted.toString(),
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    adata: await lowEntry(engineData.AudioStore),
                 });
                 ffmpeg.addInput(engineData.metaTube.thumbnail);
                 ffmpeg.addOutputOption("-map", "1:0");
@@ -2030,12 +2032,9 @@ async function ListAudioHighest(input) {
                     : process.cwd();
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
-                const sortedData = await bigEntry(engineData.AudioStore);
                 let filename = "yt-dlx_(AudioHighest_";
-                const ffmpeg = gpuffmpeg({
-                    size: sortedData.AVInfo.filesizeformatted.toString(),
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    adata: await bigEntry(engineData.AudioStore),
                 });
                 ffmpeg.addInput(engineData.metaTube.thumbnail);
                 ffmpeg.addOutputOption("-map", "1:0");
@@ -2222,12 +2221,9 @@ async function ListAudioQualityCustom(input) {
                     : process.cwd();
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
-                const sortedData = await bigEntry(customData);
                 let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
-                const ffmpeg = gpuffmpeg({
-                    size: sortedData.AVInfo.filesizeformatted.toString(),
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    adata: await bigEntry(customData),
                 });
                 ffmpeg.addInput(engineData.metaTube.thumbnail);
                 ffmpeg.addOutputOption("-map", "1:0");
@@ -2355,11 +2351,8 @@ async function VideoLowest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const sortedData = await lowEntry(engineData.VideoStore);
-            const ffmpeg = gpuffmpeg({
-                size: sortedData.AVInfo.filesizeformatted.toString(),
-                input: sortedData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                vdata: await lowEntry(engineData.VideoStore),
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
             ffmpeg.withOutputFormat("matroska");
@@ -2458,11 +2451,8 @@ async function VideoHighest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const sortedData = await bigEntry(engineData.VideoStore);
-            const ffmpeg = gpuffmpeg({
-                size: sortedData.AVInfo.filesizeformatted.toString(),
-                input: sortedData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                vdata: await bigEntry(engineData.VideoStore),
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
             ffmpeg.withOutputFormat("matroska");
@@ -2580,11 +2570,8 @@ async function VideoQualityCustom(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const sortedData = await lowEntry(customData);
-            const ffmpeg = gpuffmpeg({
-                size: sortedData.AVInfo.filesizeformatted.toString(),
-                input: sortedData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                vdata: await lowEntry(customData),
             });
             ffmpeg.addInput(engineData.metaTube.thumbnail);
             ffmpeg.withOutputFormat("matroska");
@@ -2728,12 +2715,9 @@ async function ListVideoLowest(input) {
                     : process.cwd();
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
-                const sortedData = await lowEntry(engineData.VideoStore);
                 let filename = "yt-dlx_(VideoLowest_";
-                const ffmpeg = gpuffmpeg({
-                    size: sortedData.AVInfo.filesizeformatted.toString(),
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    vdata: await lowEntry(engineData.VideoStore),
                 });
                 ffmpeg.withOutputFormat("matroska");
                 if (filter === "grayscale") {
@@ -2870,12 +2854,9 @@ async function ListVideoHighest(input) {
                     : process.cwd();
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
-                const sortedData = await bigEntry(engineData.VideoStore);
                 let filename = "yt-dlx_(VideoHighest_";
-                const ffmpeg = gpuffmpeg({
-                    size: sortedData.AVInfo.filesizeformatted.toString(),
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    vdata: await bigEntry(engineData.VideoStore),
                 });
                 ffmpeg.withOutputFormat("matroska");
                 if (filter === "grayscale") {
@@ -3032,12 +3013,9 @@ async function ListVideoQualityCustom(input) {
                     : process.cwd();
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
-                const sortedData = await bigEntry(customData);
                 let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
-                const ffmpeg = gpuffmpeg({
-                    size: sortedData.AVInfo.filesizeformatted.toString(),
-                    input: sortedData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    vdata: await bigEntry(customData),
                 });
                 ffmpeg.withOutputFormat("matroska");
                 if (filter === "grayscale") {
@@ -3130,13 +3108,12 @@ async function AudioVideoLowest(input) {
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
             const [AudioData, VideoData] = await Promise.all([
-                await lowEntry(engineData.AudioStore),
-                await lowEntry(engineData.VideoStore),
+                lowEntry(engineData.AudioStore),
+                lowEntry(engineData.VideoStore),
             ]);
-            const ffmpeg = gpuffmpeg({
-                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
-                input: VideoData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                adata: AudioData,
+                vdata: VideoData,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
             ffmpeg.withOutputFormat("matroska");
@@ -3236,13 +3213,12 @@ async function AudioVideoHighest(input) {
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
             const [AudioData, VideoData] = await Promise.all([
-                await bigEntry(engineData.AudioStore),
-                await bigEntry(engineData.VideoStore),
+                bigEntry(engineData.AudioStore),
+                bigEntry(engineData.VideoStore),
             ]);
-            const ffmpeg = gpuffmpeg({
-                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
-                input: VideoData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                adata: AudioData,
+                vdata: VideoData,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
             ffmpeg.withOutputFormat("matroska");
@@ -3360,13 +3336,12 @@ async function AudioVideoQualityCustom(input) {
             const ACustomData = engineData.AudioStore.filter((op) => op.AVDownload.formatnote === AQuality);
             const VCustomData = engineData.VideoStore.filter((op) => op.AVDownload.formatnote === VQuality);
             const [AudioData, VideoData] = await Promise.all([
-                await bigEntry(ACustomData),
-                await bigEntry(VCustomData),
+                bigEntry(ACustomData),
+                bigEntry(VCustomData),
             ]);
-            const ffmpeg = gpuffmpeg({
-                size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
-                input: VideoData.AVDownload.mediaurl,
-                verbose,
+            const ffmpeg = await proTube({
+                adata: AudioData,
+                vdata: VideoData,
             });
             ffmpeg.addInput(AudioData.AVDownload.mediaurl);
             ffmpeg.withOutputFormat("matroska");
@@ -3511,16 +3486,14 @@ async function ListAudioVideoHighest(input) {
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
                 const [AudioData, VideoData] = await Promise.all([
-                    await bigEntry(engineData.AudioStore),
-                    await bigEntry(engineData.VideoStore),
+                    bigEntry(engineData.AudioStore),
+                    bigEntry(engineData.VideoStore),
                 ]);
                 let filename = "yt-dlx_(AudioVideoHighest_";
-                const ffmpeg = gpuffmpeg({
-                    size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
-                    input: VideoData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    adata: AudioData,
+                    vdata: VideoData,
                 });
-                ffmpeg.addInput(AudioData.AVDownload.mediaurl);
                 ffmpeg.withOutputFormat("matroska");
                 if (filter === "grayscale") {
                     ffmpeg.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -3657,14 +3630,13 @@ async function ListAudioVideoLowest(input) {
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
                 const [AudioData, VideoData] = await Promise.all([
-                    await lowEntry(engineData.AudioStore),
-                    await lowEntry(engineData.VideoStore),
+                    lowEntry(engineData.AudioStore),
+                    lowEntry(engineData.VideoStore),
                 ]);
                 let filename = "yt-dlx_(AudioVideoLowest_";
-                const ffmpeg = gpuffmpeg({
-                    size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
-                    input: VideoData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    adata: AudioData,
+                    vdata: VideoData,
                 });
                 ffmpeg.addInput(AudioData.AVDownload.mediaurl);
                 ffmpeg.withOutputFormat("matroska");
@@ -3821,14 +3793,13 @@ async function ListAudioVideoQualityCustom(input) {
                 const ACustomData = engineData.AudioStore.filter((op) => op.AVDownload.formatnote === AQuality);
                 const VCustomData = engineData.VideoStore.filter((op) => op.AVDownload.formatnote === VQuality);
                 const [AudioData, VideoData] = await Promise.all([
-                    await bigEntry(ACustomData),
-                    await bigEntry(VCustomData),
+                    bigEntry(ACustomData),
+                    bigEntry(VCustomData),
                 ]);
                 let filename = "yt-dlx_(AudioVideoQualityCustom_";
-                const ffmpeg = gpuffmpeg({
-                    size: sizeFormat(AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes).toString(),
-                    input: VideoData.AVDownload.mediaurl,
-                    verbose,
+                const ffmpeg = await proTube({
+                    adata: AudioData,
+                    vdata: VideoData,
                 });
                 ffmpeg.addInput(AudioData.AVDownload.mediaurl);
                 ffmpeg.withOutputFormat("matroska");
