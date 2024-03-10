@@ -24,35 +24,49 @@ async function proTube({
   while (max > 0) {
     ffprobepath = path.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
     ffmpegpath = path.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
-    if (fs.existsSync(ffprobepath) && fs.existsSync(ffmpegpath)) {
-      fluent.setFfprobePath(ffprobepath);
-      fluent.setFfmpegPath(ffmpegpath);
-      break;
-    } else {
-      dirC = path.join(dirC, "..");
-      max--;
+    switch (true) {
+      case fs.existsSync(ffprobepath) && fs.existsSync(ffmpegpath):
+        fluent.setFfprobePath(ffprobepath);
+        fluent.setFfmpegPath(ffmpegpath);
+        max = 0;
+        break;
+      default:
+        dirC = path.join(dirC, "..");
+        max--;
     }
   }
+
+  if (vdata && !adata) {
+  }
+  if (adata && !vdata) {
+  }
+  if (adata && vdata) {
+  }
+
   fluent.addInput(vdata.AVDownload.mediaurl);
   fluent.addInput(adata.AVDownload.mediaurl);
   fluent.withOutputOptions(["-map 0:v:0", "-map 1:a:0"]);
   fluent.withVideoCodec("copy");
   fluent.withAudioCodec("copy");
   fluent.addInput(metaTube.thumbnail);
-  if (adata.Audio.bitrate) {
-    fluent.withAudioBitrate(adata.Audio.bitrate);
-  }
-  if (vdata.Audio.bitrate) {
-    fluent.withVideoBitrate(vdata.Audio.bitrate);
-  }
-  if (adata.Audio.channels) {
-    fluent.withAudioChannels(adata.Audio.channels);
-  }
-  if (vdata.AVInfo.framespersecond) {
-    fluent.withFPS(vdata.AVInfo.framespersecond);
-  }
-  if (vdata.Video.aspectratio) {
-    fluent.withAspectRatio(vdata.Video.aspectratio);
+  switch (true) {
+    case !!adata.Audio.bitrate:
+      fluent.withAudioBitrate(adata.Audio.bitrate);
+      break;
+    case !!vdata.Audio.bitrate:
+      fluent.withVideoBitrate(vdata.Audio.bitrate);
+      break;
+    case !!adata.Audio.channels:
+      fluent.withAudioChannels(adata.Audio.channels);
+      break;
+    case !!vdata.AVInfo.framespersecond:
+      fluent.withFPS(vdata.AVInfo.framespersecond);
+      break;
+    case !!vdata.Video.aspectratio:
+      fluent.withAspectRatio(vdata.Video.aspectratio);
+      break;
+    default:
+      break;
   }
   fluent.on("progress", (progress) => {
     progressBar(progress, vdata.AVInfo.filesizeformatted.toString());
