@@ -7,6 +7,13 @@ import proTube from "../../../base/ffmpeg";
 import lowEntry from "../../../base/lowEntry";
 import type { proTubeCommand } from "../../../base/ffmpeg";
 
+/**
+ * AudioHighest function is designed for fetching lowest audio content from YouTube with various customization options.
+ * It allows users to specify their search query, choose output format and apply audio filters like echo, flanger, nightcore, and more.
+ * It also allows user to specify verbose output and adding proxies.
+ * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
+ * audio manipulation using FFmpeg, and error handling for a smooth user experience.
+ */
 const qconf = z.object({
   query: z.string().min(1),
   output: z.string().optional(),
