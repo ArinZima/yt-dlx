@@ -78,7 +78,6 @@ export default async function AudioHighest(input: {
       const ffmpeg: proTubeCommand = await proTube({
         adata: await bigEntry(engineData.AudioStore),
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
       ffmpeg.withOutputFormat("avi");
       switch (filter) {
         case "bassboost":

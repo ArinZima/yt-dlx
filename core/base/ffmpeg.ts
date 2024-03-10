@@ -3,9 +3,10 @@ import colors from "colors";
 import * as path from "path";
 import readline from "readline";
 import ffmpeg from "fluent-ffmpeg";
-import type { FfmpegCommand } from "fluent-ffmpeg";
 import type TubeConfig from "../interface/TubeConfig";
+import type { FfmpegCommand as proTubeCommand } from "fluent-ffmpeg";
 
+export type { proTubeCommand };
 export function progressBar(prog: any) {
   if (prog.timemark === undefined || prog.percent === undefined) return;
   if (prog.percent < 1 && prog.timemark.includes("-")) return;
@@ -41,10 +42,10 @@ export default async function proTube({
 }: {
   adata?: TubeConfig;
   vdata?: TubeConfig;
-}): Promise<ffmpeg.FfmpegCommand> {
+}): Promise<proTubeCommand> {
   let max: number = 6;
   let dirC: string = __dirname;
-  const ff: FfmpegCommand = ffmpeg();
+  const ff: proTubeCommand = ffmpeg();
   let ffprobepath: string, ffmpegpath: string;
   while (max > 0) {
     ffprobepath = path.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
@@ -62,13 +63,11 @@ export default async function proTube({
   }
   if (vdata && !adata) {
     ff.addInput(vdata.AVDownload.mediaurl);
-    ff.withVideoCodec("copy");
     if (vdata.AVInfo.framespersecond) ff.withFPS(vdata.AVInfo.framespersecond);
     if (vdata.Video.aspectratio) ff.withAspectRatio(vdata.Video.aspectratio);
     if (vdata.Video.bitrate) ff.withVideoBitrate(vdata.Video.bitrate);
   } else if (adata && !vdata) {
     ff.addInput(adata.AVDownload.mediaurl);
-    ff.withAudioCodec("copy");
     if (adata.Audio.channels) ff.withAudioChannels(adata.Audio.channels);
     if (adata.Audio.bitrate) ff.withAudioBitrate(adata.Audio.bitrate);
   } else if (adata && vdata) {
@@ -90,4 +89,3 @@ export default async function proTube({
   });
   return ff;
 }
-export type { FfmpegCommand as proTubeCommand };

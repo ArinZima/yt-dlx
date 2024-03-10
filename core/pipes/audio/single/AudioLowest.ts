@@ -78,10 +78,6 @@ export default async function AudioLowest(input: {
       const ffmpeg: proTubeCommand = await proTube({
         adata: await lowEntry(engineData.AudioStore),
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.addOutputOption("-map", "1:0");
-      ffmpeg.addOutputOption("-map", "0:a:0");
-      ffmpeg.addOutputOption("-id3v2_version", "3");
       ffmpeg.withOutputFormat("avi");
       switch (filter) {
         case "bassboost":

@@ -87,10 +87,6 @@ export default async function AudioQualityCustom(input: {
       const ffmpeg: proTubeCommand = await proTube({
         adata: await bigEntry(customData),
       });
-      ffmpeg.addInput(engineData.metaTube.thumbnail);
-      ffmpeg.addOutputOption("-map", "1:0");
-      ffmpeg.addOutputOption("-map", "0:a:0");
-      ffmpeg.addOutputOption("-id3v2_version", "3");
       ffmpeg.withOutputFormat("avi");
       let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
       switch (filter) {
