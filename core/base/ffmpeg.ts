@@ -3,7 +3,6 @@ import colors from "colors";
 import * as path from "path";
 import readline from "readline";
 import fluent from "fluent-ffmpeg";
-import { execSync } from "child_process";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
 export function progressBar(prog: any, size: string) {
@@ -48,13 +47,6 @@ function gpuffmpeg({
   let maxTries: number = 6;
   let currentDir: string = __dirname;
   let FfprobePath: string, FfmpegPath: string;
-  const getTerm = (command: string) => {
-    try {
-      return execSync(command).toString().trim();
-    } catch {
-      return undefined;
-    }
-  };
   const ffmpeg: FfmpegCommand = fluent(input)
     .on("start", (command) => {
       if (verbose) console.log(colors.green("@ffmpeg:"), command);
@@ -74,21 +66,6 @@ function gpuffmpeg({
       maxTries--;
     }
   }
-  const vendor = getTerm("nvidia-smi --query-gpu=name --format=csv,noheader");
-  switch (true) {
-    case vendor && vendor.includes("NVIDIA"):
-      console.log(colors.green("@ffmpeg:"), "using GPU", colors.green(vendor));
-      ffmpeg.withInputOption("-hwaccel cuda");
-      ffmpeg.withVideoCodec("h264_nvenc");
-      break;
-    default:
-      console.log(
-        colors.yellow("@ffmpeg:"),
-        "GPU vendor not recognized.",
-        "defaulting to software processing."
-      );
-  }
-  ffmpeg.withOutputOption("-shortest");
   return ffmpeg;
 }
 export default gpuffmpeg;
