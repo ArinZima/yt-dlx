@@ -830,7 +830,7 @@ async function Engine({
 }
 
 // package.json
-var version = "5.2.0";
+var version = "5.5.0";
 
 // core/base/Agent.ts
 async function Agent({
@@ -1891,7 +1891,6 @@ async function proTube({
   }
   if (vdata && !adata) {
     ff.addInput(vdata.AVDownload.mediaurl);
-    ff.withVideoCodec("copy");
     if (vdata.AVInfo.framespersecond)
       ff.withFPS(vdata.AVInfo.framespersecond);
     if (vdata.Video.aspectratio)
@@ -1900,7 +1899,6 @@ async function proTube({
       ff.withVideoBitrate(vdata.Video.bitrate);
   } else if (adata && !vdata) {
     ff.addInput(adata.AVDownload.mediaurl);
-    ff.withAudioCodec("copy");
     if (adata.Audio.channels)
       ff.withAudioChannels(adata.Audio.channels);
     if (adata.Audio.bitrate)
@@ -1938,9 +1936,9 @@ async function lowEntry(metaBody) {
   const sortedByFileSize = [...validEntries].sort(
     (a, b) => a.AVInfo.filesizebytes - b.AVInfo.filesizebytes
   );
-  if (!sortedByFileSize[0]) {
+  if (!sortedByFileSize[0])
     throw new Error("sorry no downloadable data found");
-  } else
+  else
     return sortedByFileSize[0];
 }
 
@@ -1989,58 +1987,72 @@ async function AudioLowest(input) {
       const ffmpeg2 = await proTube({
         adata: await lowEntry(engineData.AudioStore)
       });
-      ffmpeg2.addInput(engineData.metaTube.thumbnail);
-      ffmpeg2.addOutputOption("-map", "1:0");
-      ffmpeg2.addOutputOption("-map", "0:a:0");
-      ffmpeg2.addOutputOption("-id3v2_version", "3");
       ffmpeg2.withOutputFormat("avi");
-      if (filter2 === "bassboost") {
-        ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        filename += `bassboost)_${title}.avi`;
-      } else if (filter2 === "echo") {
-        ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        filename += `echo)_${title}.avi`;
-      } else if (filter2 === "flanger") {
-        ffmpeg2.withAudioFilter(["flanger"]);
-        filename += `flanger)_${title}.avi`;
-      } else if (filter2 === "nightcore") {
-        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        filename += `nightcore)_${title}.avi`;
-      } else if (filter2 === "panning") {
-        ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
-        filename += `panning)_${title}.avi`;
-      } else if (filter2 === "phaser") {
-        ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
-        filename += `phaser)_${title}.avi`;
-      } else if (filter2 === "reverse") {
-        ffmpeg2.withAudioFilter(["areverse"]);
-        filename += `reverse)_${title}.avi`;
-      } else if (filter2 === "slow") {
-        ffmpeg2.withAudioFilter(["atempo=0.8"]);
-        filename += `slow)_${title}.avi`;
-      } else if (filter2 === "speed") {
-        ffmpeg2.withAudioFilter(["atempo=2"]);
-        filename += `speed)_${title}.avi`;
-      } else if (filter2 === "subboost") {
-        ffmpeg2.withAudioFilter(["asubboost"]);
-        filename += `subboost)_${title}.avi`;
-      } else if (filter2 === "superslow") {
-        ffmpeg2.withAudioFilter(["atempo=0.5"]);
-        filename += `superslow)_${title}.avi`;
-      } else if (filter2 === "superspeed") {
-        ffmpeg2.withAudioFilter(["atempo=3"]);
-        filename += `superspeed)_${title}.avi`;
-      } else if (filter2 === "surround") {
-        ffmpeg2.withAudioFilter(["surround"]);
-        filename += `surround)_${title}.avi`;
-      } else if (filter2 === "vaporwave") {
-        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        filename += `vaporwave)_${title}.avi`;
-      } else if (filter2 === "vibrato") {
-        ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
-        filename += `vibrato)_${title}.avi`;
-      } else
-        filename += `)_${title}.avi`;
+      switch (filter2) {
+        case "bassboost":
+          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          filename += `bassboost)_${title}.avi`;
+          break;
+        case "echo":
+          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          filename += `echo)_${title}.avi`;
+          break;
+        case "flanger":
+          ffmpeg2.withAudioFilter(["flanger"]);
+          filename += `flanger)_${title}.avi`;
+          break;
+        case "nightcore":
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          filename += `nightcore)_${title}.avi`;
+          break;
+        case "panning":
+          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
+          filename += `panning)_${title}.avi`;
+          break;
+        case "phaser":
+          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
+          filename += `phaser)_${title}.avi`;
+          break;
+        case "reverse":
+          ffmpeg2.withAudioFilter(["areverse"]);
+          filename += `reverse)_${title}.avi`;
+          break;
+        case "slow":
+          ffmpeg2.withAudioFilter(["atempo=0.8"]);
+          filename += `slow)_${title}.avi`;
+          break;
+        case "speed":
+          ffmpeg2.withAudioFilter(["atempo=2"]);
+          filename += `speed)_${title}.avi`;
+          break;
+        case "subboost":
+          ffmpeg2.withAudioFilter(["asubboost"]);
+          filename += `subboost)_${title}.avi`;
+          break;
+        case "superslow":
+          ffmpeg2.withAudioFilter(["atempo=0.5"]);
+          filename += `superslow)_${title}.avi`;
+          break;
+        case "superspeed":
+          ffmpeg2.withAudioFilter(["atempo=3"]);
+          filename += `superspeed)_${title}.avi`;
+          break;
+        case "surround":
+          ffmpeg2.withAudioFilter(["surround"]);
+          filename += `surround)_${title}.avi`;
+          break;
+        case "vaporwave":
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          filename += `vaporwave)_${title}.avi`;
+          break;
+        case "vibrato":
+          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
+          filename += `vibrato)_${title}.avi`;
+          break;
+        default:
+          filename += `)_${title}.avi`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -2086,9 +2098,9 @@ async function bigEntry(metaBody) {
   const sortedByFileSize = [...validEntries].sort(
     (a, b) => b.AVInfo.filesizebytes - a.AVInfo.filesizebytes
   );
-  if (!sortedByFileSize[0]) {
+  if (!sortedByFileSize[0])
     throw new Error("sorry no downloadable data found");
-  } else
+  else
     return sortedByFileSize[0];
 }
 
@@ -2137,58 +2149,72 @@ async function AudioHighest(input) {
       const ffmpeg2 = await proTube({
         adata: await bigEntry(engineData.AudioStore)
       });
-      ffmpeg2.addInput(engineData.metaTube.thumbnail);
-      ffmpeg2.addOutputOption("-map", "1:0");
-      ffmpeg2.addOutputOption("-map", "0:a:0");
-      ffmpeg2.addOutputOption("-id3v2_version", "3");
       ffmpeg2.withOutputFormat("avi");
-      if (filter2 === "bassboost") {
-        ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        filename += `bassboost)_${title}.avi`;
-      } else if (filter2 === "echo") {
-        ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        filename += `echo)_${title}.avi`;
-      } else if (filter2 === "flanger") {
-        ffmpeg2.withAudioFilter(["flanger"]);
-        filename += `flanger)_${title}.avi`;
-      } else if (filter2 === "nightcore") {
-        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        filename += `nightcore)_${title}.avi`;
-      } else if (filter2 === "panning") {
-        ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
-        filename += `panning)_${title}.avi`;
-      } else if (filter2 === "phaser") {
-        ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
-        filename += `phaser)_${title}.avi`;
-      } else if (filter2 === "reverse") {
-        ffmpeg2.withAudioFilter(["areverse"]);
-        filename += `reverse)_${title}.avi`;
-      } else if (filter2 === "slow") {
-        ffmpeg2.withAudioFilter(["atempo=0.8"]);
-        filename += `slow)_${title}.avi`;
-      } else if (filter2 === "speed") {
-        ffmpeg2.withAudioFilter(["atempo=2"]);
-        filename += `speed)_${title}.avi`;
-      } else if (filter2 === "subboost") {
-        ffmpeg2.withAudioFilter(["asubboost"]);
-        filename += `subboost)_${title}.avi`;
-      } else if (filter2 === "superslow") {
-        ffmpeg2.withAudioFilter(["atempo=0.5"]);
-        filename += `superslow)_${title}.avi`;
-      } else if (filter2 === "superspeed") {
-        ffmpeg2.withAudioFilter(["atempo=3"]);
-        filename += `superspeed)_${title}.avi`;
-      } else if (filter2 === "surround") {
-        ffmpeg2.withAudioFilter(["surround"]);
-        filename += `surround)_${title}.avi`;
-      } else if (filter2 === "vaporwave") {
-        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        filename += `vaporwave)_${title}.avi`;
-      } else if (filter2 === "vibrato") {
-        ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
-        filename += `vibrato)_${title}.avi`;
-      } else
-        filename += `)_${title}.avi`;
+      switch (filter2) {
+        case "bassboost":
+          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          filename += `bassboost)_${title}.avi`;
+          break;
+        case "echo":
+          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          filename += `echo)_${title}.avi`;
+          break;
+        case "flanger":
+          ffmpeg2.withAudioFilter(["flanger"]);
+          filename += `flanger)_${title}.avi`;
+          break;
+        case "nightcore":
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          filename += `nightcore)_${title}.avi`;
+          break;
+        case "panning":
+          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
+          filename += `panning)_${title}.avi`;
+          break;
+        case "phaser":
+          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
+          filename += `phaser)_${title}.avi`;
+          break;
+        case "reverse":
+          ffmpeg2.withAudioFilter(["areverse"]);
+          filename += `reverse)_${title}.avi`;
+          break;
+        case "slow":
+          ffmpeg2.withAudioFilter(["atempo=0.8"]);
+          filename += `slow)_${title}.avi`;
+          break;
+        case "speed":
+          ffmpeg2.withAudioFilter(["atempo=2"]);
+          filename += `speed)_${title}.avi`;
+          break;
+        case "subboost":
+          ffmpeg2.withAudioFilter(["asubboost"]);
+          filename += `subboost)_${title}.avi`;
+          break;
+        case "superslow":
+          ffmpeg2.withAudioFilter(["atempo=0.5"]);
+          filename += `superslow)_${title}.avi`;
+          break;
+        case "superspeed":
+          ffmpeg2.withAudioFilter(["atempo=3"]);
+          filename += `superspeed)_${title}.avi`;
+          break;
+        case "surround":
+          ffmpeg2.withAudioFilter(["surround"]);
+          filename += `surround)_${title}.avi`;
+          break;
+        case "vaporwave":
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          filename += `vaporwave)_${title}.avi`;
+          break;
+        case "vibrato":
+          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
+          filename += `vibrato)_${title}.avi`;
+          break;
+        default:
+          filename += `)_${title}.avi`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -2277,59 +2303,73 @@ async function AudioQualityCustom(input) {
       const ffmpeg2 = await proTube({
         adata: await bigEntry(customData)
       });
-      ffmpeg2.addInput(engineData.metaTube.thumbnail);
-      ffmpeg2.addOutputOption("-map", "1:0");
-      ffmpeg2.addOutputOption("-map", "0:a:0");
-      ffmpeg2.addOutputOption("-id3v2_version", "3");
       ffmpeg2.withOutputFormat("avi");
       let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
-      if (filter2 === "bassboost") {
-        ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        filename += `bassboost)_${title}.avi`;
-      } else if (filter2 === "echo") {
-        ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        filename += `echo)_${title}.avi`;
-      } else if (filter2 === "flanger") {
-        ffmpeg2.withAudioFilter(["flanger"]);
-        filename += `flanger)_${title}.avi`;
-      } else if (filter2 === "nightcore") {
-        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        filename += `nightcore)_${title}.avi`;
-      } else if (filter2 === "panning") {
-        ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
-        filename += `panning)_${title}.avi`;
-      } else if (filter2 === "phaser") {
-        ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
-        filename += `phaser)_${title}.avi`;
-      } else if (filter2 === "reverse") {
-        ffmpeg2.withAudioFilter(["areverse"]);
-        filename += `reverse)_${title}.avi`;
-      } else if (filter2 === "slow") {
-        ffmpeg2.withAudioFilter(["atempo=0.8"]);
-        filename += `slow)_${title}.avi`;
-      } else if (filter2 === "speed") {
-        ffmpeg2.withAudioFilter(["atempo=2"]);
-        filename += `speed)_${title}.avi`;
-      } else if (filter2 === "subboost") {
-        ffmpeg2.withAudioFilter(["asubboost"]);
-        filename += `subboost)_${title}.avi`;
-      } else if (filter2 === "superslow") {
-        ffmpeg2.withAudioFilter(["atempo=0.5"]);
-        filename += `superslow)_${title}.avi`;
-      } else if (filter2 === "superspeed") {
-        ffmpeg2.withAudioFilter(["atempo=3"]);
-        filename += `superspeed)_${title}.avi`;
-      } else if (filter2 === "surround") {
-        ffmpeg2.withAudioFilter(["surround"]);
-        filename += `surround)_${title}.avi`;
-      } else if (filter2 === "vaporwave") {
-        ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        filename += `vaporwave)_${title}.avi`;
-      } else if (filter2 === "vibrato") {
-        ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
-        filename += `vibrato)_${title}.avi`;
-      } else
-        filename += `)_${title}.avi`;
+      switch (filter2) {
+        case "bassboost":
+          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          filename += `bassboost)_${title}.avi`;
+          break;
+        case "echo":
+          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          filename += `echo)_${title}.avi`;
+          break;
+        case "flanger":
+          ffmpeg2.withAudioFilter(["flanger"]);
+          filename += `flanger)_${title}.avi`;
+          break;
+        case "nightcore":
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          filename += `nightcore)_${title}.avi`;
+          break;
+        case "panning":
+          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
+          filename += `panning)_${title}.avi`;
+          break;
+        case "phaser":
+          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
+          filename += `phaser)_${title}.avi`;
+          break;
+        case "reverse":
+          ffmpeg2.withAudioFilter(["areverse"]);
+          filename += `reverse)_${title}.avi`;
+          break;
+        case "slow":
+          ffmpeg2.withAudioFilter(["atempo=0.8"]);
+          filename += `slow)_${title}.avi`;
+          break;
+        case "speed":
+          ffmpeg2.withAudioFilter(["atempo=2"]);
+          filename += `speed)_${title}.avi`;
+          break;
+        case "subboost":
+          ffmpeg2.withAudioFilter(["asubboost"]);
+          filename += `subboost)_${title}.avi`;
+          break;
+        case "superslow":
+          ffmpeg2.withAudioFilter(["atempo=0.5"]);
+          filename += `superslow)_${title}.avi`;
+          break;
+        case "superspeed":
+          ffmpeg2.withAudioFilter(["atempo=3"]);
+          filename += `superspeed)_${title}.avi`;
+          break;
+        case "surround":
+          ffmpeg2.withAudioFilter(["surround"]);
+          filename += `surround)_${title}.avi`;
+          break;
+        case "vaporwave":
+          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          filename += `vaporwave)_${title}.avi`;
+          break;
+        case "vibrato":
+          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
+          filename += `vibrato)_${title}.avi`;
+          break;
+        default:
+          filename += `)_${title}.avi`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -2469,58 +2509,72 @@ async function ListAudioLowest(input) {
         const ffmpeg2 = await proTube({
           adata: await lowEntry(engineData.AudioStore)
         });
-        ffmpeg2.addInput(engineData.metaTube.thumbnail);
-        ffmpeg2.addOutputOption("-map", "1:0");
-        ffmpeg2.addOutputOption("-map", "0:a:0");
-        ffmpeg2.addOutputOption("-id3v2_version", "3");
         ffmpeg2.withOutputFormat("avi");
-        if (filter2 === "bassboost") {
-          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-          filename += `bassboost)_${title}.avi`;
-        } else if (filter2 === "echo") {
-          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-          filename += `echo)_${title}.avi`;
-        } else if (filter2 === "flanger") {
-          ffmpeg2.withAudioFilter(["flanger"]);
-          filename += `flanger)_${title}.avi`;
-        } else if (filter2 === "nightcore") {
-          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-          filename += `nightcore)_${title}.avi`;
-        } else if (filter2 === "panning") {
-          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
-          filename += `panning)_${title}.avi`;
-        } else if (filter2 === "phaser") {
-          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
-          filename += `phaser)_${title}.avi`;
-        } else if (filter2 === "reverse") {
-          ffmpeg2.withAudioFilter(["areverse"]);
-          filename += `reverse)_${title}.avi`;
-        } else if (filter2 === "slow") {
-          ffmpeg2.withAudioFilter(["atempo=0.8"]);
-          filename += `slow)_${title}.avi`;
-        } else if (filter2 === "speed") {
-          ffmpeg2.withAudioFilter(["atempo=2"]);
-          filename += `speed)_${title}.avi`;
-        } else if (filter2 === "subboost") {
-          ffmpeg2.withAudioFilter(["asubboost"]);
-          filename += `subboost)_${title}.avi`;
-        } else if (filter2 === "superslow") {
-          ffmpeg2.withAudioFilter(["atempo=0.5"]);
-          filename += `superslow)_${title}.avi`;
-        } else if (filter2 === "superspeed") {
-          ffmpeg2.withAudioFilter(["atempo=3"]);
-          filename += `superspeed)_${title}.avi`;
-        } else if (filter2 === "surround") {
-          ffmpeg2.withAudioFilter(["surround"]);
-          filename += `surround)_${title}.avi`;
-        } else if (filter2 === "vaporwave") {
-          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-          filename += `vaporwave)_${title}.avi`;
-        } else if (filter2 === "vibrato") {
-          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
-          filename += `vibrato)_${title}.avi`;
-        } else
-          filename += `)_${title}.avi`;
+        switch (filter2) {
+          case "bassboost":
+            ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            filename += `bassboost)_${title}.avi`;
+            break;
+          case "echo":
+            ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            filename += `echo)_${title}.avi`;
+            break;
+          case "flanger":
+            ffmpeg2.withAudioFilter(["flanger"]);
+            filename += `flanger)_${title}.avi`;
+            break;
+          case "nightcore":
+            ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            filename += `nightcore)_${title}.avi`;
+            break;
+          case "panning":
+            ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
+            filename += `panning)_${title}.avi`;
+            break;
+          case "phaser":
+            ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
+            filename += `phaser)_${title}.avi`;
+            break;
+          case "reverse":
+            ffmpeg2.withAudioFilter(["areverse"]);
+            filename += `reverse)_${title}.avi`;
+            break;
+          case "slow":
+            ffmpeg2.withAudioFilter(["atempo=0.8"]);
+            filename += `slow)_${title}.avi`;
+            break;
+          case "speed":
+            ffmpeg2.withAudioFilter(["atempo=2"]);
+            filename += `speed)_${title}.avi`;
+            break;
+          case "subboost":
+            ffmpeg2.withAudioFilter(["asubboost"]);
+            filename += `subboost)_${title}.avi`;
+            break;
+          case "superslow":
+            ffmpeg2.withAudioFilter(["atempo=0.5"]);
+            filename += `superslow)_${title}.avi`;
+            break;
+          case "superspeed":
+            ffmpeg2.withAudioFilter(["atempo=3"]);
+            filename += `superspeed)_${title}.avi`;
+            break;
+          case "surround":
+            ffmpeg2.withAudioFilter(["surround"]);
+            filename += `surround)_${title}.avi`;
+            break;
+          case "vaporwave":
+            ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            filename += `vaporwave)_${title}.avi`;
+            break;
+          case "vibrato":
+            ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
+            filename += `vibrato)_${title}.avi`;
+            break;
+          default:
+            filename += `)_${title}.avi`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -2657,58 +2711,72 @@ async function ListAudioHighest(input) {
         const ffmpeg2 = await proTube({
           adata: await bigEntry(engineData.AudioStore)
         });
-        ffmpeg2.addInput(engineData.metaTube.thumbnail);
-        ffmpeg2.addOutputOption("-map", "1:0");
-        ffmpeg2.addOutputOption("-map", "0:a:0");
-        ffmpeg2.addOutputOption("-id3v2_version", "3");
         ffmpeg2.withOutputFormat("avi");
-        if (filter2 === "bassboost") {
-          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-          filename += `bassboost)_${title}.avi`;
-        } else if (filter2 === "echo") {
-          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-          filename += `echo)_${title}.avi`;
-        } else if (filter2 === "flanger") {
-          ffmpeg2.withAudioFilter(["flanger"]);
-          filename += `flanger)_${title}.avi`;
-        } else if (filter2 === "nightcore") {
-          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-          filename += `nightcore)_${title}.avi`;
-        } else if (filter2 === "panning") {
-          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
-          filename += `panning)_${title}.avi`;
-        } else if (filter2 === "phaser") {
-          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
-          filename += `phaser)_${title}.avi`;
-        } else if (filter2 === "reverse") {
-          ffmpeg2.withAudioFilter(["areverse"]);
-          filename += `reverse)_${title}.avi`;
-        } else if (filter2 === "slow") {
-          ffmpeg2.withAudioFilter(["atempo=0.8"]);
-          filename += `slow)_${title}.avi`;
-        } else if (filter2 === "speed") {
-          ffmpeg2.withAudioFilter(["atempo=2"]);
-          filename += `speed)_${title}.avi`;
-        } else if (filter2 === "subboost") {
-          ffmpeg2.withAudioFilter(["asubboost"]);
-          filename += `subboost)_${title}.avi`;
-        } else if (filter2 === "superslow") {
-          ffmpeg2.withAudioFilter(["atempo=0.5"]);
-          filename += `superslow)_${title}.avi`;
-        } else if (filter2 === "superspeed") {
-          ffmpeg2.withAudioFilter(["atempo=3"]);
-          filename += `superspeed)_${title}.avi`;
-        } else if (filter2 === "surround") {
-          ffmpeg2.withAudioFilter(["surround"]);
-          filename += `surround)_${title}.avi`;
-        } else if (filter2 === "vaporwave") {
-          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-          filename += `vaporwave)_${title}.avi`;
-        } else if (filter2 === "vibrato") {
-          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
-          filename += `vibrato)_${title}.avi`;
-        } else
-          filename += `)_${title}.avi`;
+        switch (filter2) {
+          case "bassboost":
+            ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            filename += `bassboost)_${title}.avi`;
+            break;
+          case "echo":
+            ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            filename += `echo)_${title}.avi`;
+            break;
+          case "flanger":
+            ffmpeg2.withAudioFilter(["flanger"]);
+            filename += `flanger)_${title}.avi`;
+            break;
+          case "nightcore":
+            ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            filename += `nightcore)_${title}.avi`;
+            break;
+          case "panning":
+            ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
+            filename += `panning)_${title}.avi`;
+            break;
+          case "phaser":
+            ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
+            filename += `phaser)_${title}.avi`;
+            break;
+          case "reverse":
+            ffmpeg2.withAudioFilter(["areverse"]);
+            filename += `reverse)_${title}.avi`;
+            break;
+          case "slow":
+            ffmpeg2.withAudioFilter(["atempo=0.8"]);
+            filename += `slow)_${title}.avi`;
+            break;
+          case "speed":
+            ffmpeg2.withAudioFilter(["atempo=2"]);
+            filename += `speed)_${title}.avi`;
+            break;
+          case "subboost":
+            ffmpeg2.withAudioFilter(["asubboost"]);
+            filename += `subboost)_${title}.avi`;
+            break;
+          case "superslow":
+            ffmpeg2.withAudioFilter(["atempo=0.5"]);
+            filename += `superslow)_${title}.avi`;
+            break;
+          case "superspeed":
+            ffmpeg2.withAudioFilter(["atempo=3"]);
+            filename += `superspeed)_${title}.avi`;
+            break;
+          case "surround":
+            ffmpeg2.withAudioFilter(["surround"]);
+            filename += `surround)_${title}.avi`;
+            break;
+          case "vaporwave":
+            ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            filename += `vaporwave)_${title}.avi`;
+            break;
+          case "vibrato":
+            ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
+            filename += `vibrato)_${title}.avi`;
+            break;
+          default:
+            filename += `)_${title}.avi`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -2852,58 +2920,72 @@ async function ListAudioQualityCustom(input) {
         const ffmpeg2 = await proTube({
           adata: await bigEntry(customData)
         });
-        ffmpeg2.addInput(engineData.metaTube.thumbnail);
-        ffmpeg2.addOutputOption("-map", "1:0");
-        ffmpeg2.addOutputOption("-map", "0:a:0");
-        ffmpeg2.addOutputOption("-id3v2_version", "3");
         ffmpeg2.withOutputFormat("avi");
-        if (filter2 === "bassboost") {
-          ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-          filename += `bassboost)_${title}.avi`;
-        } else if (filter2 === "echo") {
-          ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-          filename += `echo)_${title}.avi`;
-        } else if (filter2 === "flanger") {
-          ffmpeg2.withAudioFilter(["flanger"]);
-          filename += `flanger)_${title}.avi`;
-        } else if (filter2 === "nightcore") {
-          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-          filename += `nightcore)_${title}.avi`;
-        } else if (filter2 === "panning") {
-          ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
-          filename += `panning)_${title}.avi`;
-        } else if (filter2 === "phaser") {
-          ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
-          filename += `phaser)_${title}.avi`;
-        } else if (filter2 === "reverse") {
-          ffmpeg2.withAudioFilter(["areverse"]);
-          filename += `reverse)_${title}.avi`;
-        } else if (filter2 === "slow") {
-          ffmpeg2.withAudioFilter(["atempo=0.8"]);
-          filename += `slow)_${title}.avi`;
-        } else if (filter2 === "speed") {
-          ffmpeg2.withAudioFilter(["atempo=2"]);
-          filename += `speed)_${title}.avi`;
-        } else if (filter2 === "subboost") {
-          ffmpeg2.withAudioFilter(["asubboost"]);
-          filename += `subboost)_${title}.avi`;
-        } else if (filter2 === "superslow") {
-          ffmpeg2.withAudioFilter(["atempo=0.5"]);
-          filename += `superslow)_${title}.avi`;
-        } else if (filter2 === "superspeed") {
-          ffmpeg2.withAudioFilter(["atempo=3"]);
-          filename += `superspeed)_${title}.avi`;
-        } else if (filter2 === "surround") {
-          ffmpeg2.withAudioFilter(["surround"]);
-          filename += `surround)_${title}.avi`;
-        } else if (filter2 === "vaporwave") {
-          ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-          filename += `vaporwave)_${title}.avi`;
-        } else if (filter2 === "vibrato") {
-          ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
-          filename += `vibrato)_${title}.avi`;
-        } else
-          filename += `)_${title}.avi`;
+        switch (filter2) {
+          case "bassboost":
+            ffmpeg2.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            filename += `bassboost)_${title}.avi`;
+            break;
+          case "echo":
+            ffmpeg2.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            filename += `echo)_${title}.avi`;
+            break;
+          case "flanger":
+            ffmpeg2.withAudioFilter(["flanger"]);
+            filename += `flanger)_${title}.avi`;
+            break;
+          case "nightcore":
+            ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            filename += `nightcore)_${title}.avi`;
+            break;
+          case "panning":
+            ffmpeg2.withAudioFilter(["apulsator=hz=0.08"]);
+            filename += `panning)_${title}.avi`;
+            break;
+          case "phaser":
+            ffmpeg2.withAudioFilter(["aphaser=in_gain=0.4"]);
+            filename += `phaser)_${title}.avi`;
+            break;
+          case "reverse":
+            ffmpeg2.withAudioFilter(["areverse"]);
+            filename += `reverse)_${title}.avi`;
+            break;
+          case "slow":
+            ffmpeg2.withAudioFilter(["atempo=0.8"]);
+            filename += `slow)_${title}.avi`;
+            break;
+          case "speed":
+            ffmpeg2.withAudioFilter(["atempo=2"]);
+            filename += `speed)_${title}.avi`;
+            break;
+          case "subboost":
+            ffmpeg2.withAudioFilter(["asubboost"]);
+            filename += `subboost)_${title}.avi`;
+            break;
+          case "superslow":
+            ffmpeg2.withAudioFilter(["atempo=0.5"]);
+            filename += `superslow)_${title}.avi`;
+            break;
+          case "superspeed":
+            ffmpeg2.withAudioFilter(["atempo=3"]);
+            filename += `superspeed)_${title}.avi`;
+            break;
+          case "surround":
+            ffmpeg2.withAudioFilter(["surround"]);
+            filename += `surround)_${title}.avi`;
+            break;
+          case "vaporwave":
+            ffmpeg2.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            filename += `vaporwave)_${title}.avi`;
+            break;
+          case "vibrato":
+            ffmpeg2.withAudioFilter(["vibrato=f=6.5"]);
+            filename += `vibrato)_${title}.avi`;
+            break;
+          default:
+            filename += `)_${title}.avi`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -2975,31 +3057,41 @@ async function VideoLowest(input) {
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(VideoLowest_";
-      if (filter2 === "grayscale") {
-        ffmpeg2.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        filename += `grayscale)_${title}.mkv`;
-      } else if (filter2 === "invert") {
-        ffmpeg2.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
-      } else if (filter2 === "rotate90") {
-        ffmpeg2.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
-      } else if (filter2 === "rotate180") {
-        ffmpeg2.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
-      } else if (filter2 === "rotate270") {
-        ffmpeg2.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
-      } else if (filter2 === "flipHorizontal") {
-        ffmpeg2.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
-      } else if (filter2 === "flipVertical") {
-        ffmpeg2.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
-      } else
-        filename += `)_${title}.mkv`;
+      switch (filter2) {
+        case "grayscale":
+          ffmpeg2.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ffmpeg2.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ffmpeg2.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ffmpeg2.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ffmpeg2.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ffmpeg2.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -3074,31 +3166,41 @@ async function VideoHighest(input) {
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(VideoHighest_";
-      if (filter2 === "grayscale") {
-        ffmpeg2.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        filename += `grayscale)_${title}.mkv`;
-      } else if (filter2 === "invert") {
-        ffmpeg2.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
-      } else if (filter2 === "rotate90") {
-        ffmpeg2.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
-      } else if (filter2 === "rotate180") {
-        ffmpeg2.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
-      } else if (filter2 === "rotate270") {
-        ffmpeg2.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
-      } else if (filter2 === "flipHorizontal") {
-        ffmpeg2.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
-      } else if (filter2 === "flipVertical") {
-        ffmpeg2.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
-      } else
-        filename += `)_${title}.mkv`;
+      switch (filter2) {
+        case "grayscale":
+          ffmpeg2.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ffmpeg2.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ffmpeg2.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ffmpeg2.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ffmpeg2.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ffmpeg2.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -3196,31 +3298,41 @@ async function VideoQualityCustom(input) {
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
       let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
-      if (filter2 === "grayscale") {
-        ffmpeg2.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        filename += `grayscale)_${title}.mkv`;
-      } else if (filter2 === "invert") {
-        ffmpeg2.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
-      } else if (filter2 === "rotate90") {
-        ffmpeg2.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
-      } else if (filter2 === "rotate180") {
-        ffmpeg2.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
-      } else if (filter2 === "rotate270") {
-        ffmpeg2.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
-      } else if (filter2 === "flipHorizontal") {
-        ffmpeg2.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
-      } else if (filter2 === "flipVertical") {
-        ffmpeg2.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
-      } else
-        filename += `)_${title}.mkv`;
+      switch (filter2) {
+        case "grayscale":
+          ffmpeg2.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ffmpeg2.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ffmpeg2.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ffmpeg2.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ffmpeg2.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ffmpeg2.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -3352,31 +3464,41 @@ async function ListVideoLowest(input) {
           vdata: await lowEntry(engineData.VideoStore)
         });
         ffmpeg2.withOutputFormat("matroska");
-        if (filter2 === "grayscale") {
-          ffmpeg2.withVideoFilter(
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          );
-          filename += `grayscale)_${title}.mkv`;
-        } else if (filter2 === "invert") {
-          ffmpeg2.withVideoFilter("negate");
-          filename += `invert)_${title}.mkv`;
-        } else if (filter2 === "rotate90") {
-          ffmpeg2.withVideoFilter("rotate=PI/2");
-          filename += `rotate90)_${title}.mkv`;
-        } else if (filter2 === "rotate180") {
-          ffmpeg2.withVideoFilter("rotate=PI");
-          filename += `rotate180)_${title}.mkv`;
-        } else if (filter2 === "rotate270") {
-          ffmpeg2.withVideoFilter("rotate=3*PI/2");
-          filename += `rotate270)_${title}.mkv`;
-        } else if (filter2 === "flipHorizontal") {
-          ffmpeg2.withVideoFilter("hflip");
-          filename += `flipHorizontal)_${title}.mkv`;
-        } else if (filter2 === "flipVertical") {
-          ffmpeg2.withVideoFilter("vflip");
-          filename += `flipVertical)_${title}.mkv`;
-        } else
-          filename += `)_${title}.mkv`;
+        switch (filter2) {
+          case "grayscale":
+            ffmpeg2.withVideoFilter(
+              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+            );
+            filename += `grayscale)_${title}.mkv`;
+            break;
+          case "invert":
+            ffmpeg2.withVideoFilter("negate");
+            filename += `invert)_${title}.mkv`;
+            break;
+          case "rotate90":
+            ffmpeg2.withVideoFilter("rotate=PI/2");
+            filename += `rotate90)_${title}.mkv`;
+            break;
+          case "rotate180":
+            ffmpeg2.withVideoFilter("rotate=PI");
+            filename += `rotate180)_${title}.mkv`;
+            break;
+          case "rotate270":
+            ffmpeg2.withVideoFilter("rotate=3*PI/2");
+            filename += `rotate270)_${title}.mkv`;
+            break;
+          case "flipHorizontal":
+            ffmpeg2.withVideoFilter("hflip");
+            filename += `flipHorizontal)_${title}.mkv`;
+            break;
+          case "flipVertical":
+            ffmpeg2.withVideoFilter("vflip");
+            filename += `flipVertical)_${title}.mkv`;
+            break;
+          default:
+            filename += `)_${title}.mkv`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -3505,31 +3627,41 @@ async function ListVideoHighest(input) {
           vdata: await bigEntry(engineData.VideoStore)
         });
         ffmpeg2.withOutputFormat("matroska");
-        if (filter2 === "grayscale") {
-          ffmpeg2.withVideoFilter(
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          );
-          filename += `grayscale)_${title}.mkv`;
-        } else if (filter2 === "invert") {
-          ffmpeg2.withVideoFilter("negate");
-          filename += `invert)_${title}.mkv`;
-        } else if (filter2 === "rotate90") {
-          ffmpeg2.withVideoFilter("rotate=PI/2");
-          filename += `rotate90)_${title}.mkv`;
-        } else if (filter2 === "rotate180") {
-          ffmpeg2.withVideoFilter("rotate=PI");
-          filename += `rotate180)_${title}.mkv`;
-        } else if (filter2 === "rotate270") {
-          ffmpeg2.withVideoFilter("rotate=3*PI/2");
-          filename += `rotate270)_${title}.mkv`;
-        } else if (filter2 === "flipHorizontal") {
-          ffmpeg2.withVideoFilter("hflip");
-          filename += `flipHorizontal)_${title}.mkv`;
-        } else if (filter2 === "flipVertical") {
-          ffmpeg2.withVideoFilter("vflip");
-          filename += `flipVertical)_${title}.mkv`;
-        } else
-          filename += `)_${title}.mkv`;
+        switch (filter2) {
+          case "grayscale":
+            ffmpeg2.withVideoFilter(
+              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+            );
+            filename += `grayscale)_${title}.mkv`;
+            break;
+          case "invert":
+            ffmpeg2.withVideoFilter("negate");
+            filename += `invert)_${title}.mkv`;
+            break;
+          case "rotate90":
+            ffmpeg2.withVideoFilter("rotate=PI/2");
+            filename += `rotate90)_${title}.mkv`;
+            break;
+          case "rotate180":
+            ffmpeg2.withVideoFilter("rotate=PI");
+            filename += `rotate180)_${title}.mkv`;
+            break;
+          case "rotate270":
+            ffmpeg2.withVideoFilter("rotate=3*PI/2");
+            filename += `rotate270)_${title}.mkv`;
+            break;
+          case "flipHorizontal":
+            ffmpeg2.withVideoFilter("hflip");
+            filename += `flipHorizontal)_${title}.mkv`;
+            break;
+          case "flipVertical":
+            ffmpeg2.withVideoFilter("vflip");
+            filename += `flipVertical)_${title}.mkv`;
+            break;
+          default:
+            filename += `)_${title}.mkv`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -3680,31 +3812,41 @@ async function ListVideoQualityCustom(input) {
           vdata: await bigEntry(customData)
         });
         ffmpeg2.withOutputFormat("matroska");
-        if (filter2 === "grayscale") {
-          ffmpeg2.withVideoFilter(
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          );
-          filename += `grayscale)_${title}.mkv`;
-        } else if (filter2 === "invert") {
-          ffmpeg2.withVideoFilter("negate");
-          filename += `invert)_${title}.mkv`;
-        } else if (filter2 === "rotate90") {
-          ffmpeg2.withVideoFilter("rotate=PI/2");
-          filename += `rotate90)_${title}.mkv`;
-        } else if (filter2 === "rotate180") {
-          ffmpeg2.withVideoFilter("rotate=PI");
-          filename += `rotate180)_${title}.mkv`;
-        } else if (filter2 === "rotate270") {
-          ffmpeg2.withVideoFilter("rotate=3*PI/2");
-          filename += `rotate270)_${title}.mkv`;
-        } else if (filter2 === "flipHorizontal") {
-          ffmpeg2.withVideoFilter("hflip");
-          filename += `flipHorizontal)_${title}.mkv`;
-        } else if (filter2 === "flipVertical") {
-          ffmpeg2.withVideoFilter("vflip");
-          filename += `flipVertical)_${title}.mkv`;
-        } else
-          filename += `)_${title}.mkv`;
+        switch (filter2) {
+          case "grayscale":
+            ffmpeg2.withVideoFilter(
+              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+            );
+            filename += `grayscale)_${title}.mkv`;
+            break;
+          case "invert":
+            ffmpeg2.withVideoFilter("negate");
+            filename += `invert)_${title}.mkv`;
+            break;
+          case "rotate90":
+            ffmpeg2.withVideoFilter("rotate=PI/2");
+            filename += `rotate90)_${title}.mkv`;
+            break;
+          case "rotate180":
+            ffmpeg2.withVideoFilter("rotate=PI");
+            filename += `rotate180)_${title}.mkv`;
+            break;
+          case "rotate270":
+            ffmpeg2.withVideoFilter("rotate=3*PI/2");
+            filename += `rotate270)_${title}.mkv`;
+            break;
+          case "flipHorizontal":
+            ffmpeg2.withVideoFilter("hflip");
+            filename += `flipHorizontal)_${title}.mkv`;
+            break;
+          case "flipVertical":
+            ffmpeg2.withVideoFilter("vflip");
+            filename += `flipVertical)_${title}.mkv`;
+            break;
+          default:
+            filename += `)_${title}.mkv`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -3781,31 +3923,41 @@ async function AudioVideoLowest(input) {
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(AudioVideoLowest_";
-      if (filter2 === "grayscale") {
-        ffmpeg2.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        filename += `grayscale)_${title}.mkv`;
-      } else if (filter2 === "invert") {
-        ffmpeg2.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
-      } else if (filter2 === "rotate90") {
-        ffmpeg2.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
-      } else if (filter2 === "rotate180") {
-        ffmpeg2.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
-      } else if (filter2 === "rotate270") {
-        ffmpeg2.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
-      } else if (filter2 === "flipHorizontal") {
-        ffmpeg2.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
-      } else if (filter2 === "flipVertical") {
-        ffmpeg2.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
-      } else
-        filename += `)_${title}.mkv`;
+      switch (filter2) {
+        case "grayscale":
+          ffmpeg2.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ffmpeg2.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ffmpeg2.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ffmpeg2.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ffmpeg2.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ffmpeg2.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -3885,31 +4037,41 @@ async function AudioVideoHighest(input) {
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
       let filename = "yt-dlx_(AudioVideoHighest_";
-      if (filter2 === "grayscale") {
-        ffmpeg2.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        filename += `grayscale)_${title}.mkv`;
-      } else if (filter2 === "invert") {
-        ffmpeg2.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
-      } else if (filter2 === "rotate90") {
-        ffmpeg2.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
-      } else if (filter2 === "rotate180") {
-        ffmpeg2.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
-      } else if (filter2 === "rotate270") {
-        ffmpeg2.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
-      } else if (filter2 === "flipHorizontal") {
-        ffmpeg2.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
-      } else if (filter2 === "flipVertical") {
-        ffmpeg2.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
-      } else
-        filename += `)_${title}.mkv`;
+      switch (filter2) {
+        case "grayscale":
+          ffmpeg2.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ffmpeg2.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ffmpeg2.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ffmpeg2.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ffmpeg2.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ffmpeg2.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -4020,31 +4182,41 @@ async function AudioVideoQualityCustom(input) {
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
       let filename = `yt-dlx_(AudioVideoQualityCustom_${VQuality}_${AQuality}`;
-      if (filter2 === "grayscale") {
-        ffmpeg2.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
-        filename += `grayscale)_${title}.mkv`;
-      } else if (filter2 === "invert") {
-        ffmpeg2.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
-      } else if (filter2 === "rotate90") {
-        ffmpeg2.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
-      } else if (filter2 === "rotate180") {
-        ffmpeg2.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
-      } else if (filter2 === "rotate270") {
-        ffmpeg2.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
-      } else if (filter2 === "flipHorizontal") {
-        ffmpeg2.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
-      } else if (filter2 === "flipVertical") {
-        ffmpeg2.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
-      } else
-        filename += `)_${title}.mkv`;
+      switch (filter2) {
+        case "grayscale":
+          ffmpeg2.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ffmpeg2.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ffmpeg2.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ffmpeg2.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ffmpeg2.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ffmpeg2.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ffmpeg2.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
@@ -4181,31 +4353,41 @@ async function ListAudioVideoHighest(input) {
           vdata: VideoData
         });
         ffmpeg2.withOutputFormat("matroska");
-        if (filter2 === "grayscale") {
-          ffmpeg2.withVideoFilter(
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          );
-          filename += `grayscale)_${title}.mkv`;
-        } else if (filter2 === "invert") {
-          ffmpeg2.withVideoFilter("negate");
-          filename += `invert)_${title}.mkv`;
-        } else if (filter2 === "rotate90") {
-          ffmpeg2.withVideoFilter("rotate=PI/2");
-          filename += `rotate90)_${title}.mkv`;
-        } else if (filter2 === "rotate180") {
-          ffmpeg2.withVideoFilter("rotate=PI");
-          filename += `rotate180)_${title}.mkv`;
-        } else if (filter2 === "rotate270") {
-          ffmpeg2.withVideoFilter("rotate=3*PI/2");
-          filename += `rotate270)_${title}.mkv`;
-        } else if (filter2 === "flipHorizontal") {
-          ffmpeg2.withVideoFilter("hflip");
-          filename += `flipHorizontal)_${title}.mkv`;
-        } else if (filter2 === "flipVertical") {
-          ffmpeg2.withVideoFilter("vflip");
-          filename += `flipVertical)_${title}.mkv`;
-        } else
-          filename += `)_${title}.mkv`;
+        switch (filter2) {
+          case "grayscale":
+            ffmpeg2.withVideoFilter(
+              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+            );
+            filename += `grayscale)_${title}.mkv`;
+            break;
+          case "invert":
+            ffmpeg2.withVideoFilter("negate");
+            filename += `invert)_${title}.mkv`;
+            break;
+          case "rotate90":
+            ffmpeg2.withVideoFilter("rotate=PI/2");
+            filename += `rotate90)_${title}.mkv`;
+            break;
+          case "rotate180":
+            ffmpeg2.withVideoFilter("rotate=PI");
+            filename += `rotate180)_${title}.mkv`;
+            break;
+          case "rotate270":
+            ffmpeg2.withVideoFilter("rotate=3*PI/2");
+            filename += `rotate270)_${title}.mkv`;
+            break;
+          case "flipHorizontal":
+            ffmpeg2.withVideoFilter("hflip");
+            filename += `flipHorizontal)_${title}.mkv`;
+            break;
+          case "flipVertical":
+            ffmpeg2.withVideoFilter("vflip");
+            filename += `flipVertical)_${title}.mkv`;
+            break;
+          default:
+            filename += `)_${title}.mkv`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -4340,31 +4522,41 @@ async function ListAudioVideoLowest(input) {
         });
         ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg2.withOutputFormat("matroska");
-        if (filter2 === "grayscale") {
-          ffmpeg2.withVideoFilter(
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          );
-          filename += `grayscale)_${title}.mkv`;
-        } else if (filter2 === "invert") {
-          ffmpeg2.withVideoFilter("negate");
-          filename += `invert)_${title}.mkv`;
-        } else if (filter2 === "rotate90") {
-          ffmpeg2.withVideoFilter("rotate=PI/2");
-          filename += `rotate90)_${title}.mkv`;
-        } else if (filter2 === "rotate180") {
-          ffmpeg2.withVideoFilter("rotate=PI");
-          filename += `rotate180)_${title}.mkv`;
-        } else if (filter2 === "rotate270") {
-          ffmpeg2.withVideoFilter("rotate=3*PI/2");
-          filename += `rotate270)_${title}.mkv`;
-        } else if (filter2 === "flipHorizontal") {
-          ffmpeg2.withVideoFilter("hflip");
-          filename += `flipHorizontal)_${title}.mkv`;
-        } else if (filter2 === "flipVertical") {
-          ffmpeg2.withVideoFilter("vflip");
-          filename += `flipVertical)_${title}.mkv`;
-        } else
-          filename += `)_${title}.mkv`;
+        switch (filter2) {
+          case "grayscale":
+            ffmpeg2.withVideoFilter(
+              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+            );
+            filename += `grayscale)_${title}.mkv`;
+            break;
+          case "invert":
+            ffmpeg2.withVideoFilter("negate");
+            filename += `invert)_${title}.mkv`;
+            break;
+          case "rotate90":
+            ffmpeg2.withVideoFilter("rotate=PI/2");
+            filename += `rotate90)_${title}.mkv`;
+            break;
+          case "rotate180":
+            ffmpeg2.withVideoFilter("rotate=PI");
+            filename += `rotate180)_${title}.mkv`;
+            break;
+          case "rotate270":
+            ffmpeg2.withVideoFilter("rotate=3*PI/2");
+            filename += `rotate270)_${title}.mkv`;
+            break;
+          case "flipHorizontal":
+            ffmpeg2.withVideoFilter("hflip");
+            filename += `flipHorizontal)_${title}.mkv`;
+            break;
+          case "flipVertical":
+            ffmpeg2.withVideoFilter("vflip");
+            filename += `flipVertical)_${title}.mkv`;
+            break;
+          default:
+            filename += `)_${title}.mkv`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -4519,31 +4711,41 @@ async function ListAudioVideoQualityCustom(input) {
         });
         ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg2.withOutputFormat("matroska");
-        if (filter2 === "grayscale") {
-          ffmpeg2.withVideoFilter(
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          );
-          filename += `grayscale)_${title}.mkv`;
-        } else if (filter2 === "invert") {
-          ffmpeg2.withVideoFilter("negate");
-          filename += `invert)_${title}.mkv`;
-        } else if (filter2 === "rotate90") {
-          ffmpeg2.withVideoFilter("rotate=PI/2");
-          filename += `rotate90)_${title}.mkv`;
-        } else if (filter2 === "rotate180") {
-          ffmpeg2.withVideoFilter("rotate=PI");
-          filename += `rotate180)_${title}.mkv`;
-        } else if (filter2 === "rotate270") {
-          ffmpeg2.withVideoFilter("rotate=3*PI/2");
-          filename += `rotate270)_${title}.mkv`;
-        } else if (filter2 === "flipHorizontal") {
-          ffmpeg2.withVideoFilter("hflip");
-          filename += `flipHorizontal)_${title}.mkv`;
-        } else if (filter2 === "flipVertical") {
-          ffmpeg2.withVideoFilter("vflip");
-          filename += `flipVertical)_${title}.mkv`;
-        } else
-          filename += `)_${title}.mkv`;
+        switch (filter2) {
+          case "grayscale":
+            ffmpeg2.withVideoFilter(
+              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+            );
+            filename += `grayscale)_${title}.mkv`;
+            break;
+          case "invert":
+            ffmpeg2.withVideoFilter("negate");
+            filename += `invert)_${title}.mkv`;
+            break;
+          case "rotate90":
+            ffmpeg2.withVideoFilter("rotate=PI/2");
+            filename += `rotate90)_${title}.mkv`;
+            break;
+          case "rotate180":
+            ffmpeg2.withVideoFilter("rotate=PI");
+            filename += `rotate180)_${title}.mkv`;
+            break;
+          case "rotate270":
+            ffmpeg2.withVideoFilter("rotate=3*PI/2");
+            filename += `rotate270)_${title}.mkv`;
+            break;
+          case "flipHorizontal":
+            ffmpeg2.withVideoFilter("hflip");
+            filename += `flipHorizontal)_${title}.mkv`;
+            break;
+          case "flipVertical":
+            ffmpeg2.withVideoFilter("vflip");
+            filename += `flipVertical)_${title}.mkv`;
+            break;
+          default:
+            filename += `)_${title}.mkv`;
+            break;
+        }
         await new Promise((resolve, _reject) => {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
@@ -4597,7 +4799,7 @@ var ytdlx = () => ({
       Highest: AudioHighest,
       Custom: AudioQualityCustom
     }),
-    Playlist: () => ({
+    List: () => ({
       Lowest: ListAudioLowest,
       Highest: ListAudioHighest,
       Custom: ListAudioQualityCustom
@@ -4609,7 +4811,7 @@ var ytdlx = () => ({
       Highest: VideoHighest,
       Custom: VideoQualityCustom
     }),
-    Playlist: () => ({
+    List: () => ({
       Lowest: ListVideoLowest,
       Highest: ListVideoHighest,
       Custom: ListVideoQualityCustom
@@ -4621,7 +4823,7 @@ var ytdlx = () => ({
       Highest: AudioVideoHighest,
       Custom: AudioVideoQualityCustom
     }),
-    Playlist: () => ({
+    List: () => ({
       Lowest: ListAudioVideoHighest,
       Highest: ListAudioVideoLowest,
       Custom: ListAudioVideoQualityCustom
