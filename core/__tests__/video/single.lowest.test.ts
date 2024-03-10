@@ -11,6 +11,6 @@ import colors from "colors";
       stream: false,
     });
   } catch (error: any) {
-    console.error(colors.red(error));
+    console.error(colors.red(error.message));
   }
 })();

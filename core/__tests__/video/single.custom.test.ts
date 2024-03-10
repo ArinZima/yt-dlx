@@ -18,22 +18,18 @@ const quals = [
 ] as const;
 
 (async () => {
-  try {
-    for (const q of quals) {
-      try {
-        console.log(colors.blue("@test:"), "Custom video", q);
-        await ytdlx().VideoOnly().Single().Custom({
-          quality: q,
-          stream: false,
-          verbose: false,
-          output: "public/video",
-          query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-        });
-      } catch (error: any) {
-        console.error(colors.red(error));
-      }
+  for (const q of quals) {
+    try {
+      console.log(colors.blue("@test:"), "Custom video", q);
+      await ytdlx().VideoOnly().Single().Custom({
+        quality: q,
+        stream: false,
+        verbose: false,
+        output: "public/video",
+        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      });
+    } catch (error: any) {
+      console.error(colors.red(error.message));
     }
-  } catch (error: any) {
-    console.error(colors.red(error));
   }
 })();
