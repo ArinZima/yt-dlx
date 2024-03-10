@@ -2,10 +2,11 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import readline from "readline";
-import fluent from "fluent-ffmpeg";
+import ffmpeg from "fluent-ffmpeg";
 import type { FfmpegCommand } from "fluent-ffmpeg";
+import type TubeConfig from "../interface/TubeConfig";
 
-export function progressBar(prog: any, size: string) {
+export function progressBar(prog: any) {
   if (prog.timemark === undefined || prog.percent === undefined) return;
   if (prog.percent < 1 && prog.timemark.includes("-")) return;
   readline.cursorTo(process.stdout, 0);
@@ -30,43 +31,63 @@ export function progressBar(prog: any, size: string) {
   if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
     output += " | " + color("@fps: ") + prog.currentFps;
   }
-  output += " | " + color("@size: ") + size;
   process.stdout.write(output);
   if (prog.timemark.includes("-")) process.stdout.write("\n\n");
 }
 
-function gpuffmpeg({
-  size,
-  input,
-  verbose,
+export default async function proTube({
+  adata,
+  vdata,
 }: {
-  size: string;
-  input: string;
-  verbose?: boolean;
-}): FfmpegCommand {
-  let maxTries: number = 6;
-  let currentDir: string = __dirname;
-  let FfprobePath: string, FfmpegPath: string;
-  const ffmpeg: FfmpegCommand = fluent(input)
-    .on("start", (command) => {
-      if (verbose) console.log(colors.green("@ffmpeg:"), command);
-    })
-    .on("progress", (prog) => progressBar(prog, size))
-    .on("end", () => console.log("\n"))
-    .on("error", (e) => console.error(colors.red("\n@ffmpeg:"), e.message));
-  while (maxTries > 0) {
-    FfprobePath = path.join(currentDir, "util", "ffmpeg", "bin", "ffprobe");
-    FfmpegPath = path.join(currentDir, "util", "ffmpeg", "bin", "ffmpeg");
-    if (fs.existsSync(FfprobePath) && fs.existsSync(FfmpegPath)) {
-      ffmpeg.setFfprobePath(FfprobePath);
-      ffmpeg.setFfmpegPath(FfmpegPath);
-      break;
-    } else {
-      currentDir = path.join(currentDir, "..");
-      maxTries--;
+  adata?: TubeConfig;
+  vdata?: TubeConfig;
+}): Promise<ffmpeg.FfmpegCommand> {
+  let max: number = 6;
+  let dirC: string = __dirname;
+  const ff: FfmpegCommand = ffmpeg();
+  let ffprobepath: string, ffmpegpath: string;
+  while (max > 0) {
+    ffprobepath = path.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
+    ffmpegpath = path.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
+    switch (true) {
+      case fs.existsSync(ffprobepath) && fs.existsSync(ffmpegpath):
+        ff.setFfprobePath(ffprobepath);
+        ff.setFfmpegPath(ffmpegpath);
+        max = 0;
+        break;
+      default:
+        dirC = path.join(dirC, "..");
+        max--;
     }
   }
-  return ffmpeg;
+  if (vdata && !adata) {
+    ff.addInput(vdata.AVDownload.mediaurl);
+    ff.withVideoCodec("copy");
+    if (vdata.AVInfo.framespersecond) ff.withFPS(vdata.AVInfo.framespersecond);
+    if (vdata.Video.aspectratio) ff.withAspectRatio(vdata.Video.aspectratio);
+    if (vdata.Video.bitrate) ff.withVideoBitrate(vdata.Video.bitrate);
+  } else if (adata && !vdata) {
+    ff.addInput(adata.AVDownload.mediaurl);
+    ff.withAudioCodec("copy");
+    if (adata.Audio.channels) ff.withAudioChannels(adata.Audio.channels);
+    if (adata.Audio.bitrate) ff.withAudioBitrate(adata.Audio.bitrate);
+  } else if (adata && vdata) {
+    ff.addInput(vdata.AVDownload.mediaurl);
+    ff.addInput(adata.AVDownload.mediaurl);
+    ff.withOutputOptions(["-map 0:v:0", "-map 1:a:0"]);
+    ff.withVideoCodec("copy");
+    ff.withAudioCodec("copy");
+    if (vdata.AVInfo.framespersecond) ff.withFPS(vdata.AVInfo.framespersecond);
+    if (vdata.Video.aspectratio) ff.withAspectRatio(vdata.Video.aspectratio);
+    if (adata.Audio.channels) ff.withAudioChannels(adata.Audio.channels);
+    if (vdata.Video.bitrate) ff.withVideoBitrate(vdata.Video.bitrate);
+    if (adata.Audio.bitrate) ff.withAudioBitrate(adata.Audio.bitrate);
+  }
+  ff.on("progress", (progress) => progressBar(progress));
+  ff.on("end", () => process.stdout.write("\n"));
+  ff.on("error", (error) => {
+    throw new Error(error.message);
+  });
+  return ff;
 }
-export default gpuffmpeg;
-export type { FfmpegCommand as gpuffmpegCommand };
+export type { FfmpegCommand as proTubeCommand };

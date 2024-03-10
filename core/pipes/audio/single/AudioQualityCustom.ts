@@ -3,9 +3,9 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import gpuffmpeg from "../../../base/ffmpeg";
-import lowEntry from "../../../base/lowEntry";
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import proTube from "../../../base/ffmpeg";
+import bigEntry from "../../../base/bigEntry";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -59,7 +59,7 @@ export default async function AudioQualityCustom(input: {
     | "superspeed";
 }): Promise<void | {
   filename: string;
-  ffmpeg: gpuffmpegCommand;
+  ffmpeg: proTubeCommand;
 }> {
   try {
     const { query, stream, verbose, output, quality, filter, torproxy } =
@@ -84,11 +84,8 @@ export default async function AudioQualityCustom(input: {
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const sortedData = await lowEntry(customData);
-      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose,
+      const ffmpeg: proTubeCommand = await proTube({
+        adata: await bigEntry(customData),
       });
       ffmpeg.addInput(engineData.metaTube.thumbnail);
       ffmpeg.addOutputOption("-map", "1:0");

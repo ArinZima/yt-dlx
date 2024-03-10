@@ -4,11 +4,10 @@ import * as path from "path";
 import web from "../../../web";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import gpuffmpeg from "../../../base/ffmpeg";
+import proTube from "../../../base/ffmpeg";
 import bigEntry from "../../../base/bigEntry";
 import YouTubeID from "../../../web/YouTubeId";
-import { sizeFormat } from "../../../base/Engine";
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   output: z.string().optional(),
@@ -101,7 +100,7 @@ export default async function ListAudioVideoQualityCustom(input: {
     | "flipHorizontal";
 }): Promise<void | {
   filename: string;
-  ffmpeg: gpuffmpegCommand;
+  ffmpeg: proTubeCommand;
 }> {
   try {
     const { query, verbose, output, VQuality, AQuality, filter, torproxy } =
@@ -167,16 +166,13 @@ export default async function ListAudioVideoQualityCustom(input: {
           (op) => op.AVDownload.formatnote === VQuality
         );
         const [AudioData, VideoData] = await Promise.all([
-          await bigEntry(ACustomData),
-          await bigEntry(VCustomData),
+          bigEntry(ACustomData),
+          bigEntry(VCustomData),
         ]);
         let filename: string = "yt-dlx_(AudioVideoQualityCustom_";
-        const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-          size: sizeFormat(
-            AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-          ).toString(),
-          input: VideoData.AVDownload.mediaurl,
-          verbose,
+        const ffmpeg: proTubeCommand = await proTube({
+          adata: AudioData,
+          vdata: VideoData,
         });
         ffmpeg.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg.withOutputFormat("matroska");

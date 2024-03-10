@@ -3,10 +3,9 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import gpuffmpeg from "../../../base/ffmpeg";
+import proTube from "../../../base/ffmpeg";
 import bigEntry from "../../../base/bigEntry";
-import { sizeFormat } from "../../../base/Engine";
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -73,7 +72,7 @@ export default async function AudioVideoQualityCustom(input: {
     | "flipHorizontal";
 }): Promise<void | {
   filename: string;
-  ffmpeg: gpuffmpegCommand;
+  ffmpeg: proTubeCommand;
 }> {
   try {
     const {
@@ -105,15 +104,12 @@ export default async function AudioVideoQualityCustom(input: {
         (op) => op.AVDownload.formatnote === VQuality
       );
       const [AudioData, VideoData] = await Promise.all([
-        await bigEntry(ACustomData),
-        await bigEntry(VCustomData),
+        bigEntry(ACustomData),
+        bigEntry(VCustomData),
       ]);
-      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-        size: sizeFormat(
-          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-        ).toString(),
-        input: VideoData.AVDownload.mediaurl,
-        verbose,
+      const ffmpeg: proTubeCommand = await proTube({
+        adata: AudioData,
+        vdata: VideoData,
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg.withOutputFormat("matroska");

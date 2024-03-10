@@ -3,10 +3,9 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import gpuffmpeg from "../../../base/ffmpeg";
+import proTube from "../../../base/ffmpeg";
 import lowEntry from "../../../base/lowEntry";
-import { sizeFormat } from "../../../base/Engine";
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -42,7 +41,7 @@ export default async function AudioVideoLowest(input: {
     | "flipHorizontal";
 }): Promise<void | {
   filename: string;
-  ffmpeg: gpuffmpegCommand;
+  ffmpeg: proTubeCommand;
 }> {
   try {
     const { query, stream, verbose, output, filter, torproxy } =
@@ -60,15 +59,12 @@ export default async function AudioVideoLowest(input: {
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const [AudioData, VideoData] = await Promise.all([
-        await lowEntry(engineData.AudioStore),
-        await lowEntry(engineData.VideoStore),
+        lowEntry(engineData.AudioStore),
+        lowEntry(engineData.VideoStore),
       ]);
-      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-        size: sizeFormat(
-          AudioData.AVInfo.filesizebytes + VideoData.AVInfo.filesizebytes
-        ).toString(),
-        input: VideoData.AVDownload.mediaurl,
-        verbose,
+      const ffmpeg: proTubeCommand = await proTube({
+        adata: AudioData,
+        vdata: VideoData,
       });
       ffmpeg.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg.withOutputFormat("matroska");

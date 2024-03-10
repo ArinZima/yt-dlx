@@ -4,10 +4,10 @@ import * as path from "path";
 import web from "../../../web";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import gpuffmpeg from "../../../base/ffmpeg";
+import proTube from "../../../base/ffmpeg";
 import bigEntry from "../../../base/bigEntry";
 import YouTubeID from "../../../web/YouTubeId";
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   output: z.string().optional(),
@@ -153,12 +153,9 @@ export default async function ListAudioQualityCustom(input: {
           ? path.join(process.cwd(), output)
           : process.cwd();
         if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-        const sortedData = await bigEntry(customData);
         let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
-        const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose,
+        const ffmpeg: proTubeCommand = await proTube({
+          adata: await bigEntry(customData),
         });
         ffmpeg.addInput(engineData.metaTube.thumbnail);
         ffmpeg.addOutputOption("-map", "1:0");

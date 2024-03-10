@@ -3,9 +3,9 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import gpuffmpeg from "../../../base/ffmpeg";
+import proTube from "../../../base/ffmpeg";
 import bigEntry from "../../../base/bigEntry";
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   query: z.string().min(1),
@@ -41,7 +41,7 @@ export default async function VideoHighest(input: {
     | "flipHorizontal";
 }): Promise<void | {
   filename: string;
-  ffmpeg: gpuffmpegCommand;
+  ffmpeg: proTubeCommand;
 }> {
   try {
     const { query, stream, verbose, output, filter, torproxy } =
@@ -58,11 +58,8 @@ export default async function VideoHighest(input: {
       );
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const sortedData = await bigEntry(engineData.VideoStore);
-      const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-        size: sortedData.AVInfo.filesizeformatted.toString(),
-        input: sortedData.AVDownload.mediaurl,
-        verbose,
+      const ffmpeg: proTubeCommand = await proTube({
+        vdata: await bigEntry(engineData.VideoStore),
       });
       ffmpeg.addInput(engineData.metaTube.thumbnail);
       ffmpeg.withOutputFormat("matroska");

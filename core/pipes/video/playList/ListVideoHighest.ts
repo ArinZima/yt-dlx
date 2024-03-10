@@ -4,10 +4,10 @@ import * as path from "path";
 import web from "../../../web";
 import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import gpuffmpeg from "../../../base/ffmpeg";
+import proTube from "../../../base/ffmpeg";
 import bigEntry from "../../../base/bigEntry";
 import YouTubeID from "../../../web/YouTubeId";
-import type { gpuffmpegCommand } from "../../../base/ffmpeg";
+import type { proTubeCommand } from "../../../base/ffmpeg";
 
 const qconf = z.object({
   output: z.string().optional(),
@@ -69,7 +69,7 @@ export default async function ListVideoHighest(input: {
     | "flipHorizontal";
 }): Promise<void | {
   filename: string;
-  ffmpeg: gpuffmpegCommand;
+  ffmpeg: proTubeCommand;
 }> {
   try {
     const { query, verbose, output, filter, torproxy } = await qconf.parseAsync(
@@ -129,12 +129,9 @@ export default async function ListVideoHighest(input: {
           ? path.join(process.cwd(), output)
           : process.cwd();
         if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-        const sortedData = await bigEntry(engineData.VideoStore);
         let filename: string = "yt-dlx_(VideoHighest_";
-        const ffmpeg: gpuffmpegCommand = gpuffmpeg({
-          size: sortedData.AVInfo.filesizeformatted.toString(),
-          input: sortedData.AVDownload.mediaurl,
-          verbose,
+        const ffmpeg: proTubeCommand = await proTube({
+          vdata: await bigEntry(engineData.VideoStore),
         });
         ffmpeg.withOutputFormat("matroska");
         if (filter === "grayscale") {
