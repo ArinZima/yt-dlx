@@ -140,30 +140,41 @@ export default async function ListAudioVideoLowest(input: {
         });
         ffmpeg.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg.withOutputFormat("matroska");
-        if (filter === "grayscale") {
-          ffmpeg.withVideoFilter(
-            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-          );
-          filename += `grayscale)_${title}.mkv`;
-        } else if (filter === "invert") {
-          ffmpeg.withVideoFilter("negate");
-          filename += `invert)_${title}.mkv`;
-        } else if (filter === "rotate90") {
-          ffmpeg.withVideoFilter("rotate=PI/2");
-          filename += `rotate90)_${title}.mkv`;
-        } else if (filter === "rotate180") {
-          ffmpeg.withVideoFilter("rotate=PI");
-          filename += `rotate180)_${title}.mkv`;
-        } else if (filter === "rotate270") {
-          ffmpeg.withVideoFilter("rotate=3*PI/2");
-          filename += `rotate270)_${title}.mkv`;
-        } else if (filter === "flipHorizontal") {
-          ffmpeg.withVideoFilter("hflip");
-          filename += `flipHorizontal)_${title}.mkv`;
-        } else if (filter === "flipVertical") {
-          ffmpeg.withVideoFilter("vflip");
-          filename += `flipVertical)_${title}.mkv`;
-        } else filename += `)_${title}.mkv`;
+        switch (filter) {
+          case "grayscale":
+            ffmpeg.withVideoFilter(
+              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+            );
+            filename += `grayscale)_${title}.mkv`;
+            break;
+          case "invert":
+            ffmpeg.withVideoFilter("negate");
+            filename += `invert)_${title}.mkv`;
+            break;
+          case "rotate90":
+            ffmpeg.withVideoFilter("rotate=PI/2");
+            filename += `rotate90)_${title}.mkv`;
+            break;
+          case "rotate180":
+            ffmpeg.withVideoFilter("rotate=PI");
+            filename += `rotate180)_${title}.mkv`;
+            break;
+          case "rotate270":
+            ffmpeg.withVideoFilter("rotate=3*PI/2");
+            filename += `rotate270)_${title}.mkv`;
+            break;
+          case "flipHorizontal":
+            ffmpeg.withVideoFilter("hflip");
+            filename += `flipHorizontal)_${title}.mkv`;
+            break;
+          case "flipVertical":
+            ffmpeg.withVideoFilter("vflip");
+            filename += `flipVertical)_${title}.mkv`;
+            break;
+          default:
+            filename += `)_${title}.mkv`;
+            break;
+        }
         await new Promise<void>((resolve, _reject) => {
           ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
           ffmpeg.on("end", () => resolve());

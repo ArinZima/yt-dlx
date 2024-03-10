@@ -162,52 +162,71 @@ export default async function ListAudioQualityCustom(input: {
         ffmpeg.addOutputOption("-map", "0:a:0");
         ffmpeg.addOutputOption("-id3v2_version", "3");
         ffmpeg.withOutputFormat("avi");
-        if (filter === "bassboost") {
-          ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-          filename += `bassboost)_${title}.avi`;
-        } else if (filter === "echo") {
-          ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-          filename += `echo)_${title}.avi`;
-        } else if (filter === "flanger") {
-          ffmpeg.withAudioFilter(["flanger"]);
-          filename += `flanger)_${title}.avi`;
-        } else if (filter === "nightcore") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-          filename += `nightcore)_${title}.avi`;
-        } else if (filter === "panning") {
-          ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
-          filename += `panning)_${title}.avi`;
-        } else if (filter === "phaser") {
-          ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
-          filename += `phaser)_${title}.avi`;
-        } else if (filter === "reverse") {
-          ffmpeg.withAudioFilter(["areverse"]);
-          filename += `reverse)_${title}.avi`;
-        } else if (filter === "slow") {
-          ffmpeg.withAudioFilter(["atempo=0.8"]);
-          filename += `slow)_${title}.avi`;
-        } else if (filter === "speed") {
-          ffmpeg.withAudioFilter(["atempo=2"]);
-          filename += `speed)_${title}.avi`;
-        } else if (filter === "subboost") {
-          ffmpeg.withAudioFilter(["asubboost"]);
-          filename += `subboost)_${title}.avi`;
-        } else if (filter === "superslow") {
-          ffmpeg.withAudioFilter(["atempo=0.5"]);
-          filename += `superslow)_${title}.avi`;
-        } else if (filter === "superspeed") {
-          ffmpeg.withAudioFilter(["atempo=3"]);
-          filename += `superspeed)_${title}.avi`;
-        } else if (filter === "surround") {
-          ffmpeg.withAudioFilter(["surround"]);
-          filename += `surround)_${title}.avi`;
-        } else if (filter === "vaporwave") {
-          ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-          filename += `vaporwave)_${title}.avi`;
-        } else if (filter === "vibrato") {
-          ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
-          filename += `vibrato)_${title}.avi`;
-        } else filename += `)_${title}.avi`;
+        switch (filter) {
+          case "bassboost":
+            ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+            filename += `bassboost)_${title}.avi`;
+            break;
+          case "echo":
+            ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+            filename += `echo)_${title}.avi`;
+            break;
+          case "flanger":
+            ffmpeg.withAudioFilter(["flanger"]);
+            filename += `flanger)_${title}.avi`;
+            break;
+          case "nightcore":
+            ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+            filename += `nightcore)_${title}.avi`;
+            break;
+          case "panning":
+            ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+            filename += `panning)_${title}.avi`;
+            break;
+          case "phaser":
+            ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+            filename += `phaser)_${title}.avi`;
+            break;
+          case "reverse":
+            ffmpeg.withAudioFilter(["areverse"]);
+            filename += `reverse)_${title}.avi`;
+            break;
+          case "slow":
+            ffmpeg.withAudioFilter(["atempo=0.8"]);
+            filename += `slow)_${title}.avi`;
+            break;
+          case "speed":
+            ffmpeg.withAudioFilter(["atempo=2"]);
+            filename += `speed)_${title}.avi`;
+            break;
+          case "subboost":
+            ffmpeg.withAudioFilter(["asubboost"]);
+            filename += `subboost)_${title}.avi`;
+            break;
+          case "superslow":
+            ffmpeg.withAudioFilter(["atempo=0.5"]);
+            filename += `superslow)_${title}.avi`;
+            break;
+          case "superspeed":
+            ffmpeg.withAudioFilter(["atempo=3"]);
+            filename += `superspeed)_${title}.avi`;
+            break;
+          case "surround":
+            ffmpeg.withAudioFilter(["surround"]);
+            filename += `surround)_${title}.avi`;
+            break;
+          case "vaporwave":
+            ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+            filename += `vaporwave)_${title}.avi`;
+            break;
+          case "vibrato":
+            ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+            filename += `vibrato)_${title}.avi`;
+            break;
+          default:
+            filename += `)_${title}.avi`;
+            break;
+        }
         await new Promise<void>((resolve, _reject) => {
           ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
           ffmpeg.on("end", () => resolve());
