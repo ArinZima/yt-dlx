@@ -10,13 +10,15 @@ const colors = {
 };
 
 const core = {
+  postinstall:
+    "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
   monit: "watch -n 1 nvidia-smi",
   torprox: "chmod +x torprox.sh && ./torprox.sh",
   "torprox:watch": "chmod +x torprox.sh && ./torprox.sh && sudo nyx",
   remake: "yarn clean && yarn make && yarn update && yarn build",
-  upload: "yarn test && yarn remake && npm pkg fix && npm publish --force",
-  postinstall:
-    "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
+  "client:dev": "cd client && yarn dev",
+  "client:build": "cd client && yarn build",
+  "client:start": "cd client && yarn start",
   clean: "yarn clean:base && yarn clean:client && yarn clean:deps",
   "clean:base": "rm -rf node_modules temp shared others",
   "clean:client": "cd client && rm -rf node_modules .next",
