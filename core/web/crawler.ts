@@ -4,6 +4,7 @@ export let page: Page;
 
 export default async function crawler(verbose?: boolean, torprox?: string) {
   try {
+    if (torprox) console.log(torprox);
     browser = await puppeteer.launch({
       headless: verbose ? false : true,
       userDataDir: "others",
