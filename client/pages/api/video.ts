@@ -1,5 +1,5 @@
 // import chalk from "chalk";
-// import ytdlp from "yt-dlp";
+// import ytdlp from "yt-dlx";
 // import type { NextApiRequest, NextApiResponse } from "next";
 // export const config = {
 // api: {

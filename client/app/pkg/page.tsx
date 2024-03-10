@@ -38,7 +38,7 @@ export default function AwesomePackage() {
             href="/pkg"
             className="text-red-600 cursor-pointer text-3xl mr-2"
           >
-            yt-dlp
+            yt-dlx
           </Link>
         </div>
       </nav>
@@ -47,18 +47,18 @@ export default function AwesomePackage() {
           <article className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLP@{npm?.LatestVersion}
+                YT-DLX@{npm?.LatestVersion}
               </h1>
             </div>
             <p className="text-gray-400">
               Uncover an unparalleled solution for effortless audio and video
-              downloads powered by YT-DLP - An advanced{" "}
+              downloads powered by YT-DLX - An advanced{" "}
               <span className="text-red-600">
                 (command-line + Node.js + Streaming)
               </span>{" "}
-              tool meticulously designed for avid enthusiasts. YT-DLP stands out
+              tool meticulously designed for avid enthusiasts. YT-DLX stands out
               as a feature-rich advanced package built upon the foundation of{" "}
-              <span className="text-red-600">(Youtube-DL & Python yt-dlp)</span>
+              <span className="text-red-600">(Youtube-DL & Python yt-dlx)</span>
               , consistently evolving with state-of-the-art functionalities.
             </p>
           </article>
@@ -85,8 +85,8 @@ export default function AwesomePackage() {
                     href="#"
                     className="hover:underline"
                   >
-                    <span className="text-red-600">yarn</span> add yt-dlp |{" "}
-                    <span className="text-red-600">yarn</span> global add yt-dlp
+                    <span className="text-red-600">yarn</span> add yt-dlx |{" "}
+                    <span className="text-red-600">yarn</span> global add yt-dlx
                   </a>
                 </li>
                 <li>
@@ -95,8 +95,8 @@ export default function AwesomePackage() {
                     href="#"
                     className="hover:underline"
                   >
-                    <span className="text-red-600">bun</span> add yt-dlp |{" "}
-                    <span className="text-red-600">bun</span> global add yt-dlp
+                    <span className="text-red-600">bun</span> add yt-dlx |{" "}
+                    <span className="text-red-600">bun</span> global add yt-dlx
                   </a>
                 </li>
                 <li>
@@ -105,8 +105,8 @@ export default function AwesomePackage() {
                     href="#"
                     className="hover:underline"
                   >
-                    <span className="text-red-600">npm</span> install yt-dlp |{" "}
-                    <span className="text-red-600">npm</span> install -g yt-dlp
+                    <span className="text-red-600">npm</span> install yt-dlx |{" "}
+                    <span className="text-red-600">npm</span> install -g yt-dlx
                   </a>
                 </li>
                 <li>
@@ -115,8 +115,8 @@ export default function AwesomePackage() {
                     href="#"
                     className="hover:underline"
                   >
-                    <span className="text-red-600">pnpm</span> install yt-dlp |{" "}
-                    <span className="text-red-600">pnpm</span> install -g yt-dlp
+                    <span className="text-red-600">pnpm</span> install yt-dlx |{" "}
+                    <span className="text-red-600">pnpm</span> install -g yt-dlx
                   </a>
                 </li>
               </ul>
@@ -131,7 +131,7 @@ export default function AwesomePackage() {
               Explore All Available Functions
             </h2>
             <p className="mt-4 text-gray-400">
-              yt-dlp accommodates various Node.js coding styles, including
+              yt-dlx accommodates various Node.js coding styles, including
               <span className="text-red-600">
                 (commonjs.js), (esm.mjs), (typescript.ts)
               </span>
@@ -146,7 +146,7 @@ export default function AwesomePackage() {
                 <span className="text-red-600 text-sm">Audio-Only:</span>
                 <h2 className="text-lg font-bold">AudioHighest()</h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically utilizes yt-dlp&apos;s search
+                  This function automatically utilizes yt-dlx&apos;s search
                   algorithm to identify the optimal audio quality for a given
                   YouTube video link. Employing ffmpeg alongside the best
                   available codecs and bitrate settings, it ensures the delivery
@@ -161,7 +161,7 @@ export default function AwesomePackage() {
                 <span className="text-red-600 text-sm">Audio-Only:</span>
                 <h2 className="text-lg font-bold">AudioLowest()</h2>
                 <p className="text-sm text-gray-400">
-                  This function is automated and employs yt-dlp&apos;s search
+                  This function is automated and employs yt-dlx&apos;s search
                   algorithm to identify the lowest possible audio quality for a
                   given YouTube video link. Utilizing ffmpeg with the lowest
                   available codecs and bitrate settings, it outputs the minimum
@@ -178,7 +178,7 @@ export default function AwesomePackage() {
                   Should you desire to download a specific audio quality for a
                   given YouTube video link, this function has you covered.
                   Simply provide the available format for the custom quality,
-                  and yt-dlp along with ffmpeg will manage the rest. To identify
+                  and yt-dlx along with ffmpeg will manage the rest. To identify
                   the available formats, utilize the getFormats() function.
                 </p>
               </div>
@@ -189,7 +189,7 @@ export default function AwesomePackage() {
                 <span className="text-red-600 text-sm">Video-Only:</span>
                 <h2 className="text-lg font-bold">VideoHighest()</h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlp&apos;s search
+                  This function automatically employs yt-dlx&apos;s search
                   algorithm to identify the optimal video quality for a given
                   YouTube video link. Utilizing ffmpeg, along with the best
                   available codecs and bitrate settings, it ensures the delivery
@@ -204,7 +204,7 @@ export default function AwesomePackage() {
                 <span className="text-red-600 text-sm">Video-Only:</span>
                 <h2 className="text-lg font-bold">VideoLowest()</h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlp&apos;s search
+                  This function automatically employs yt-dlx&apos;s search
                   algorithm to identify the minimum achievable video quality for
                   a given YouTube video link. Utilizing ffmpeg with the lowest
                   available codecs and bitrate settings, it produces the video
@@ -222,7 +222,7 @@ export default function AwesomePackage() {
                   This function caters to your specific needs when it comes to
                   downloading a desired video quality for a given YouTube video
                   link. Simply provide the available format for the custom
-                  quality, and yt-dlp along with ffmpeg will handle the rest. To
+                  quality, and yt-dlx along with ffmpeg will handle the rest. To
                   identify the available formats, use the getFormats() function.
                 </p>
               </div>
@@ -236,7 +236,7 @@ export default function AwesomePackage() {
                 <span className="text-red-600 text-sm">Audio + Video:</span>
                 <h2 className="text-lg font-bold">AudioVideoHighest()</h2>
                 <p className="text-sm text-gray-400">
-                  This automated function utilizes yt-dlp&apos;s search
+                  This automated function utilizes yt-dlx&apos;s search
                   algorithm to identify the optimal audio+video quality for any
                   given YouTube video link. It employs ffmpeg, leveraging the
                   best available codecs and bitrate settings to produce the
@@ -254,7 +254,7 @@ export default function AwesomePackage() {
                 <span className="text-red-600 text-sm">Audio + Video:</span>
                 <h2 className="text-lg font-bold">AudioVideoLowest()</h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlp&apos;s search
+                  This function automatically employs yt-dlx&apos;s search
                   algorithm to identify the lowest possible audio+video quality
                   for a given YouTube video link. Utilizing ffmpeg with the
                   least resource-intensive codecs and bitrate settings, it
@@ -324,7 +324,7 @@ export default function AwesomePackage() {
                 </span>
                 <h2 className="text-lg font-bold">getRaw()</h2>
                 <p className="text-sm text-gray-400">
-                  This advanced function leverages yt-dlp&apos;s engine to
+                  This advanced function leverages yt-dlx&apos;s engine to
                   generate comprehensive JSON data, providing detailed
                   information about the content.
                 </p>
