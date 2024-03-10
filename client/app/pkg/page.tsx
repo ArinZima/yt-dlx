@@ -1,28 +1,10 @@
 "use client";
 import Link from "next/link";
-import io from "socket.io-client";
 import { TbBrandNpm } from "react-icons/tb";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa6";
-import { RiSettings3Fill } from "react-icons/ri";
-import React, { useEffect, useState } from "react";
-import { AiFillCodeSandboxCircle } from "react-icons/ai";
 
 export default function AwesomePackage() {
-  const [npm, setnpm] = useState<any>(null);
-  useEffect(() => {
-    fetch("/ioSocket").finally(() => {
-      let ioSocket = io();
-      ioSocket.emit("npm[meta(req)]");
-      const handleNpm = (data: any) => setnpm(data);
-      ioSocket.on("npm[meta(resp)]", handleNpm);
-      return () => {
-        ioSocket.off("npm[meta(resp)]", handleNpm);
-        ioSocket.disconnect();
-      };
-    });
-  }, []);
-
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#101318] scrollbar-track-[#101318] scrollbar-thumb-red-600">
       <nav className="navbar bg-red-500/10 text-gray-400 backdrop-blur-md fixed z-50 top-0">
@@ -47,19 +29,21 @@ export default function AwesomePackage() {
           <article className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLX@{npm?.LatestVersion}
+                YT-DLX@5.5.0
               </h1>
             </div>
             <p className="text-gray-400">
-              Uncover an unparalleled solution for effortless audio and video
-              downloads powered by YT-DLX - An advanced{" "}
-              <span className="text-red-600">
-                (command-line + Node.js + Streaming)
-              </span>{" "}
-              tool meticulously designed for avid enthusiasts. YT-DLX stands out
-              as a feature-rich advanced package built upon the foundation of{" "}
-              <span className="text-red-600">(Youtube-DL & Python yt-dlx)</span>
-              , consistently evolving with state-of-the-art functionalities.
+              YT-DLX is a robust multimedia downloading tool meticulously
+              crafted to elevate your media consumption experience. With its
+              advanced capabilities, it offers an all-encompassing solution for
+              effortlessly acquiring audio and video content from diverse
+              sources. Drawing inspiration from renowned projects such as
+              python-yt-dlp and python-youtube-dl, YT-DLX combines cutting-edge
+              features with real-time data acquisition facilitated by Puppeteer
+              technologies. Whether you seek to enrich your audio library or
+              curate a collection of high-quality videos, YT-DLX stands as your
+              indispensable companion, ensuring seamless and efficient media
+              acquisition.
             </p>
           </article>
           <div>
@@ -68,8 +52,8 @@ export default function AwesomePackage() {
                 <div className="flex items-center gap-2 md:space-x-2">
                   <TbBrandNpm className="text-red-700" size={40} />
                   <p className="text-sm">
-                    Latest Uploaded On{" "}
-                    <span className="text-red-600">• July 19th, 2024</span>
+                    Latest Updated On{" "}
+                    <span className="text-red-600">• recently</span>
                   </p>
                 </div>
               </div>
@@ -80,41 +64,25 @@ export default function AwesomePackage() {
               </p>
               <ul className="ml-4 space-y-1 list-disc text-gray-400">
                 <li>
-                  <a
-                    rel="noopener noreferrer"
-                    href="#"
-                    className="hover:underline"
-                  >
+                  <a rel="noopener noreferrer">
                     <span className="text-red-600">yarn</span> add yt-dlx |{" "}
                     <span className="text-red-600">yarn</span> global add yt-dlx
                   </a>
                 </li>
                 <li>
-                  <a
-                    rel="noopener noreferrer"
-                    href="#"
-                    className="hover:underline"
-                  >
+                  <a rel="noopener noreferrer">
                     <span className="text-red-600">bun</span> add yt-dlx |{" "}
-                    <span className="text-red-600">bun</span> global add yt-dlx
+                    <span className="text-red-600">bun</span> add -g yt-dlx
                   </a>
                 </li>
                 <li>
-                  <a
-                    rel="noopener noreferrer"
-                    href="#"
-                    className="hover:underline"
-                  >
+                  <a rel="noopener noreferrer">
                     <span className="text-red-600">npm</span> install yt-dlx |{" "}
                     <span className="text-red-600">npm</span> install -g yt-dlx
                   </a>
                 </li>
                 <li>
-                  <a
-                    rel="noopener noreferrer"
-                    href="#"
-                    className="hover:underline"
-                  >
+                  <a rel="noopener noreferrer">
                     <span className="text-red-600">pnpm</span> install yt-dlx |{" "}
                     <span className="text-red-600">pnpm</span> install -g yt-dlx
                   </a>
@@ -133,7 +101,8 @@ export default function AwesomePackage() {
             <p className="mt-4 text-gray-400">
               yt-dlx accommodates various Node.js coding styles, including
               <span className="text-red-600">
-                (commonjs.js), (esm.mjs), (typescript.ts)
+                {" "}
+                (commonjs), (esm), (typescript)
               </span>
               , ensuring 100% compatibility and comprehensive type safety
               coverage.
@@ -144,14 +113,15 @@ export default function AwesomePackage() {
               <div>
                 <MdAudioFile size={30} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Audio-Only:</span>
-                <h2 className="text-lg font-bold">AudioHighest()</h2>
+                <h2 className="text-lg font-bold">
+                  Audio().Single().Highest()
+                </h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically utilizes yt-dlx&apos;s search
-                  algorithm to identify the optimal audio quality for a given
-                  YouTube video link. Employing ffmpeg alongside the best
-                  available codecs and bitrate settings, it ensures the delivery
-                  of superior audio quality and saves the file in the .mp3
-                  format.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
@@ -159,13 +129,13 @@ export default function AwesomePackage() {
               <div>
                 <MdAudioFile size={30} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Audio-Only:</span>
-                <h2 className="text-lg font-bold">AudioLowest()</h2>
+                <h2 className="text-lg font-bold">Audio().Single().Lowest()</h2>
                 <p className="text-sm text-gray-400">
-                  This function is automated and employs yt-dlx&apos;s search
-                  algorithm to identify the lowest possible audio quality for a
-                  given YouTube video link. Utilizing ffmpeg with the lowest
-                  available codecs and bitrate settings, it outputs the minimum
-                  audio quality and saves the file in .mp3 format.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
@@ -173,160 +143,107 @@ export default function AwesomePackage() {
               <div>
                 <MdAudioFile size={30} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Audio-Only:</span>
-                <h2 className="text-lg font-bold">AudioCustomQuality()</h2>
+                <h2 className="text-lg font-bold">Audio().Single().Custom()</h2>
                 <p className="text-sm text-gray-400">
-                  Should you desire to download a specific audio quality for a
-                  given YouTube video link, this function has you covered.
-                  Simply provide the available format for the custom quality,
-                  and yt-dlx along with ffmpeg will manage the rest. To identify
-                  the available formats, utilize the getFormats() function.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div>
-                <FaFileVideo size={25} className="text-red-600 animate-pulse" />
+                <FaFileVideo size={26} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Video-Only:</span>
-                <h2 className="text-lg font-bold">VideoHighest()</h2>
+                <h2 className="text-lg font-bold">
+                  Video().Single().Highest()
+                </h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlx&apos;s search
-                  algorithm to identify the optimal video quality for a given
-                  YouTube video link. Utilizing ffmpeg, along with the best
-                  available codecs and bitrate settings, it ensures the delivery
-                  of superior video quality and saves the file in the .mp4
-                  format.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div>
-                <FaFileVideo size={25} className="text-red-600 animate-pulse" />
+                <FaFileVideo size={26} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Video-Only:</span>
-                <h2 className="text-lg font-bold">VideoLowest()</h2>
+                <h2 className="text-lg font-bold">Video().Single().Lowest()</h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlx&apos;s search
-                  algorithm to identify the minimum achievable video quality for
-                  a given YouTube video link. Utilizing ffmpeg with the lowest
-                  available codecs and bitrate settings, it produces the video
-                  with the least possible quality and saves the file in the .mp4
-                  format.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div>
-                <FaFileVideo size={25} className="text-red-600 animate-pulse" />
+                <FaFileVideo size={26} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Video-Only:</span>
-                <h2 className="text-lg font-bold">VideoCustomQuality()</h2>
+                <h2 className="text-lg font-bold">Video().Single().Custom()</h2>
                 <p className="text-sm text-gray-400">
-                  This function caters to your specific needs when it comes to
-                  downloading a desired video quality for a given YouTube video
-                  link. Simply provide the available format for the custom
-                  quality, and yt-dlx along with ffmpeg will handle the rest. To
-                  identify the available formats, use the getFormats() function.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div>
-                <AiFillCodeSandboxCircle
-                  size={35}
-                  className="text-red-600 animate-pulse"
-                />
+                <div className="flex items-center gap-2">
+                  <MdAudioFile
+                    size={30}
+                    className="text-red-600 animate-pulse"
+                  />
+                  <FaFileVideo
+                    size={26}
+                    className="text-red-600 animate-pulse"
+                  />
+                </div>
                 <span className="text-red-600 text-sm">Audio + Video:</span>
-                <h2 className="text-lg font-bold">AudioVideoHighest()</h2>
+                <h2 className="text-lg font-bold">
+                  AudioVideo().Single().Highest()
+                </h2>
                 <p className="text-sm text-gray-400">
-                  This automated function utilizes yt-dlx&apos;s search
-                  algorithm to identify the optimal audio+video quality for any
-                  given YouTube video link. It employs ffmpeg, leveraging the
-                  best available codecs and bitrate settings to produce the
-                  highest quality audio+video output, saving the file in .mp4
-                  format.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div>
-                <AiFillCodeSandboxCircle
-                  size={35}
-                  className="text-red-600 animate-pulse"
-                />
+                <div className="flex items-center gap-2">
+                  <MdAudioFile
+                    size={30}
+                    className="text-red-600 animate-pulse"
+                  />
+                  <FaFileVideo
+                    size={26}
+                    className="text-red-600 animate-pulse"
+                  />
+                </div>
                 <span className="text-red-600 text-sm">Audio + Video:</span>
-                <h2 className="text-lg font-bold">AudioVideoLowest()</h2>
+                <h2 className="text-lg font-bold">
+                  AudioVideo().Single().Lowest()
+                </h2>
                 <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlx&apos;s search
-                  algorithm to identify the lowest possible audio+video quality
-                  for a given YouTube video link. Utilizing ffmpeg with the
-                  least resource-intensive codecs and bitrate settings, it
-                  outputs the lowest possible audio+video quality and saves the
-                  file in .mp4 format.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div>
-                <RiSettings3Fill
-                  size={35}
-                  className="text-red-600 animate-spin"
-                />
-                <span className="text-red-600 text-sm">
-                  Information Retrieval:
-                </span>
-                <h2 className="text-lg font-bold">getHelp()</h2>
-                <p className="text-sm text-gray-400">
-                  Utilize this function to access comprehensive information
-                  about all available functions and their basic details. This
-                  function requires no arguments.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div>
-                <RiSettings3Fill
-                  size={35}
-                  className="text-red-600 animate-spin"
-                />
-                <span className="text-red-600 text-sm">
-                  Information Retrieval:
-                </span>
-                <h2 className="text-lg font-bold">getFormats()</h2>
-                <p className="text-sm text-gray-400">
-                  This function serves to identify all potential formats
-                  associated with a video. Utilize this functionality to obtain
-                  comprehensive information about available video formats.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div>
-                <RiSettings3Fill
-                  size={35}
-                  className="text-red-600 animate-spin"
-                />
-                <span className="text-red-600 text-sm">
-                  Information Retrieval:
-                </span>
-                <h2 className="text-lg font-bold">getVideoInfo()</h2>
-                <p className="text-sm text-gray-400">
-                  Utilize this function to retrieve comprehensive video metadata
-                  information.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div>
-                <RiSettings3Fill
-                  size={35}
-                  className="text-red-600 animate-spin"
-                />
-                <span className="text-red-600 text-sm">
-                  Information Retrieval:
-                </span>
-                <h2 className="text-lg font-bold">getRaw()</h2>
-                <p className="text-sm text-gray-400">
-                  This advanced function leverages yt-dlx&apos;s engine to
-                  generate comprehensive JSON data, providing detailed
-                  information about the content.
+                  Aute velit aliqua eu mollit incididunt id sit reprehenderit
+                  eiusmod pariatur magna aliqua enim aliqua. Aute duis labore
+                  proident non aute in adipisicing amet aliqua consequat. Dolor
+                  aliqua duis pariatur eiusmod esse dolor tempor nostrud amet
+                  mollit elit et minim occaecat. Sunt velit veniam ea proident.
                 </p>
               </div>
             </div>
@@ -336,7 +253,7 @@ export default function AwesomePackage() {
       <footer className="pt-20 pb-6 flex flex-wrap items-baseline justify-center">
         <span className="text-[#e73d75] text-3xl mr-2">
           Mixly <span className="text-[#C4C4C4] text-lg">&</span>{" "}
-          <span className="text-red-600">Yt-Dlp</span>
+          <span className="text-red-600">Yt-Dlx</span>
         </span>
         <span className="mt-2 text-sm font-light text-[#C4C4C4]">
           Copyright © 2023
