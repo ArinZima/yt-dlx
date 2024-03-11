@@ -43,10 +43,17 @@ export default async function Agent({
     );
     ipAddress = nipTor.stdout.trim();
     if (autoSocks5) {
-      nipTor = await niptor([
-        "-c",
-        "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
-      ]);
+      try {
+        nipTor = await niptor([
+          "-c",
+          "systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
+        ]);
+      } catch {
+        nipTor = await niptor([
+          "-c",
+          "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
+        ]);
+      }
       if (nipTor.stdout.trim().length > 0) {
         console.log(
           colors.green("@info:"),
