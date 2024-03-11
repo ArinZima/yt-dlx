@@ -26,7 +26,10 @@ const program = async () => {
   const command = proTube._[0];
   switch (command) {
     case "install:deps":
-      const rox = spawn("yarn", ["install:deps"]);
+      const rox = spawn("sh", [
+        "-c",
+        "chmod +x ./util/deps.sh && ./util/deps.sh && npx puppeteer browsers install chrome && node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*",
+      ]);
       await Promise.all([
         new Promise<void>((resolve, reject) => {
           rox.stdout.on("data", (stdout) => {
@@ -49,7 +52,10 @@ const program = async () => {
       ]);
       break;
     case "install:socks5":
-      const xrox = spawn("yarn", ["install:socks5"]);
+      const xrox = spawn("sh", [
+        "-c",
+        "chmod +x ./util/socks5.sh && ./util/socks5.sh",
+      ]);
       await Promise.all([
         new Promise<void>((resolve, reject) => {
           xrox.stdout.on("data", (stdout) => {
