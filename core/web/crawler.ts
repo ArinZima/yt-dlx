@@ -7,7 +7,6 @@ export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
     if (autoSocks5) {
       browser = await puppeteer.launch({
         headless: verbose ? false : true,
-        userDataDir: "others",
         args: [
           "--no-zygote",
           "--incognito",

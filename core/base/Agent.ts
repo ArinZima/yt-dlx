@@ -30,28 +30,24 @@ export default async function Agent({
       colors.green(version)
     );
     let nipTor;
-    let ipAddress: string | undefined;
-    switch (autoSocks5) {
-      case true:
-        nipTor = await niptor([
-          "-c",
-          "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com",
-        ]);
-        if (nipTor.stdout.trim().length > 0) {
-          console.log(
-            colors.green("@niptor:"),
-            "autoSocks5 new ip",
-            nipTor.stdout.trim()
-          );
-          console.log(colors.green("@niptor:\n"), nipTor.stderr.trim());
-          ipAddress = nipTor.stdout.trim();
-        } else throw new Error("Unable to connect to Tor.");
-        break;
-      default:
-        nipTor = await niptor(["-c", "curl https://checkip.amazonaws.com"]);
-        console.log(colors.green("@niptor:"), "real ip", nipTor.stdout.trim());
+    let ipAddress: string | undefined = undefined;
+    nipTor = await niptor(["-c", "curl https://checkip.amazonaws.com"]);
+    console.log(colors.green("@niptor:"), "real ip", nipTor.stdout.trim());
+    ipAddress = nipTor.stdout.trim();
+    if (autoSocks5) {
+      nipTor = await niptor([
+        "-c",
+        "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com",
+      ]);
+      if (nipTor.stdout.trim().length > 0) {
+        console.log(
+          colors.green("@niptor:"),
+          "autoSocks5 new ip",
+          nipTor.stdout.trim()
+        );
+        console.log(colors.green("@niptor:\n"), nipTor.stderr.trim());
         ipAddress = nipTor.stdout.trim();
-        break;
+      } else throw new Error("Unable to connect to Tor.");
     }
     let respEngine: EngineResult | undefined = undefined;
     let videoId: string | undefined = await YouTubeID(query);
