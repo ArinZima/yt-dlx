@@ -10,8 +10,8 @@
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
-    "socks5": "chmod +x util/socks5.sh && ./util/socks5.sh",
     "renew": "yarn clean && yarn make && yarn update && yarn build",
+    "socks5": "chmod +x ./util/socks5.sh && ./util/socks5.sh",
     "client:dev": "cd client && yarn dev",
     "client:build": "cd client && yarn build",
     "client:start": "cd client && yarn start",
@@ -19,10 +19,9 @@
     "clean:base": "rm -rf node_modules temp shared others",
     "clean:client": "cd client && rm -rf node_modules .next",
     "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/engine",
-    "make": "yarn make:deps && yarn make:base && yarn make:client && yarn postinstall",
-    "make:base": "yarn install",
-    "make:client": "cd client && yarn install",
-    "make:deps": "chmod +x util/deps.sh && ./util/deps.sh",
+    "make": "yarn make:base && yarn make:client && yarn postinstall",
+    "make:base": "yarn install --verbose",
+    "make:client": "cd client && yarn install --verbose",
     "update": "yarn update:base && yarn update:client",
     "update:base": "yarn install --verbose && yarn upgrade --latest",
     "update:client": "cd client && yarn install --verbose && yarn upgrade --latest",
@@ -38,8 +37,8 @@
     "test:video": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
     "test:mix": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
     "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
+    "preinstall": "chmod +x ./util/deps.sh && ./util/deps.sh",
     "prepublishOnly": "yarn clean:deps",
-    "preinstall": "npm run make:deps",
     "start": "node util/dev.mjs"
   },
   "dependencies": {
