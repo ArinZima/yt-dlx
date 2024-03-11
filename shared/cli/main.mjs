@@ -4992,58 +4992,58 @@ var program = async () => {
   const command = proTube2._[0];
   switch (command) {
     case "install:deps":
-      const prox = spawn("yarn", ["install:deps"]);
-      const [stdout, stderr] = await Promise.all([
+      const rox = spawn("yarn", ["install:deps"]);
+      await Promise.all([
         new Promise((resolve, reject2) => {
-          const stdoutData = [];
-          prox.stdout.on("data", (data) => stdoutData.push(data));
-          prox.on("close", (code) => {
+          rox.stdout.on("data", (stdout) => {
+            console.log(colors28.green("@stdout:"), stdout.toString().trim());
+          });
+          rox.on("close", (code) => {
             if (code === 0)
-              resolve(Buffer.concat(stdoutData).toString());
+              resolve();
             else
               reject2(new Error(`@closed with code ${code}`));
           });
         }),
         new Promise((resolve, reject2) => {
-          const stderrData = [];
-          prox.stderr.on("data", (data) => stderrData.push(data));
-          prox.on("close", (code) => {
+          rox.stderr.on("data", (stderr) => {
+            console.log(colors28.yellow("@stderr:"), stderr.toString().trim());
+          });
+          rox.on("close", (code) => {
             if (code === 0)
-              resolve(Buffer.concat(stderrData).toString());
+              resolve();
             else
               reject2(new Error(`@closed with code ${code}`));
           });
         })
       ]);
-      console.log(colors28.green("@stdout:"), stdout.trim());
-      console.log(colors28.yellow("@stderr:"), stderr.trim());
       break;
     case "install:socks5":
-      const proxi = spawn("yarn", ["install:socks5"]);
-      const [stdouti, stderri] = await Promise.all([
+      const xrox = spawn("yarn", ["install:socks5"]);
+      await Promise.all([
         new Promise((resolve, reject2) => {
-          const stdoutData = [];
-          proxi.stdout.on("data", (data) => stdoutData.push(data));
-          proxi.on("close", (code) => {
+          xrox.stdout.on("data", (stdout) => {
+            console.log(colors28.green("@stdout:"), stdout.toString().trim());
+          });
+          xrox.on("close", (code) => {
             if (code === 0)
-              resolve(Buffer.concat(stdoutData).toString());
+              resolve();
             else
               reject2(new Error(`@closed with code ${code}`));
           });
         }),
         new Promise((resolve, reject2) => {
-          const stderrData = [];
-          proxi.stderr.on("data", (data) => stderrData.push(data));
-          proxi.on("close", (code) => {
+          xrox.stderr.on("data", (stderr) => {
+            console.log(colors28.yellow("@stderr:"), stderr.toString().trim());
+          });
+          xrox.on("close", (code) => {
             if (code === 0)
-              resolve(Buffer.concat(stderrData).toString());
+              resolve();
             else
               reject2(new Error(`@closed with code ${code}`));
           });
         })
       ]);
-      console.log(colors28.green("@stdout:"), stdouti.trim());
-      console.log(colors28.yellow("@stderr:"), stderri.trim());
       break;
     case "version":
     case "v":

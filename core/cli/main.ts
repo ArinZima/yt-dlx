@@ -26,50 +26,50 @@ const program = async () => {
   const command = proTube._[0];
   switch (command) {
     case "install:deps":
-      const prox = spawn("yarn", ["install:deps"]);
-      const [stdout, stderr] = await Promise.all([
-        new Promise<string>((resolve, reject) => {
-          const stdoutData: Buffer[] = [];
-          prox.stdout.on("data", (data) => stdoutData.push(data));
-          prox.on("close", (code) => {
-            if (code === 0) resolve(Buffer.concat(stdoutData).toString());
+      const rox = spawn("yarn", ["install:deps"]);
+      await Promise.all([
+        new Promise<void>((resolve, reject) => {
+          rox.stdout.on("data", (stdout) => {
+            console.log(colors.green("@stdout:"), stdout.toString().trim());
+          });
+          rox.on("close", (code) => {
+            if (code === 0) resolve();
             else reject(new Error(`@closed with code ${code}`));
           });
         }),
-        new Promise<string>((resolve, reject) => {
-          const stderrData: Buffer[] = [];
-          prox.stderr.on("data", (data) => stderrData.push(data));
-          prox.on("close", (code) => {
-            if (code === 0) resolve(Buffer.concat(stderrData).toString());
+        new Promise<void>((resolve, reject) => {
+          rox.stderr.on("data", (stderr) => {
+            console.log(colors.yellow("@stderr:"), stderr.toString().trim());
+          });
+          rox.on("close", (code) => {
+            if (code === 0) resolve();
             else reject(new Error(`@closed with code ${code}`));
           });
         }),
       ]);
-      console.log(colors.green("@stdout:"), stdout.trim());
-      console.log(colors.yellow("@stderr:"), stderr.trim());
       break;
     case "install:socks5":
-      const proxi = spawn("yarn", ["install:socks5"]);
-      const [stdouti, stderri] = await Promise.all([
-        new Promise<string>((resolve, reject) => {
-          const stdoutData: Buffer[] = [];
-          proxi.stdout.on("data", (data) => stdoutData.push(data));
-          proxi.on("close", (code) => {
-            if (code === 0) resolve(Buffer.concat(stdoutData).toString());
+      const xrox = spawn("yarn", ["install:socks5"]);
+      await Promise.all([
+        new Promise<void>((resolve, reject) => {
+          xrox.stdout.on("data", (stdout) => {
+            console.log(colors.green("@stdout:"), stdout.toString().trim());
+          });
+          xrox.on("close", (code) => {
+            if (code === 0) resolve();
             else reject(new Error(`@closed with code ${code}`));
           });
         }),
-        new Promise<string>((resolve, reject) => {
-          const stderrData: Buffer[] = [];
-          proxi.stderr.on("data", (data) => stderrData.push(data));
-          proxi.on("close", (code) => {
-            if (code === 0) resolve(Buffer.concat(stderrData).toString());
+        new Promise<void>((resolve, reject) => {
+          xrox.stderr.on("data", (stderr) => {
+            console.log(colors.yellow("@stderr:"), stderr.toString().trim());
+          });
+          xrox.on("close", (code) => {
+            if (code === 0) resolve();
             else reject(new Error(`@closed with code ${code}`));
           });
         }),
       ]);
-      console.log(colors.green("@stdout:"), stdouti.trim());
-      console.log(colors.yellow("@stderr:"), stderri.trim());
       break;
     case "version":
     case "v":
