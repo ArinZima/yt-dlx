@@ -1,12 +1,10 @@
 import puppeteer, { Browser, Page } from "puppeteer";
-import colors from "colors";
 export let browser: Browser;
 export let page: Page;
 
 export default async function crawler(verbose?: boolean, proxy?: string) {
   try {
     if (proxy) {
-      console.log(colors.green("@info:"), "using proxy", proxy);
       browser = await puppeteer.launch({
         headless: verbose ? false : true,
         userDataDir: "others",
@@ -23,7 +21,6 @@ export default async function crawler(verbose?: boolean, proxy?: string) {
         ],
       });
     } else {
-      console.log(colors.yellow("@info:"), "not using proxy");
       browser = await puppeteer.launch({
         headless: verbose ? false : true,
         userDataDir: "others",
