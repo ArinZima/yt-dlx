@@ -13,9 +13,11 @@ const core = {
   postinstall:
     "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
   monit: "watch -n 1 nvidia-smi",
-  torprox: "chmod +x util/torprox.sh && ./util/torprox.sh",
-  "torprox:watch": "chmod +x util/torprox.sh && ./util/torprox.sh && sudo nyx",
+  torsock: "chmod +x util/torsock.sh && ./util/torsock.sh",
+  "torsock:watch": "chmod +x util/torsock.sh && ./util/torsock.sh && sudo nyx",
   remake: "yarn clean && yarn make && yarn update && yarn build",
+  "remake:torsock":
+    "yarn clean && yarn make && yarn update && yarn build && yarn torsock",
   "client:dev": "cd client && yarn dev",
   "client:build": "cd client && yarn build",
   "client:start": "cd client && yarn start",
