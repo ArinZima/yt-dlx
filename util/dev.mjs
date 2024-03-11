@@ -10,8 +10,6 @@ const colors = {
 };
 
 const core = {
-  postinstall:
-    "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
   monit: "watch -n 1 nvidia-smi",
   socks5: "chmod +x util/socks5.sh && ./util/socks5.sh",
   "socks5:watch": "chmod +x util/socks5.sh && ./util/socks5.sh && sudo nyx",
@@ -52,6 +50,9 @@ const core = {
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
+  preinstall: "npm run make:deps && npm run socks5",
+  postinstall:
+    "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];

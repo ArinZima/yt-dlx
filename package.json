@@ -10,10 +10,6 @@
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
-    "start": "node util/dev.mjs",
-    "prepublishOnly": "yarn clean:deps",
-    "preinstall": "npm run make:deps && npm run socks5",
-    "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
     "monit": "watch -n 1 nvidia-smi",
     "socks5": "chmod +x util/socks5.sh && ./util/socks5.sh",
     "socks5:watch": "chmod +x util/socks5.sh && ./util/socks5.sh && sudo nyx",
@@ -43,7 +39,11 @@
     "test:full": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
     "test:audio": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/audio.js",
     "test:video": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
-    "test:mix": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js"
+    "test:mix": "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
+    "start": "node util/dev.mjs",
+    "prepublishOnly": "yarn clean:deps",
+    "preinstall": "npm run make:deps && npm run socks5",
+    "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "async-retry": "^1.3.3",
