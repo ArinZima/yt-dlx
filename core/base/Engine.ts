@@ -50,7 +50,7 @@ export default async function Engine({
       proLoc += ` --dump-single-json '${query}'`;
     } else
       throw new Error(
-        "could not find the engine file. Try running npx yt-dlx install:deps"
+        "Could not find the dependencies. Try running npx yt-dlx install:deps"
       );
     const result = await promisify(exec)(proLoc);
     const metaTube = await JSON.parse(result.stdout.toString());
