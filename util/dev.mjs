@@ -14,8 +14,6 @@ const core = {
   socks5: "chmod +x util/socks5.sh && ./util/socks5.sh",
   "socks5:watch": "chmod +x util/socks5.sh && ./util/socks5.sh && sudo nyx",
   remake: "yarn clean && yarn make && yarn update && yarn build",
-  "remake:socks5":
-    "yarn clean && yarn make && yarn update && yarn build && yarn socks5",
   "client:dev": "cd client && yarn dev",
   "client:build": "cd client && yarn build",
   "client:start": "cd client && yarn start",
