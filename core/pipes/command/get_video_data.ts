@@ -1,4 +1,5 @@
 import * as z from "zod";
+import colors from "colors";
 import Engine from "../../base/Agent";
 
 export interface VideoData {
@@ -152,6 +153,15 @@ export default function get_video_data({
           EnResp.metaTube.channel_follower_count
         ),
       });
+      console.log(
+        colors.green("@info:"),
+        "❣️ Thank you for using",
+        colors.green("yt-dlx."),
+        "Consider",
+        colors.green("🌟starring"),
+        "the github repo",
+        colors.green("https://github.com/yt-dlx\n")
+      );
     } catch (error) {
       reject(error instanceof z.ZodError ? error.errors : error);
     }

@@ -64,6 +64,15 @@ export default async function get_playlist({
         }
       }
     }
+    console.log(
+      colors.green("@info:"),
+      "❣️ Thank you for using",
+      colors.green("yt-dlx."),
+      "Consider",
+      colors.green("🌟starring"),
+      "the github repo",
+      colors.green("https://github.com/yt-dlx\n")
+    );
     return proTubeArr;
   } catch (error) {
     return error instanceof z.ZodError ? error.errors : error;

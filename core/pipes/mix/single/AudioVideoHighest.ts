@@ -133,10 +133,10 @@ export default async function AudioVideoHighest(input: {
         colors.green("@info:"),
         "❣️ Thank you for using",
         colors.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors.green("🌟starring"),
         "the github repo",
-        colors.green("https://github.com/yt-dlx")
+        colors.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {

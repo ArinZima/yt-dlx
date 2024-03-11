@@ -22,6 +22,13 @@ export default async function Agent({
   autoSocks5?: boolean;
 }): Promise<EngineResult> {
   try {
+    console.log(
+      colors.green("@info:"),
+      "using",
+      colors.green("yt-dlx"),
+      "version",
+      colors.green(version)
+    );
     let nipTor;
     let ipAddress: string | undefined;
     switch (autoSocks5) {
@@ -33,7 +40,7 @@ export default async function Agent({
         if (nipTor.stdout.trim().length > 0) {
           console.log(
             colors.green("@niptor:"),
-            "new tor ip",
+            "autoSocks5 new ip",
             nipTor.stdout.trim()
           );
           console.log(colors.green("@niptor:\n"), nipTor.stderr.trim());
@@ -42,6 +49,7 @@ export default async function Agent({
         break;
       default:
         nipTor = await niptor(["-c", "curl https://checkip.amazonaws.com"]);
+        console.log(colors.green("@niptor:"), "real ip", nipTor.stdout.trim());
         ipAddress = nipTor.stdout.trim();
         break;
     }
@@ -52,13 +60,6 @@ export default async function Agent({
       | VideoInfoType
       | TypePlaylist[]
       | PlaylistInfoType;
-    console.log(
-      colors.green("@info:"),
-      "using",
-      colors.green("yt-dlx"),
-      "version",
-      colors.green(version)
-    );
     if (!videoId) {
       TubeBody = (await web.search.SearchVideos({
         type: "video",
