@@ -6,7 +6,7 @@ import { FfmpegCommand } from 'fluent-ffmpeg';
 
 interface IpOp {
     query: string;
-    torproxy?: string;
+    proxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
     type: keyof {
@@ -37,7 +37,7 @@ declare function SearchVideos(input: IpOp): Promise<TypeVideo[] | TypePlaylist[]
 
 interface InputYouTube$1 {
     query: string;
-    torproxy?: string;
+    proxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
 }
@@ -61,7 +61,7 @@ declare function PlaylistInfo(input: InputYouTube$1): Promise<PlaylistInfoType |
 
 interface InputYouTube {
     query: string;
-    torproxy?: string;
+    proxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
 }
@@ -202,8 +202,8 @@ interface EngineResult {
     HDRVideoStore: TubeConfig[];
 }
 
-declare function extract_playlist_videos({ torproxy, playlistUrls, }: {
-    torproxy?: string;
+declare function extract_playlist_videos({ proxy, playlistUrls, }: {
+    proxy?: string;
     playlistUrls: string[];
 }): Promise<EngineResult[]>;
 
@@ -212,7 +212,7 @@ declare function AudioLowest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;
@@ -224,7 +224,7 @@ declare function AudioHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;
@@ -236,7 +236,7 @@ declare function AudioQualityCustom(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     quality: "high" | "medium" | "low" | "ultralow";
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
@@ -248,7 +248,7 @@ declare function ListAudioLowest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void>;
 
@@ -256,7 +256,7 @@ declare function ListAudioHighest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void>;
 
@@ -264,7 +264,7 @@ declare function ListAudioQualityCustom(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     quality: "high" | "medium" | "low" | "ultralow";
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void>;
@@ -274,7 +274,7 @@ declare function VideoLowest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -286,7 +286,7 @@ declare function VideoHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -298,7 +298,7 @@ declare function VideoQualityCustom(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     quality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
@@ -310,7 +310,7 @@ declare function ListVideoLowest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -321,7 +321,7 @@ declare function ListVideoHighest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -332,7 +332,7 @@ declare function ListVideoQualityCustom(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     quality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
@@ -345,7 +345,7 @@ declare function AudioVideoLowest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -357,7 +357,7 @@ declare function AudioVideoHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -369,7 +369,7 @@ declare function AudioVideoQualityCustom(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     AQuality: "high" | "medium" | "low" | "ultralow";
     VQuality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
@@ -382,7 +382,7 @@ declare function ListAudioVideoHighest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -393,7 +393,7 @@ declare function ListAudioVideoLowest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;
@@ -404,7 +404,7 @@ declare function ListAudioVideoQualityCustom(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     AQuality: "high" | "medium" | "low" | "ultralow";
     VQuality: "144p" | "240p" | "360p" | "480p" | "720p" | "1080p" | "1440p" | "2160p" | "2880p" | "4320p" | "5760p" | "8640p" | "12000p";
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";

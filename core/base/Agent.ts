@@ -15,11 +15,11 @@ import type EngineResult from "../interface/EngineResult";
 export default async function Agent({
   query,
   verbose,
-  torproxy,
+  proxy,
 }: {
   query: string;
   verbose?: boolean;
-  torproxy?: string;
+  proxy?: string;
 }): Promise<EngineResult> {
   try {
     const child = spawn("sh", [
@@ -49,7 +49,7 @@ export default async function Agent({
         if (!videoId) {
           TubeBody = (await web.search.SearchVideos({
             type: "video",
-            torproxy,
+            proxy,
             verbose,
             query,
           })) as TypeVideo[];
@@ -63,13 +63,13 @@ export default async function Agent({
             );
             respEngine = await Engine({
               query: TubeBody[0].videoLink,
-              torproxy,
+              proxy,
             });
             resolve(respEngine);
           }
         } else {
           TubeBody = (await web.search.VideoInfo({
-            torproxy,
+            proxy,
             verbose,
             query,
           })) as VideoInfoType;
@@ -83,7 +83,7 @@ export default async function Agent({
             );
             respEngine = await Engine({
               query: TubeBody.videoLink,
-              torproxy,
+              proxy,
             });
             resolve(respEngine);
           }

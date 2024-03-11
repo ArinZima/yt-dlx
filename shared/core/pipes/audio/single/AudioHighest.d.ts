@@ -5,7 +5,7 @@ export default function AudioHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
 }): Promise<void | {
     filename: string;

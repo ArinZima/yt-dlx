@@ -1,7 +1,7 @@
 import type EngineResult from "../interface/EngineResult";
-export default function Agent({ query, verbose, torproxy, }: {
+export default function Agent({ query, verbose, proxy, }: {
     query: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
 }): Promise<EngineResult>;
 //# sourceMappingURL=Agent.d.ts.map

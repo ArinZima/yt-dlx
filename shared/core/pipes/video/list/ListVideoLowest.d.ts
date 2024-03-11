@@ -4,7 +4,7 @@ export default function ListVideoLowest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;

@@ -12,7 +12,7 @@ import type { proTubeCommand } from "../../../base/ffmpeg";
 const qconf = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z
     .array(
       z
@@ -73,7 +73,7 @@ export default async function ListVideoQualityCustom(input: {
   query: string[];
   output?: string;
   verbose?: boolean;
-  torproxy?: string;
+  proxy?: string;
   quality:
     | "144p"
     | "240p"
@@ -101,7 +101,7 @@ export default async function ListVideoQualityCustom(input: {
   ffmpeg: proTubeCommand;
 }> {
   try {
-    const { query, verbose, output, quality, filter, torproxy } =
+    const { query, verbose, output, quality, filter, proxy } =
       await qconf.parseAsync(input);
     const vDATA = new Set<{
       ago: string;
@@ -115,7 +115,7 @@ export default async function ListVideoQualityCustom(input: {
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === undefined) {
           console.log(
             colors.red("@error:"),
@@ -139,7 +139,7 @@ export default async function ListVideoQualityCustom(input: {
       try {
         const engineData = await ytdlx({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose,
         });
         if (engineData === undefined) {

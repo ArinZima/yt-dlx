@@ -4,7 +4,7 @@ import * as path3 from 'path';
 import path3__default from 'path';
 import * as fs from 'fs';
 import fs__default from 'fs';
-import colors28 from 'colors';
+import colors29 from 'colors';
 import { load } from 'cheerio';
 import retry from 'async-retry';
 import puppeteer from 'puppeteer';
@@ -62,21 +62,42 @@ function YouTubeID(videoLink) {
 }
 var browser;
 var page;
-async function crawler(verbose, torprox) {
+async function crawler(verbose, proxy) {
   try {
-    if (torprox)
-      console.log(torprox);
-    browser = await puppeteer.launch({
-      headless: verbose ? false : true,
-      userDataDir: "others",
-      args: [
-        "--no-zygote",
-        "--incognito",
-        "--no-sandbox",
-        "--enable-automation",
-        "--disable-dev-shm-usage"
-      ]
-    });
+    if (proxy) {
+      console.log(colors29.green("@info:"), "using proxy", proxy);
+      browser = await puppeteer.launch({
+        headless: verbose ? false : true,
+        userDataDir: "others",
+        args: [
+          "--no-zygote",
+          "--incognito",
+          "--no-sandbox",
+          "--lang=en-US",
+          "--enable-automation",
+          "--disable-dev-shm-usage",
+          "--ignore-certificate-errors",
+          "--allow-running-insecure-content",
+          "--proxy-server=socks5://127.0.0.1:9050"
+        ]
+      });
+    } else {
+      console.log(colors29.yellow("@info:"), "not using proxy");
+      browser = await puppeteer.launch({
+        headless: verbose ? false : true,
+        userDataDir: "others",
+        args: [
+          "--no-zygote",
+          "--incognito",
+          "--no-sandbox",
+          "--lang=en-US",
+          "--enable-automation",
+          "--disable-dev-shm-usage",
+          "--ignore-certificate-errors",
+          "--allow-running-insecure-content"
+        ]
+      });
+    }
     page = await browser.newPage();
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
@@ -108,12 +129,14 @@ async function SearchVideos(input) {
           message: "Query must not be a YouTube video/Playlist link"
         }
       ),
-      torproxy: z.string().optional(),
+      proxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional()
     });
-    const { query, screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
-    await crawler(verbose, torproxy);
+    const { query, screenshot, verbose, proxy } = await QuerySchema.parseAsync(
+      input
+    );
+    await crawler(verbose, proxy);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -130,7 +153,7 @@ async function SearchVideos(input) {
     let TubeResp;
     let snapshot;
     spinnies.add(spin, {
-      text: colors28.green("@scrape: ") + "booting chromium..."
+      text: colors29.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
@@ -141,7 +164,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors29.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -149,7 +172,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
-              text: colors28.yellow("@scrape: ") + "took snapshot..."
+              text: colors29.yellow("@scrape: ") + "took snapshot..."
             });
           }
           content = await page.content();
@@ -188,7 +211,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
+            text: colors29.green("@info: ") + colors29.white("scrapping done for ") + query
           });
           return metaTube;
         }, retryOptions);
@@ -202,7 +225,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors28.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors29.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -210,7 +233,7 @@ async function SearchVideos(input) {
             });
             fs__default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
-              text: colors28.yellow("@scrape: ") + "took snapshot..."
+              text: colors29.yellow("@scrape: ") + "took snapshot..."
             });
           }
           const content2 = await page.content();
@@ -229,7 +252,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
+            text: colors29.green("@info: ") + colors29.white("scrapping done for ") + query
           });
           return playlistMeta;
         }, retryOptions);
@@ -237,7 +260,7 @@ async function SearchVideos(input) {
         return TubeResp;
       default:
         spinnies.fail(spin, {
-          text: colors28.red("@error: ") + colors28.white("wrong filter type provided.")
+          text: colors29.red("@error: ") + colors29.white("wrong filter type provided.")
         });
         await closers(browser);
         return void 0;
@@ -247,12 +270,12 @@ async function SearchVideos(input) {
     switch (true) {
       case error instanceof ZodError:
         throw new Error(
-          colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+          colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
         );
       case error instanceof Error:
-        throw new Error(colors28.red("@error: ") + error.message);
+        throw new Error(colors29.red("@error: ") + error.message);
       default:
-        throw new Error(colors28.red("@error: ") + "internal server error");
+        throw new Error(colors29.red("@error: ") + "internal server error");
     }
   }
 }
@@ -293,14 +316,12 @@ async function PlaylistInfo(input) {
           message: "Query must be a valid YouTube Playlist Link or ID."
         }
       ),
-      torproxy: z.string().optional(),
+      proxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional()
     });
-    const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(
-      input
-    );
-    await crawler(verbose, torproxy);
+    const { screenshot, verbose, proxy } = await QuerySchema.parseAsync(input);
+    await crawler(verbose, proxy);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -312,14 +333,14 @@ async function PlaylistInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors28.green("@scrape: ") + "booting chromium..."
+        text: colors29.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors29.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -327,7 +348,7 @@ async function PlaylistInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors28.yellow("@scrape: ") + "took snapshot..."
+          text: colors29.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const content = await page.content();
@@ -367,7 +388,7 @@ async function PlaylistInfo(input) {
         });
       });
       spinnies.succeed(spin, {
-        text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
+        text: colors29.green("@info: ") + colors29.white("scrapping done for ") + query
       });
       return {
         playlistVideos: metaTube,
@@ -428,14 +449,12 @@ async function VideoInfo(input) {
           message: "Query must be a valid YouTube video Link or ID."
         }
       ),
-      torproxy: z.string().optional(),
+      proxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional()
     });
-    const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(
-      input
-    );
-    await crawler(verbose, torproxy);
+    const { screenshot, verbose, proxy } = await QuerySchema.parseAsync(input);
+    await crawler(verbose, proxy);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -446,14 +465,14 @@ async function VideoInfo(input) {
     let snapshot;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
-        text: colors28.green("@scrape: ") + "booting chromium..."
+        text: colors29.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors29.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -461,7 +480,7 @@ async function VideoInfo(input) {
         });
         fs__default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors28.yellow("@scrape: ") + "took snapshot..."
+          text: colors29.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const videoId = await YouTubeID(query);
@@ -508,7 +527,7 @@ async function VideoInfo(input) {
         videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
       spinnies.succeed(spin, {
-        text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
+        text: colors29.green("@info: ") + colors29.white("scrapping done for ") + query
       });
       return metaTube;
     }, retryOptions);
@@ -542,7 +561,7 @@ var web = {
 var web_default = web;
 function help() {
   return Promise.resolve(
-    colors28.bold.white(`
+    colors29.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -687,7 +706,7 @@ function sizeFormat(filesize) {
 }
 async function Engine({
   query,
-  torproxy
+  proxy
 }) {
   try {
     let pushTube = [];
@@ -705,8 +724,8 @@ async function Engine({
       }
     }
     if (proLoc !== "") {
-      if (torproxy)
-        proLoc += ` --proxy ${torproxy}`;
+      if (proxy)
+        proLoc += ` --proxy ${proxy}`;
       proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` --dump-single-json '${query}'`;
@@ -810,7 +829,7 @@ var version = "5.5.0";
 async function Agent({
   query,
   verbose,
-  torproxy
+  proxy
 }) {
   try {
     const child = spawn("sh", [
@@ -819,7 +838,7 @@ async function Agent({
     ]);
     return new Promise((resolve, reject2) => {
       child.stdout.on("data", (data) => {
-        console.log(colors28.green("@info:"), data.toString());
+        console.log(colors29.green("@info:"), data.toString());
       });
       child.on("close", async (code) => {
         if (code !== 0)
@@ -828,16 +847,16 @@ async function Agent({
         let videoId = await YouTubeID(query);
         let TubeBody;
         console.log(
-          colors28.green("@info:"),
+          colors29.green("@info:"),
           "using",
-          colors28.green("yt-dlx"),
+          colors29.green("yt-dlx"),
           "version",
-          colors28.green(version)
+          colors29.green(version)
         );
         if (!videoId) {
           TubeBody = await web_default.search.SearchVideos({
             type: "video",
-            torproxy,
+            proxy,
             verbose,
             query
           });
@@ -845,19 +864,19 @@ async function Agent({
             reject2(new Error("Unable to get response from YouTube..."));
           } else {
             console.log(
-              colors28.green("@info:"),
+              colors29.green("@info:"),
               `preparing payload for`,
-              colors28.green(TubeBody[0].title)
+              colors29.green(TubeBody[0].title)
             );
             respEngine = await Engine({
               query: TubeBody[0].videoLink,
-              torproxy
+              proxy
             });
             resolve(respEngine);
           }
         } else {
           TubeBody = await web_default.search.VideoInfo({
-            torproxy,
+            proxy,
             verbose,
             query
           });
@@ -865,13 +884,13 @@ async function Agent({
             reject2(new Error("Unable to get response from YouTube..."));
           } else {
             console.log(
-              colors28.green("@info:"),
+              colors29.green("@info:"),
               `preparing payload for`,
-              colors28.green(TubeBody.title)
+              colors29.green(TubeBody.title)
             );
             respEngine = await Engine({
               query: TubeBody.videoLink,
-              torproxy
+              proxy
             });
             resolve(respEngine);
           }
@@ -984,7 +1003,7 @@ async function extract({
       }
     };
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
     );
     return payload;
@@ -1029,7 +1048,7 @@ function list_formats({
       };
       resolve(EnBody);
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
       );
     } catch (error) {
@@ -1766,7 +1785,7 @@ function waterfall(tasks, callback) {
 }
 awaitify(waterfall);
 async function extract_playlist_videos({
-  torproxy,
+  proxy,
   playlistUrls
 }) {
   try {
@@ -1776,7 +1795,7 @@ async function extract_playlist_videos({
       const query = await YouTubeID(listLink);
       if (query === void 0) {
         console.error(
-          colors28.bold.red("@error: "),
+          colors29.bold.red("@error: "),
           "invalid youtube playlist url:",
           listLink
         );
@@ -1784,20 +1803,20 @@ async function extract_playlist_videos({
       } else {
         const resp = await web_default.search.PlaylistInfo({
           query,
-          torproxy
+          proxy
         });
         if (resp === void 0) {
           console.error(
-            colors28.bold.red("@error: "),
+            colors29.bold.red("@error: "),
             "unable to get response from youtube for",
             query
           );
           return;
         } else {
           console.log(
-            colors28.green("@info:"),
+            colors29.green("@info:"),
             "total videos in playlist",
-            colors28.green(resp.playlistTitle),
+            colors29.green(resp.playlistTitle),
             resp.playlistVideoCount
           );
           await eachSeries$1(resp.playlistVideos, async (vid) => {
@@ -1806,7 +1825,7 @@ async function extract_playlist_videos({
             });
             counter++;
             console.log(
-              colors28.green("@info:"),
+              colors29.green("@info:"),
               "added",
               counter + "/" + resp.playlistVideoCount
             );
@@ -1816,19 +1835,19 @@ async function extract_playlist_videos({
       }
     });
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
     );
     return metaTubeArr;
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 function progressBar(prog) {
@@ -1837,13 +1856,13 @@ function progressBar(prog) {
   if (prog.percent < 1 && prog.timemark.includes("-"))
     return;
   readline.cursorTo(process.stdout, 0);
-  let color = colors28.green;
+  let color = colors29.green;
   if (prog.percent > 98)
     prog.percent = 100;
   if (prog.percent < 25)
-    color = colors28.red;
+    color = colors29.red;
   else if (prog.percent < 50)
-    color = colors28.yellow;
+    color = colors29.yellow;
   const width = Math.floor(process.stdout.columns / 4);
   const scomp = Math.round(width * prog.percent / 100);
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -1939,7 +1958,7 @@ var qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   filter: z.enum([
     "echo",
     "slow",
@@ -1960,11 +1979,11 @@ var qconf = z.object({
 });
 async function AudioLowest(input) {
   try {
-    const { query, output, stream, verbose, filter: filter2, torproxy } = await qconf.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, output, stream, verbose, filter: filter2, proxy } = await qconf.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -2054,30 +2073,30 @@ async function AudioLowest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 
@@ -2101,7 +2120,7 @@ var qconf2 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   filter: z.enum([
     "echo",
     "slow",
@@ -2122,11 +2141,11 @@ var qconf2 = z.object({
 });
 async function AudioHighest(input) {
   try {
-    const { query, output, stream, verbose, filter: filter2, torproxy } = await qconf2.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, output, stream, verbose, filter: filter2, proxy } = await qconf2.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -2216,30 +2235,30 @@ async function AudioHighest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf3 = z.object({
@@ -2247,7 +2266,7 @@ var qconf3 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   quality: z.enum(["high", "medium", "low", "ultralow"]),
   filter: z.enum([
     "echo",
@@ -2269,11 +2288,11 @@ var qconf3 = z.object({
 });
 async function AudioQualityCustom(input) {
   try {
-    const { query, stream, verbose, output, quality, filter: filter2, torproxy } = await qconf3.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, stream, verbose, output, quality, filter: filter2, proxy } = await qconf3.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const customData = engineData.AudioStore.filter(
@@ -2281,7 +2300,7 @@ async function AudioQualityCustom(input) {
       );
       if (!customData) {
         throw new Error(
-          colors28.red("@error: ") + quality + " not found in the video."
+          colors29.red("@error: ") + quality + " not found in the video."
         );
       }
       const title = engineData.metaTube.title.replace(
@@ -2371,36 +2390,36 @@ async function AudioQualityCustom(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf4 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -2447,16 +2466,16 @@ var qconf4 = z.object({
 });
 async function ListAudioLowest(input) {
   try {
-    const { query, output, verbose, filter: filter2, torproxy } = await qconf4.parseAsync(
+    const { query, output, verbose, filter: filter2, proxy } = await qconf4.parseAsync(
       input
     );
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -2465,25 +2484,25 @@ async function ListAudioLowest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             video.videoLink
           );
@@ -2570,39 +2589,39 @@ async function ListAudioLowest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf5 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -2649,16 +2668,16 @@ var qconf5 = z.object({
 });
 async function ListAudioHighest(input) {
   try {
-    const { query, output, verbose, filter: filter2, torproxy } = await qconf5.parseAsync(
+    const { query, output, verbose, filter: filter2, proxy } = await qconf5.parseAsync(
       input
     );
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -2667,25 +2686,25 @@ async function ListAudioHighest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             video.videoLink
           );
@@ -2772,39 +2791,39 @@ async function ListAudioHighest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf6 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -2852,14 +2871,14 @@ var qconf6 = z.object({
 });
 async function ListAudioQualityCustom(input) {
   try {
-    const { query, output, verbose, quality, filter: filter2, torproxy } = await qconf6.parseAsync(input);
+    const { query, output, verbose, quality, filter: filter2, proxy } = await qconf6.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -2868,25 +2887,25 @@ async function ListAudioQualityCustom(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -2896,7 +2915,7 @@ async function ListAudioQualityCustom(input) {
         );
         if (!customData) {
           console.log(
-            colors28.red("@error: ") + quality + " not found in the video."
+            colors29.red("@error: ") + quality + " not found in the video."
           );
           continue;
         }
@@ -2981,33 +3000,33 @@ async function ListAudioQualityCustom(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf7 = z.object({
@@ -3015,7 +3034,7 @@ var qconf7 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   filter: z.enum([
     "invert",
     "rotate90",
@@ -3028,11 +3047,11 @@ var qconf7 = z.object({
 });
 async function VideoLowest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, torproxy } = await qconf7.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf7.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3093,30 +3112,30 @@ async function VideoLowest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf8 = z.object({
@@ -3124,7 +3143,7 @@ var qconf8 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   filter: z.enum([
     "invert",
     "rotate90",
@@ -3137,11 +3156,11 @@ var qconf8 = z.object({
 });
 async function VideoHighest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, torproxy } = await qconf8.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf8.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3202,30 +3221,30 @@ async function VideoHighest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf9 = z.object({
@@ -3233,7 +3252,7 @@ var qconf9 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   quality: z.enum([
     "144p",
     "240p",
@@ -3261,11 +3280,11 @@ var qconf9 = z.object({
 });
 async function VideoQualityCustom(input) {
   try {
-    const { query, stream, verbose, output, quality, filter: filter2, torproxy } = await qconf9.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, stream, verbose, output, quality, filter: filter2, proxy } = await qconf9.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const customData = engineData.VideoStore.filter(
@@ -3273,7 +3292,7 @@ async function VideoQualityCustom(input) {
       );
       if (!customData) {
         throw new Error(
-          colors28.red("@error: ") + quality + " not found in the video."
+          colors29.red("@error: ") + quality + " not found in the video."
         );
       }
       const title = engineData.metaTube.title.replace(
@@ -3334,36 +3353,36 @@ async function VideoQualityCustom(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf10 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -3402,16 +3421,16 @@ var qconf10 = z.object({
 });
 async function ListVideoLowest(input) {
   try {
-    const { query, output, verbose, filter: filter2, torproxy } = await qconf10.parseAsync(
+    const { query, output, verbose, filter: filter2, proxy } = await qconf10.parseAsync(
       input
     );
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -3420,25 +3439,25 @@ async function ListVideoLowest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -3494,39 +3513,39 @@ async function ListVideoLowest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf11 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -3565,16 +3584,16 @@ var qconf11 = z.object({
 });
 async function ListVideoHighest(input) {
   try {
-    const { query, verbose, output, filter: filter2, torproxy } = await qconf11.parseAsync(
+    const { query, verbose, output, filter: filter2, proxy } = await qconf11.parseAsync(
       input
     );
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -3583,25 +3602,25 @@ async function ListVideoHighest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -3657,39 +3676,39 @@ async function ListVideoHighest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf12 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -3743,14 +3762,14 @@ var qconf12 = z.object({
 });
 async function ListVideoQualityCustom(input) {
   try {
-    const { query, verbose, output, quality, filter: filter2, torproxy } = await qconf12.parseAsync(input);
+    const { query, verbose, output, quality, filter: filter2, proxy } = await qconf12.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -3759,25 +3778,25 @@ async function ListVideoQualityCustom(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -3787,7 +3806,7 @@ async function ListVideoQualityCustom(input) {
         );
         if (!customData) {
           console.log(
-            colors28.red("@error: ") + quality + " not found in the video."
+            colors29.red("@error: ") + quality + " not found in the video."
           );
           continue;
         }
@@ -3842,33 +3861,33 @@ async function ListVideoQualityCustom(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf13 = z.object({
@@ -3876,7 +3895,7 @@ var qconf13 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   filter: z.enum([
     "invert",
     "rotate90",
@@ -3889,11 +3908,11 @@ var qconf13 = z.object({
 });
 async function AudioVideoLowest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, torproxy } = await qconf13.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf13.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3959,30 +3978,30 @@ async function AudioVideoLowest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf14 = z.object({
@@ -3990,7 +4009,7 @@ var qconf14 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   filter: z.enum([
     "invert",
     "rotate90",
@@ -4003,11 +4022,11 @@ var qconf14 = z.object({
 });
 async function AudioVideoHighest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, torproxy } = await qconf14.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf14.parseAsync(input);
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -4073,30 +4092,30 @@ async function AudioVideoHighest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf15 = z.object({
@@ -4104,7 +4123,7 @@ var qconf15 = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   AQuality: z.enum(["high", "medium", "low", "ultralow"]),
   VQuality: z.enum([
     "144p",
@@ -4141,12 +4160,12 @@ async function AudioVideoQualityCustom(input) {
       VQuality,
       AQuality,
       filter: filter2,
-      torproxy
+      proxy
     } = await qconf15.parseAsync(input);
-    const engineData = await Agent({ query, verbose, torproxy });
+    const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors28.red("@error: ") + "unable to get response from youtube."
+        colors29.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -4218,36 +4237,36 @@ async function AudioVideoQualityCustom(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors28.green("@info:"),
+        colors29.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors28.green("yt-dlx."),
+        colors29.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors28.green("\u{1F31F}starring"),
+        colors29.green("\u{1F31F}starring"),
         "the github repo",
-        colors28.green("https://github.com/yt-dlx")
+        colors29.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf16 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -4286,16 +4305,16 @@ var qconf16 = z.object({
 });
 async function ListAudioVideoHighest(input) {
   try {
-    const { query, verbose, output, filter: filter2, torproxy } = await qconf16.parseAsync(
+    const { query, verbose, output, filter: filter2, proxy } = await qconf16.parseAsync(
       input
     );
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -4304,25 +4323,25 @@ async function ListAudioVideoHighest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -4383,39 +4402,39 @@ async function ListAudioVideoHighest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf17 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -4454,16 +4473,16 @@ var qconf17 = z.object({
 });
 async function ListAudioVideoLowest(input) {
   try {
-    const { query, verbose, output, filter: filter2, torproxy } = await qconf17.parseAsync(
+    const { query, verbose, output, filter: filter2, proxy } = await qconf17.parseAsync(
       input
     );
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -4472,25 +4491,25 @@ async function ListAudioVideoLowest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -4552,39 +4571,39 @@ async function ListAudioVideoLowest(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 var qconf18 = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z.array(
     z.string().min(1).refine(
       async (input) => {
@@ -4639,14 +4658,14 @@ var qconf18 = z.object({
 });
 async function ListAudioVideoQualityCustom(input) {
   try {
-    const { query, verbose, output, VQuality, AQuality, filter: filter2, torproxy } = await qconf18.parseAsync(input);
+    const { query, verbose, output, VQuality, AQuality, filter: filter2, proxy } = await qconf18.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -4655,25 +4674,25 @@ async function ListAudioVideoQualityCustom(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "total number of uncommon videos:",
-      colors28.yellow(vDATA.size.toString())
+      colors29.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose
         });
         if (engineData === void 0) {
           console.log(
-            colors28.red("@error:"),
+            colors29.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -4741,33 +4760,33 @@ async function ListAudioVideoQualityCustom(input) {
           ffmpeg2.output(path3.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors28.red("@error: ") + error.message);
+            throw new Error(colors29.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors28.red("@error:"), error);
+        console.log(colors29.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors28.green("@info:"),
+      colors29.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors28.green("yt-dlx."),
+      colors29.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors28.green("\u{1F31F}starring"),
+      colors29.green("\u{1F31F}starring"),
       "the github repo",
-      colors28.green("https://github.com/yt-dlx")
+      colors29.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(
-        colors28.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors29.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors28.red("@error: ") + error.message);
+      throw new Error(colors29.red("@error: ") + error.message);
     } else
-      throw new Error(colors28.red("@error: ") + "internal server error");
+      throw new Error(colors29.red("@error: ") + "internal server error");
   }
 }
 
@@ -4844,7 +4863,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors28.green("Installed Version: yt-dlx@" + version));
+      console.error(colors29.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -4852,14 +4871,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().info().extract({
           query: proTube2.query
@@ -4867,14 +4886,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().info().list_formats({
           query: proTube2.query
@@ -4882,14 +4901,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().AudioOnly().Single().Highest({
           query: proTube2.query
@@ -4897,14 +4916,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().AudioOnly().Single().Lowest({
           query: proTube2.query
@@ -4912,14 +4931,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().VideoOnly().Single().Highest({
           query: proTube2.query
@@ -4927,14 +4946,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().VideoOnly().Single().Lowest({
           query: proTube2.query
@@ -4942,14 +4961,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().AudioVideo().Single().Highest({
           query: proTube2.query
@@ -4957,14 +4976,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       } else
         core_default().AudioVideo().Single().Lowest({
           query: proTube2.query
@@ -4972,17 +4991,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors28.red(error));
+          console.error(colors29.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       }
       if (!proTube2 || !proTube2.format || proTube2.format.length === 0) {
-        console.error(colors28.red("error: no format"));
+        console.error(colors29.red("error: no format"));
       }
       core_default().AudioOnly().Single().Custom({
         query: proTube2.query,
@@ -4991,17 +5010,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors28.red("error: no query"));
+        console.error(colors29.red("error: no query"));
       }
       if (!proTube2 || !proTube2.format || proTube2.format.length === 0) {
-        console.error(colors28.red("error: no format"));
+        console.error(colors29.red("error: no format"));
       }
       core_default().VideoOnly().Single().Custom({
         query: proTube2.query,
@@ -5010,7 +5029,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
@@ -5019,7 +5038,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors28.red(error));
+        console.error(colors29.red(error));
         process.exit();
       });
       break;
@@ -5030,7 +5049,7 @@ if (!proTube2._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors28.red(error));
+    console.error(colors29.red(error));
     process.exit();
   });
 } else

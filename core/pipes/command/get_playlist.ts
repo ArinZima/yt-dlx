@@ -12,10 +12,10 @@ interface metaVideo {
   views: string;
 }
 export default async function get_playlist({
-  torproxy,
+  proxy,
   playlistUrls,
 }: {
-  torproxy?: string;
+  proxy?: string;
   playlistUrls: string[];
 }): Promise<any> {
   try {
@@ -33,7 +33,7 @@ export default async function get_playlist({
       }
       const resp = await web.search.PlaylistInfo({
         query: ispUrl[1],
-        torproxy,
+        proxy,
       });
       if (resp === undefined) {
         console.error(

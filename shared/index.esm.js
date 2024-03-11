@@ -62,21 +62,43 @@ function YouTubeID(videoLink) {
 
 let browser;
 let page;
-async function crawler(verbose, torprox) {
+async function crawler(verbose, proxy) {
     try {
-        if (torprox)
-            console.log(torprox);
-        browser = await puppeteer.launch({
-            headless: verbose ? false : true,
-            userDataDir: "others",
-            args: [
-                "--no-zygote",
-                "--incognito",
-                "--no-sandbox",
-                "--enable-automation",
-                "--disable-dev-shm-usage",
-            ],
-        });
+        if (proxy) {
+            console.log(colors.green("@info:"), "using proxy", proxy);
+            browser = await puppeteer.launch({
+                headless: verbose ? false : true,
+                userDataDir: "others",
+                args: [
+                    "--no-zygote",
+                    "--incognito",
+                    "--no-sandbox",
+                    "--lang=en-US",
+                    "--enable-automation",
+                    "--disable-dev-shm-usage",
+                    "--ignore-certificate-errors",
+                    "--allow-running-insecure-content",
+                    "--proxy-server=socks5://127.0.0.1:9050",
+                ],
+            });
+        }
+        else {
+            console.log(colors.yellow("@info:"), "not using proxy");
+            browser = await puppeteer.launch({
+                headless: verbose ? false : true,
+                userDataDir: "others",
+                args: [
+                    "--no-zygote",
+                    "--incognito",
+                    "--no-sandbox",
+                    "--lang=en-US",
+                    "--enable-automation",
+                    "--disable-dev-shm-usage",
+                    "--ignore-certificate-errors",
+                    "--allow-running-insecure-content",
+                ],
+            });
+        }
         page = await browser.newPage();
         await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
     }
@@ -106,12 +128,12 @@ async function SearchVideos(input) {
             }, {
                 message: "Query must not be a YouTube video/Playlist link",
             }),
-            torproxy: z$1.string().optional(),
+            proxy: z$1.string().optional(),
             verbose: z$1.boolean().optional(),
             screenshot: z$1.boolean().optional(),
         });
-        const { query, screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
-        await crawler(verbose, torproxy);
+        const { query, screenshot, verbose, proxy } = await QuerySchema.parseAsync(input);
+        await crawler(verbose, proxy);
         const retryOptions = {
             maxTimeout: 6000,
             minTimeout: 1000,
@@ -316,12 +338,12 @@ async function PlaylistInfo(input) {
             }, {
                 message: "Query must be a valid YouTube Playlist Link or ID.",
             }),
-            torproxy: z$1.string().optional(),
+            proxy: z$1.string().optional(),
             verbose: z$1.boolean().optional(),
             screenshot: z$1.boolean().optional(),
         });
-        const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
-        await crawler(verbose, torproxy);
+        const { screenshot, verbose, proxy } = await QuerySchema.parseAsync(input);
+        await crawler(verbose, proxy);
         const retryOptions = {
             maxTimeout: 6000,
             minTimeout: 1000,
@@ -454,12 +476,12 @@ async function VideoInfo(input) {
             }, {
                 message: "Query must be a valid YouTube video Link or ID.",
             }),
-            torproxy: z$1.string().optional(),
+            proxy: z$1.string().optional(),
             verbose: z$1.boolean().optional(),
             screenshot: z$1.boolean().optional(),
         });
-        const { screenshot, verbose, torproxy } = await QuerySchema.parseAsync(input);
-        await crawler(verbose, torproxy);
+        const { screenshot, verbose, proxy } = await QuerySchema.parseAsync(input);
+        await crawler(verbose, proxy);
         const retryOptions = {
             maxTimeout: 6000,
             minTimeout: 1000,
@@ -700,7 +722,7 @@ function sizeFormat(filesize) {
     else
         return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
 }
-async function Engine({ query, torproxy, }) {
+async function Engine({ query, proxy, }) {
     try {
         let pushTube = [];
         let proLoc = "";
@@ -718,8 +740,8 @@ async function Engine({ query, torproxy, }) {
             }
         }
         if (proLoc !== "") {
-            if (torproxy)
-                proLoc += ` --proxy ${torproxy}`;
+            if (proxy)
+                proLoc += ` --proxy ${proxy}`;
             proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
             proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
             proLoc += ` --dump-single-json '${query}'`;
@@ -833,7 +855,7 @@ async function Engine({ query, torproxy, }) {
 
 var version = "5.5.0";
 
-async function Agent({ query, verbose, torproxy, }) {
+async function Agent({ query, verbose, proxy, }) {
     try {
         const child = spawn("sh", [
             "-c",
@@ -853,7 +875,7 @@ async function Agent({ query, verbose, torproxy, }) {
                 if (!videoId) {
                     TubeBody = (await web.search.SearchVideos({
                         type: "video",
-                        torproxy,
+                        proxy,
                         verbose,
                         query,
                     }));
@@ -864,14 +886,14 @@ async function Agent({ query, verbose, torproxy, }) {
                         console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody[0].title));
                         respEngine = await Engine({
                             query: TubeBody[0].videoLink,
-                            torproxy,
+                            proxy,
                         });
                         resolve(respEngine);
                     }
                 }
                 else {
                     TubeBody = (await web.search.VideoInfo({
-                        torproxy,
+                        proxy,
                         verbose,
                         query,
                     }));
@@ -882,7 +904,7 @@ async function Agent({ query, verbose, torproxy, }) {
                         console.log(colors.green("@info:"), `preparing payload for`, colors.green(TubeBody.title));
                         respEngine = await Engine({
                             query: TubeBody.videoLink,
-                            torproxy,
+                            proxy,
                         });
                         resolve(respEngine);
                     }
@@ -1035,7 +1057,7 @@ function list_formats({ query, verbose, }) {
     });
 }
 
-async function extract_playlist_videos({ torproxy, playlistUrls, }) {
+async function extract_playlist_videos({ proxy, playlistUrls, }) {
     try {
         let counter = 0;
         const metaTubeArr = [];
@@ -1048,7 +1070,7 @@ async function extract_playlist_videos({ torproxy, playlistUrls, }) {
             else {
                 const resp = await web.search.PlaylistInfo({
                     query,
-                    torproxy,
+                    proxy,
                 });
                 if (resp === undefined) {
                     console.error(colors.bold.red("@error: "), "unable to get response from youtube for", query);
@@ -1199,7 +1221,7 @@ const qconf$h = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     filter: z$1
         .enum([
         "echo",
@@ -1222,8 +1244,8 @@ const qconf$h = z$1.object({
 });
 async function AudioLowest(input) {
     try {
-        const { query, output, stream, verbose, filter, torproxy } = await qconf$h.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, output, stream, verbose, filter, proxy } = await qconf$h.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -1359,7 +1381,7 @@ const qconf$g = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     filter: z$1
         .enum([
         "echo",
@@ -1382,8 +1404,8 @@ const qconf$g = z$1.object({
 });
 async function AudioHighest(input) {
     try {
-        const { query, output, stream, verbose, filter, torproxy } = await qconf$g.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, output, stream, verbose, filter, proxy } = await qconf$g.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -1508,7 +1530,7 @@ const qconf$f = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     quality: z$1.enum(["high", "medium", "low", "ultralow"]),
     filter: z$1
         .enum([
@@ -1532,8 +1554,8 @@ const qconf$f = z$1.object({
 });
 async function AudioQualityCustom(input) {
     try {
-        const { query, stream, verbose, output, quality, filter, torproxy } = await qconf$f.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, stream, verbose, output, quality, filter, proxy } = await qconf$f.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -1653,7 +1675,7 @@ async function AudioQualityCustom(input) {
 const qconf$e = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -1698,11 +1720,11 @@ const qconf$e = z$1.object({
 });
 async function ListAudioLowest(input) {
     try {
-        const { query, output, verbose, filter, torproxy } = await qconf$e.parseAsync(input);
+        const { query, output, verbose, filter, proxy } = await qconf$e.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -1720,7 +1742,7 @@ async function ListAudioLowest(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -1835,7 +1857,7 @@ async function ListAudioLowest(input) {
 const qconf$d = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -1880,11 +1902,11 @@ const qconf$d = z$1.object({
 });
 async function ListAudioHighest(input) {
     try {
-        const { query, output, verbose, filter, torproxy } = await qconf$d.parseAsync(input);
+        const { query, output, verbose, filter, proxy } = await qconf$d.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -1902,7 +1924,7 @@ async function ListAudioHighest(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -2017,7 +2039,7 @@ async function ListAudioHighest(input) {
 const qconf$c = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -2063,11 +2085,11 @@ const qconf$c = z$1.object({
 });
 async function ListAudioQualityCustom(input) {
     try {
-        const { query, output, verbose, quality, filter, torproxy } = await qconf$c.parseAsync(input);
+        const { query, output, verbose, quality, filter, proxy } = await qconf$c.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2085,7 +2107,7 @@ async function ListAudioQualityCustom(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -2214,7 +2236,7 @@ const qconf$b = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     filter: z$1
         .enum([
         "invert",
@@ -2229,8 +2251,8 @@ const qconf$b = z$1.object({
 });
 async function VideoLowest(input) {
     try {
-        const { query, stream, verbose, output, filter, torproxy } = await qconf$b.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, stream, verbose, output, filter, proxy } = await qconf$b.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -2324,7 +2346,7 @@ const qconf$a = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     filter: z$1
         .enum([
         "invert",
@@ -2339,8 +2361,8 @@ const qconf$a = z$1.object({
 });
 async function VideoHighest(input) {
     try {
-        const { query, stream, verbose, output, filter, torproxy } = await qconf$a.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, stream, verbose, output, filter, proxy } = await qconf$a.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -2434,7 +2456,7 @@ const qconf$9 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     quality: z$1.enum([
         "144p",
         "240p",
@@ -2464,8 +2486,8 @@ const qconf$9 = z$1.object({
 });
 async function VideoQualityCustom(input) {
     try {
-        const { query, stream, verbose, output, quality, filter, torproxy } = await qconf$9.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, stream, verbose, output, quality, filter, proxy } = await qconf$9.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -2554,7 +2576,7 @@ async function VideoQualityCustom(input) {
 const qconf$8 = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -2591,11 +2613,11 @@ const qconf$8 = z$1.object({
 });
 async function ListVideoLowest(input) {
     try {
-        const { query, output, verbose, filter, torproxy } = await qconf$8.parseAsync(input);
+        const { query, output, verbose, filter, proxy } = await qconf$8.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2613,7 +2635,7 @@ async function ListVideoLowest(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -2696,7 +2718,7 @@ async function ListVideoLowest(input) {
 const qconf$7 = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -2733,11 +2755,11 @@ const qconf$7 = z$1.object({
 });
 async function ListVideoHighest(input) {
     try {
-        const { query, verbose, output, filter, torproxy } = await qconf$7.parseAsync(input);
+        const { query, verbose, output, filter, proxy } = await qconf$7.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2755,7 +2777,7 @@ async function ListVideoHighest(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -2838,7 +2860,7 @@ async function ListVideoHighest(input) {
 const qconf$6 = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -2890,11 +2912,11 @@ const qconf$6 = z$1.object({
 });
 async function ListVideoQualityCustom(input) {
     try {
-        const { query, verbose, output, quality, filter, torproxy } = await qconf$6.parseAsync(input);
+        const { query, verbose, output, quality, filter, proxy } = await qconf$6.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -2912,7 +2934,7 @@ async function ListVideoQualityCustom(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -3009,7 +3031,7 @@ const qconf$5 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     filter: z$1
         .enum([
         "invert",
@@ -3024,8 +3046,8 @@ const qconf$5 = z$1.object({
 });
 async function AudioVideoLowest(input) {
     try {
-        const { query, stream, verbose, output, filter, torproxy } = await qconf$5.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, stream, verbose, output, filter, proxy } = await qconf$5.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -3124,7 +3146,7 @@ const qconf$4 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     filter: z$1
         .enum([
         "invert",
@@ -3139,8 +3161,8 @@ const qconf$4 = z$1.object({
 });
 async function AudioVideoHighest(input) {
     try {
-        const { query, stream, verbose, output, filter, torproxy } = await qconf$4.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, stream, verbose, output, filter, proxy } = await qconf$4.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -3239,7 +3261,7 @@ const qconf$3 = z$1.object({
     output: z$1.string().optional(),
     stream: z$1.boolean().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     AQuality: z$1.enum(["high", "medium", "low", "ultralow"]),
     VQuality: z$1.enum([
         "144p",
@@ -3270,8 +3292,8 @@ const qconf$3 = z$1.object({
 });
 async function AudioVideoQualityCustom(input) {
     try {
-        const { query, stream, verbose, output, VQuality, AQuality, filter, torproxy, } = await qconf$3.parseAsync(input);
-        const engineData = await Agent({ query, verbose, torproxy });
+        const { query, stream, verbose, output, VQuality, AQuality, filter, proxy, } = await qconf$3.parseAsync(input);
+        const engineData = await Agent({ query, verbose, proxy });
         if (engineData === undefined) {
             throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
         }
@@ -3363,7 +3385,7 @@ async function AudioVideoQualityCustom(input) {
 const qconf$2 = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -3400,11 +3422,11 @@ const qconf$2 = z$1.object({
 });
 async function ListAudioVideoHighest(input) {
     try {
-        const { query, verbose, output, filter, torproxy } = await qconf$2.parseAsync(input);
+        const { query, verbose, output, filter, proxy } = await qconf$2.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -3422,7 +3444,7 @@ async function ListAudioVideoHighest(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -3510,7 +3532,7 @@ async function ListAudioVideoHighest(input) {
 const qconf$1 = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -3547,11 +3569,11 @@ const qconf$1 = z$1.object({
 });
 async function ListAudioVideoLowest(input) {
     try {
-        const { query, verbose, output, filter, torproxy } = await qconf$1.parseAsync(input);
+        const { query, verbose, output, filter, proxy } = await qconf$1.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -3569,7 +3591,7 @@ async function ListAudioVideoLowest(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {
@@ -3658,7 +3680,7 @@ async function ListAudioVideoLowest(input) {
 const qconf = z$1.object({
     output: z$1.string().optional(),
     verbose: z$1.boolean().optional(),
-    torproxy: z$1.string().min(1).optional(),
+    proxy: z$1.string().min(1).optional(),
     query: z$1
         .array(z$1
         .string()
@@ -3711,11 +3733,11 @@ const qconf = z$1.object({
 });
 async function ListAudioVideoQualityCustom(input) {
     try {
-        const { query, verbose, output, VQuality, AQuality, filter, torproxy } = await qconf.parseAsync(input);
+        const { query, verbose, output, VQuality, AQuality, filter, proxy } = await qconf.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {
-                const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+                const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
                 if (pDATA === undefined) {
                     console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
                     continue;
@@ -3733,7 +3755,7 @@ async function ListAudioVideoQualityCustom(input) {
             try {
                 const engineData = await Agent({
                     query: video.videoLink,
-                    torproxy,
+                    proxy,
                     verbose,
                 });
                 if (engineData === undefined) {

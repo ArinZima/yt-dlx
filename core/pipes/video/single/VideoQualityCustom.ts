@@ -19,7 +19,7 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   quality: z.enum([
     "144p",
     "240p",
@@ -52,7 +52,7 @@ export default async function VideoQualityCustom(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
-  torproxy?: string;
+  proxy?: string;
   quality:
     | "144p"
     | "240p"
@@ -80,9 +80,9 @@ export default async function VideoQualityCustom(input: {
   ffmpeg: proTubeCommand;
 }> {
   try {
-    const { query, stream, verbose, output, quality, filter, torproxy } =
+    const { query, stream, verbose, output, quality, filter, proxy } =
       await qconf.parseAsync(input);
-    const engineData = await ytdlx({ query, verbose, torproxy });
+    const engineData = await ytdlx({ query, verbose, proxy });
     if (engineData === undefined) {
       throw new Error(
         colors.red("@error: ") + "unable to get response from youtube."

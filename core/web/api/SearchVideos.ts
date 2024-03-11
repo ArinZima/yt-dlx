@@ -11,7 +11,7 @@ import crawler, { browser, page } from "../crawler";
 
 export interface IpOp {
   query: string;
-  torproxy?: string;
+  proxy?: string;
   verbose?: boolean;
   screenshot?: boolean;
   type: keyof { video: "video"; playlist: "playlist" };
@@ -55,13 +55,14 @@ export default async function SearchVideos(
             message: "Query must not be a YouTube video/Playlist link",
           }
         ),
-      torproxy: z.string().optional(),
+      proxy: z.string().optional(),
       verbose: z.boolean().optional(),
       screenshot: z.boolean().optional(),
     });
-    const { query, screenshot, verbose, torproxy } =
-      await QuerySchema.parseAsync(input);
-    await crawler(verbose, torproxy);
+    const { query, screenshot, verbose, proxy } = await QuerySchema.parseAsync(
+      input
+    );
+    await crawler(verbose, proxy);
     const retryOptions = {
       maxTimeout: 6000,
       minTimeout: 1000,

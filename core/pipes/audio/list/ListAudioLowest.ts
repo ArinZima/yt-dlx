@@ -12,7 +12,7 @@ import type { proTubeCommand } from "../../../base/ffmpeg";
 const qconf = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  torproxy: z.string().min(1).optional(),
+  proxy: z.string().min(1).optional(),
   query: z
     .array(
       z
@@ -66,7 +66,7 @@ export default async function ListAudioLowest(input: {
   query: string[];
   output?: string;
   verbose?: boolean;
-  torproxy?: string;
+  proxy?: string;
   filter?:
     | "echo"
     | "slow"
@@ -85,7 +85,7 @@ export default async function ListAudioLowest(input: {
     | "superspeed";
 }): Promise<void> {
   try {
-    const { query, output, verbose, filter, torproxy } = await qconf.parseAsync(
+    const { query, output, verbose, filter, proxy } = await qconf.parseAsync(
       input
     );
     const vDATA = new Set<{
@@ -100,7 +100,7 @@ export default async function ListAudioLowest(input: {
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.search.PlaylistInfo({ query: pURL, torproxy });
+        const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === undefined) {
           console.log(
             colors.red("@error:"),
@@ -124,7 +124,7 @@ export default async function ListAudioLowest(input: {
       try {
         const engineData = await ytdlx({
           query: video.videoLink,
-          torproxy,
+          proxy,
           verbose,
         });
         if (engineData === undefined) {

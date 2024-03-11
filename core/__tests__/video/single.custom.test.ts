@@ -26,6 +26,7 @@ const quals = [
         stream: false,
         verbose: false,
         output: "public/video",
+        proxy: "socks5://127.0.0.1:9050",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
     } catch (error: any) {

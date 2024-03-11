@@ -6,6 +6,7 @@ import colors from "colors";
     console.log(colors.blue("@test:"), "Lowest audio_video");
     await ytdlx().AudioVideo().Single().Lowest({
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      proxy: "socks5://127.0.0.1:9050",
       output: "public/audio_video",
       verbose: false,
       stream: false,

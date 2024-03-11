@@ -8,7 +8,7 @@ import colors from "colors";
       stream: false,
       verbose: false,
       output: "public/audio",
-      torproxy: "socks5://127.0.0.1:9050",
+      proxy: "socks5://127.0.0.1:9050",
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
   } catch (error: any) {

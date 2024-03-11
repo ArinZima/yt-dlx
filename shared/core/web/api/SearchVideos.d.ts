@@ -1,6 +1,6 @@
 export interface IpOp {
     query: string;
-    torproxy?: string;
+    proxy?: string;
     verbose?: boolean;
     screenshot?: boolean;
     type: keyof {

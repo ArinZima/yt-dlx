@@ -5,7 +5,7 @@ export default function VideoHighest(input: {
     output?: string;
     stream?: boolean;
     verbose?: boolean;
-    torproxy?: string;
+    proxy?: string;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;

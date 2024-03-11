@@ -16,6 +16,7 @@ import type {
       | VideoInfoType
       | PlaylistInfoType;
     metaTube = (await web.search.SearchVideos({
+      proxy: "socks5://127.0.0.1:9050",
       query: "PERSONAL BY PLAZA",
       screenshot: false,
       verbose: true,
@@ -24,11 +25,13 @@ import type {
     console.log(colors.green("@pass:"), "video search results received");
     metaTube = (await web.search.VideoInfo({
       query: metaTube[0]?.videoLink as string,
+      proxy: "socks5://127.0.0.1:9050",
       screenshot: false,
       verbose: true,
     })) as VideoInfoType;
     console.log(colors.green("@pass:"), "single video data received");
     metaTube = (await web.search.SearchVideos({
+      proxy: "socks5://127.0.0.1:9050",
       query: metaTube.title,
       screenshot: false,
       type: "playlist",
@@ -37,6 +40,7 @@ import type {
     console.log(colors.green("@pass:"), "playlist search results received");
     metaTube = (await web.search.PlaylistInfo({
       query: metaTube[0]?.playlistLink as string,
+      proxy: "socks5://127.0.0.1:9050",
       screenshot: false,
       verbose: true,
     })) as PlaylistInfoType;
