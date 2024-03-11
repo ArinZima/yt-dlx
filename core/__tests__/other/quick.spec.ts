@@ -1,28 +1,16 @@
 console.clear();
-import web from "../../web";
+import ytdlx from "../..";
 import colors from "colors";
-import type {
-  PlaylistInfoType,
-  VideoInfoType,
-  TypePlaylist,
-  TypeVideo,
-} from "../../web";
 
 (async () => {
   try {
-    let metaTube:
-      | TypeVideo[]
-      | TypePlaylist[]
-      | VideoInfoType
-      | PlaylistInfoType;
-    metaTube = (await web.search.VideoInfo({
-      query: "https://www.youtube.com/watch?v=pBYx_dT3xS8",
-      screenshot: false,
-      autoSocks5: true,
+    await ytdlx().AudioOnly().Single().Highest({
       verbose: true,
-    })) as VideoInfoType;
-    console.log(metaTube);
+      autoSocks5: true,
+      output: "public/audio",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+    });
   } catch (error: any) {
-    console.error(colors.red("@error:"), error.message);
+    console.error(colors.red(error.message));
   }
 })();
