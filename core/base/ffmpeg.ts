@@ -41,7 +41,7 @@ export default async function proTube({
   vdata,
   ipAddress,
 }: {
-  ipAddress?: string;
+  ipAddress: string;
   adata?: TubeConfig;
   vdata?: TubeConfig;
 }): Promise<proTubeCommand> {
@@ -84,10 +84,8 @@ export default async function proTube({
     if (vdata.Video.bitrate) ff.withVideoBitrate(vdata.Video.bitrate);
     if (adata.Audio.bitrate) ff.withAudioBitrate(adata.Audio.bitrate);
   }
-  if (ipAddress) {
-    console.log(colors.green("@ffmpeg:"), "using proxy ip", ipAddress);
-    ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
-  }
+  console.log(colors.green("@ffmpeg:"), "using proxy ip", ipAddress);
+  ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   ff.on("progress", (progress) => progressBar(progress));
   ff.on("end", () => process.stdout.write("\n"));
   ff.on("error", (error) => {

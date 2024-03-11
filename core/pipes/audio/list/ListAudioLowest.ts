@@ -146,7 +146,7 @@ export default async function ListAudioLowest(input: {
         let filename: string = "yt-dlx_(AudioLowest_";
         const ffmpeg: proTubeCommand = await proTube({
           adata: await lowEntry(engineData.AudioStore),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
+          ipAddress: engineData.ipAddress,
         });
         ffmpeg.withOutputFormat("avi");
         switch (filter) {

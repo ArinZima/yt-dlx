@@ -26,7 +26,7 @@ export default async function Engine({
 }: {
   query: string;
   proxy?: string;
-  ipAddress?: string;
+  ipAddress: string;
 }): Promise<EngineResult> {
   try {
     let pushTube: any[] = [];

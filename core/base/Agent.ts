@@ -22,7 +22,7 @@ export default async function Agent({
   verbose?: boolean;
 }): Promise<EngineResult> {
   try {
-    let ipAddress = "";
+    let ipAddress: string | undefined = undefined;
     const child = spawn("sh", [
       "-c",
       "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com",
@@ -30,64 +30,66 @@ export default async function Agent({
     return new Promise((resolve) => {
       child.stdout.on("data", (data) => (ipAddress = data.toString()));
       child.on("close", async (code) => {
-        if (code !== 0 && !ipAddress) throw new Error("internal server error");
-        console.log(colors.green("@info:"), "new socks5 ip", ipAddress);
-        let respEngine: EngineResult | undefined = undefined;
-        let videoId: string | undefined = await YouTubeID(query);
-        let TubeBody:
-          | TypeVideo[]
-          | VideoInfoType
-          | TypePlaylist[]
-          | PlaylistInfoType;
-        console.log(
-          colors.green("@info:"),
-          "using",
-          colors.green("yt-dlx"),
-          "version",
-          colors.green(version)
-        );
-        if (!videoId) {
-          TubeBody = (await web.search.SearchVideos({
-            type: "video",
-            verbose,
-            proxy,
-            query,
-          })) as TypeVideo[];
-          if (!TubeBody[0]) {
-            throw new Error("Unable to get response from YouTube.");
-          } else {
-            console.log(
-              colors.green("@info:"),
-              `preparing payload for`,
-              colors.green(TubeBody[0].title as string)
-            );
-            respEngine = await Engine({
-              query: TubeBody[0].videoLink,
-              ipAddress,
+        if (code !== 0) throw new Error("internal server error");
+        else if (!ipAddress) throw new Error("couldn't connect to tor");
+        else {
+          let respEngine: EngineResult | undefined = undefined;
+          let videoId: string | undefined = await YouTubeID(query);
+          let TubeBody:
+            | TypeVideo[]
+            | VideoInfoType
+            | TypePlaylist[]
+            | PlaylistInfoType;
+          console.log(
+            colors.green("@info:"),
+            "using",
+            colors.green("yt-dlx"),
+            "version",
+            colors.green(version)
+          );
+          if (!videoId) {
+            TubeBody = (await web.search.SearchVideos({
+              type: "video",
+              verbose,
               proxy,
-            });
-            resolve(respEngine);
-          }
-        } else {
-          TubeBody = (await web.search.VideoInfo({
-            verbose,
-            proxy,
-            query,
-          })) as VideoInfoType;
-          if (!TubeBody) {
-            throw new Error("Unable to get response from YouTube.");
+              query,
+            })) as TypeVideo[];
+            if (!TubeBody[0]) {
+              throw new Error("Unable to get response from YouTube.");
+            } else {
+              console.log(
+                colors.green("@info:"),
+                `preparing payload for`,
+                colors.green(TubeBody[0].title as string)
+              );
+              respEngine = await Engine({
+                query: TubeBody[0].videoLink,
+                ipAddress,
+                proxy,
+              });
+              resolve(respEngine);
+            }
           } else {
-            console.log(
-              colors.green("@info:"),
-              `preparing payload for`,
-              colors.green(TubeBody.title)
-            );
-            respEngine = await Engine({
-              query: TubeBody.videoLink,
-              ipAddress,
+            TubeBody = (await web.search.VideoInfo({
+              verbose,
               proxy,
-            });
-            resolve(respEngine);
+              query,
+            })) as VideoInfoType;
+            if (!TubeBody) {
+              throw new Error("Unable to get response from YouTube.");
+            } else {
+              console.log(
+                colors.green("@info:"),
+                `preparing payload for`,
+                colors.green(TubeBody.title)
+              );
+              respEngine = await Engine({
+                query: TubeBody.videoLink,
+                ipAddress,
+                proxy,
+              });
+              resolve(respEngine);
+            }
           }
         }
       });

@@ -137,7 +137,7 @@ export default async function ListAudioVideoHighest(input: {
         const ffmpeg: proTubeCommand = await proTube({
           adata: AudioData,
           vdata: VideoData,
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
+          ipAddress: engineData.ipAddress,
         });
         ffmpeg.withOutputFormat("matroska");
         switch (filter) {

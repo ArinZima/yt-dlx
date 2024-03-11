@@ -132,7 +132,7 @@ export default async function ListVideoHighest(input: {
         let filename: string = "yt-dlx_(VideoHighest_";
         const ffmpeg: proTubeCommand = await proTube({
           vdata: await bigEntry(engineData.VideoStore),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
+          ipAddress: engineData.ipAddress,
         });
         ffmpeg.withOutputFormat("matroska");
         switch (filter) {
