@@ -899,15 +899,11 @@ async function Agent({ query, verbose, autoSocks5, }) {
         console.log(colors.green("@info:"), "using", colors.green("yt-dlx"), "version", colors.green(version));
         let nipTor;
         let ipAddress = undefined;
-        nipTor = await niptor([
-            "-c",
-            "curl https://checkip.amazonaws.com --insecure",
-        ]);
+        nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
         console.log(colors.green("@info:"), "system", colors.green("ipAddress"), nipTor.stdout.trim());
         ipAddress = nipTor.stdout.trim();
         if (autoSocks5) {
             nipTor = await niptor([
-                "-c",
                 "systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
             ]);
             if (nipTor.stdout.trim().length > 0) {
