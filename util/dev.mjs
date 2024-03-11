@@ -13,7 +13,7 @@ const core = {
   renew: "yarn clean && yarn make && yarn update && yarn build",
   "install:socks5": "chmod +x ./util/socks5.sh && ./util/socks5.sh",
   "install:deps":
-    "chmod +x ./util/deps.sh && ./util/deps.sh && npx puppeteer browsers install chrome",
+    "chmod +x ./util/deps.sh && ./util/deps.sh && npx puppeteer browsers install chrome && node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*",
   "client:dev": "cd client && yarn dev",
   "client:build": "cd client && yarn build",
   "client:start": "cd client && yarn start",
@@ -47,8 +47,6 @@ const core = {
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
-  postinstall:
-    "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*",
   prepublishOnly: "yarn clean:deps",
 };
 function formatBytes(bytes) {
