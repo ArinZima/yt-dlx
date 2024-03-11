@@ -6,8 +6,8 @@ import colors from "colors";
   try {
     await ytdlx().AudioOnly().Single().Highest({
       stream: false,
-      verbose: false,
-      autoSocks5: true,
+      verbose: true,
+      autoSocks5: false,
       output: "public/audio",
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
