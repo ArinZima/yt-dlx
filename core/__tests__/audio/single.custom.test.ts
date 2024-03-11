@@ -12,6 +12,7 @@ const quals = ["high", "medium", "low", "ultralow"] as const;
         stream: false,
         verbose: false,
         output: "public/audio",
+        torproxy: "socks5://127.0.0.1:9050",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
     } catch (error: any) {

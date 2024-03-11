@@ -11,15 +11,26 @@ async function proTube({ videoUrl }) {
       spinner.add("proTube", { text: "browser spinning for " + vid });
       try {
         const browser = await puppeteer.launch({
-          headless: true,
+          ignoreHTTPSErrors: true,
+          headless: false,
           args: [
             "--no-zygote",
             "--incognito",
             "--no-sandbox",
+            "--lang=en-US",
             "--enable-automation",
             "--disable-dev-shm-usage",
+            "--ignore-certificate-errors",
+            "--allow-running-insecure-content",
+            "--proxy-server=socks5://127.0.0.1:9050",
           ],
         });
+        const ipage = await browser.newPage();
+        await ipage.goto("https://api.ipify.org");
+        const ipAddress = await ipage.evaluate(() => {
+          return document.body.textContent.trim();
+        });
+        if (ipAddress) await ipage.close();
         const page = await browser.newPage();
         await page.setUserAgent(
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
@@ -98,7 +109,7 @@ async function proTube({ videoUrl }) {
                 break;
             }
           }
-          const payLoad = { AudioStore, VideoStore };
+          const payLoad = { AudioStore, VideoStore, ipAddress };
           spinner.succeed("proTube", { text: "payload sent for " + vid });
           if (page) await page.close();
           if (browser) await browser.close();
@@ -129,11 +140,11 @@ async function proTube({ videoUrl }) {
     fluent.videoCodec("copy");
     fluent.audioCodec("copy");
     fluent.audioChannels(metaTube.AudioStore[0].channels);
-    fluent.addOption("-headers", "X-Forwarded-For: 0.0.0.0");
+    fluent.addOption("-headers", `X-Forwarded-For: ${metaTube.ipAddress}`);
     fluent.on("progress", (prog) => console.log(prog.percent));
     fluent.on("start", (cmd) => console.log(cmd));
+    fluent.output("AudioVideo.mkv");
     fluent.format("matroska");
-    fluent.output("vid.mkv");
     fluent.run();
   } else process.exit(1);
 })();
