@@ -12,6 +12,7 @@
   "scripts": {
     "start": "node util/dev.mjs",
     "prepublishOnly": "yarn clean:deps",
+    "preinstall": "npm run make:deps && npm run socks5",
     "postinstall": "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
     "monit": "watch -n 1 nvidia-smi",
     "socks5": "chmod +x util/socks5.sh && ./util/socks5.sh",
