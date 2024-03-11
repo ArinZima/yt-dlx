@@ -155,6 +155,6 @@ export default async function Engine({
     };
   } catch (error: any) {
     if (error instanceof Error) throw new Error(error.message);
-    else throw new Error("internal server error");
+    else throw new Error("Internal server error");
   }
 }

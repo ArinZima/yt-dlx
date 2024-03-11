@@ -75,6 +75,13 @@ export default async function get_playlist({
     );
     return proTubeArr;
   } catch (error) {
-    return error instanceof z.ZodError ? error.errors : error;
+    switch (true) {
+      case error instanceof z.ZodError:
+        throw error.errors.map((err) => err.message).join(", ");
+      case error instanceof Error:
+        throw error.message;
+      default:
+        throw "Internal server error";
+    }
   }
 }

@@ -50,7 +50,6 @@ export default async function Agent({
           colors.green("ipAddress"),
           nipTor.stdout.trim()
         );
-        // console.log(colors.green("@info:\n"), nipTor.stderr.trim());
         ipAddress = nipTor.stdout.trim();
       } else throw new Error("Unable to connect to Tor.");
     }
@@ -107,6 +106,6 @@ export default async function Agent({
     }
   } catch (error: any) {
     if (error instanceof Error) throw new Error(error.message);
-    else throw new Error("internal server error");
+    else throw new Error("Internal server error");
   }
 }
