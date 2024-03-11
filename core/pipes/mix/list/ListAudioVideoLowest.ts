@@ -201,13 +201,13 @@ export default async function ListAudioVideoLowest(input: {
       colors.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
-    if (error instanceof ZodError) {
-      throw new Error(
-        colors.red("@error: ") +
-          error.errors.map((error) => error.message).join(", ")
-      );
-    } else if (error instanceof Error) {
-      throw new Error(colors.red("@error: ") + error.message);
-    } else throw new Error(colors.red("@error: ") + "internal server error");
+    switch (true) {
+      case error instanceof ZodError:
+        throw error.errors.map((err) => err.message).join(", ");
+      case error instanceof Error:
+        throw error.message;
+      default:
+        throw "Internal server error";
+    }
   }
 }
