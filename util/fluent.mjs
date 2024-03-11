@@ -26,7 +26,7 @@ async function proTube({ videoUrl }) {
           ],
         });
         const ipage = await browser.newPage();
-        await ipage.goto("https://api.ipify.org");
+        await ipage.goto("https://checkip.amazonaws.com");
         const ipAddress = await ipage.evaluate(() => {
           return document.body.textContent.trim();
         });
