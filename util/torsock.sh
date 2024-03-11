@@ -48,6 +48,6 @@ if [ -x "$(command -v apt-get)" ]; then
     RUN "systemctl enable --now tor" "Failed to enable and start Tor service"
     RUN 'sh -c "echo \"MaxCircuitDirtiness 60\" >> /etc/tor/torrc"' "Failed to modify torrc file"
     RUN "systemctl restart tor" "Failed to restart Tor service"
-    RUN 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/.nyx/config"' "Failed to configure Nyx"
+    RUN 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/root/.nyx/config"' "Failed to configure Nyx"
     RUN 'curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com' "Failed to connect to tor via Nyx"
 fi

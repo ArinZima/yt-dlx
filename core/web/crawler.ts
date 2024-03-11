@@ -6,7 +6,7 @@ export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
   try {
     if (autoSocks5) {
       browser = await puppeteer.launch({
-        headless: verbose ? true : true,
+        headless: verbose ? false : true,
         args: [
           "--no-zygote",
           "--incognito",
@@ -21,7 +21,7 @@ export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
       });
     } else {
       browser = await puppeteer.launch({
-        headless: verbose ? true : true,
+        headless: verbose ? false : true,
         args: [
           "--no-zygote",
           "--incognito",
@@ -35,8 +35,11 @@ export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
       });
     }
     page = await browser.newPage();
+    // await page.setUserAgent(
+    // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
+    // );
     await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
     );
   } catch (error) {
     if (page) await page.close();
