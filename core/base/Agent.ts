@@ -44,15 +44,24 @@ export default async function Agent({
     ipAddress = nipTor.stdout.trim();
     if (autoSocks5) {
       try {
-        nipTor = await niptor([
-          "-c",
-          "systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
-        ]);
-      } catch {
-        nipTor = await niptor([
-          "-c",
-          "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
-        ]);
+        try {
+          nipTor = await niptor([
+            "-c",
+            "systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
+          ]);
+        } catch {
+          nipTor = await niptor([
+            "-c",
+            "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
+          ]);
+        }
+      } catch (error) {
+        console.error(
+          colors.red("@error:"),
+          "Try running npx yt-dlx install:socks5"
+        );
+        if (error instanceof Error) throw new Error(error.message);
+        else throw new Error("internal server error");
       }
       if (nipTor.stdout.trim().length > 0) {
         console.log(
