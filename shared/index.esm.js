@@ -849,7 +849,7 @@ async function Engine({ query, ipAddress, autoSocks5, }) {
     }
 }
 
-var version = "5.11.0";
+var version = "5.12.0";
 
 async function Agent({ query, verbose, autoSocks5, }) {
     try {

@@ -9,7 +9,7 @@ var z4 = require('zod');
 var crypto = require('crypto');
 var child_process = require('child_process');
 var fs2 = require('fs');
-var path2 = require('path');
+var path21 = require('path');
 var util = require('util');
 var readline = require('readline');
 var ffmpeg = require('fluent-ffmpeg');
@@ -40,7 +40,7 @@ var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
 var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
 var z4__namespace = /*#__PURE__*/_interopNamespace(z4);
 var fs2__namespace = /*#__PURE__*/_interopNamespace(fs2);
-var path2__namespace = /*#__PURE__*/_interopNamespace(path2);
+var path21__namespace = /*#__PURE__*/_interopNamespace(path21);
 var readline__default = /*#__PURE__*/_interopDefault(readline);
 var ffmpeg__default = /*#__PURE__*/_interopDefault(ffmpeg);
 var minimist__default = /*#__PURE__*/_interopDefault(minimist);
@@ -736,16 +736,16 @@ async function Engine({
   try {
     let pushTube = [];
     let proLoc = "";
-    let maxTries = 6;
-    let currentDir = __dirname;
-    while (maxTries > 0) {
-      const enginePath = path2__namespace.join(currentDir, "util", "engine");
+    let maxTries2 = 6;
+    let currentDir2 = __dirname;
+    while (maxTries2 > 0) {
+      const enginePath = path21__namespace.join(currentDir2, "util", "engine");
       if (fs2__namespace.existsSync(enginePath)) {
         proLoc = enginePath;
         break;
       } else {
-        currentDir = path2__namespace.join(currentDir, "..");
-        maxTries--;
+        currentDir2 = path21__namespace.join(currentDir2, "..");
+        maxTries2--;
       }
     }
     if (proLoc !== "") {
@@ -852,7 +852,7 @@ async function Engine({
 }
 
 // package.json
-var version = "5.11.0";
+var version = "5.12.0";
 
 // core/base/Agent.ts
 async function Agent({
@@ -1945,8 +1945,8 @@ async function proTube({
   const ff = ffmpeg__default.default();
   let ffprobepath, ffmpegpath;
   while (max > 0) {
-    ffprobepath = path2__namespace.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
-    ffmpegpath = path2__namespace.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
+    ffprobepath = path21__namespace.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
+    ffmpegpath = path21__namespace.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
     switch (true) {
       case (fs2__namespace.existsSync(ffprobepath) && fs2__namespace.existsSync(ffmpegpath)):
         ff.setFfprobePath(ffprobepath);
@@ -1954,7 +1954,7 @@ async function proTube({
         max = 0;
         break;
       default:
-        dirC = path2__namespace.join(dirC, "..");
+        dirC = path21__namespace.join(dirC, "..");
         max--;
     }
   }
@@ -2056,7 +2056,7 @@ async function AudioLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioLowest_";
@@ -2133,11 +2133,11 @@ async function AudioLowest(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -2219,7 +2219,7 @@ async function AudioHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioHighest_";
@@ -2296,11 +2296,11 @@ async function AudioHighest(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -2375,7 +2375,7 @@ async function AudioQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
@@ -2452,11 +2452,11 @@ async function AudioQualityCustom(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -2582,7 +2582,7 @@ async function ListAudioLowest(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(AudioLowest_";
@@ -2657,7 +2657,7 @@ async function ListAudioLowest(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -2786,7 +2786,7 @@ async function ListAudioHighest(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(AudioHighest_";
@@ -2861,7 +2861,7 @@ async function ListAudioHighest(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -2999,7 +2999,7 @@ async function ListAudioQualityCustom(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
@@ -3074,7 +3074,7 @@ async function ListAudioQualityCustom(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -3135,7 +3135,7 @@ async function VideoLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
@@ -3183,11 +3183,11 @@ async function VideoLowest(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -3245,7 +3245,7 @@ async function VideoHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
@@ -3293,11 +3293,11 @@ async function VideoHighest(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -3378,7 +3378,7 @@ async function VideoQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
@@ -3426,11 +3426,11 @@ async function VideoQualityCustom(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -3547,7 +3547,7 @@ async function ListVideoLowest(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(VideoLowest_";
@@ -3592,7 +3592,7 @@ async function ListVideoLowest(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -3712,7 +3712,7 @@ async function ListVideoHighest(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(VideoHighest_";
@@ -3757,7 +3757,7 @@ async function ListVideoHighest(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -3901,7 +3901,7 @@ async function ListVideoQualityCustom(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
@@ -3946,7 +3946,7 @@ async function ListVideoQualityCustom(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -4007,7 +4007,7 @@ async function AudioVideoLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       const [AudioData, VideoData] = await Promise.all([
@@ -4060,11 +4060,11 @@ async function AudioVideoLowest(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -4122,7 +4122,7 @@ async function AudioVideoHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       const [AudioData, VideoData] = await Promise.all([
@@ -4175,11 +4175,11 @@ async function AudioVideoHighest(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -4262,7 +4262,7 @@ async function AudioVideoQualityCustom(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       const ACustomData = engineData.AudioStore.filter(
@@ -4321,11 +4321,11 @@ async function AudioVideoQualityCustom(input) {
       if (stream) {
         return {
           ffmpeg: ffmpeg2,
-          filename: output ? path2__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+          filename: output ? path21__namespace.join(folder, filename) : filename.replace("_)_", ")_")
         };
       } else {
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -4442,7 +4442,7 @@ async function ListAudioVideoHighest(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         const [AudioData, VideoData] = await Promise.all([
@@ -4492,7 +4492,7 @@ async function ListAudioVideoHighest(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -4612,7 +4612,7 @@ async function ListAudioVideoLowest(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         const [AudioData, VideoData] = await Promise.all([
@@ -4663,7 +4663,7 @@ async function ListAudioVideoLowest(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -4799,7 +4799,7 @@ async function ListAudioVideoQualityCustom(input) {
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
+        const folder = output ? path21__namespace.join(process.cwd(), output) : process.cwd();
         if (!fs2__namespace.existsSync(folder))
           fs2__namespace.mkdirSync(folder, { recursive: true });
         const ACustomData = engineData.AudioStore.filter(
@@ -4856,7 +4856,7 @@ async function ListAudioVideoQualityCustom(input) {
             break;
         }
         await new Promise((resolve, _reject) => {
-          ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
+          ffmpeg2.output(path21__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
             throw new Error(colors28__default.default.red("@error: ") + error.message);
@@ -4957,11 +4957,27 @@ var proTube2 = minimist__default.default(process.argv.slice(2), {
     vqc: "video-quality-custom"
   }
 });
+var uLoc = "";
+var maxTries = 6;
+var currentDir = __dirname;
 var program = async () => {
   const command = proTube2._[0];
   switch (command) {
     case "install:deps":
-      const rox = child_process.spawn("yarn", ["install:deps"]);
+      while (maxTries > 0) {
+        const enginePath = path21__namespace.join(currentDir, "util");
+        if (fs2__namespace.existsSync(enginePath)) {
+          uLoc = enginePath;
+          break;
+        } else {
+          currentDir = path21__namespace.join(currentDir, "..");
+          maxTries--;
+        }
+      }
+      const rox = child_process.spawn("sh", [
+        "-c",
+        `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh && npx puppeteer browsers install chrome && node ${uLoc}/ffmpeg.mjs && node ${uLoc}/engine.mjs && chmod -R +x ${uLoc}/*`
+      ]);
       await Promise.all([
         new Promise((resolve, reject2) => {
           rox.stdout.on("data", (stdout) => {
@@ -4988,7 +5004,20 @@ var program = async () => {
       ]);
       break;
     case "install:socks5":
-      const xrox = child_process.spawn("yarn", ["install:socks5"]);
+      while (maxTries > 0) {
+        const enginePath = path21__namespace.join(currentDir, "util");
+        if (fs2__namespace.existsSync(enginePath)) {
+          uLoc = enginePath;
+          break;
+        } else {
+          currentDir = path21__namespace.join(currentDir, "..");
+          maxTries--;
+        }
+      }
+      const xrox = child_process.spawn("sh", [
+        "-c",
+        `chmod +x ${uLoc}/socks5.sh && ${uLoc}/socks5.sh`
+      ]);
       await Promise.all([
         new Promise((resolve, reject2) => {
           xrox.stdout.on("data", (stdout) => {

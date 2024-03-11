@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import ytdlx from "..";
+import * as fs from "fs";
 import colors from "colors";
+import * as path from "path";
 import minimist from "minimist";
 import { spawn } from "child_process";
 import { version } from "../../package.json";
@@ -22,13 +24,26 @@ const proTube = minimist(process.argv.slice(2), {
     vqc: "video-quality-custom",
   },
 });
+let uLoc: string = "";
+let maxTries: number = 6;
+let currentDir: string = __dirname;
 const program = async () => {
   const command = proTube._[0];
   switch (command) {
     case "install:deps":
+      while (maxTries > 0) {
+        const enginePath = path.join(currentDir, "util");
+        if (fs.existsSync(enginePath)) {
+          uLoc = enginePath;
+          break;
+        } else {
+          currentDir = path.join(currentDir, "..");
+          maxTries--;
+        }
+      }
       const rox = spawn("sh", [
         "-c",
-        "chmod +x ./util/deps.sh && ./util/deps.sh && npx puppeteer browsers install chrome && node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/*",
+        `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh && npx puppeteer browsers install chrome && node ${uLoc}/ffmpeg.mjs && node ${uLoc}/engine.mjs && chmod -R +x ${uLoc}/*`,
       ]);
       await Promise.all([
         new Promise<void>((resolve, reject) => {
@@ -52,9 +67,19 @@ const program = async () => {
       ]);
       break;
     case "install:socks5":
+      while (maxTries > 0) {
+        const enginePath = path.join(currentDir, "util");
+        if (fs.existsSync(enginePath)) {
+          uLoc = enginePath;
+          break;
+        } else {
+          currentDir = path.join(currentDir, "..");
+          maxTries--;
+        }
+      }
       const xrox = spawn("sh", [
         "-c",
-        "chmod +x ./util/socks5.sh && ./util/socks5.sh",
+        `chmod +x ${uLoc}/socks5.sh && ${uLoc}/socks5.sh`,
       ]);
       await Promise.all([
         new Promise<void>((resolve, reject) => {
