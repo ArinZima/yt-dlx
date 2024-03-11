@@ -724,15 +724,13 @@ function help() {
 }
 async function niptor(args) {
   const prox = child_process.spawn("sh", args);
-  const stdoutData = [];
-  prox.stdout.on("data", (data) => stdoutData.push(data));
   const [stdout, stderr] = await Promise.all([
     new Promise((resolve, reject2) => {
-      const stdoutData2 = [];
-      prox.stdout.on("data", (data) => stdoutData2.push(data));
+      const stdoutData = [];
+      prox.stdout.on("data", (data) => stdoutData.push(data));
       prox.on("close", (code) => {
         if (code === 0)
-          resolve(Buffer.concat(stdoutData2).toString());
+          resolve(Buffer.concat(stdoutData).toString());
         else
           reject2(new Error(`@niptor closed with code ${code}`));
       });
@@ -792,7 +790,9 @@ async function Engine({
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` --dump-single-json '${query}'`;
     } else
-      throw new Error("could not find the engine file.");
+      throw new Error(
+        "could not find the engine file. Try running npx yt-dlx install:deps"
+      );
     const result = await util.promisify(child_process.exec)(proLoc);
     const metaTube = await JSON.parse(result.stdout.toString());
     await metaTube.formats.forEach((io) => {
@@ -886,7 +886,7 @@ async function Engine({
 }
 
 // package.json
-var version = "5.6.0";
+var version = "5.8.0";
 
 // core/base/Agent.ts
 async function Agent({
@@ -916,10 +916,28 @@ async function Agent({
     );
     ipAddress = nipTor.stdout.trim();
     if (autoSocks5) {
-      nipTor = await niptor([
-        "-c",
-        "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure"
-      ]);
+      try {
+        try {
+          nipTor = await niptor([
+            "-c",
+            "systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure"
+          ]);
+        } catch {
+          nipTor = await niptor([
+            "-c",
+            "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure"
+          ]);
+        }
+      } catch (error) {
+        console.error(
+          colors28__default.default.red("@error:"),
+          "Try running npx yt-dlx install:socks5"
+        );
+        if (error instanceof Error)
+          throw new Error(error.message);
+        else
+          throw new Error("internal server error");
+      }
       if (nipTor.stdout.trim().length > 0) {
         console.log(
           colors28__default.default.green("@info:"),
@@ -4999,6 +5017,60 @@ var proTube2 = minimist__default.default(process.argv.slice(2), {
 var program = async () => {
   const command = proTube2._[0];
   switch (command) {
+    case "install:deps":
+      const prox = child_process.spawn("yarn", ["install:deps"]);
+      const [stdout, stderr] = await Promise.all([
+        new Promise((resolve, reject2) => {
+          const stdoutData = [];
+          prox.stdout.on("data", (data) => stdoutData.push(data));
+          prox.on("close", (code) => {
+            if (code === 0)
+              resolve(Buffer.concat(stdoutData).toString());
+            else
+              reject2(new Error(`@closed with code ${code}`));
+          });
+        }),
+        new Promise((resolve, reject2) => {
+          const stderrData = [];
+          prox.stderr.on("data", (data) => stderrData.push(data));
+          prox.on("close", (code) => {
+            if (code === 0)
+              resolve(Buffer.concat(stderrData).toString());
+            else
+              reject2(new Error(`@closed with code ${code}`));
+          });
+        })
+      ]);
+      console.log(colors28__default.default.green("@stdout:"), stdout.trim());
+      console.log(colors28__default.default.yellow("@stderr:"), stderr.trim());
+      break;
+    case "install:socks5":
+      const proxi = child_process.spawn("yarn", ["install:socks5"]);
+      const [stdouti, stderri] = await Promise.all([
+        new Promise((resolve, reject2) => {
+          const stdoutData = [];
+          proxi.stdout.on("data", (data) => stdoutData.push(data));
+          proxi.on("close", (code) => {
+            if (code === 0)
+              resolve(Buffer.concat(stdoutData).toString());
+            else
+              reject2(new Error(`@closed with code ${code}`));
+          });
+        }),
+        new Promise((resolve, reject2) => {
+          const stderrData = [];
+          proxi.stderr.on("data", (data) => stderrData.push(data));
+          proxi.on("close", (code) => {
+            if (code === 0)
+              resolve(Buffer.concat(stderrData).toString());
+            else
+              reject2(new Error(`@closed with code ${code}`));
+          });
+        })
+      ]);
+      console.log(colors28__default.default.green("@stdout:"), stdouti.trim());
+      console.log(colors28__default.default.yellow("@stderr:"), stderri.trim());
+      break;
     case "version":
     case "v":
       console.error(colors28__default.default.green("Installed Version: yt-dlx@" + version));

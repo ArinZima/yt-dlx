@@ -729,8 +729,6 @@ function help() {
 
 async function niptor(args) {
     const prox = child_process.spawn("sh", args);
-    const stdoutData = [];
-    prox.stdout.on("data", (data) => stdoutData.push(data));
     const [stdout, stderr] = await Promise.all([
         new Promise((resolve, reject) => {
             const stdoutData = [];
@@ -798,7 +796,7 @@ async function Engine({ query, ipAddress, autoSocks5, }) {
             proLoc += ` --dump-single-json '${query}'`;
         }
         else
-            throw new Error("could not find the engine file.");
+            throw new Error("could not find the engine file. Try running npx yt-dlx install:deps");
         const result = await util.promisify(child_process.exec)(proLoc);
         const metaTube = await JSON.parse(result.stdout.toString());
         await metaTube.formats.forEach((io) => {
@@ -905,7 +903,7 @@ async function Engine({ query, ipAddress, autoSocks5, }) {
     }
 }
 
-var version = "5.6.0";
+var version = "5.8.0";
 
 async function Agent({ query, verbose, autoSocks5, }) {
     try {
@@ -919,10 +917,27 @@ async function Agent({ query, verbose, autoSocks5, }) {
         console.log(colors.green("@info:"), "system", colors.green("ipAddress"), nipTor.stdout.trim());
         ipAddress = nipTor.stdout.trim();
         if (autoSocks5) {
-            nipTor = await niptor([
-                "-c",
-                "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
-            ]);
+            try {
+                try {
+                    nipTor = await niptor([
+                        "-c",
+                        "systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
+                    ]);
+                }
+                catch {
+                    nipTor = await niptor([
+                        "-c",
+                        "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
+                    ]);
+                }
+            }
+            catch (error) {
+                console.error(colors.red("@error:"), "Try running npx yt-dlx install:socks5");
+                if (error instanceof Error)
+                    throw new Error(error.message);
+                else
+                    throw new Error("internal server error");
+            }
             if (nipTor.stdout.trim().length > 0) {
                 console.log(colors.green("@info:"), "autoSocks5", colors.green("new ipAddress"), nipTor.stdout.trim());
                 console.log(colors.green("@info:\n"), nipTor.stderr.trim());
