@@ -21,8 +21,8 @@ export function sizeFormat(filesize: number) {
 
 export default async function Engine({
   query,
-  autoSocks5,
   ipAddress,
+  autoSocks5,
 }: {
   query: string;
   ipAddress: string;
