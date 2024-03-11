@@ -31,7 +31,10 @@ export default async function Agent({
     );
     let nipTor;
     let ipAddress: string | undefined = undefined;
-    nipTor = await niptor(["-c", "curl https://checkip.amazonaws.com"]);
+    nipTor = await niptor([
+      "-c",
+      "curl https://checkip.amazonaws.com --insecure",
+    ]);
     console.log(
       colors.green("@info:"),
       "system",
@@ -42,7 +45,7 @@ export default async function Agent({
     if (autoSocks5) {
       nipTor = await niptor([
         "-c",
-        "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com",
+        "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
       ]);
       if (nipTor.stdout.trim().length > 0) {
         console.log(
