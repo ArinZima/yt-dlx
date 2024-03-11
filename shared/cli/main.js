@@ -2,7 +2,7 @@
 'use strict';
 
 var fs = require('fs');
-var colors29 = require('colors');
+var colors28 = require('colors');
 var cheerio = require('cheerio');
 var retry = require('async-retry');
 var puppeteer = require('puppeteer');
@@ -37,7 +37,7 @@ function _interopNamespace(e) {
 }
 
 var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
-var colors29__default = /*#__PURE__*/_interopDefault(colors29);
+var colors28__default = /*#__PURE__*/_interopDefault(colors28);
 var retry__default = /*#__PURE__*/_interopDefault(retry);
 var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
 var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
@@ -91,7 +91,6 @@ var page;
 async function crawler(verbose, proxy) {
   try {
     if (proxy) {
-      console.log(colors29__default.default.green("@info:"), "using proxy", proxy);
       browser = await puppeteer__default.default.launch({
         headless: verbose ? false : true,
         userDataDir: "others",
@@ -108,7 +107,6 @@ async function crawler(verbose, proxy) {
         ]
       });
     } else {
-      console.log(colors29__default.default.yellow("@info:"), "not using proxy");
       browser = await puppeteer__default.default.launch({
         headless: verbose ? false : true,
         userDataDir: "others",
@@ -179,7 +177,7 @@ async function SearchVideos(input) {
     let TubeResp;
     let snapshot;
     spinnies.add(spin, {
-      text: colors29__default.default.green("@scrape: ") + "booting chromium..."
+      text: colors28__default.default.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
@@ -190,7 +188,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors29__default.default.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -198,7 +196,7 @@ async function SearchVideos(input) {
             });
             fs__namespace.default.writeFileSync("TypeVideo.png", snapshot);
             spinnies.update(spin, {
-              text: colors29__default.default.yellow("@scrape: ") + "took snapshot..."
+              text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
             });
           }
           content = await page.content();
@@ -237,7 +235,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors29__default.default.green("@info: ") + colors29__default.default.white("scrapping done for ") + query
+            text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
           });
           return metaTube;
         }, retryOptions);
@@ -251,7 +249,7 @@ async function SearchVideos(input) {
             await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           }
           spinnies.update(spin, {
-            text: colors29__default.default.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
           });
           if (screenshot) {
             snapshot = await page.screenshot({
@@ -259,7 +257,7 @@ async function SearchVideos(input) {
             });
             fs__namespace.default.writeFileSync("TypePlaylist.png", snapshot);
             spinnies.update(spin, {
-              text: colors29__default.default.yellow("@scrape: ") + "took snapshot..."
+              text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
             });
           }
           const content2 = await page.content();
@@ -278,7 +276,7 @@ async function SearchVideos(input) {
             });
           });
           spinnies.succeed(spin, {
-            text: colors29__default.default.green("@info: ") + colors29__default.default.white("scrapping done for ") + query
+            text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
           });
           return playlistMeta;
         }, retryOptions);
@@ -286,7 +284,7 @@ async function SearchVideos(input) {
         return TubeResp;
       default:
         spinnies.fail(spin, {
-          text: colors29__default.default.red("@error: ") + colors29__default.default.white("wrong filter type provided.")
+          text: colors28__default.default.red("@error: ") + colors28__default.default.white("wrong filter type provided.")
         });
         await closers(browser);
         return void 0;
@@ -296,12 +294,12 @@ async function SearchVideos(input) {
     switch (true) {
       case error instanceof z4.ZodError:
         throw new Error(
-          colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+          colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
         );
       case error instanceof Error:
-        throw new Error(colors29__default.default.red("@error: ") + error.message);
+        throw new Error(colors28__default.default.red("@error: ") + error.message);
       default:
-        throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+        throw new Error(colors28__default.default.red("@error: ") + "internal server error");
     }
   }
 }
@@ -359,14 +357,14 @@ async function PlaylistInfo(input) {
     let snapshot;
     TubeResp = await retry__default.default(async () => {
       spinnies.add(spin, {
-        text: colors29__default.default.green("@scrape: ") + "booting chromium..."
+        text: colors28__default.default.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors29__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -374,7 +372,7 @@ async function PlaylistInfo(input) {
         });
         fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors29__default.default.yellow("@scrape: ") + "took snapshot..."
+          text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const content = await page.content();
@@ -414,7 +412,7 @@ async function PlaylistInfo(input) {
         });
       });
       spinnies.succeed(spin, {
-        text: colors29__default.default.green("@info: ") + colors29__default.default.white("scrapping done for ") + query
+        text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
       });
       return {
         playlistVideos: metaTube,
@@ -491,14 +489,14 @@ async function VideoInfo(input) {
     let snapshot;
     TubeResp = await retry__default.default(async () => {
       spinnies.add(spin, {
-        text: colors29__default.default.green("@scrape: ") + "booting chromium..."
+        text: colors28__default.default.green("@scrape: ") + "booting chromium..."
       });
       await page.goto(query);
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
       spinnies.update(spin, {
-        text: colors29__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
       });
       if (screenshot) {
         snapshot = await page.screenshot({
@@ -506,7 +504,7 @@ async function VideoInfo(input) {
         });
         fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
         spinnies.update(spin, {
-          text: colors29__default.default.yellow("@scrape: ") + "took snapshot..."
+          text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
         });
       }
       const videoId = await YouTubeID(query);
@@ -553,7 +551,7 @@ async function VideoInfo(input) {
         videoLink: "https://www.youtube.com/watch?v=" + videoId
       };
       spinnies.succeed(spin, {
-        text: colors29__default.default.green("@info: ") + colors29__default.default.white("scrapping done for ") + query
+        text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
       });
       return metaTube;
     }, retryOptions);
@@ -587,7 +585,7 @@ var web = {
 var web_default = web;
 function help() {
   return Promise.resolve(
-    colors29__default.default.bold.white(`
+    colors28__default.default.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -732,7 +730,8 @@ function sizeFormat(filesize) {
 }
 async function Engine({
   query,
-  proxy
+  proxy,
+  ipAddress
 }) {
   try {
     let pushTube = [];
@@ -838,7 +837,8 @@ async function Engine({
       AudioStore: pushTube.filter((item) => item.Tube === "AudioStore").map((item) => item.reTube) || void 0,
       VideoStore: pushTube.filter((item) => item.Tube === "VideoStore").map((item) => item.reTube) || void 0,
       HDRVideoStore: pushTube.filter((item) => item.Tube === "HDRVideoStore").map((item) => item.reTube) || void 0,
-      metaTube: pushTube.filter((item) => item.Tube === "metaTube").map((item) => item.reTube)[0] || void 0
+      metaTube: pushTube.filter((item) => item.Tube === "metaTube").map((item) => item.reTube)[0] || void 0,
+      ipAddress
     };
   } catch (error) {
     if (error instanceof Error)
@@ -854,68 +854,70 @@ var version = "5.5.0";
 // core/base/Agent.ts
 async function Agent({
   query,
-  verbose,
-  proxy
+  proxy,
+  verbose
 }) {
   try {
+    let ipAddress = "";
     const child = child_process.spawn("sh", [
       "-c",
-      "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
+      "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
     ]);
-    return new Promise((resolve, reject2) => {
-      child.stdout.on("data", (data) => {
-        console.log(colors29__default.default.green("@info:"), data.toString());
-      });
+    return new Promise((resolve) => {
+      child.stdout.on("data", (data) => ipAddress = data.toString());
       child.on("close", async (code) => {
-        if (code !== 0)
+        if (code !== 0 && !ipAddress)
           throw new Error("internal server error");
+        console.log(colors28__default.default.green("@info:"), "new socks5 ip", ipAddress);
         let respEngine = void 0;
         let videoId = await YouTubeID(query);
         let TubeBody;
         console.log(
-          colors29__default.default.green("@info:"),
+          colors28__default.default.green("@info:"),
           "using",
-          colors29__default.default.green("yt-dlx"),
+          colors28__default.default.green("yt-dlx"),
           "version",
-          colors29__default.default.green(version)
+          colors28__default.default.green(version)
         );
         if (!videoId) {
           TubeBody = await web_default.search.SearchVideos({
             type: "video",
-            proxy,
             verbose,
+            proxy,
             query
           });
           if (!TubeBody[0]) {
-            reject2(new Error("Unable to get response from YouTube..."));
+            throw new Error("Unable to get response from YouTube.");
           } else {
             console.log(
-              colors29__default.default.green("@info:"),
+              colors28__default.default.green("@info:"),
               `preparing payload for`,
-              colors29__default.default.green(TubeBody[0].title)
+              colors28__default.default.green(TubeBody[0].title)
             );
             respEngine = await Engine({
               query: TubeBody[0].videoLink,
+              ipAddress,
               proxy
             });
             resolve(respEngine);
           }
         } else {
           TubeBody = await web_default.search.VideoInfo({
-            proxy,
             verbose,
+            proxy,
             query
           });
           if (!TubeBody) {
-            reject2(new Error("Unable to get response from YouTube..."));
+            throw new Error("Unable to get response from YouTube.");
           } else {
             console.log(
-              colors29__default.default.green("@info:"),
+              colors28__default.default.green("@info:"),
               `preparing payload for`,
-              colors29__default.default.green(TubeBody.title)
+              colors28__default.default.green(TubeBody.title)
             );
             respEngine = await Engine({
               query: TubeBody.videoLink,
+              ipAddress,
               proxy
             });
             resolve(respEngine);
@@ -1029,7 +1031,7 @@ async function extract({
       }
     };
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
     );
     return payload;
@@ -1074,7 +1076,7 @@ function list_formats({
       };
       resolve(EnBody);
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
       );
     } catch (error) {
@@ -1821,7 +1823,7 @@ async function extract_playlist_videos({
       const query = await YouTubeID(listLink);
       if (query === void 0) {
         console.error(
-          colors29__default.default.bold.red("@error: "),
+          colors28__default.default.bold.red("@error: "),
           "invalid youtube playlist url:",
           listLink
         );
@@ -1833,16 +1835,16 @@ async function extract_playlist_videos({
         });
         if (resp === void 0) {
           console.error(
-            colors29__default.default.bold.red("@error: "),
+            colors28__default.default.bold.red("@error: "),
             "unable to get response from youtube for",
             query
           );
           return;
         } else {
           console.log(
-            colors29__default.default.green("@info:"),
+            colors28__default.default.green("@info:"),
             "total videos in playlist",
-            colors29__default.default.green(resp.playlistTitle),
+            colors28__default.default.green(resp.playlistTitle),
             resp.playlistVideoCount
           );
           await eachSeries$1(resp.playlistVideos, async (vid) => {
@@ -1851,7 +1853,7 @@ async function extract_playlist_videos({
             });
             counter++;
             console.log(
-              colors29__default.default.green("@info:"),
+              colors28__default.default.green("@info:"),
               "added",
               counter + "/" + resp.playlistVideoCount
             );
@@ -1861,19 +1863,19 @@ async function extract_playlist_videos({
       }
     });
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
     );
     return metaTubeArr;
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 function progressBar(prog) {
@@ -1882,13 +1884,13 @@ function progressBar(prog) {
   if (prog.percent < 1 && prog.timemark.includes("-"))
     return;
   readline__default.default.cursorTo(process.stdout, 0);
-  let color = colors29__default.default.green;
+  let color = colors28__default.default.green;
   if (prog.percent > 98)
     prog.percent = 100;
   if (prog.percent < 25)
-    color = colors29__default.default.red;
+    color = colors28__default.default.red;
   else if (prog.percent < 50)
-    color = colors29__default.default.yellow;
+    color = colors28__default.default.yellow;
   const width = Math.floor(process.stdout.columns / 4);
   const scomp = Math.round(width * prog.percent / 100);
   const sprog = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -1905,7 +1907,8 @@ function progressBar(prog) {
 }
 async function proTube({
   adata,
-  vdata
+  vdata,
+  ipAddress
 }) {
   let max = 6;
   let dirC = __dirname;
@@ -1955,6 +1958,10 @@ async function proTube({
       ff.withVideoBitrate(vdata.Video.bitrate);
     if (adata.Audio.bitrate)
       ff.withAudioBitrate(adata.Audio.bitrate);
+  }
+  if (ipAddress) {
+    console.log(colors28__default.default.green("@ffmpeg:"), "using proxy ip", ipAddress);
+    ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   }
   ff.on("progress", (progress) => progressBar(progress));
   ff.on("end", () => process.stdout.write("\n"));
@@ -2009,7 +2016,7 @@ async function AudioLowest(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -2021,7 +2028,8 @@ async function AudioLowest(input) {
         fs__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioLowest_";
       const ffmpeg2 = await proTube({
-        adata: await lowEntry(engineData.AudioStore)
+        adata: await lowEntry(engineData.AudioStore),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.withOutputFormat("avi");
       switch (filter2) {
@@ -2099,30 +2107,30 @@ async function AudioLowest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 
@@ -2171,7 +2179,7 @@ async function AudioHighest(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -2183,7 +2191,8 @@ async function AudioHighest(input) {
         fs__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioHighest_";
       const ffmpeg2 = await proTube({
-        adata: await bigEntry(engineData.AudioStore)
+        adata: await bigEntry(engineData.AudioStore),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.withOutputFormat("avi");
       switch (filter2) {
@@ -2261,30 +2270,30 @@ async function AudioHighest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf3 = z4.z.object({
@@ -2318,7 +2327,7 @@ async function AudioQualityCustom(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const customData = engineData.AudioStore.filter(
@@ -2326,7 +2335,7 @@ async function AudioQualityCustom(input) {
       );
       if (!customData) {
         throw new Error(
-          colors29__default.default.red("@error: ") + quality + " not found in the video."
+          colors28__default.default.red("@error: ") + quality + " not found in the video."
         );
       }
       const title = engineData.metaTube.title.replace(
@@ -2337,7 +2346,8 @@ async function AudioQualityCustom(input) {
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
-        adata: await bigEntry(customData)
+        adata: await bigEntry(customData),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.withOutputFormat("avi");
       let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
@@ -2416,30 +2426,30 @@ async function AudioQualityCustom(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf4 = z4.z.object({
@@ -2501,7 +2511,7 @@ async function ListAudioLowest(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -2510,14 +2520,14 @@ async function ListAudioLowest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -2528,7 +2538,7 @@ async function ListAudioLowest(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             video.videoLink
           );
@@ -2543,7 +2553,8 @@ async function ListAudioLowest(input) {
           fs__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(AudioLowest_";
         const ffmpeg2 = await proTube({
-          adata: await lowEntry(engineData.AudioStore)
+          adata: await lowEntry(engineData.AudioStore),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.withOutputFormat("avi");
         switch (filter2) {
@@ -2615,33 +2626,33 @@ async function ListAudioLowest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf5 = z4.z.object({
@@ -2703,7 +2714,7 @@ async function ListAudioHighest(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -2712,14 +2723,14 @@ async function ListAudioHighest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -2730,7 +2741,7 @@ async function ListAudioHighest(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             video.videoLink
           );
@@ -2745,7 +2756,8 @@ async function ListAudioHighest(input) {
           fs__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(AudioHighest_";
         const ffmpeg2 = await proTube({
-          adata: await bigEntry(engineData.AudioStore)
+          adata: await bigEntry(engineData.AudioStore),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.withOutputFormat("avi");
         switch (filter2) {
@@ -2817,33 +2829,33 @@ async function ListAudioHighest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf6 = z4.z.object({
@@ -2904,7 +2916,7 @@ async function ListAudioQualityCustom(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -2913,14 +2925,14 @@ async function ListAudioQualityCustom(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -2931,7 +2943,7 @@ async function ListAudioQualityCustom(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -2941,7 +2953,7 @@ async function ListAudioQualityCustom(input) {
         );
         if (!customData) {
           console.log(
-            colors29__default.default.red("@error: ") + quality + " not found in the video."
+            colors28__default.default.red("@error: ") + quality + " not found in the video."
           );
           continue;
         }
@@ -2954,7 +2966,8 @@ async function ListAudioQualityCustom(input) {
           fs__namespace.mkdirSync(folder, { recursive: true });
         let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
         const ffmpeg2 = await proTube({
-          adata: await bigEntry(customData)
+          adata: await bigEntry(customData),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.withOutputFormat("avi");
         switch (filter2) {
@@ -3026,33 +3039,33 @@ async function ListAudioQualityCustom(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf7 = z4.z.object({
@@ -3077,7 +3090,7 @@ async function VideoLowest(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3088,7 +3101,8 @@ async function VideoLowest(input) {
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
-        vdata: await lowEntry(engineData.VideoStore)
+        vdata: await lowEntry(engineData.VideoStore),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
@@ -3138,30 +3152,30 @@ async function VideoLowest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf8 = z4.z.object({
@@ -3186,7 +3200,7 @@ async function VideoHighest(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3197,7 +3211,8 @@ async function VideoHighest(input) {
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
-        vdata: await bigEntry(engineData.VideoStore)
+        vdata: await bigEntry(engineData.VideoStore),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
@@ -3247,30 +3262,30 @@ async function VideoHighest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf9 = z4.z.object({
@@ -3310,7 +3325,7 @@ async function VideoQualityCustom(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const customData = engineData.VideoStore.filter(
@@ -3318,7 +3333,7 @@ async function VideoQualityCustom(input) {
       );
       if (!customData) {
         throw new Error(
-          colors29__default.default.red("@error: ") + quality + " not found in the video."
+          colors28__default.default.red("@error: ") + quality + " not found in the video."
         );
       }
       const title = engineData.metaTube.title.replace(
@@ -3329,7 +3344,8 @@ async function VideoQualityCustom(input) {
       if (!fs__namespace.existsSync(folder))
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
-        vdata: await lowEntry(customData)
+        vdata: await lowEntry(customData),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
@@ -3379,30 +3395,30 @@ async function VideoQualityCustom(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf10 = z4.z.object({
@@ -3456,7 +3472,7 @@ async function ListVideoLowest(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -3465,14 +3481,14 @@ async function ListVideoLowest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -3483,7 +3499,7 @@ async function ListVideoLowest(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -3497,7 +3513,8 @@ async function ListVideoLowest(input) {
           fs__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(VideoLowest_";
         const ffmpeg2 = await proTube({
-          vdata: await lowEntry(engineData.VideoStore)
+          vdata: await lowEntry(engineData.VideoStore),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -3539,33 +3556,33 @@ async function ListVideoLowest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf11 = z4.z.object({
@@ -3619,7 +3636,7 @@ async function ListVideoHighest(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -3628,14 +3645,14 @@ async function ListVideoHighest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -3646,7 +3663,7 @@ async function ListVideoHighest(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -3660,7 +3677,8 @@ async function ListVideoHighest(input) {
           fs__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(VideoHighest_";
         const ffmpeg2 = await proTube({
-          vdata: await bigEntry(engineData.VideoStore)
+          vdata: await bigEntry(engineData.VideoStore),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -3702,33 +3720,33 @@ async function ListVideoHighest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf12 = z4.z.object({
@@ -3795,7 +3813,7 @@ async function ListVideoQualityCustom(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -3804,14 +3822,14 @@ async function ListVideoQualityCustom(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -3822,7 +3840,7 @@ async function ListVideoQualityCustom(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -3832,7 +3850,7 @@ async function ListVideoQualityCustom(input) {
         );
         if (!customData) {
           console.log(
-            colors29__default.default.red("@error: ") + quality + " not found in the video."
+            colors28__default.default.red("@error: ") + quality + " not found in the video."
           );
           continue;
         }
@@ -3845,7 +3863,8 @@ async function ListVideoQualityCustom(input) {
           fs__namespace.mkdirSync(folder, { recursive: true });
         let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
         const ffmpeg2 = await proTube({
-          vdata: await bigEntry(customData)
+          vdata: await bigEntry(customData),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -3887,33 +3906,33 @@ async function ListVideoQualityCustom(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf13 = z4.z.object({
@@ -3938,7 +3957,7 @@ async function AudioVideoLowest(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -3954,7 +3973,8 @@ async function AudioVideoLowest(input) {
       ]);
       const ffmpeg2 = await proTube({
         adata: AudioData,
-        vdata: VideoData
+        vdata: VideoData,
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
@@ -4004,30 +4024,30 @@ async function AudioVideoLowest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf14 = z4.z.object({
@@ -4052,7 +4072,7 @@ async function AudioVideoHighest(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -4068,7 +4088,8 @@ async function AudioVideoHighest(input) {
       ]);
       const ffmpeg2 = await proTube({
         adata: AudioData,
-        vdata: VideoData
+        vdata: VideoData,
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
@@ -4118,30 +4139,30 @@ async function AudioVideoHighest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf15 = z4.z.object({
@@ -4191,7 +4212,7 @@ async function AudioVideoQualityCustom(input) {
     const engineData = await Agent({ query, verbose, proxy });
     if (engineData === void 0) {
       throw new Error(
-        colors29__default.default.red("@error: ") + "unable to get response from youtube."
+        colors28__default.default.red("@error: ") + "unable to get response from youtube."
       );
     } else {
       const title = engineData.metaTube.title.replace(
@@ -4213,7 +4234,8 @@ async function AudioVideoQualityCustom(input) {
       ]);
       const ffmpeg2 = await proTube({
         adata: AudioData,
-        vdata: VideoData
+        vdata: VideoData,
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
       });
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
@@ -4263,30 +4285,30 @@ async function AudioVideoQualityCustom(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       }
       console.log(
-        colors29__default.default.green("@info:"),
+        colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
-        colors29__default.default.green("yt-dlx."),
+        colors28__default.default.green("yt-dlx."),
         "If you enjoy the project, consider",
-        colors29__default.default.green("\u{1F31F}starring"),
+        colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors29__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx")
       );
     }
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf16 = z4.z.object({
@@ -4340,7 +4362,7 @@ async function ListAudioVideoHighest(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -4349,14 +4371,14 @@ async function ListAudioVideoHighest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -4367,7 +4389,7 @@ async function ListAudioVideoHighest(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -4386,7 +4408,8 @@ async function ListAudioVideoHighest(input) {
         let filename = "yt-dlx_(AudioVideoHighest_";
         const ffmpeg2 = await proTube({
           adata: AudioData,
-          vdata: VideoData
+          vdata: VideoData,
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -4428,33 +4451,33 @@ async function ListAudioVideoHighest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf17 = z4.z.object({
@@ -4508,7 +4531,7 @@ async function ListAudioVideoLowest(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -4517,14 +4540,14 @@ async function ListAudioVideoLowest(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -4535,7 +4558,7 @@ async function ListAudioVideoLowest(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -4554,7 +4577,8 @@ async function ListAudioVideoLowest(input) {
         let filename = "yt-dlx_(AudioVideoLowest_";
         const ffmpeg2 = await proTube({
           adata: AudioData,
-          vdata: VideoData
+          vdata: VideoData,
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg2.withOutputFormat("matroska");
@@ -4597,33 +4621,33 @@ async function ListAudioVideoLowest(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 var qconf18 = z4.z.object({
@@ -4691,7 +4715,7 @@ async function ListAudioVideoQualityCustom(input) {
         const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
         if (pDATA === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube for",
             pURL
           );
@@ -4700,14 +4724,14 @@ async function ListAudioVideoQualityCustom(input) {
         for (const video of pDATA.playlistVideos)
           vDATA.add(video);
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "total number of uncommon videos:",
-      colors29__default.default.yellow(vDATA.size.toString())
+      colors28__default.default.yellow(vDATA.size.toString())
     );
     for (const video of vDATA) {
       try {
@@ -4718,7 +4742,7 @@ async function ListAudioVideoQualityCustom(input) {
         });
         if (engineData === void 0) {
           console.log(
-            colors29__default.default.red("@error:"),
+            colors28__default.default.red("@error:"),
             "unable to get response from youtube."
           );
           continue;
@@ -4743,7 +4767,8 @@ async function ListAudioVideoQualityCustom(input) {
         let filename = "yt-dlx_(AudioVideoQualityCustom_";
         const ffmpeg2 = await proTube({
           adata: AudioData,
-          vdata: VideoData
+          vdata: VideoData,
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
         });
         ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg2.withOutputFormat("matroska");
@@ -4786,33 +4811,33 @@ async function ListAudioVideoQualityCustom(input) {
           ffmpeg2.output(path2__namespace.join(folder, filename.replace("_)_", ")_")));
           ffmpeg2.on("end", () => resolve());
           ffmpeg2.on("error", (error) => {
-            throw new Error(colors29__default.default.red("@error: ") + error.message);
+            throw new Error(colors28__default.default.red("@error: ") + error.message);
           });
           ffmpeg2.run();
         });
       } catch (error) {
-        console.log(colors29__default.default.red("@error:"), error);
+        console.log(colors28__default.default.red("@error:"), error);
         continue;
       }
     }
     console.log(
-      colors29__default.default.green("@info:"),
+      colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors29__default.default.green("yt-dlx."),
+      colors28__default.default.green("yt-dlx."),
       "If you enjoy the project, consider",
-      colors29__default.default.green("\u{1F31F}starring"),
+      colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors29__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
       throw new Error(
-        colors29__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
+        colors28__default.default.red("@error: ") + error.errors.map((error2) => error2.message).join(", ")
       );
     } else if (error instanceof Error) {
-      throw new Error(colors29__default.default.red("@error: ") + error.message);
+      throw new Error(colors28__default.default.red("@error: ") + error.message);
     } else
-      throw new Error(colors29__default.default.red("@error: ") + "internal server error");
+      throw new Error(colors28__default.default.red("@error: ") + "internal server error");
   }
 }
 
@@ -4889,7 +4914,7 @@ var program = async () => {
   switch (command) {
     case "version":
     case "v":
-      console.error(colors29__default.default.green("Installed Version: yt-dlx@" + version));
+      console.error(colors28__default.default.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -4897,14 +4922,14 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors29__default.default.red(error));
+        console.error(colors28__default.default.red(error));
         process.exit();
       });
       break;
     case "extract":
     case "e":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().info().extract({
           query: proTube2.query
@@ -4912,14 +4937,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "list-formats":
     case "f":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().info().list_formats({
           query: proTube2.query
@@ -4927,14 +4952,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioOnly().Single().Highest({
           query: proTube2.query
@@ -4942,14 +4967,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioOnly().Single().Lowest({
           query: proTube2.query
@@ -4957,14 +4982,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().VideoOnly().Single().Highest({
           query: proTube2.query
@@ -4972,14 +4997,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().VideoOnly().Single().Lowest({
           query: proTube2.query
@@ -4987,14 +5012,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-highest":
     case "avh":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioVideo().Single().Highest({
           query: proTube2.query
@@ -5002,14 +5027,14 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-video-lowest":
     case "avl":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       } else
         core_default().AudioVideo().Single().Lowest({
           query: proTube2.query
@@ -5017,17 +5042,17 @@ var program = async () => {
           console.log(data);
           process.exit();
         }).catch((error) => {
-          console.error(colors29__default.default.red(error));
+          console.error(colors28__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-quality-custom":
     case "aqc":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       }
       if (!proTube2 || !proTube2.format || proTube2.format.length === 0) {
-        console.error(colors29__default.default.red("error: no format"));
+        console.error(colors28__default.default.red("error: no format"));
       }
       core_default().AudioOnly().Single().Custom({
         query: proTube2.query,
@@ -5036,17 +5061,17 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors29__default.default.red(error));
+        console.error(colors28__default.default.red(error));
         process.exit();
       });
       break;
     case "video-quality-custom":
     case "vqc":
       if (!proTube2 || !proTube2.query || proTube2.query.length === 0) {
-        console.error(colors29__default.default.red("error: no query"));
+        console.error(colors28__default.default.red("error: no query"));
       }
       if (!proTube2 || !proTube2.format || proTube2.format.length === 0) {
-        console.error(colors29__default.default.red("error: no format"));
+        console.error(colors28__default.default.red("error: no format"));
       }
       core_default().VideoOnly().Single().Custom({
         query: proTube2.query,
@@ -5055,7 +5080,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors29__default.default.red(error));
+        console.error(colors28__default.default.red(error));
         process.exit();
       });
       break;
@@ -5064,7 +5089,7 @@ var program = async () => {
         console.log(data);
         process.exit();
       }).catch((error) => {
-        console.error(colors29__default.default.red(error));
+        console.error(colors28__default.default.red(error));
         process.exit();
       });
       break;
@@ -5075,7 +5100,7 @@ if (!proTube2._[0]) {
     console.log(data);
     process.exit();
   }).catch((error) => {
-    console.error(colors29__default.default.red(error));
+    console.error(colors28__default.default.red(error));
     process.exit();
   });
 } else
