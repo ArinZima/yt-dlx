@@ -934,7 +934,6 @@ async function Agent({
           colors28__default.default.green("new ipAddress"),
           nipTor.stdout.trim()
         );
-        console.log(colors28__default.default.green("@info:\n"), nipTor.stderr.trim());
         ipAddress = nipTor.stdout.trim();
       } else
         throw new Error("Unable to connect to Tor.");

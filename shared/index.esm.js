@@ -908,7 +908,7 @@ async function Agent({ query, verbose, autoSocks5, }) {
             ]);
             if (nipTor.stdout.trim().length > 0) {
                 console.log(colors.green("@info:"), "autoSocks5", colors.green("new ipAddress"), nipTor.stdout.trim());
-                console.log(colors.green("@info:\n"), nipTor.stderr.trim());
+                // console.log(colors.green("@info:\n"), nipTor.stderr.trim());
                 ipAddress = nipTor.stdout.trim();
             }
             else
