@@ -10,10 +10,9 @@ const colors = {
 };
 
 const core = {
-  monit: "watch -n 1 nvidia-smi",
-  socks5: "chmod +x util/socks5.sh && ./util/socks5.sh",
-  "socks5:watch": "chmod +x util/socks5.sh && ./util/socks5.sh && sudo nyx",
   renew: "yarn clean && yarn make && yarn update && yarn build",
+  "install:deps": "chmod +x ./util/deps.sh && ./util/deps.sh",
+  "install:socks5": "chmod +x ./util/socks5.sh && ./util/socks5.sh",
   "client:dev": "cd client && yarn dev",
   "client:build": "cd client && yarn build",
   "client:start": "cd client && yarn start",
@@ -21,10 +20,9 @@ const core = {
   "clean:base": "rm -rf node_modules temp shared others",
   "clean:client": "cd client && rm -rf node_modules .next",
   "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/engine",
-  make: "yarn make:deps && yarn make:base && yarn make:client && yarn postinstall",
-  "make:base": "yarn install",
-  "make:client": "cd client && yarn install",
-  "make:deps": "chmod +x util/deps.sh && ./util/deps.sh",
+  make: "yarn make:base && yarn make:client && yarn postinstall",
+  "make:base": "yarn install --verbose",
+  "make:client": "cd client && yarn install --verbose",
   update: "yarn update:base && yarn update:client",
   "update:base": "yarn install --verbose && yarn upgrade --latest",
   "update:client":
@@ -48,9 +46,9 @@ const core = {
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
-  preinstall: "npm run make:deps && npm run socks5",
   postinstall:
     "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
+  prepublishOnly: "yarn clean:deps",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
