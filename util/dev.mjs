@@ -13,11 +13,11 @@ const core = {
   postinstall:
     "node util/ffmpeg.mjs && node util/engine.mjs && chmod -R +x util/* && npx puppeteer browsers install chrome",
   monit: "watch -n 1 nvidia-smi",
-  torsock: "chmod +x util/torsock.sh && ./util/torsock.sh",
-  "torsock:watch": "chmod +x util/torsock.sh && ./util/torsock.sh && sudo nyx",
+  socks5: "chmod +x util/socks5.sh && ./util/socks5.sh",
+  "socks5:watch": "chmod +x util/socks5.sh && ./util/socks5.sh && sudo nyx",
   remake: "yarn clean && yarn make && yarn update && yarn build",
-  "remake:torsock":
-    "yarn clean && yarn make && yarn update && yarn build && yarn torsock",
+  "remake:socks5":
+    "yarn clean && yarn make && yarn update && yarn build && yarn socks5",
   "client:dev": "cd client && yarn dev",
   "client:build": "cd client && yarn build",
   "client:start": "cd client && yarn start",
@@ -28,7 +28,7 @@ const core = {
   make: "yarn make:deps && yarn make:base && yarn make:client && yarn postinstall",
   "make:base": "yarn install",
   "make:client": "cd client && yarn install",
-  "make:deps": "chmod +x util/ytdlx-deps.sh && ./util/ytdlx-deps.sh",
+  "make:deps": "chmod +x util/deps.sh && ./util/deps.sh",
   update: "yarn update:base && yarn update:client",
   "update:base": "yarn install --verbose && yarn upgrade --latest",
   "update:client":
