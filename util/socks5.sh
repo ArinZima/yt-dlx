@@ -12,9 +12,7 @@ LOG() {
 RUN() {
     local command="$1"
     if [ "$use_sudo" = true ]; then
-        command="sudo sh -c '$command'"
-    else
-        command="sh -c '$command'"
+        command="sudo $command"
     fi
     if ! eval "$command"; then
         ERR "Failed to execute command: $command"
@@ -32,19 +30,25 @@ if [ -x "$(command -v apt-get)" ]; then
     RUN "systemctl daemon-reload"
     RUN "apt-get purge -y tor nyx"
     RUN "apt-get update && apt-get install -y tor nyx"
-    RUN "echo -e 'ControlPort 9051\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1' > /etc/tor/torrc"
-    RUN "echo -e 'redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log' > /root/.nyx/config"
+    RUN 'sed -i "s/#ControlPort 9051/ControlPort 9051/" /etc/tor/torrc'
+    RUN 'echo -e "\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1" >> /etc/tor/torrc'
     RUN "systemctl enable --now tor"
+    RUN 'echo "MaxCircuitDirtiness 60" >> /etc/tor/torrc'
+    RUN "systemctl restart tor"
+    RUN 'echo -e "redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log" > ~/.nyx/config'
     RUN "curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
     elif [ -x "$(command -v pacman)" ]; then
+    LOG "Detected Arch-based system"
     RUN "systemctl stop tor"
     RUN "systemctl daemon-reload"
-    LOG "Detected Arch-based system"
     RUN "pacman -Rns --noconfirm tor nyx"
     RUN "pacman -Syyu --noconfirm tor nyx"
-    RUN "echo -e 'ControlPort 9051\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1' > /etc/tor/torrc"
-    RUN "echo -e 'redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log' > /root/.nyx/config"
+    RUN 'sed -i "s/#ControlPort 9051/ControlPort 9051/" /etc/tor/torrc'
+    RUN 'echo -e "\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1" >> /etc/tor/torrc'
     RUN "systemctl enable --now tor"
+    RUN 'echo "MaxCircuitDirtiness 60" >> /etc/tor/torrc'
+    RUN "systemctl restart tor"
+    RUN 'echo -e "redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log" > ~/.nyx/config'
     RUN "curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
 else
     ERR "Neither apt-get nor pacman found. Unsupported system."
