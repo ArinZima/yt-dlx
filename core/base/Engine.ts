@@ -48,10 +48,11 @@ export default async function Engine({
       proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` --dump-single-json '${query}'`;
-    } else
+    } else {
       throw new Error(
-        "Could not find the dependencies. Try running npx yt-dlx install:deps"
+        "Could not find dependencies. Try running npx yt-dlx install:deps"
       );
+    }
     const result = await promisify(exec)(proLoc);
     const metaTube = await JSON.parse(result.stdout.toString());
     await metaTube.formats.forEach((io: TubeFormat) => {
