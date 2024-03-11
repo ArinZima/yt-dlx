@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 'use strict';
 
-var fs = require('fs');
 var colors28 = require('colors');
 var cheerio = require('cheerio');
-var retry = require('async-retry');
 var puppeteer = require('puppeteer');
 var spinClient = require('spinnies');
 var z4 = require('zod');
 var crypto = require('crypto');
 var child_process = require('child_process');
+var fs2 = require('fs');
 var path2 = require('path');
 var util = require('util');
 var readline = require('readline');
@@ -36,12 +35,11 @@ function _interopNamespace(e) {
   return Object.freeze(n);
 }
 
-var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
 var colors28__default = /*#__PURE__*/_interopDefault(colors28);
-var retry__default = /*#__PURE__*/_interopDefault(retry);
 var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
 var spinClient__default = /*#__PURE__*/_interopDefault(spinClient);
 var z4__namespace = /*#__PURE__*/_interopNamespace(z4);
+var fs2__namespace = /*#__PURE__*/_interopNamespace(fs2);
 var path2__namespace = /*#__PURE__*/_interopNamespace(path2);
 var readline__default = /*#__PURE__*/_interopDefault(readline);
 var ffmpeg__default = /*#__PURE__*/_interopDefault(ffmpeg);
@@ -93,6 +91,7 @@ async function crawler(verbose, autoSocks5) {
     if (autoSocks5) {
       browser = await puppeteer__default.default.launch({
         headless: verbose ? false : true,
+        ignoreHTTPSErrors: true,
         args: [
           "--no-zygote",
           "--incognito",
@@ -108,6 +107,7 @@ async function crawler(verbose, autoSocks5) {
     } else {
       browser = await puppeteer__default.default.launch({
         headless: verbose ? false : true,
+        ignoreHTTPSErrors: true,
         args: [
           "--no-zygote",
           "--incognito",
@@ -157,134 +157,118 @@ async function SearchVideos(input) {
     });
     const { query, screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(input);
     await crawler(verbose, autoSocks5);
-    const retryOptions = {
-      maxTimeout: 6e3,
-      minTimeout: 1e3,
-      retries: 4
-    };
     let url;
     let $;
-    const spin = crypto.randomUUID();
+    let spin = crypto.randomUUID();
     let content;
     let metaTube = [];
-    const spinnies = new spinClient__default.default();
+    let spinnies = new spinClient__default.default();
     let videoElements;
     let playlistMeta = [];
     let TubeResp;
-    let snapshot;
     spinnies.add(spin, {
       text: colors28__default.default.green("@scrape: ") + "booting chromium..."
     });
     switch (input.type) {
       case "video":
-        TubeResp = await retry__default.default(async () => {
-          url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAQ%253D%253D";
-          await page.goto(url);
-          for (let i = 0; i < 40; i++) {
-            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-          }
-          spinnies.update(spin, {
-            text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAQ%253D%253D";
+        await page.goto(url);
+        for (let i = 0; i < 40; i++) {
+          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        }
+        spinnies.update(spin, {
+          text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        });
+        if (screenshot) {
+          await page.screenshot({
+            path: "TypeVideo.png"
           });
-          if (screenshot) {
-            snapshot = await page.screenshot({
-              path: "TypeVideo.png"
-            });
-            fs__namespace.default.writeFileSync("TypeVideo.png", snapshot);
-            spinnies.update(spin, {
-              text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
-            });
-          }
-          content = await page.content();
-          $ = cheerio.load(content);
-          videoElements = $(
-            "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
+          spinnies.update(spin, {
+            text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
+          });
+        }
+        content = await page.content();
+        $ = cheerio.load(content);
+        videoElements = $(
+          "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
+        );
+        videoElements.each(async (_, vide) => {
+          const videoId = await YouTubeID(
+            "https://www.youtube.com" + $(vide).find("a").attr("href")
           );
-          videoElements.each(async (_, vide) => {
-            const videoId = await YouTubeID(
-              "https://www.youtube.com" + $(vide).find("a").attr("href")
-            );
-            const authorContainer = $(vide).find(".ytd-channel-name a");
-            const uploadedOnElement = $(vide).find(
-              ".inline-metadata-item.style-scope.ytd-video-meta-block"
-            );
-            metaTube.push({
-              title: $(vide).find("#video-title").text().trim() || void 0,
-              views: $(vide).find(
-                ".inline-metadata-item.style-scope.ytd-video-meta-block"
-              ).filter(
-                (_2, vide2) => $(vide2).text().includes("views")
-              ).text().trim().replace(/ views/g, "") || void 0,
-              author: authorContainer.text().trim() || void 0,
-              videoId,
-              uploadOn: uploadedOnElement.length >= 2 ? $(uploadedOnElement[1]).text().trim() : void 0,
-              authorUrl: "https://www.youtube.com" + authorContainer.attr("href") || void 0,
-              videoLink: "https://www.youtube.com/watch?v=" + videoId,
-              thumbnailUrls: [
-                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/default.jpg`
-              ],
-              description: $(vide).find(".metadata-snippet-text").text().trim() || void 0
-            });
+          const authorContainer = $(vide).find(".ytd-channel-name a");
+          const uploadedOnElement = $(vide).find(
+            ".inline-metadata-item.style-scope.ytd-video-meta-block"
+          );
+          metaTube.push({
+            title: $(vide).find("#video-title").text().trim() || void 0,
+            views: $(vide).find(".inline-metadata-item.style-scope.ytd-video-meta-block").filter((_2, vide2) => $(vide2).text().includes("views")).text().trim().replace(/ views/g, "") || void 0,
+            author: authorContainer.text().trim() || void 0,
+            videoId,
+            uploadOn: uploadedOnElement.length >= 2 ? $(uploadedOnElement[1]).text().trim() : void 0,
+            authorUrl: "https://www.youtube.com" + authorContainer.attr("href") || void 0,
+            videoLink: "https://www.youtube.com/watch?v=" + videoId,
+            thumbnailUrls: [
+              `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/default.jpg`
+            ],
+            description: $(vide).find(".metadata-snippet-text").text().trim() || void 0
           });
-          spinnies.succeed(spin, {
-            text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
-          });
-          return metaTube;
-        }, retryOptions);
-        await closers(browser);
-        return TubeResp;
+        });
+        spinnies.succeed(spin, {
+          text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
+        });
+        TubeResp = metaTube;
+        break;
       case "playlist":
-        TubeResp = await retry__default.default(async () => {
-          url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAw%253D%253D";
-          await page.goto(url);
-          for (let i = 0; i < 80; i++) {
-            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-          }
+        url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAw%253D%253D";
+        await page.goto(url);
+        for (let i = 0; i < 80; i++) {
+          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        }
+        spinnies.update(spin, {
+          text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        });
+        if (screenshot) {
+          await page.screenshot({
+            path: "TypePlaylist.png"
+          });
           spinnies.update(spin, {
-            text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+            text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
           });
-          if (screenshot) {
-            snapshot = await page.screenshot({
-              path: "TypePlaylist.png"
-            });
-            fs__namespace.default.writeFileSync("TypePlaylist.png", snapshot);
-            spinnies.update(spin, {
-              text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
-            });
-          }
-          const content2 = await page.content();
-          const $2 = cheerio.load(content2);
-          const playlistElements = $2("ytd-playlist-renderer");
-          playlistElements.each((_index, element) => {
-            const playlistLink = $2(element).find(".style-scope.ytd-playlist-renderer #view-more a").attr("href");
-            const vCount = $2(element).text().trim();
-            playlistMeta.push({
-              title: $2(element).find(".style-scope.ytd-playlist-renderer #video-title").text().replace(/\s+/g, " ").trim() || void 0,
-              author: $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text().replace(/\s+/g, " ").trim() || void 0,
-              playlistId: playlistLink.split("list=")[1],
-              playlistLink: "https://www.youtube.com" + playlistLink,
-              authorUrl: $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") ? "https://www.youtube.com" + $2(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") : void 0,
-              videoCount: parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) || void 0
-            });
+        }
+        content = await page.content();
+        $ = cheerio.load(content);
+        const playlistElements = $("ytd-playlist-renderer");
+        playlistElements.each((_index, element) => {
+          const playlistLink = $(element).find(".style-scope.ytd-playlist-renderer #view-more a").attr("href");
+          const vCount = $(element).text().trim();
+          playlistMeta.push({
+            title: $(element).find(".style-scope.ytd-playlist-renderer #video-title").text().replace(/\s+/g, " ").trim() || void 0,
+            author: $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text().replace(/\s+/g, " ").trim() || void 0,
+            playlistId: playlistLink.split("list=")[1],
+            playlistLink: "https://www.youtube.com" + playlistLink,
+            authorUrl: $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") ? "https://www.youtube.com" + $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href") : void 0,
+            videoCount: parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) || void 0
           });
-          spinnies.succeed(spin, {
-            text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
-          });
-          return playlistMeta;
-        }, retryOptions);
-        await closers(browser);
-        return TubeResp;
+        });
+        spinnies.succeed(spin, {
+          text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
+        });
+        TubeResp = playlistMeta;
+        break;
       default:
         spinnies.fail(spin, {
           text: colors28__default.default.red("@error: ") + colors28__default.default.white("wrong filter type provided.")
         });
-        await closers(browser);
-        return void 0;
+        TubeResp = void 0;
+        break;
     }
+    await closers(browser);
+    return TubeResp;
   } catch (error) {
     await closers(browser);
     switch (true) {
@@ -305,7 +289,7 @@ process.on("uncaughtException", async () => await closers(browser));
 process.on("unhandledRejection", async () => await closers(browser));
 async function PlaylistInfo(input) {
   try {
-    let query;
+    let query = "";
     const spinnies = new spinClient__default.default();
     const QuerySchema = z4.z.object({
       query: z4.z.string().min(1).refine(
@@ -343,85 +327,72 @@ async function PlaylistInfo(input) {
     const { screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(
       input
     );
-    await crawler(verbose, autoSocks5);
-    const retryOptions = {
-      maxTimeout: 6e3,
-      minTimeout: 1e3,
-      retries: 4
-    };
     let metaTube = [];
     const spin = crypto.randomUUID();
-    let TubeResp;
-    let snapshot;
-    TubeResp = await retry__default.default(async () => {
-      spinnies.add(spin, {
-        text: colors28__default.default.green("@scrape: ") + "booting chromium..."
+    await crawler(verbose, autoSocks5);
+    spinnies.add(spin, {
+      text: colors28__default.default.green("@scrape: ") + "booting chromium..."
+    });
+    await page.goto(query);
+    for (let i = 0; i < 40; i++) {
+      await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+    }
+    spinnies.update(spin, {
+      text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+    });
+    if (screenshot) {
+      await page.screenshot({
+        path: "FilterVideo.png"
       });
-      await page.goto(query);
-      for (let i = 0; i < 40; i++) {
-        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-      }
       spinnies.update(spin, {
-        text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
       });
-      if (screenshot) {
-        snapshot = await page.screenshot({
-          path: "FilterVideo.png"
-        });
-        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
-        spinnies.update(spin, {
-          text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
-        });
-      }
-      const content = await page.content();
-      const $ = cheerio.load(content);
-      const playlistTitle = $(
-        "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
-      ).text().trim();
-      const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
-      const playlistViews = parseInt(
-        viewsText.replace(/,/g, "").match(/\d+/)[0]
-      );
-      let playlistDescription = $("span#plain-snippet-text").text();
-      $("ytd-playlist-video-renderer").each(async (_index, element) => {
-        const title = $(element).find("h3").text().trim();
-        const videoLink = "https://www.youtube.com" + $(element).find("a").attr("href");
-        const videoId = await YouTubeID(videoLink);
-        const newLink = "https://www.youtube.com/watch?v=" + videoId;
-        const author = $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text();
-        const authorUrl = "https://www.youtube.com" + $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href");
-        const views = $(element).find(".style-scope.ytd-video-meta-block span:first-child").text();
-        const ago = $(element).find(".style-scope.ytd-video-meta-block span:last-child").text();
-        const thumbnailUrls = [
-          `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-          `https://img.youtube.com/vi/${videoId}/default.jpg`
-        ];
-        metaTube.push({
-          ago,
-          author,
-          videoId,
-          authorUrl,
-          thumbnailUrls,
-          videoLink: newLink,
-          title: title.trim(),
-          views: views.replace(/ views/g, "")
-        });
+    }
+    const content = await page.content();
+    const $ = cheerio.load(content);
+    const playlistTitle = $(
+      "yt-formatted-string.style-scope.yt-dynamic-sizing-formatted-string"
+    ).text().trim();
+    const viewsText = $("yt-formatted-string.byline-item").eq(1).text();
+    const playlistViews = parseInt(viewsText.replace(/,/g, "").match(/\d+/)[0]);
+    let playlistDescription = $("span#plain-snippet-text").text();
+    $("ytd-playlist-video-renderer").each(async (_index, element) => {
+      const title = $(element).find("h3").text().trim();
+      const videoLink = "https://www.youtube.com" + $(element).find("a").attr("href");
+      const videoId = await YouTubeID(videoLink);
+      const newLink = "https://www.youtube.com/watch?v=" + videoId;
+      const author = $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").text();
+      const authorUrl = "https://www.youtube.com" + $(element).find(".yt-simple-endpoint.style-scope.yt-formatted-string").attr("href");
+      const views = $(element).find(".style-scope.ytd-video-meta-block span:first-child").text();
+      const ago = $(element).find(".style-scope.ytd-video-meta-block span:last-child").text();
+      const thumbnailUrls = [
+        `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/default.jpg`
+      ];
+      metaTube.push({
+        ago,
+        author,
+        videoId,
+        authorUrl,
+        thumbnailUrls,
+        videoLink: newLink,
+        title: title.trim(),
+        views: views.replace(/ views/g, "")
       });
-      spinnies.succeed(spin, {
-        text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
-      });
-      return {
-        playlistVideos: metaTube,
-        playlistDescription: playlistDescription.trim(),
-        playlistVideoCount: metaTube.length,
-        playlistViews,
-        playlistTitle
-      };
-    }, retryOptions);
+    });
+    spinnies.succeed(spin, {
+      text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
+    });
     await closers(browser);
-    return TubeResp;
+    return {
+      playlistVideos: metaTube,
+      playlistDescription: playlistDescription.trim(),
+      playlistVideoCount: metaTube.length,
+      playlistViews,
+      playlistTitle
+    };
   } catch (error) {
     await closers(browser);
     switch (true) {
@@ -440,29 +411,26 @@ process.on("uncaughtException", async () => await closers(browser));
 process.on("unhandledRejection", async () => await closers(browser));
 async function VideoInfo(input) {
   try {
-    let query;
+    let query = "";
     const spinnies = new spinClient__default.default();
     const QuerySchema = z4.z.object({
       query: z4.z.string().min(1).refine(
         async (input2) => {
+          query = input2;
           switch (true) {
             case /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?(.*&)?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(
               input2
             ):
               const resultLink = await YouTubeID(input2);
-              if (resultLink !== void 0) {
-                query = input2;
+              if (resultLink !== void 0)
                 return true;
-              }
               break;
             default:
               const resultId = await YouTubeID(
                 `https://www.youtube.com/watch?v=${input2}`
               );
-              if (resultId !== void 0) {
-                query = `https://www.youtube.com/watch?v=${input2}`;
+              if (resultId !== void 0)
                 return true;
-              }
               break;
           }
           return false;
@@ -478,83 +446,70 @@ async function VideoInfo(input) {
     const { screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(
       input
     );
-    await crawler(verbose, autoSocks5);
-    const retryOptions = {
-      maxTimeout: 6e3,
-      minTimeout: 1e3,
-      retries: 4
-    };
-    let TubeResp;
     const spin = crypto.randomUUID();
-    let snapshot;
-    TubeResp = await retry__default.default(async () => {
-      spinnies.add(spin, {
-        text: colors28__default.default.green("@scrape: ") + "booting chromium..."
-      });
-      await page.goto(query);
-      for (let i = 0; i < 40; i++) {
-        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-      }
+    await crawler(verbose, autoSocks5);
+    spinnies.add(spin, {
+      text: colors28__default.default.green("@scrape: ") + "booting chromium..."
+    });
+    await page.goto(query);
+    for (let i = 0; i < 40; i++) {
+      await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+    }
+    spinnies.update(spin, {
+      text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+    });
+    if (screenshot) {
+      await page.screenshot({ path: "FilterVideo.png" });
       spinnies.update(spin, {
-        text: colors28__default.default.yellow("@scrape: ") + "waiting for hydration..."
+        text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
       });
-      if (screenshot) {
-        snapshot = await page.screenshot({
-          path: "FilterVideo.png"
-        });
-        fs__namespace.default.writeFileSync("FilterVideo.png", snapshot);
-        spinnies.update(spin, {
-          text: colors28__default.default.yellow("@scrape: ") + "took snapshot..."
-        });
-      }
-      const videoId = await YouTubeID(query);
-      await page.waitForSelector(
-        "yt-formatted-string.style-scope.ytd-watch-metadata",
-        { timeout: 1e4 }
-      );
-      await page.waitForSelector(
-        "a.yt-simple-endpoint.style-scope.yt-formatted-string",
-        { timeout: 1e4 }
-      );
-      await page.waitForSelector(
-        "yt-formatted-string.style-scope.ytd-watch-info-text",
-        { timeout: 1e4 }
-      );
-      setTimeout(() => {
-      }, 1e3);
-      const htmlContent = await page.content();
-      const $ = cheerio.load(htmlContent);
-      const title = $("yt-formatted-string.style-scope.ytd-watch-metadata").text().trim();
-      const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string").text().trim();
-      const viewsElement = $(
-        "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('views')"
-      ).first();
-      const views = viewsElement.text().trim().replace(" views", "");
-      const uploadOnElement = $(
-        "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('ago')"
-      ).first();
-      const uploadOn = uploadOnElement.text().trim();
-      const thumbnailUrls = [
-        `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-        `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-        `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-        `https://img.youtube.com/vi/${videoId}/default.jpg`
-      ];
-      const metaTube = {
-        views,
-        author,
-        videoId,
-        uploadOn,
-        thumbnailUrls,
-        title: title.trim(),
-        videoLink: "https://www.youtube.com/watch?v=" + videoId
-      };
-      spinnies.succeed(spin, {
-        text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
-      });
-      return metaTube;
-    }, retryOptions);
+    }
+    const videoId = await YouTubeID(query);
+    await page.waitForSelector(
+      "yt-formatted-string.style-scope.ytd-watch-metadata",
+      { timeout: 1e4 }
+    );
+    await page.waitForSelector(
+      "a.yt-simple-endpoint.style-scope.yt-formatted-string",
+      { timeout: 1e4 }
+    );
+    await page.waitForSelector(
+      "yt-formatted-string.style-scope.ytd-watch-info-text",
+      { timeout: 1e4 }
+    );
+    setTimeout(() => {
+    }, 1e3);
+    const htmlContent = await page.content();
+    const $ = cheerio.load(htmlContent);
+    const title = $("yt-formatted-string.style-scope.ytd-watch-metadata").text().trim();
+    const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string").text().trim();
+    const viewsElement = $(
+      "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('views')"
+    ).first();
+    const views = viewsElement.text().trim().replace(" views", "");
+    const uploadOnElement = $(
+      "yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('ago')"
+    ).first();
+    const uploadOn = uploadOnElement.text().trim();
+    const thumbnailUrls = [
+      `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+      `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+      `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+      `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+      `https://img.youtube.com/vi/${videoId}/default.jpg`
+    ];
+    const TubeResp = {
+      views,
+      author,
+      videoId,
+      uploadOn,
+      thumbnailUrls,
+      title: title.trim(),
+      videoLink: "https://www.youtube.com/watch?v=" + videoId
+    };
+    spinnies.succeed(spin, {
+      text: colors28__default.default.green("@info: ") + colors28__default.default.white("scrapping done for ") + query
+    });
     await closers(browser);
     return TubeResp;
   } catch (error) {
@@ -785,7 +740,7 @@ async function Engine({
     let currentDir = __dirname;
     while (maxTries > 0) {
       const enginePath = path2__namespace.join(currentDir, "util", "engine");
-      if (fs__namespace.existsSync(enginePath)) {
+      if (fs2__namespace.existsSync(enginePath)) {
         proLoc = enginePath;
         break;
       } else {
@@ -897,7 +852,7 @@ async function Engine({
 }
 
 // package.json
-var version = "5.10.0";
+var version = "5.11.0";
 
 // core/base/Agent.ts
 async function Agent({
@@ -1993,7 +1948,7 @@ async function proTube({
     ffprobepath = path2__namespace.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
     ffmpegpath = path2__namespace.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
     switch (true) {
-      case (fs__namespace.existsSync(ffprobepath) && fs__namespace.existsSync(ffmpegpath)):
+      case (fs2__namespace.existsSync(ffprobepath) && fs2__namespace.existsSync(ffmpegpath)):
         ff.setFfprobePath(ffprobepath);
         ff.setFfmpegPath(ffmpegpath);
         max = 0;
@@ -2102,8 +2057,8 @@ async function AudioLowest(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioLowest_";
       const ffmpeg2 = await proTube({
         adata: await lowEntry(engineData.AudioStore),
@@ -2265,8 +2220,8 @@ async function AudioHighest(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioHighest_";
       const ffmpeg2 = await proTube({
         adata: await bigEntry(engineData.AudioStore),
@@ -2421,8 +2376,8 @@ async function AudioQualityCustom(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         adata: await bigEntry(customData),
         ipAddress: engineData.ipAddress
@@ -2628,8 +2583,8 @@ async function ListAudioLowest(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(AudioLowest_";
         const ffmpeg2 = await proTube({
           adata: await lowEntry(engineData.AudioStore),
@@ -2832,8 +2787,8 @@ async function ListAudioHighest(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(AudioHighest_";
         const ffmpeg2 = await proTube({
           adata: await bigEntry(engineData.AudioStore),
@@ -3045,8 +3000,8 @@ async function ListAudioQualityCustom(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
         const ffmpeg2 = await proTube({
           adata: await bigEntry(customData),
@@ -3181,8 +3136,8 @@ async function VideoLowest(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         vdata: await lowEntry(engineData.VideoStore),
         ipAddress: engineData.ipAddress
@@ -3291,8 +3246,8 @@ async function VideoHighest(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         vdata: await bigEntry(engineData.VideoStore),
         ipAddress: engineData.ipAddress
@@ -3424,8 +3379,8 @@ async function VideoQualityCustom(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         vdata: await lowEntry(customData),
         ipAddress: engineData.ipAddress
@@ -3593,8 +3548,8 @@ async function ListVideoLowest(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(VideoLowest_";
         const ffmpeg2 = await proTube({
           vdata: await lowEntry(engineData.VideoStore),
@@ -3758,8 +3713,8 @@ async function ListVideoHighest(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = "yt-dlx_(VideoHighest_";
         const ffmpeg2 = await proTube({
           vdata: await bigEntry(engineData.VideoStore),
@@ -3947,8 +3902,8 @@ async function ListVideoQualityCustom(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
         const ffmpeg2 = await proTube({
           vdata: await bigEntry(customData),
@@ -4053,8 +4008,8 @@ async function AudioVideoLowest(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       const [AudioData, VideoData] = await Promise.all([
         lowEntry(engineData.AudioStore),
         lowEntry(engineData.VideoStore)
@@ -4168,8 +4123,8 @@ async function AudioVideoHighest(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       const [AudioData, VideoData] = await Promise.all([
         bigEntry(engineData.AudioStore),
         bigEntry(engineData.VideoStore)
@@ -4308,8 +4263,8 @@ async function AudioVideoQualityCustom(input) {
         "_"
       );
       const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-      if (!fs__namespace.existsSync(folder))
-        fs__namespace.mkdirSync(folder, { recursive: true });
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
       const ACustomData = engineData.AudioStore.filter(
         (op) => op.AVDownload.formatnote === AQuality
       );
@@ -4488,8 +4443,8 @@ async function ListAudioVideoHighest(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         const [AudioData, VideoData] = await Promise.all([
           bigEntry(engineData.AudioStore),
           bigEntry(engineData.VideoStore)
@@ -4658,8 +4613,8 @@ async function ListAudioVideoLowest(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         const [AudioData, VideoData] = await Promise.all([
           lowEntry(engineData.AudioStore),
           lowEntry(engineData.VideoStore)
@@ -4845,8 +4800,8 @@ async function ListAudioVideoQualityCustom(input) {
           "_"
         );
         const folder = output ? path2__namespace.join(process.cwd(), output) : process.cwd();
-        if (!fs__namespace.existsSync(folder))
-          fs__namespace.mkdirSync(folder, { recursive: true });
+        if (!fs2__namespace.existsSync(folder))
+          fs2__namespace.mkdirSync(folder, { recursive: true });
         const ACustomData = engineData.AudioStore.filter(
           (op) => op.AVDownload.formatnote === AQuality
         );
