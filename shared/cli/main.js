@@ -88,9 +88,9 @@ function YouTubeID(videoLink) {
 }
 var browser;
 var page;
-async function crawler(verbose, proxy) {
+async function crawler(verbose, autoSocks5) {
   try {
-    if (proxy) {
+    if (autoSocks5) {
       browser = await puppeteer__default.default.launch({
         headless: verbose ? false : true,
         userDataDir: "others",
@@ -153,14 +153,12 @@ async function SearchVideos(input) {
           message: "Query must not be a YouTube video/Playlist link"
         }
       ),
-      proxy: z4.z.string().optional(),
       verbose: z4.z.boolean().optional(),
+      autoSocks5: z4.z.boolean().optional(),
       screenshot: z4.z.boolean().optional()
     });
-    const { query, screenshot, verbose, proxy } = await QuerySchema.parseAsync(
-      input
-    );
-    await crawler(verbose, proxy);
+    const { query, screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(input);
+    await crawler(verbose, autoSocks5);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -340,12 +338,14 @@ async function PlaylistInfo(input) {
           message: "Query must be a valid YouTube Playlist Link or ID."
         }
       ),
-      proxy: z4.z.string().optional(),
       verbose: z4.z.boolean().optional(),
+      autoSocks5: z4.z.boolean().optional(),
       screenshot: z4.z.boolean().optional()
     });
-    const { screenshot, verbose, proxy } = await QuerySchema.parseAsync(input);
-    await crawler(verbose, proxy);
+    const { screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(
+      input
+    );
+    await crawler(verbose, autoSocks5);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -473,12 +473,14 @@ async function VideoInfo(input) {
           message: "Query must be a valid YouTube video Link or ID."
         }
       ),
-      proxy: z4.z.string().optional(),
       verbose: z4.z.boolean().optional(),
+      autoSocks5: z4.z.boolean().optional(),
       screenshot: z4.z.boolean().optional()
     });
-    const { screenshot, verbose, proxy } = await QuerySchema.parseAsync(input);
-    await crawler(verbose, proxy);
+    const { screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(
+      input
+    );
+    await crawler(verbose, autoSocks5);
     const retryOptions = {
       maxTimeout: 6e3,
       minTimeout: 1e3,
@@ -730,7 +732,7 @@ function sizeFormat(filesize) {
 }
 async function Engine({
   query,
-  proxy,
+  autoSocks5,
   ipAddress
 }) {
   try {
@@ -749,8 +751,8 @@ async function Engine({
       }
     }
     if (proLoc !== "") {
-      if (proxy)
-        proLoc += ` --proxy ${proxy}`;
+      if (autoSocks5)
+        proLoc += " --proxy socks5://127.0.0.1:9050";
       proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` --dump-single-json '${query}'`;
@@ -854,11 +856,11 @@ var version = "5.5.0";
 // core/base/Agent.ts
 async function Agent({
   query,
-  proxy,
+  autoSocks5,
   verbose
 }) {
   try {
-    let ipAddress = "";
+    let ipAddress = void 0;
     const child = child_process.spawn("sh", [
       "-c",
       "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
@@ -866,61 +868,64 @@ async function Agent({
     return new Promise((resolve) => {
       child.stdout.on("data", (data) => ipAddress = data.toString());
       child.on("close", async (code) => {
-        if (code !== 0 && !ipAddress)
+        if (code !== 0)
           throw new Error("internal server error");
-        console.log(colors28__default.default.green("@info:"), "new socks5 ip", ipAddress);
-        let respEngine = void 0;
-        let videoId = await YouTubeID(query);
-        let TubeBody;
-        console.log(
-          colors28__default.default.green("@info:"),
-          "using",
-          colors28__default.default.green("yt-dlx"),
-          "version",
-          colors28__default.default.green(version)
-        );
-        if (!videoId) {
-          TubeBody = await web_default.search.SearchVideos({
-            type: "video",
-            verbose,
-            proxy,
-            query
-          });
-          if (!TubeBody[0]) {
-            throw new Error("Unable to get response from YouTube.");
-          } else {
-            console.log(
-              colors28__default.default.green("@info:"),
-              `preparing payload for`,
-              colors28__default.default.green(TubeBody[0].title)
-            );
-            respEngine = await Engine({
-              query: TubeBody[0].videoLink,
-              ipAddress,
-              proxy
+        else if (!ipAddress)
+          throw new Error("couldn't connect to tor");
+        else {
+          let respEngine = void 0;
+          let videoId = await YouTubeID(query);
+          let TubeBody;
+          console.log(
+            colors28__default.default.green("@info:"),
+            "using",
+            colors28__default.default.green("yt-dlx"),
+            "version",
+            colors28__default.default.green(version)
+          );
+          if (!videoId) {
+            TubeBody = await web_default.search.SearchVideos({
+              type: "video",
+              autoSocks5,
+              verbose,
+              query
             });
-            resolve(respEngine);
-          }
-        } else {
-          TubeBody = await web_default.search.VideoInfo({
-            verbose,
-            proxy,
-            query
-          });
-          if (!TubeBody) {
-            throw new Error("Unable to get response from YouTube.");
+            if (!TubeBody[0]) {
+              throw new Error("Unable to get response from YouTube.");
+            } else {
+              console.log(
+                colors28__default.default.green("@info:"),
+                `preparing payload for`,
+                colors28__default.default.green(TubeBody[0].title)
+              );
+              respEngine = await Engine({
+                query: TubeBody[0].videoLink,
+                autoSocks5,
+                ipAddress
+              });
+              resolve(respEngine);
+            }
           } else {
-            console.log(
-              colors28__default.default.green("@info:"),
-              `preparing payload for`,
-              colors28__default.default.green(TubeBody.title)
-            );
-            respEngine = await Engine({
-              query: TubeBody.videoLink,
-              ipAddress,
-              proxy
+            TubeBody = await web_default.search.VideoInfo({
+              autoSocks5,
+              verbose,
+              query
             });
-            resolve(respEngine);
+            if (!TubeBody) {
+              throw new Error("Unable to get response from YouTube.");
+            } else {
+              console.log(
+                colors28__default.default.green("@info:"),
+                `preparing payload for`,
+                colors28__default.default.green(TubeBody.title)
+              );
+              respEngine = await Engine({
+                query: TubeBody.videoLink,
+                autoSocks5,
+                ipAddress
+              });
+              resolve(respEngine);
+            }
           }
         }
       });
@@ -1813,7 +1818,7 @@ function waterfall(tasks, callback) {
 }
 awaitify(waterfall);
 async function extract_playlist_videos({
-  proxy,
+  autoSocks5,
   playlistUrls
 }) {
   try {
@@ -1831,7 +1836,7 @@ async function extract_playlist_videos({
       } else {
         const resp = await web_default.search.PlaylistInfo({
           query,
-          proxy
+          autoSocks5
         });
         if (resp === void 0) {
           console.error(
@@ -1959,10 +1964,8 @@ async function proTube({
     if (adata.Audio.bitrate)
       ff.withAudioBitrate(adata.Audio.bitrate);
   }
-  if (ipAddress) {
-    console.log(colors28__default.default.green("@ffmpeg:"), "using proxy ip", ipAddress);
-    ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
-  }
+  console.log(colors28__default.default.green("@ffmpeg:"), "using autoSocks5 ip", ipAddress);
+  ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   ff.on("progress", (progress) => progressBar(progress));
   ff.on("end", () => process.stdout.write("\n"));
   ff.on("error", (error) => {
@@ -1991,7 +1994,7 @@ var qconf = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   filter: z4.z.enum([
     "echo",
     "slow",
@@ -2012,8 +2015,8 @@ var qconf = z4.z.object({
 });
 async function AudioLowest(input) {
   try {
-    const { query, output, stream, verbose, filter: filter2, proxy } = await qconf.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, output, stream, verbose, filter: filter2, autoSocks5 } = await qconf.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -2029,7 +2032,7 @@ async function AudioLowest(input) {
       let filename = "yt-dlx_(AudioLowest_";
       const ffmpeg2 = await proTube({
         adata: await lowEntry(engineData.AudioStore),
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.withOutputFormat("avi");
       switch (filter2) {
@@ -2154,7 +2157,7 @@ var qconf2 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   filter: z4.z.enum([
     "echo",
     "slow",
@@ -2175,8 +2178,8 @@ var qconf2 = z4.z.object({
 });
 async function AudioHighest(input) {
   try {
-    const { query, output, stream, verbose, filter: filter2, proxy } = await qconf2.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, output, stream, verbose, filter: filter2, autoSocks5 } = await qconf2.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -2192,7 +2195,7 @@ async function AudioHighest(input) {
       let filename = "yt-dlx_(AudioHighest_";
       const ffmpeg2 = await proTube({
         adata: await bigEntry(engineData.AudioStore),
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.withOutputFormat("avi");
       switch (filter2) {
@@ -2301,7 +2304,7 @@ var qconf3 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   quality: z4.z.enum(["high", "medium", "low", "ultralow"]),
   filter: z4.z.enum([
     "echo",
@@ -2323,8 +2326,8 @@ var qconf3 = z4.z.object({
 });
 async function AudioQualityCustom(input) {
   try {
-    const { query, stream, verbose, output, quality, filter: filter2, proxy } = await qconf3.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, stream, verbose, output, quality, filter: filter2, autoSocks5 } = await qconf3.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -2347,7 +2350,7 @@ async function AudioQualityCustom(input) {
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         adata: await bigEntry(customData),
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.withOutputFormat("avi");
       let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
@@ -2455,7 +2458,7 @@ async function AudioQualityCustom(input) {
 var qconf4 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -2502,13 +2505,14 @@ var qconf4 = z4.z.object({
 });
 async function ListAudioLowest(input) {
   try {
-    const { query, output, verbose, filter: filter2, proxy } = await qconf4.parseAsync(
-      input
-    );
+    const { query, output, verbose, filter: filter2, autoSocks5 } = await qconf4.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -2533,7 +2537,7 @@ async function ListAudioLowest(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -2554,7 +2558,7 @@ async function ListAudioLowest(input) {
         let filename = "yt-dlx_(AudioLowest_";
         const ffmpeg2 = await proTube({
           adata: await lowEntry(engineData.AudioStore),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.withOutputFormat("avi");
         switch (filter2) {
@@ -2658,7 +2662,7 @@ async function ListAudioLowest(input) {
 var qconf5 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -2705,13 +2709,14 @@ var qconf5 = z4.z.object({
 });
 async function ListAudioHighest(input) {
   try {
-    const { query, output, verbose, filter: filter2, proxy } = await qconf5.parseAsync(
-      input
-    );
+    const { query, output, verbose, filter: filter2, autoSocks5 } = await qconf5.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -2736,7 +2741,7 @@ async function ListAudioHighest(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -2757,7 +2762,7 @@ async function ListAudioHighest(input) {
         let filename = "yt-dlx_(AudioHighest_";
         const ffmpeg2 = await proTube({
           adata: await bigEntry(engineData.AudioStore),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.withOutputFormat("avi");
         switch (filter2) {
@@ -2861,7 +2866,7 @@ async function ListAudioHighest(input) {
 var qconf6 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -2909,11 +2914,14 @@ var qconf6 = z4.z.object({
 });
 async function ListAudioQualityCustom(input) {
   try {
-    const { query, output, verbose, quality, filter: filter2, proxy } = await qconf6.parseAsync(input);
+    const { query, output, verbose, quality, filter: filter2, autoSocks5 } = await qconf6.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -2938,7 +2946,7 @@ async function ListAudioQualityCustom(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -2967,7 +2975,7 @@ async function ListAudioQualityCustom(input) {
         let filename = `yt-dlx_(AudioQualityCustom_${quality}`;
         const ffmpeg2 = await proTube({
           adata: await bigEntry(customData),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.withOutputFormat("avi");
         switch (filter2) {
@@ -3073,7 +3081,7 @@ var qconf7 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   filter: z4.z.enum([
     "invert",
     "rotate90",
@@ -3086,8 +3094,8 @@ var qconf7 = z4.z.object({
 });
 async function VideoLowest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf7.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, stream, verbose, output, filter: filter2, autoSocks5 } = await qconf7.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -3102,7 +3110,7 @@ async function VideoLowest(input) {
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         vdata: await lowEntry(engineData.VideoStore),
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
@@ -3183,7 +3191,7 @@ var qconf8 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   filter: z4.z.enum([
     "invert",
     "rotate90",
@@ -3196,8 +3204,8 @@ var qconf8 = z4.z.object({
 });
 async function VideoHighest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf8.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, stream, verbose, output, filter: filter2, autoSocks5 } = await qconf8.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -3212,7 +3220,7 @@ async function VideoHighest(input) {
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         vdata: await bigEntry(engineData.VideoStore),
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
@@ -3293,7 +3301,7 @@ var qconf9 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   quality: z4.z.enum([
     "144p",
     "240p",
@@ -3321,8 +3329,8 @@ var qconf9 = z4.z.object({
 });
 async function VideoQualityCustom(input) {
   try {
-    const { query, stream, verbose, output, quality, filter: filter2, proxy } = await qconf9.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, stream, verbose, output, quality, filter: filter2, autoSocks5 } = await qconf9.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -3345,7 +3353,7 @@ async function VideoQualityCustom(input) {
         fs__namespace.mkdirSync(folder, { recursive: true });
       const ffmpeg2 = await proTube({
         vdata: await lowEntry(customData),
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.addInput(engineData.metaTube.thumbnail);
       ffmpeg2.withOutputFormat("matroska");
@@ -3424,7 +3432,7 @@ async function VideoQualityCustom(input) {
 var qconf10 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -3463,13 +3471,14 @@ var qconf10 = z4.z.object({
 });
 async function ListVideoLowest(input) {
   try {
-    const { query, output, verbose, filter: filter2, proxy } = await qconf10.parseAsync(
-      input
-    );
+    const { query, output, verbose, filter: filter2, autoSocks5 } = await qconf10.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -3494,7 +3503,7 @@ async function ListVideoLowest(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -3514,7 +3523,7 @@ async function ListVideoLowest(input) {
         let filename = "yt-dlx_(VideoLowest_";
         const ffmpeg2 = await proTube({
           vdata: await lowEntry(engineData.VideoStore),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -3588,7 +3597,7 @@ async function ListVideoLowest(input) {
 var qconf11 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -3627,13 +3636,14 @@ var qconf11 = z4.z.object({
 });
 async function ListVideoHighest(input) {
   try {
-    const { query, verbose, output, filter: filter2, proxy } = await qconf11.parseAsync(
-      input
-    );
+    const { query, verbose, output, filter: filter2, autoSocks5 } = await qconf11.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -3658,7 +3668,7 @@ async function ListVideoHighest(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -3678,7 +3688,7 @@ async function ListVideoHighest(input) {
         let filename = "yt-dlx_(VideoHighest_";
         const ffmpeg2 = await proTube({
           vdata: await bigEntry(engineData.VideoStore),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -3752,7 +3762,7 @@ async function ListVideoHighest(input) {
 var qconf12 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -3806,11 +3816,14 @@ var qconf12 = z4.z.object({
 });
 async function ListVideoQualityCustom(input) {
   try {
-    const { query, verbose, output, quality, filter: filter2, proxy } = await qconf12.parseAsync(input);
+    const { query, verbose, output, quality, filter: filter2, autoSocks5 } = await qconf12.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -3835,7 +3848,7 @@ async function ListVideoQualityCustom(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -3864,7 +3877,7 @@ async function ListVideoQualityCustom(input) {
         let filename = `yt-dlx_(VideoQualityCustom_${quality}`;
         const ffmpeg2 = await proTube({
           vdata: await bigEntry(customData),
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -3940,7 +3953,7 @@ var qconf13 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   filter: z4.z.enum([
     "invert",
     "rotate90",
@@ -3953,8 +3966,8 @@ var qconf13 = z4.z.object({
 });
 async function AudioVideoLowest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf13.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, stream, verbose, output, filter: filter2, autoSocks5 } = await qconf13.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -3974,7 +3987,7 @@ async function AudioVideoLowest(input) {
       const ffmpeg2 = await proTube({
         adata: AudioData,
         vdata: VideoData,
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
@@ -4055,7 +4068,7 @@ var qconf14 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   filter: z4.z.enum([
     "invert",
     "rotate90",
@@ -4068,8 +4081,8 @@ var qconf14 = z4.z.object({
 });
 async function AudioVideoHighest(input) {
   try {
-    const { query, stream, verbose, output, filter: filter2, proxy } = await qconf14.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const { query, stream, verbose, output, filter: filter2, autoSocks5 } = await qconf14.parseAsync(input);
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -4089,7 +4102,7 @@ async function AudioVideoHighest(input) {
       const ffmpeg2 = await proTube({
         adata: AudioData,
         vdata: VideoData,
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
@@ -4170,7 +4183,7 @@ var qconf15 = z4.z.object({
   output: z4.z.string().optional(),
   stream: z4.z.boolean().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   AQuality: z4.z.enum(["high", "medium", "low", "ultralow"]),
   VQuality: z4.z.enum([
     "144p",
@@ -4207,9 +4220,9 @@ async function AudioVideoQualityCustom(input) {
       VQuality,
       AQuality,
       filter: filter2,
-      proxy
+      autoSocks5
     } = await qconf15.parseAsync(input);
-    const engineData = await Agent({ query, verbose, proxy });
+    const engineData = await Agent({ query, verbose, autoSocks5 });
     if (engineData === void 0) {
       throw new Error(
         colors28__default.default.red("@error: ") + "unable to get response from youtube."
@@ -4235,7 +4248,7 @@ async function AudioVideoQualityCustom(input) {
       const ffmpeg2 = await proTube({
         adata: AudioData,
         vdata: VideoData,
-        ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+        ipAddress: engineData.ipAddress
       });
       ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
       ffmpeg2.withOutputFormat("matroska");
@@ -4314,7 +4327,7 @@ async function AudioVideoQualityCustom(input) {
 var qconf16 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -4353,13 +4366,14 @@ var qconf16 = z4.z.object({
 });
 async function ListAudioVideoHighest(input) {
   try {
-    const { query, verbose, output, filter: filter2, proxy } = await qconf16.parseAsync(
-      input
-    );
+    const { query, verbose, output, filter: filter2, autoSocks5 } = await qconf16.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -4384,7 +4398,7 @@ async function ListAudioVideoHighest(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -4409,7 +4423,7 @@ async function ListAudioVideoHighest(input) {
         const ffmpeg2 = await proTube({
           adata: AudioData,
           vdata: VideoData,
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.withOutputFormat("matroska");
         switch (filter2) {
@@ -4483,7 +4497,7 @@ async function ListAudioVideoHighest(input) {
 var qconf17 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -4522,13 +4536,14 @@ var qconf17 = z4.z.object({
 });
 async function ListAudioVideoLowest(input) {
   try {
-    const { query, verbose, output, filter: filter2, proxy } = await qconf17.parseAsync(
-      input
-    );
+    const { query, verbose, output, filter: filter2, autoSocks5 } = await qconf17.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -4553,7 +4568,7 @@ async function ListAudioVideoLowest(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -4578,7 +4593,7 @@ async function ListAudioVideoLowest(input) {
         const ffmpeg2 = await proTube({
           adata: AudioData,
           vdata: VideoData,
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg2.withOutputFormat("matroska");
@@ -4653,7 +4668,7 @@ async function ListAudioVideoLowest(input) {
 var qconf18 = z4.z.object({
   output: z4.z.string().optional(),
   verbose: z4.z.boolean().optional(),
-  proxy: z4.z.string().min(1).optional(),
+  autoSocks5: z4.z.boolean().optional(),
   query: z4.z.array(
     z4.z.string().min(1).refine(
       async (input) => {
@@ -4708,11 +4723,14 @@ var qconf18 = z4.z.object({
 });
 async function ListAudioVideoQualityCustom(input) {
   try {
-    const { query, verbose, output, VQuality, AQuality, filter: filter2, proxy } = await qconf18.parseAsync(input);
+    const { query, verbose, output, VQuality, AQuality, filter: filter2, autoSocks5 } = await qconf18.parseAsync(input);
     const vDATA = /* @__PURE__ */ new Set();
     for (const pURL of query) {
       try {
-        const pDATA = await web_default.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web_default.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5
+        });
         if (pDATA === void 0) {
           console.log(
             colors28__default.default.red("@error:"),
@@ -4737,7 +4755,7 @@ async function ListAudioVideoQualityCustom(input) {
       try {
         const engineData = await Agent({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose
         });
         if (engineData === void 0) {
@@ -4768,7 +4786,7 @@ async function ListAudioVideoQualityCustom(input) {
         const ffmpeg2 = await proTube({
           adata: AudioData,
           vdata: VideoData,
-          ipAddress: engineData.ipAddress ? engineData.ipAddress : void 0
+          ipAddress: engineData.ipAddress
         });
         ffmpeg2.addInput(AudioData.AVDownload.mediaurl);
         ffmpeg2.withOutputFormat("matroska");

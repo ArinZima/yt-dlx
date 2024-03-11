@@ -18,7 +18,7 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  proxy: z.string().min(1).optional(),
+  autoSocks5: z.boolean().optional(),
   AQuality: z.enum(["high", "medium", "low", "ultralow"]),
   VQuality: z.enum([
     "144p",
@@ -52,7 +52,7 @@ export default async function AudioVideoQualityCustom(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
-  proxy?: string;
+  autoSocks5?: boolean;
   AQuality: "high" | "medium" | "low" | "ultralow";
   VQuality:
     | "144p"
@@ -89,9 +89,9 @@ export default async function AudioVideoQualityCustom(input: {
       VQuality,
       AQuality,
       filter,
-      proxy,
+      autoSocks5,
     } = await qconf.parseAsync(input);
-    const engineData = await ytdlx({ query, verbose, proxy });
+    const engineData = await ytdlx({ query, verbose, autoSocks5 });
     if (engineData === undefined) {
       throw new Error(
         colors.red("@error: ") + "unable to get response from youtube."

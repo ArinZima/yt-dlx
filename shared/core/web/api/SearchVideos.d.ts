@@ -1,7 +1,7 @@
 export interface IpOp {
     query: string;
-    proxy?: string;
     verbose?: boolean;
+    autoSocks5?: boolean;
     screenshot?: boolean;
     type: keyof {
         video: "video";

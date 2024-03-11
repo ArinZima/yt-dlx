@@ -3,7 +3,7 @@ import type { FfmpegCommand as proTubeCommand } from "fluent-ffmpeg";
 export type { proTubeCommand };
 export declare function progressBar(prog: any): void;
 export default function proTube({ adata, vdata, ipAddress, }: {
-    ipAddress?: string;
+    ipAddress: string;
     adata?: TubeConfig;
     vdata?: TubeConfig;
 }): Promise<proTubeCommand>;

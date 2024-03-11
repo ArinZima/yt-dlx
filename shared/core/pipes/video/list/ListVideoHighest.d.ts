@@ -4,7 +4,7 @@ export default function ListVideoHighest(input: {
     query: string[];
     output?: string;
     verbose?: boolean;
-    proxy?: string;
+    autoSocks5?: boolean;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
 }): Promise<void | {
     filename: string;

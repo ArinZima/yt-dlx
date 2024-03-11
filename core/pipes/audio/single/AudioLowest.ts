@@ -19,7 +19,7 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  proxy: z.string().min(1).optional(),
+  autoSocks5: z.boolean().optional(),
   filter: z
     .enum([
       "echo",
@@ -45,7 +45,7 @@ export default async function AudioLowest(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
-  proxy?: string;
+  autoSocks5?: boolean;
   filter?:
     | "echo"
     | "slow"
@@ -67,9 +67,9 @@ export default async function AudioLowest(input: {
   ffmpeg: proTubeCommand;
 }> {
   try {
-    const { query, output, stream, verbose, filter, proxy } =
+    const { query, output, stream, verbose, filter, autoSocks5 } =
       await qconf.parseAsync(input);
-    const engineData = await ytdlx({ query, verbose, proxy });
+    const engineData = await ytdlx({ query, verbose, autoSocks5 });
     if (engineData === undefined) {
       throw new Error(
         colors.red("@error: ") + "unable to get response from youtube."

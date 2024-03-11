@@ -12,7 +12,7 @@ import type { proTubeCommand } from "../../../base/ffmpeg";
 const qconf = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  proxy: z.string().min(1).optional(),
+  autoSocks5: z.boolean().optional(),
   query: z
     .array(
       z
@@ -74,7 +74,7 @@ export default async function ListAudioVideoQualityCustom(input: {
   query: string[];
   output?: string;
   verbose?: boolean;
-  proxy?: string;
+  autoSocks5?: boolean;
   AQuality: "high" | "medium" | "low" | "ultralow";
   VQuality:
     | "144p"
@@ -103,7 +103,7 @@ export default async function ListAudioVideoQualityCustom(input: {
   ffmpeg: proTubeCommand;
 }> {
   try {
-    const { query, verbose, output, VQuality, AQuality, filter, proxy } =
+    const { query, verbose, output, VQuality, AQuality, filter, autoSocks5 } =
       await qconf.parseAsync(input);
     const vDATA = new Set<{
       ago: string;
@@ -117,7 +117,10 @@ export default async function ListAudioVideoQualityCustom(input: {
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5,
+        });
         if (pDATA === undefined) {
           console.log(
             colors.red("@error:"),
@@ -141,7 +144,7 @@ export default async function ListAudioVideoQualityCustom(input: {
       try {
         const engineData = await ytdlx({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose,
         });
         if (engineData === undefined) {

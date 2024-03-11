@@ -8,10 +8,10 @@ import type { PlaylistInfoType } from "../../web/";
 import type EngineResult from "../../interface/EngineResult";
 
 export default async function extract_playlist_videos({
-  proxy,
+  autoSocks5,
   playlistUrls,
 }: {
-  proxy?: string;
+  autoSocks5?: boolean;
   playlistUrls: string[];
 }): Promise<EngineResult[]> {
   try {
@@ -30,7 +30,7 @@ export default async function extract_playlist_videos({
         const resp: PlaylistInfoType | undefined =
           await web.search.PlaylistInfo({
             query,
-            proxy,
+            autoSocks5,
           });
         if (resp === undefined) {
           console.error(

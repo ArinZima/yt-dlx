@@ -12,7 +12,7 @@ import type { proTubeCommand } from "../../../base/ffmpeg";
 const qconf = z.object({
   output: z.string().optional(),
   verbose: z.boolean().optional(),
-  proxy: z.string().min(1).optional(),
+  autoSocks5: z.boolean().optional(),
   query: z
     .array(
       z
@@ -66,7 +66,7 @@ export default async function ListAudioHighest(input: {
   query: string[];
   output?: string;
   verbose?: boolean;
-  proxy?: string;
+  autoSocks5?: boolean;
   filter?:
     | "echo"
     | "slow"
@@ -85,9 +85,8 @@ export default async function ListAudioHighest(input: {
     | "superspeed";
 }): Promise<void> {
   try {
-    const { query, output, verbose, filter, proxy } = await qconf.parseAsync(
-      input
-    );
+    const { query, output, verbose, filter, autoSocks5 } =
+      await qconf.parseAsync(input);
     const vDATA = new Set<{
       ago: string;
       title: string;
@@ -100,7 +99,10 @@ export default async function ListAudioHighest(input: {
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.search.PlaylistInfo({ query: pURL, proxy });
+        const pDATA = await web.search.PlaylistInfo({
+          query: pURL,
+          autoSocks5,
+        });
         if (pDATA === undefined) {
           console.log(
             colors.red("@error:"),
@@ -124,7 +126,7 @@ export default async function ListAudioHighest(input: {
       try {
         const engineData = await ytdlx({
           query: video.videoLink,
-          proxy,
+          autoSocks5,
           verbose,
         });
         if (engineData === undefined) {

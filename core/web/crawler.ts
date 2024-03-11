@@ -2,9 +2,9 @@ import puppeteer, { Browser, Page } from "puppeteer";
 export let browser: Browser;
 export let page: Page;
 
-export default async function crawler(verbose?: boolean, proxy?: string) {
+export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
   try {
-    if (proxy) {
+    if (autoSocks5) {
       browser = await puppeteer.launch({
         headless: verbose ? false : true,
         userDataDir: "others",

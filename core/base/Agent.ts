@@ -14,12 +14,12 @@ import type EngineResult from "../interface/EngineResult";
 
 export default async function Agent({
   query,
-  proxy,
+  autoSocks5,
   verbose,
 }: {
   query: string;
-  proxy?: string;
   verbose?: boolean;
+  autoSocks5?: boolean;
 }): Promise<EngineResult> {
   try {
     let ipAddress: string | undefined = undefined;
@@ -50,8 +50,8 @@ export default async function Agent({
           if (!videoId) {
             TubeBody = (await web.search.SearchVideos({
               type: "video",
+              autoSocks5,
               verbose,
-              proxy,
               query,
             })) as TypeVideo[];
             if (!TubeBody[0]) {
@@ -64,15 +64,15 @@ export default async function Agent({
               );
               respEngine = await Engine({
                 query: TubeBody[0].videoLink,
+                autoSocks5,
                 ipAddress,
-                proxy,
               });
               resolve(respEngine);
             }
           } else {
             TubeBody = (await web.search.VideoInfo({
+              autoSocks5,
               verbose,
-              proxy,
               query,
             })) as VideoInfoType;
             if (!TubeBody) {
@@ -85,8 +85,8 @@ export default async function Agent({
               );
               respEngine = await Engine({
                 query: TubeBody.videoLink,
+                autoSocks5,
                 ipAddress,
-                proxy,
               });
               resolve(respEngine);
             }

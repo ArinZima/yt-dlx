@@ -21,12 +21,12 @@ export function sizeFormat(filesize: number) {
 
 export default async function Engine({
   query,
-  proxy,
+  autoSocks5,
   ipAddress,
 }: {
   query: string;
-  proxy?: string;
   ipAddress: string;
+  autoSocks5?: boolean;
 }): Promise<EngineResult> {
   try {
     let pushTube: any[] = [];
@@ -44,7 +44,7 @@ export default async function Engine({
       }
     }
     if (proLoc !== "") {
-      if (proxy) proLoc += ` --proxy ${proxy}`;
+      if (autoSocks5) proLoc += " --proxy socks5://127.0.0.1:9050";
       proLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       proLoc += ` --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'`;
       proLoc += ` --dump-single-json '${query}'`;

@@ -19,7 +19,7 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  proxy: z.string().min(1).optional(),
+  autoSocks5: z.boolean().optional(),
   filter: z
     .enum([
       "invert",
@@ -37,7 +37,7 @@ export default async function VideoHighest(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
-  proxy?: string;
+  autoSocks5?: boolean;
   filter?:
     | "invert"
     | "rotate90"
@@ -51,9 +51,9 @@ export default async function VideoHighest(input: {
   ffmpeg: proTubeCommand;
 }> {
   try {
-    const { query, stream, verbose, output, filter, proxy } =
+    const { query, stream, verbose, output, filter, autoSocks5 } =
       await qconf.parseAsync(input);
-    const engineData = await ytdlx({ query, verbose, proxy });
+    const engineData = await ytdlx({ query, verbose, autoSocks5 });
     if (engineData === undefined) {
       throw new Error(
         colors.red("@error: ") + "unable to get response from youtube."

@@ -6,8 +6,8 @@ import colors from "colors";
     console.log(colors.blue("@test:"), "Lowest video");
     await ytdlx().VideoOnly().Single().Lowest({
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-      proxy: "socks5://127.0.0.1:9050",
       output: "public/video",
+      autoSocks5: true,
       verbose: false,
       stream: false,
     });

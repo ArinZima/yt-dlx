@@ -1,7 +1,7 @@
 export interface InputYouTube {
     query: string;
-    proxy?: string;
     verbose?: boolean;
+    autoSocks5?: boolean;
     screenshot?: boolean;
 }
 export interface VideoInfoType {
