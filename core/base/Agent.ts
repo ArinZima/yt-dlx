@@ -32,7 +32,7 @@ export default async function Agent({
     let nipTor;
     let ipAddress: string | undefined = undefined;
     nipTor = await niptor(["-c", "curl https://checkip.amazonaws.com"]);
-    console.log(colors.green("@niptor:"), "real ip", nipTor.stdout.trim());
+    console.log(colors.green("@info:"), "real ip", nipTor.stdout.trim());
     ipAddress = nipTor.stdout.trim();
     if (autoSocks5) {
       nipTor = await niptor([
@@ -41,11 +41,11 @@ export default async function Agent({
       ]);
       if (nipTor.stdout.trim().length > 0) {
         console.log(
-          colors.green("@niptor:"),
+          colors.green("@info:"),
           "autoSocks5 new ip",
           nipTor.stdout.trim()
         );
-        console.log(colors.green("@niptor:\n"), nipTor.stderr.trim());
+        console.log(colors.green("@info:\n"), nipTor.stderr.trim());
         ipAddress = nipTor.stdout.trim();
       } else throw new Error("Unable to connect to Tor.");
     }

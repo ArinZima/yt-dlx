@@ -9,9 +9,9 @@ var puppeteer = require('puppeteer');
 var spinClient = require('spinnies');
 var z4 = require('zod');
 var crypto = require('crypto');
+var child_process = require('child_process');
 var path2 = require('path');
 var util = require('util');
-var child_process = require('child_process');
 var readline = require('readline');
 var ffmpeg = require('fluent-ffmpeg');
 var minimist = require('minimist');
@@ -93,7 +93,6 @@ async function crawler(verbose, autoSocks5) {
     if (autoSocks5) {
       browser = await puppeteer__default.default.launch({
         headless: verbose ? false : true,
-        userDataDir: "others",
         args: [
           "--no-zygote",
           "--incognito",
@@ -109,7 +108,6 @@ async function crawler(verbose, autoSocks5) {
     } else {
       browser = await puppeteer__default.default.launch({
         headless: verbose ? false : true,
-        userDataDir: "others",
         args: [
           "--no-zygote",
           "--incognito",
@@ -586,6 +584,15 @@ var web = {
 };
 var web_default = web;
 function help() {
+  console.log(
+    colors28__default.default.green("@info:"),
+    "\u2763\uFE0F Thank you for using",
+    colors28__default.default.green("yt-dlx."),
+    "Consider",
+    colors28__default.default.green("\u{1F31F}starring"),
+    "the github repo",
+    colors28__default.default.green("https://github.com/yt-dlx\n")
+  );
   return Promise.resolve(
     colors28__default.default.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
@@ -715,6 +722,34 @@ function help() {
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715`)
   );
 }
+async function niptor(args) {
+  const prox = child_process.spawn("sh", args);
+  const stdoutData = [];
+  prox.stdout.on("data", (data) => stdoutData.push(data));
+  const [stdout, stderr] = await Promise.all([
+    new Promise((resolve, reject2) => {
+      const stdoutData2 = [];
+      prox.stdout.on("data", (data) => stdoutData2.push(data));
+      prox.on("close", (code) => {
+        if (code === 0)
+          resolve(Buffer.concat(stdoutData2).toString());
+        else
+          reject2(new Error(`@niptor closed with code ${code}`));
+      });
+    }),
+    new Promise((resolve, reject2) => {
+      const stderrData = [];
+      prox.stderr.on("data", (data) => stderrData.push(data));
+      prox.on("close", (code) => {
+        if (code === 0)
+          resolve(Buffer.concat(stderrData).toString());
+        else
+          reject2(new Error(`@niptor closed with code ${code}`));
+      });
+    })
+  ]);
+  return { stdout, stderr };
+}
 function sizeFormat(filesize) {
   if (isNaN(filesize) || filesize < 0)
     return filesize;
@@ -732,8 +767,8 @@ function sizeFormat(filesize) {
 }
 async function Engine({
   query,
-  autoSocks5,
-  ipAddress
+  ipAddress,
+  autoSocks5
 }) {
   try {
     let pushTube = [];
@@ -856,80 +891,85 @@ var version = "5.6.0";
 // core/base/Agent.ts
 async function Agent({
   query,
-  autoSocks5,
-  verbose
+  verbose,
+  autoSocks5
 }) {
   try {
+    console.log(
+      colors28__default.default.green("@info:"),
+      "using",
+      colors28__default.default.green("yt-dlx"),
+      "version",
+      colors28__default.default.green(version)
+    );
+    let nipTor;
     let ipAddress = void 0;
-    const child = child_process.spawn("sh", [
-      "-c",
-      "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
-    ]);
-    return new Promise((resolve) => {
-      child.stdout.on("data", (data) => ipAddress = data.toString());
-      child.on("close", async (code) => {
-        if (code !== 0)
-          throw new Error("internal server error");
-        else if (!ipAddress)
-          throw new Error("couldn't connect to tor");
-        else {
-          let respEngine = void 0;
-          let videoId = await YouTubeID(query);
-          let TubeBody;
-          console.log(
-            colors28__default.default.green("@info:"),
-            "using",
-            colors28__default.default.green("yt-dlx"),
-            "version",
-            colors28__default.default.green(version)
-          );
-          if (!videoId) {
-            TubeBody = await web_default.search.SearchVideos({
-              type: "video",
-              autoSocks5,
-              verbose,
-              query
-            });
-            if (!TubeBody[0]) {
-              throw new Error("Unable to get response from YouTube.");
-            } else {
-              console.log(
-                colors28__default.default.green("@info:"),
-                `preparing payload for`,
-                colors28__default.default.green(TubeBody[0].title)
-              );
-              respEngine = await Engine({
-                query: TubeBody[0].videoLink,
-                autoSocks5,
-                ipAddress
-              });
-              resolve(respEngine);
-            }
-          } else {
-            TubeBody = await web_default.search.VideoInfo({
-              autoSocks5,
-              verbose,
-              query
-            });
-            if (!TubeBody) {
-              throw new Error("Unable to get response from YouTube.");
-            } else {
-              console.log(
-                colors28__default.default.green("@info:"),
-                `preparing payload for`,
-                colors28__default.default.green(TubeBody.title)
-              );
-              respEngine = await Engine({
-                query: TubeBody.videoLink,
-                autoSocks5,
-                ipAddress
-              });
-              resolve(respEngine);
-            }
-          }
-        }
+    nipTor = await niptor(["-c", "curl https://checkip.amazonaws.com"]);
+    console.log(colors28__default.default.green("@info:"), "real ip", nipTor.stdout.trim());
+    ipAddress = nipTor.stdout.trim();
+    if (autoSocks5) {
+      nipTor = await niptor([
+        "-c",
+        "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
+      ]);
+      if (nipTor.stdout.trim().length > 0) {
+        console.log(
+          colors28__default.default.green("@info:"),
+          "autoSocks5 new ip",
+          nipTor.stdout.trim()
+        );
+        console.log(colors28__default.default.green("@info:\n"), nipTor.stderr.trim());
+        ipAddress = nipTor.stdout.trim();
+      } else
+        throw new Error("Unable to connect to Tor.");
+    }
+    let respEngine = void 0;
+    let videoId = await YouTubeID(query);
+    let TubeBody;
+    if (!videoId) {
+      TubeBody = await web_default.search.SearchVideos({
+        type: "video",
+        autoSocks5,
+        verbose,
+        query
       });
-    });
+      if (!TubeBody[0]) {
+        throw new Error("Unable to get response from YouTube.");
+      } else {
+        console.log(
+          colors28__default.default.green("@info:"),
+          `preparing payload for`,
+          colors28__default.default.green(TubeBody[0].title)
+        );
+        respEngine = await Engine({
+          query: TubeBody[0].videoLink,
+          autoSocks5,
+          ipAddress
+        });
+        return respEngine;
+      }
+    } else {
+      TubeBody = await web_default.search.VideoInfo({
+        autoSocks5,
+        verbose,
+        query
+      });
+      if (!TubeBody) {
+        throw new Error("Unable to get response from YouTube.");
+      } else {
+        console.log(
+          colors28__default.default.green("@info:"),
+          `preparing payload for`,
+          colors28__default.default.green(TubeBody.title)
+        );
+        respEngine = await Engine({
+          query: TubeBody.videoLink,
+          autoSocks5,
+          ipAddress
+        });
+        return respEngine;
+      }
+    }
   } catch (error) {
     if (error instanceof Error)
       throw new Error(error.message);
@@ -1037,7 +1077,12 @@ async function extract({
     };
     console.log(
       colors28__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+      "\u2763\uFE0F Thank you for using",
+      colors28__default.default.green("yt-dlx."),
+      "Consider",
+      colors28__default.default.green("\u{1F31F}starring"),
+      "the github repo",
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
     return payload;
   } catch (error) {
@@ -1082,7 +1127,12 @@ function list_formats({
       resolve(EnBody);
       console.log(
         colors28__default.default.green("@info:"),
-        "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+        "\u2763\uFE0F Thank you for using",
+        colors28__default.default.green("yt-dlx."),
+        "Consider",
+        colors28__default.default.green("\u{1F31F}starring"),
+        "the github repo",
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     } catch (error) {
       reject2(error instanceof z4__namespace.ZodError ? error.errors : error);
@@ -1869,7 +1919,12 @@ async function extract_playlist_videos({
     });
     console.log(
       colors28__default.default.green("@info:"),
-      "\u2763\uFE0F Thank you for using yt-dlx! If you enjoy the project, consider starring the GitHub repo: https://github.com/yt-dlx"
+      "\u2763\uFE0F Thank you for using",
+      colors28__default.default.green("yt-dlx."),
+      "Consider",
+      colors28__default.default.green("\u{1F31F}starring"),
+      "the github repo",
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
     return metaTubeArr;
   } catch (error) {
@@ -1964,7 +2019,7 @@ async function proTube({
     if (adata.Audio.bitrate)
       ff.withAudioBitrate(adata.Audio.bitrate);
   }
-  console.log(colors28__default.default.green("@ffmpeg:"), "using autoSocks5 ip", ipAddress);
+  console.log(colors28__default.default.green("@ffmpeg:"), "using ip", ipAddress);
   ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   ff.on("progress", (progress) => progressBar(progress));
   ff.on("end", () => process.stdout.write("\n"));
@@ -2119,10 +2174,10 @@ async function AudioLowest(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -2282,10 +2337,10 @@ async function AudioHighest(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -2438,10 +2493,10 @@ async function AudioQualityCustom(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -2643,10 +2698,10 @@ async function ListAudioLowest(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -2847,10 +2902,10 @@ async function ListAudioHighest(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -3060,10 +3115,10 @@ async function ListAudioQualityCustom(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -3169,10 +3224,10 @@ async function VideoLowest(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -3279,10 +3334,10 @@ async function VideoHighest(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -3412,10 +3467,10 @@ async function VideoQualityCustom(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -3578,10 +3633,10 @@ async function ListVideoLowest(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -3743,10 +3798,10 @@ async function ListVideoHighest(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -3932,10 +3987,10 @@ async function ListVideoQualityCustom(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -4046,10 +4101,10 @@ async function AudioVideoLowest(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -4161,10 +4216,10 @@ async function AudioVideoHighest(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -4307,10 +4362,10 @@ async function AudioVideoQualityCustom(input) {
         colors28__default.default.green("@info:"),
         "\u2763\uFE0F Thank you for using",
         colors28__default.default.green("yt-dlx."),
-        "If you enjoy the project, consider",
+        "Consider",
         colors28__default.default.green("\u{1F31F}starring"),
         "the github repo",
-        colors28__default.default.green("https://github.com/yt-dlx")
+        colors28__default.default.green("https://github.com/yt-dlx\n")
       );
     }
   } catch (error) {
@@ -4478,10 +4533,10 @@ async function ListAudioVideoHighest(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -4649,10 +4704,10 @@ async function ListAudioVideoLowest(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
@@ -4842,10 +4897,10 @@ async function ListAudioVideoQualityCustom(input) {
       colors28__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
       colors28__default.default.green("yt-dlx."),
-      "If you enjoy the project, consider",
+      "Consider",
       colors28__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors28__default.default.green("https://github.com/yt-dlx")
+      colors28__default.default.green("https://github.com/yt-dlx\n")
     );
   } catch (error) {
     if (error instanceof z4.ZodError) {
