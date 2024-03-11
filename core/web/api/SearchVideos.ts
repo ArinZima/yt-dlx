@@ -63,9 +63,9 @@ export default async function SearchVideos(
       await QuerySchema.parseAsync(input);
     await crawler(verbose, autoSocks5);
     const retryOptions = {
-      maxTimeout: 6000,
+      maxTimeout: 3000,
       minTimeout: 1000,
-      retries: 4,
+      retries: 3,
     };
     let url: string;
     let $: cheerio.Root;

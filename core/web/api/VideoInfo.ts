@@ -71,12 +71,12 @@ export default async function VideoInfo(
     );
     await crawler(verbose, autoSocks5);
     const retryOptions = {
-      maxTimeout: 6000,
+      maxTimeout: 3000,
       minTimeout: 1000,
-      retries: 4,
+      retries: 3,
     };
-    let TubeResp: VideoInfoType;
     const spin = randomUUID();
+    let TubeResp: VideoInfoType;
     let snapshot: string | Buffer | NodeJS.ArrayBufferView;
     TubeResp = await retry(async () => {
       spinnies.add(spin, {
