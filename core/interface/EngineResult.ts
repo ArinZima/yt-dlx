@@ -26,6 +26,7 @@ interface EngineData {
   channel_follower_count: number;
 }
 export default interface EngineResult {
+  ipAddress?: string;
   metaTube: EngineData;
   AudioStore: TubeConfig[];
   VideoStore: TubeConfig[];

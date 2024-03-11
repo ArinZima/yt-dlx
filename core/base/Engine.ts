@@ -22,9 +22,11 @@ export function sizeFormat(filesize: number) {
 export default async function Engine({
   query,
   proxy,
+  ipAddress,
 }: {
   query: string;
   proxy?: string;
+  ipAddress?: string;
 }): Promise<EngineResult> {
   try {
     let pushTube: any[] = [];
@@ -145,6 +147,7 @@ export default async function Engine({
         pushTube
           .filter((item: { Tube: string }) => item.Tube === "metaTube")
           .map((item: { reTube: any }) => item.reTube)[0] || undefined,
+      ipAddress,
     };
   } catch (error: any) {
     if (error instanceof Error) throw new Error(error.message);

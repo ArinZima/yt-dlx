@@ -14,24 +14,24 @@ import type EngineResult from "../interface/EngineResult";
 
 export default async function Agent({
   query,
-  verbose,
   proxy,
+  verbose,
 }: {
   query: string;
-  verbose?: boolean;
   proxy?: string;
+  verbose?: boolean;
 }): Promise<EngineResult> {
   try {
+    let ipAddress = "";
     const child = spawn("sh", [
       "-c",
-      "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com",
+      "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com",
     ]);
-    return new Promise((resolve, reject) => {
-      child.stdout.on("data", (data) => {
-        console.log(colors.green("@info:"), data.toString());
-      });
+    return new Promise((resolve) => {
+      child.stdout.on("data", (data) => (ipAddress = data.toString()));
       child.on("close", async (code) => {
-        if (code !== 0) throw new Error("internal server error");
+        if (code !== 0 && !ipAddress) throw new Error("internal server error");
+        console.log(colors.green("@info:"), "new socks5 ip", ipAddress);
         let respEngine: EngineResult | undefined = undefined;
         let videoId: string | undefined = await YouTubeID(query);
         let TubeBody:
@@ -49,12 +49,12 @@ export default async function Agent({
         if (!videoId) {
           TubeBody = (await web.search.SearchVideos({
             type: "video",
-            proxy,
             verbose,
+            proxy,
             query,
           })) as TypeVideo[];
           if (!TubeBody[0]) {
-            reject(new Error("Unable to get response from YouTube..."));
+            throw new Error("Unable to get response from YouTube.");
           } else {
             console.log(
               colors.green("@info:"),
@@ -63,18 +63,19 @@ export default async function Agent({
             );
             respEngine = await Engine({
               query: TubeBody[0].videoLink,
+              ipAddress,
               proxy,
             });
             resolve(respEngine);
           }
         } else {
           TubeBody = (await web.search.VideoInfo({
-            proxy,
             verbose,
+            proxy,
             query,
           })) as VideoInfoType;
           if (!TubeBody) {
-            reject(new Error("Unable to get response from YouTube..."));
+            throw new Error("Unable to get response from YouTube.");
           } else {
             console.log(
               colors.green("@info:"),
@@ -83,6 +84,7 @@ export default async function Agent({
             );
             respEngine = await Engine({
               query: TubeBody.videoLink,
+              ipAddress,
               proxy,
             });
             resolve(respEngine);
