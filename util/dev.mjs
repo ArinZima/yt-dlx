@@ -13,7 +13,7 @@ const core = {
   monit: "watch -n 1 nvidia-smi",
   socks5: "chmod +x util/socks5.sh && ./util/socks5.sh",
   "socks5:watch": "chmod +x util/socks5.sh && ./util/socks5.sh && sudo nyx",
-  remake: "yarn clean && yarn make && yarn update && yarn build",
+  renew: "yarn clean && yarn make && yarn update && yarn build",
   "client:dev": "cd client && yarn dev",
   "client:build": "cd client && yarn build",
   "client:start": "cd client && yarn start",
