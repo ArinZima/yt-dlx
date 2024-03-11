@@ -796,7 +796,7 @@ async function Engine({ query, ipAddress, autoSocks5, }) {
             proLoc += ` --dump-single-json '${query}'`;
         }
         else
-            throw new Error("could not find the engine file. Try running npx yt-dlx install:deps");
+            throw new Error("Could not find the dependencies. Try running npx yt-dlx install:deps");
         const result = await util.promisify(child_process.exec)(proLoc);
         const metaTube = await JSON.parse(result.stdout.toString());
         await metaTube.formats.forEach((io) => {
@@ -903,7 +903,7 @@ async function Engine({ query, ipAddress, autoSocks5, }) {
     }
 }
 
-var version = "5.8.0";
+var version = "5.9.0";
 
 async function Agent({ query, verbose, autoSocks5, }) {
     try {

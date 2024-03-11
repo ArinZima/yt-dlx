@@ -1,12 +1,13 @@
 {
   "name": "yt-dlx",
-  "version": "5.8.0",
+  "version": "5.9.0",
   "types": "shared/index.d.ts",
   "main": "shared/index.cjs.js",
   "module": "shared/index.esm.js",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "bin": {
     "yt": "shared/cli/main.js",
+    "ytdlx": "shared/cli/main.js",
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
