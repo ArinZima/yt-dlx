@@ -2,6 +2,8 @@ import { spawn } from "child_process";
 
 export default async function niptor(args: string[]) {
   const prox = spawn("sh", args);
+  const stdoutData: Buffer[] = [];
+  prox.stdout.on("data", (data) => stdoutData.push(data));
   const [stdout, stderr] = await Promise.all([
     new Promise<string>((resolve, reject) => {
       const stdoutData: Buffer[] = [];
