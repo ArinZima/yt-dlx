@@ -47,7 +47,7 @@ export default async function Agent({
         console.log(
           colors.green("@info:"),
           "autoSocks5",
-          colors.green("new ipAddress"),
+          colors.green("ipAddress"),
           nipTor.stdout.trim()
         );
         // console.log(colors.green("@info:\n"), nipTor.stderr.trim());
