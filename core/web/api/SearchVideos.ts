@@ -1,7 +1,5 @@
-import fs from "fs";
 import colors from "colors";
 import { load } from "cheerio";
-import retry from "async-retry";
 import closers from "../closers";
 import spinClient from "spinnies";
 import { z, ZodError } from "zod";
@@ -62,182 +60,165 @@ export default async function SearchVideos(
     const { query, screenshot, verbose, autoSocks5 } =
       await QuerySchema.parseAsync(input);
     await crawler(verbose, autoSocks5);
-    const retryOptions = {
-      maxTimeout: 3000,
-      minTimeout: 1000,
-      retries: 3,
-    };
     let url: string;
     let $: cheerio.Root;
-    const spin = randomUUID();
+    let spin = randomUUID();
     let content: string | Buffer;
     let metaTube: TypeVideo[] = [];
-    const spinnies = new spinClient();
+    let spinnies = new spinClient();
     let videoElements: cheerio.Cheerio;
     let playlistMeta: TypePlaylist[] = [];
-    let TubeResp: TypeVideo[] | TypePlaylist[];
-    let snapshot: string | Buffer | NodeJS.ArrayBufferView;
+    let TubeResp: TypeVideo[] | TypePlaylist[] | undefined;
     spinnies.add(spin, {
       text: colors.green("@scrape: ") + "booting chromium...",
     });
     switch (input.type) {
       case "video":
-        TubeResp = await retry(async () => {
-          url =
-            "https://www.youtube.com/results?search_query=" +
-            encodeURIComponent(query) +
-            "&sp=EgIQAQ%253D%253D";
-          await page.goto(url);
-          for (let i = 0; i < 40; i++) {
-            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-          }
-          spinnies.update(spin, {
-            text: colors.yellow("@scrape: ") + "waiting for hydration...",
+        url =
+          "https://www.youtube.com/results?search_query=" +
+          encodeURIComponent(query) +
+          "&sp=EgIQAQ%253D%253D";
+        await page.goto(url);
+        for (let i = 0; i < 40; i++) {
+          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        }
+        spinnies.update(spin, {
+          text: colors.yellow("@scrape: ") + "waiting for hydration...",
+        });
+        if (screenshot) {
+          await page.screenshot({
+            path: "TypeVideo.png",
           });
-          if (screenshot) {
-            snapshot = await page.screenshot({
-              path: "TypeVideo.png",
-            });
-            fs.writeFileSync("TypeVideo.png", snapshot);
-            spinnies.update(spin, {
-              text: colors.yellow("@scrape: ") + "took snapshot...",
-            });
-          }
-          content = await page.content();
-          $ = load(content);
-          videoElements = $(
-            "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
+          spinnies.update(spin, {
+            text: colors.yellow("@scrape: ") + "took snapshot...",
+          });
+        }
+        content = await page.content();
+        $ = load(content);
+        videoElements = $(
+          "ytd-video-renderer:not([class*='ytd-rich-grid-video-renderer'])"
+        );
+        videoElements.each(async (_: any, vide: any) => {
+          const videoId: any = await YouTubeId(
+            "https://www.youtube.com" + $(vide).find("a").attr("href")
           );
-          videoElements.each(async (_: any, vide: any) => {
-            const videoId: any = await YouTubeId(
-              "https://www.youtube.com" + $(vide).find("a").attr("href")
-            );
-            const authorContainer = $(vide).find(".ytd-channel-name a");
-            const uploadedOnElement = $(vide).find(
-              ".inline-metadata-item.style-scope.ytd-video-meta-block"
-            );
-            metaTube.push({
-              title: $(vide).find("#video-title").text().trim() || undefined,
-              views:
-                $(vide)
-                  .find(
-                    ".inline-metadata-item.style-scope.ytd-video-meta-block"
-                  )
-                  .filter((_: any, vide: any) =>
-                    $(vide).text().includes("views")
-                  )
-                  .text()
-                  .trim()
-                  .replace(/ views/g, "") || undefined,
-              author: authorContainer.text().trim() || undefined,
-              videoId,
-              uploadOn:
-                uploadedOnElement.length >= 2
-                  ? $(uploadedOnElement[1]).text().trim()
-                  : undefined,
-              authorUrl:
-                "https://www.youtube.com" + authorContainer.attr("href") ||
-                undefined,
-              videoLink: "https://www.youtube.com/watch?v=" + videoId,
-              thumbnailUrls: [
-                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/default.jpg`,
-              ],
-              description:
-                $(vide).find(".metadata-snippet-text").text().trim() ||
-                undefined,
-            });
+          const authorContainer = $(vide).find(".ytd-channel-name a");
+          const uploadedOnElement = $(vide).find(
+            ".inline-metadata-item.style-scope.ytd-video-meta-block"
+          );
+          metaTube.push({
+            title: $(vide).find("#video-title").text().trim() || undefined,
+            views:
+              $(vide)
+                .find(".inline-metadata-item.style-scope.ytd-video-meta-block")
+                .filter((_: any, vide: any) => $(vide).text().includes("views"))
+                .text()
+                .trim()
+                .replace(/ views/g, "") || undefined,
+            author: authorContainer.text().trim() || undefined,
+            videoId,
+            uploadOn:
+              uploadedOnElement.length >= 2
+                ? $(uploadedOnElement[1]).text().trim()
+                : undefined,
+            authorUrl:
+              "https://www.youtube.com" + authorContainer.attr("href") ||
+              undefined,
+            videoLink: "https://www.youtube.com/watch?v=" + videoId,
+            thumbnailUrls: [
+              `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+              `https://img.youtube.com/vi/${videoId}/default.jpg`,
+            ],
+            description:
+              $(vide).find(".metadata-snippet-text").text().trim() || undefined,
           });
-          spinnies.succeed(spin, {
-            text:
-              colors.green("@info: ") +
-              colors.white("scrapping done for ") +
-              query,
-          });
-          return metaTube;
-        }, retryOptions);
-        await closers(browser);
-        return TubeResp;
+        });
+        spinnies.succeed(spin, {
+          text:
+            colors.green("@info: ") +
+            colors.white("scrapping done for ") +
+            query,
+        });
+        TubeResp = metaTube;
+        break;
       case "playlist":
-        TubeResp = await retry(async () => {
-          url =
-            "https://www.youtube.com/results?search_query=" +
-            encodeURIComponent(query) +
-            "&sp=EgIQAw%253D%253D";
-          await page.goto(url);
-          for (let i = 0; i < 80; i++) {
-            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-          }
-          spinnies.update(spin, {
-            text: colors.yellow("@scrape: ") + "waiting for hydration...",
+        url =
+          "https://www.youtube.com/results?search_query=" +
+          encodeURIComponent(query) +
+          "&sp=EgIQAw%253D%253D";
+        await page.goto(url);
+        for (let i = 0; i < 80; i++) {
+          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        }
+        spinnies.update(spin, {
+          text: colors.yellow("@scrape: ") + "waiting for hydration...",
+        });
+        if (screenshot) {
+          await page.screenshot({
+            path: "TypePlaylist.png",
           });
-          if (screenshot) {
-            snapshot = await page.screenshot({
-              path: "TypePlaylist.png",
-            });
-            fs.writeFileSync("TypePlaylist.png", snapshot);
-            spinnies.update(spin, {
-              text: colors.yellow("@scrape: ") + "took snapshot...",
-            });
-          }
-          const content = await page.content();
-          const $ = load(content);
-          const playlistElements = $("ytd-playlist-renderer");
-          playlistElements.each((_index, element) => {
-            const playlistLink: any = $(element)
-              .find(".style-scope.ytd-playlist-renderer #view-more a")
-              .attr("href");
-            const vCount = $(element).text().trim();
-            playlistMeta.push({
-              title:
-                $(element)
-                  .find(".style-scope.ytd-playlist-renderer #video-title")
-                  .text()
-                  .replace(/\s+/g, " ")
-                  .trim() || undefined,
-              author:
+          spinnies.update(spin, {
+            text: colors.yellow("@scrape: ") + "took snapshot...",
+          });
+        }
+        content = await page.content();
+        $ = load(content);
+        const playlistElements = $("ytd-playlist-renderer");
+        playlistElements.each((_index, element) => {
+          const playlistLink: any = $(element)
+            .find(".style-scope.ytd-playlist-renderer #view-more a")
+            .attr("href");
+          const vCount = $(element).text().trim();
+          playlistMeta.push({
+            title:
+              $(element)
+                .find(".style-scope.ytd-playlist-renderer #video-title")
+                .text()
+                .replace(/\s+/g, " ")
+                .trim() || undefined,
+            author:
+              $(element)
+                .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
+                .text()
+                .replace(/\s+/g, " ")
+                .trim() || undefined,
+            playlistId: playlistLink.split("list=")[1],
+            playlistLink: "https://www.youtube.com" + playlistLink,
+            authorUrl: $(element)
+              .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
+              .attr("href")
+              ? "https://www.youtube.com" +
                 $(element)
                   .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
-                  .text()
-                  .replace(/\s+/g, " ")
-                  .trim() || undefined,
-              playlistId: playlistLink.split("list=")[1],
-              playlistLink: "https://www.youtube.com" + playlistLink,
-              authorUrl: $(element)
-                .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
-                .attr("href")
-                ? "https://www.youtube.com" +
-                  $(element)
-                    .find(".yt-simple-endpoint.style-scope.yt-formatted-string")
-                    .attr("href")
-                : undefined,
-              videoCount:
-                parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) ||
-                undefined,
-            });
+                  .attr("href")
+              : undefined,
+            videoCount:
+              parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) ||
+              undefined,
           });
-          spinnies.succeed(spin, {
-            text:
-              colors.green("@info: ") +
-              colors.white("scrapping done for ") +
-              query,
-          });
-          return playlistMeta;
-        }, retryOptions);
-        await closers(browser);
-        return TubeResp;
+        });
+        spinnies.succeed(spin, {
+          text:
+            colors.green("@info: ") +
+            colors.white("scrapping done for ") +
+            query,
+        });
+        TubeResp = playlistMeta;
+        break;
       default:
         spinnies.fail(spin, {
           text:
             colors.red("@error: ") +
             colors.white("wrong filter type provided."),
         });
-        await closers(browser);
-        return undefined;
+        TubeResp = undefined;
+        break;
     }
+    await closers(browser);
+    return TubeResp;
   } catch (error) {
     await closers(browser);
     switch (true) {
