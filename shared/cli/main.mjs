@@ -96,7 +96,7 @@ async function crawler(verbose, autoSocks5) {
     }
     page = await browser.newPage();
     await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
     );
   } catch (error) {
     if (page)
@@ -879,17 +879,23 @@ async function Agent({
     let nipTor;
     let ipAddress = void 0;
     nipTor = await niptor(["-c", "curl https://checkip.amazonaws.com"]);
-    console.log(colors28.green("@info:"), "real ip", nipTor.stdout.trim());
+    console.log(
+      colors28.green("@info:"),
+      "system",
+      colors28.green("ipAddress"),
+      nipTor.stdout.trim()
+    );
     ipAddress = nipTor.stdout.trim();
     if (autoSocks5) {
       nipTor = await niptor([
         "-c",
-        "sudo systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
+        "sudo systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
       ]);
       if (nipTor.stdout.trim().length > 0) {
         console.log(
           colors28.green("@info:"),
-          "autoSocks5 new ip",
+          "autoSocks5",
+          colors28.green("new ipAddress"),
           nipTor.stdout.trim()
         );
         console.log(colors28.green("@info:\n"), nipTor.stderr.trim());
@@ -1993,7 +1999,12 @@ async function proTube({
     if (adata.Audio.bitrate)
       ff.withAudioBitrate(adata.Audio.bitrate);
   }
-  console.log(colors28.green("@ffmpeg:"), "using ip", ipAddress);
+  console.log(
+    colors28.green("@ffmpeg:"),
+    "using",
+    colors28.green("ipAddress"),
+    ipAddress
+  );
   ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   ff.on("progress", (progress) => progressBar(progress));
   ff.on("end", () => process.stdout.write("\n"));
