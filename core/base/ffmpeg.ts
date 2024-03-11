@@ -84,7 +84,12 @@ export default async function proTube({
     if (vdata.Video.bitrate) ff.withVideoBitrate(vdata.Video.bitrate);
     if (adata.Audio.bitrate) ff.withAudioBitrate(adata.Audio.bitrate);
   }
-  console.log(colors.green("@ffmpeg:"), "using ip", ipAddress);
+  console.log(
+    colors.green("@ffmpeg:"),
+    "using",
+    colors.green("ipAddress"),
+    ipAddress
+  );
   ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   ff.on("progress", (progress) => progressBar(progress));
   ff.on("end", () => process.stdout.write("\n"));
