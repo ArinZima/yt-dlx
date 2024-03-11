@@ -12,7 +12,7 @@ async function proTube({ videoUrl }) {
       try {
         const browser = await puppeteer.launch({
           ignoreHTTPSErrors: true,
-          headless: false,
+          headless: true,
           args: [
             "--no-zygote",
             "--incognito",
@@ -143,7 +143,7 @@ async function proTube({ videoUrl }) {
     fluent.addOption("-headers", `X-Forwarded-For: ${metaTube.ipAddress}`);
     fluent.on("progress", (prog) => console.log(prog.percent));
     fluent.on("start", (cmd) => console.log(cmd));
-    fluent.output("AudioVideo.mkv");
+    fluent.output(`${metaTube.ipAddress}.mkv`);
     fluent.format("matroska");
     fluent.run();
   } else process.exit(1);
