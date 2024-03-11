@@ -84,6 +84,7 @@ export default async function AudioHighest(input: {
       let filename: string = "yt-dlx_(AudioHighest_";
       const ffmpeg: proTubeCommand = await proTube({
         adata: await bigEntry(engineData.AudioStore),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
       });
       ffmpeg.withOutputFormat("avi");
       switch (filter) {

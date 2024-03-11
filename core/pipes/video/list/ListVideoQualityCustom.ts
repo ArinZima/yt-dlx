@@ -169,6 +169,7 @@ export default async function ListVideoQualityCustom(input: {
         let filename: string = `yt-dlx_(VideoQualityCustom_${quality}`;
         const ffmpeg: proTubeCommand = await proTube({
           vdata: await bigEntry(customData),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
         });
         ffmpeg.withOutputFormat("matroska");
         switch (filter) {

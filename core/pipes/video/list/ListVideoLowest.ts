@@ -132,6 +132,7 @@ export default async function ListVideoLowest(input: {
         let filename: string = "yt-dlx_(VideoLowest_";
         const ffmpeg: proTubeCommand = await proTube({
           vdata: await lowEntry(engineData.VideoStore),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
         });
         ffmpeg.withOutputFormat("matroska");
         switch (filter) {

@@ -104,6 +104,7 @@ export default async function VideoQualityCustom(input: {
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const ffmpeg: proTubeCommand = await proTube({
         vdata: await lowEntry(customData),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
       });
       ffmpeg.addInput(engineData.metaTube.thumbnail);
       ffmpeg.withOutputFormat("matroska");

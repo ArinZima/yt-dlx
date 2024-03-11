@@ -93,6 +93,7 @@ export default async function AudioQualityCustom(input: {
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const ffmpeg: proTubeCommand = await proTube({
         adata: await bigEntry(customData),
+        ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
       });
       ffmpeg.withOutputFormat("avi");
       let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;

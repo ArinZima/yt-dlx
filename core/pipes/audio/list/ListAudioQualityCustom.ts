@@ -156,6 +156,7 @@ export default async function ListAudioQualityCustom(input: {
         let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
         const ffmpeg: proTubeCommand = await proTube({
           adata: await bigEntry(customData),
+          ipAddress: engineData.ipAddress ? engineData.ipAddress : undefined,
         });
         ffmpeg.withOutputFormat("avi");
         switch (filter) {
