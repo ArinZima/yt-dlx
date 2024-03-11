@@ -36,7 +36,6 @@ if [ -x "$(command -v apt-get)" ]; then
     RUN 'echo "MaxCircuitDirtiness 60" >> /etc/tor/torrc'
     RUN "systemctl restart tor"
     RUN 'echo -e "redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log" > ~/.nyx/config'
-    RUN "curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
     elif [ -x "$(command -v pacman)" ]; then
     LOG "Detected Arch-based system"
     RUN "systemctl stop tor"
@@ -49,7 +48,6 @@ if [ -x "$(command -v apt-get)" ]; then
     RUN 'echo "MaxCircuitDirtiness 60" >> /etc/tor/torrc'
     RUN "systemctl restart tor"
     RUN 'echo -e "redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log" > ~/.nyx/config'
-    RUN "curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com"
 else
     ERR "Neither apt-get nor pacman found. Unsupported system."
 fi
