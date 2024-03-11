@@ -2,6 +2,7 @@ import retry from "async-retry";
 import SpinClient from "spinnies";
 import puppeteer from "puppeteer";
 import ffmpeg from "fluent-ffmpeg";
+// sudo rm -rf ~/.nyx && sudo rm -rf /etc/tor/torrc && tor
 
 async function proTube({ videoUrl }) {
   const response = await retry(

@@ -31,10 +31,7 @@ if [ -x "$(command -v apt-get)" ]; then
     LOG "Detected Debian-based system"
     RUN "rm -rf ~/.nyx" "Failed to remove Nyx config"
     RUN "rm -rf /etc/tor/torrc" "Failed to remove Tor config"
-    if [ ! -f "/etc/tor/torrc" ]; then
-        LOG "Creating a default Tor configuration file"
-        RUN "echo -e 'ControlPort 9051\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1\nMaxCircuitDirtiness 60' | sudo tee /etc/tor/torrc > /dev/null" "Failed to create default torrc file"
-    fi
+    RUN "echo -e 'ControlPort 9051\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1\nMaxCircuitDirtiness 60' | sudo tee /etc/tor/torrc > /dev/null" "Failed to create default torrc file"
     RUN "apt update && sudo apt install -y tor nyx" "Failed to update and install Tor and Nyx"
     RUN "systemctl enable --now tor" "Failed to enable and start Tor service"
     RUN 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/.nyx/config"' "Failed to configure Nyx"
@@ -43,10 +40,7 @@ if [ -x "$(command -v apt-get)" ]; then
     LOG "Detected Arch-based system"
     RUN "rm -rf ~/.nyx" "Failed to remove Nyx config"
     RUN "rm -rf /etc/tor/torrc" "Failed to remove Tor config"
-    if [ ! -f "/etc/tor/torrc" ]; then
-        LOG "Creating a default Tor configuration file"
-        RUN "echo -e 'ControlPort 9051\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1\nMaxCircuitDirtiness 60' | sudo tee /etc/tor/torrc > /dev/null" "Failed to create default torrc file"
-    fi
+    RUN "echo -e 'ControlPort 9051\nCookieAuthentication 1\nCookieAuthFileGroupReadable 1\nMaxCircuitDirtiness 60' | sudo tee /etc/tor/torrc > /dev/null" "Failed to create default torrc file"
     RUN "pacman -Syyu --noconfirm tor nyx" "Failed to update and install Tor and Nyx"
     RUN "systemctl enable --now tor" "Failed to enable and start Tor service"
     RUN 'sh -c "echo -e \"redraw_rate 60\nwrite_logs_to /var/log/nyx/notices.log\" > ~/.nyx/config"' "Failed to configure Nyx"
