@@ -4,6 +4,7 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import { promisify } from "util";
+import ffmpeg from "fluent-ffmpeg";
 import { exec } from "child_process";
 
 function sizeFormat(filesize: number) {
@@ -20,42 +21,33 @@ function sizeFormat(filesize: number) {
 }
 
 async function Engine() {
+  const highAudio: any = {};
+  const highVideo: any = {};
+  const highHLS: any = {};
   let payLoad: any = {
     manifest: [],
     audio: [],
     video: [],
   };
-  let metaTube;
-  const jsonFilePath = path.join(process.cwd(), "metaTube.json");
-  if (fs.existsSync(jsonFilePath)) {
-    const jsonData = fs.readFileSync(jsonFilePath, "utf8");
-    metaTube = JSON.parse(jsonData);
-  } else {
-    let maxT = 8;
-    let pLoc = "";
-    let dirC = process.cwd();
-    while (maxT > 0) {
-      const enginePath = path.join(dirC, "util", "engine");
-      if (fs.existsSync(enginePath)) {
-        pLoc = enginePath;
-        break;
-      } else {
-        dirC = path.join(dirC, "..");
-        maxT--;
-      }
+  let maxT = 8;
+  let pLoc = "";
+  let dirC = process.cwd();
+  while (maxT > 0) {
+    const enginePath = path.join(dirC, "util", "engine");
+    if (fs.existsSync(enginePath)) {
+      pLoc = enginePath;
+      break;
+    } else {
+      dirC = path.join(dirC, "..");
+      maxT--;
     }
-    pLoc += ` --proxy socks5://127.0.0.1:9050`;
-    pLoc += ` --dump-single-json "https://www.youtube.com/watch?v=AbFnsaDQMYQ"`;
-    pLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
-    pLoc += ` --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"`;
-    const metaCore = await promisify(exec)(pLoc);
-    metaTube = JSON.parse(metaCore.stdout.toString());
-    fs.writeFileSync(jsonFilePath, JSON.stringify(metaTube, null, 2));
   }
-  const highHLS: any = {};
-  const highVideo: any = {};
-  const highAudio: any = {};
-
+  pLoc += ` --proxy socks5://127.0.0.1:9050`;
+  pLoc += ` --dump-single-json "https://www.youtube.com/watch?v=AbFnsaDQMYQ"`;
+  pLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
+  pLoc += ` --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"`;
+  const metaCore = await promisify(exec)(pLoc);
+  const metaTube = JSON.parse(metaCore.stdout.toString());
   await metaTube.formats.forEach((op: any) => {
     const rm = new Set(["storyboard", "Default"]);
     if (!rm.has(op.format_note) && op.protocol === "m3u8_native" && op.vbr) {
@@ -123,4 +115,14 @@ async function Engine() {
       });
     });
   }
+
+  const ff = ffmpeg();
+  ff.input(op.manifest[0].manifest_url);
+  ff.inputOptions(["-protocol_whitelist file,http,https,tcp,tls"]);
+  ff.output("output.mp4");
+  ff.videoCodec("copy");
+  ff.on("start", (start) => console.log(start));
+  ff.on("progress", (prog) => console.log(prog));
+  ff.on("error", (error) => console.error(error.message));
+  ff.run();
 })();
