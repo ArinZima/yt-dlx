@@ -3,6 +3,7 @@ console.clear();
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
+import readline from "readline";
 import { promisify } from "util";
 import ffmpeg from "fluent-ffmpeg";
 import { exec } from "child_process";
@@ -18,6 +19,35 @@ function sizeFormat(filesize: number) {
   } else if (filesize < bytesPerTerabyte) {
     return (filesize / bytesPerGigabyte).toFixed(2) + " GB";
   } else return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
+}
+
+function progressBar(prog: any) {
+  if (prog.timemark === undefined || prog.percent === undefined) return;
+  if (prog.percent < 1 && prog.timemark.includes("-")) return;
+  readline.cursorTo(process.stdout, 0);
+  let color = colors.green;
+  if (prog.percent > 98) prog.percent = 100;
+  if (prog.percent < 25) color = colors.red;
+  else if (prog.percent < 50) color = colors.yellow;
+  const width = Math.floor(process.stdout.columns / 4);
+  const scomp = Math.round((width * prog.percent) / 100);
+  const sprog = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+  let output =
+    color("@prog: ") +
+    sprog +
+    " " +
+    prog.percent.toFixed(2) +
+    "% | " +
+    color("@timemark: ") +
+    prog.timemark;
+  if (prog.frames !== 0 && !isNaN(prog.frames)) {
+    output += " | " + color("@frames: ") + prog.frames;
+  }
+  if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
+    output += " | " + color("@fps: ") + prog.currentFps;
+  }
+  process.stdout.write(output);
+  if (prog.timemark.includes("-")) process.stdout.write("\n\n");
 }
 
 async function Engine() {
@@ -42,7 +72,7 @@ async function Engine() {
       maxT--;
     }
   }
-  pLoc += ` --proxy socks5://127.0.0.1:9050`;
+  //   pLoc += ` --proxy socks5://127.0.0.1:9050`;
   pLoc += ` --dump-single-json "https://www.youtube.com/watch?v=AbFnsaDQMYQ"`;
   pLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
   pLoc += ` --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"`;
@@ -115,14 +145,26 @@ async function Engine() {
       });
     });
   }
-
-  const ff = ffmpeg();
-  ff.input(op.manifest[0].manifest_url);
-  ff.inputOptions(["-protocol_whitelist file,http,https,tcp,tls"]);
-  ff.output("output.mp4");
-  ff.videoCodec("copy");
-  ff.on("start", (start) => console.log(start));
-  ff.on("progress", (prog) => console.log(prog));
-  ff.on("error", (error) => console.error(error.message));
-  ff.run();
+  console.log();
+  const found = [
+    op.manifest[0],
+    op.manifest[2],
+    op.manifest[3],
+    op.manifest[4],
+    op.manifest[5],
+    op.manifest[6],
+    op.manifest[7],
+  ];
+  for (const f of found) {
+    ffmpeg(f.manifest_url)
+      .videoCodec("copy")
+      .outputFormat("webm")
+      .output(f.resolution + ".webm")
+      .inputOptions(["-protocol_whitelist file,http,https,tcp,tls"])
+      .on("start", (start) => console.log(start))
+      .on("end", () => process.stdout.write("\n"))
+      .on("progress", (progress) => progressBar(progress))
+      .on("error", (error) => console.error(error.message))
+      .run();
+  }
 })();
