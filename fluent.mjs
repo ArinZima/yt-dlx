@@ -1,3 +1,4 @@
+import os from "os";
 import SpinClient from "spinnies";
 import puppeteer from "puppeteer";
 import ffmpeg from "fluent-ffmpeg";
@@ -19,7 +20,7 @@ async function proTube({ videoUrl }) {
         "--disable-dev-shm-usage",
         "--ignore-certificate-errors",
         "--allow-running-insecure-content",
-        "--proxy-server=socks5://127.0.0.1:9050",
+        // "--proxy-server=socks5://127.0.0.1:9050",
       ],
     });
     const ipage = await browser.newPage();
@@ -119,21 +120,22 @@ async function proTube({ videoUrl }) {
     videoUrl: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
   });
   if (metaTube) {
-    console.log({
-      video: metaTube.VideoStore[0],
-      audio: metaTube.AudioStore[0],
-      ipAddress: metaTube.ipAddress,
-    });
-    const fluent = ffmpeg(metaTube.VideoStore[0].mediaLink);
-    fluent.input(metaTube.AudioStore[0].mediaLink);
-    fluent.videoCodec("copy");
-    fluent.audioCodec("copy");
-    fluent.audioChannels(metaTube.AudioStore[0].channels);
+    const numCores = os.cpus().length;
+    const numThreads = numCores * 2;
+    const fluent = ffmpeg();
+    fluent.addInput(metaTube.VideoStore[0].mediaLink);
+    fluent.addInput(metaTube.AudioStore[0].mediaLink);
+    fluent.withVideoCodec("copy");
+    fluent.withAudioCodec("copy");
+    fluent.withAudioChannels(metaTube.AudioStore[0].channels);
+    fluent.addOption("-preset", "ultrafast");
+    fluent.addOption("-threads", numThreads);
+    fluent.addOption("-movflags", "faststart");
     fluent.addOption("-headers", `X-Forwarded-For: ${metaTube.ipAddress}`);
-    fluent.on("progress", (prog) => console.log(prog.percent));
+    fluent.on("progress", (prog) => console.log(prog));
     fluent.on("start", (cmd) => console.log(cmd));
     fluent.output(`${metaTube.ipAddress}.mkv`);
-    fluent.format("matroska");
+    fluent.withOutputFormat("matroska");
     fluent.run();
   } else process.exit(1);
 })();

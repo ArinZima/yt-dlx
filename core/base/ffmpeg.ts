@@ -1,3 +1,4 @@
+import * as os from "os";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -90,6 +91,10 @@ export default async function proTube({
     colors.green("ipAddress"),
     ipAddress
   );
+  const numCores = os.cpus().length;
+  const numThreads = numCores * 2;
+  ff.addOption("-preset", "ultrafast");
+  ff.addOption("-threads", numThreads.toString());
   ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   ff.on("progress", (progress) => progressBar(progress));
   ff.on("end", () => process.stdout.write("\n"));
