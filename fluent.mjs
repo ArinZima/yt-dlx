@@ -10,7 +10,7 @@ async function proTube({ videoUrl }) {
   try {
     const browser = await puppeteer.launch({
       ignoreHTTPSErrors: true,
-      headless: true,
+      headless: false,
       args: [
         "--no-zygote",
         "--incognito",
@@ -20,7 +20,7 @@ async function proTube({ videoUrl }) {
         "--disable-dev-shm-usage",
         "--ignore-certificate-errors",
         "--allow-running-insecure-content",
-        // "--proxy-server=socks5://127.0.0.1:9050",
+        "--proxy-server=socks5://127.0.0.1:9050",
       ],
     });
     const ipage = await browser.newPage();
