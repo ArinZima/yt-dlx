@@ -1,8 +1,8 @@
+import { z } from "zod";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import web from "../../../web";
-import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
 import proTube from "../../../base/ffmpeg";
 import bigEntry from "../../../base/bigEntry";
@@ -71,137 +71,125 @@ export default async function ListVideoHighest(input: {
   filename: string;
   ffmpeg: proTubeCommand;
 }> {
-  try {
-    const { query, verbose, output, filter, autoSocks5 } =
-      await qconf.parseAsync(input);
-    const vDATA = new Set<{
-      ago: string;
-      title: string;
-      views: string;
-      author: string;
-      videoId: string;
-      videoLink: string;
-      authorUrl: string;
-      thumbnailUrls: string[];
-    }>();
-    for (const pURL of query) {
-      try {
-        const pDATA = await web.search.PlaylistInfo({
-          query: pURL,
-          autoSocks5,
-        });
-        if (pDATA === undefined) {
-          console.log(
-            colors.red("@error:"),
-            "unable to get response from youtube for",
-            pURL
-          );
-          continue;
-        }
-        for (const video of pDATA.playlistVideos) vDATA.add(video);
-      } catch (error) {
-        console.log(colors.red("@error:"), error);
-        continue;
-      }
-    }
-    console.log(
-      colors.green("@info:"),
-      "total number of uncommon videos:",
-      colors.yellow(vDATA.size.toString())
-    );
-    for (const video of vDATA) {
-      try {
-        const engineData = await ytdlx({
-          query: video.videoLink,
-          autoSocks5,
-          verbose,
-        });
-        if (engineData === undefined) {
-          console.log(
-            colors.red("@error:"),
-            "unable to get response from youtube."
-          );
-          continue;
-        }
-        const title: string = engineData.metaTube.title.replace(
-          /[^a-zA-Z0-9_]+/g,
-          "_"
+  const { query, verbose, output, filter, autoSocks5 } = await qconf.parseAsync(
+    input
+  );
+  const vDATA = new Set<{
+    ago: string;
+    title: string;
+    views: string;
+    author: string;
+    videoId: string;
+    videoLink: string;
+    authorUrl: string;
+    thumbnailUrls: string[];
+  }>();
+  for (const pURL of query) {
+    try {
+      const pDATA = await web.search.PlaylistInfo({
+        query: pURL,
+        autoSocks5,
+      });
+      if (pDATA === undefined) {
+        console.log(
+          colors.red("@error:"),
+          "unable to get response from youtube for",
+          pURL
         );
-        const folder = output
-          ? path.join(process.cwd(), output)
-          : process.cwd();
-        if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-        let filename: string = "yt-dlx_(VideoHighest_";
-        const ffmpeg: proTubeCommand = await proTube({
-          vdata: await bigEntry(engineData.VideoStore),
-          ipAddress: engineData.ipAddress,
-        });
-        ffmpeg.withOutputFormat("matroska");
-        switch (filter) {
-          case "grayscale":
-            ffmpeg.withVideoFilter(
-              "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-            );
-            filename += `grayscale)_${title}.mkv`;
-            break;
-          case "invert":
-            ffmpeg.withVideoFilter("negate");
-            filename += `invert)_${title}.mkv`;
-            break;
-          case "rotate90":
-            ffmpeg.withVideoFilter("rotate=PI/2");
-            filename += `rotate90)_${title}.mkv`;
-            break;
-          case "rotate180":
-            ffmpeg.withVideoFilter("rotate=PI");
-            filename += `rotate180)_${title}.mkv`;
-            break;
-          case "rotate270":
-            ffmpeg.withVideoFilter("rotate=3*PI/2");
-            filename += `rotate270)_${title}.mkv`;
-            break;
-          case "flipHorizontal":
-            ffmpeg.withVideoFilter("hflip");
-            filename += `flipHorizontal)_${title}.mkv`;
-            break;
-          case "flipVertical":
-            ffmpeg.withVideoFilter("vflip");
-            filename += `flipVertical)_${title}.mkv`;
-            break;
-          default:
-            filename += `)_${title}.mkv`;
-            break;
-        }
-        await new Promise<void>((resolve, _reject) => {
-          ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-          ffmpeg.on("end", () => resolve());
-          ffmpeg.on("error", (error) => {
-            throw new Error(colors.red("@error: ") + error.message);
-          });
-          ffmpeg.run();
-        });
-      } catch (error) {
-        console.log(colors.red("@error:"), error);
         continue;
       }
-    }
-    console.log(
-      colors.green("@info:"),
-      "❣️ Thank you for using",
-      colors.green("yt-dlx."),
-      "Consider",
-      colors.green("🌟starring"),
-      "the github repo",
-      colors.green("https://github.com/yt-dlx\n")
-    );
-  } catch (error) {
-    switch (true) {
-      case error instanceof ZodError:
-        throw error.errors.map((err) => err.message).join(", ");
-      case error instanceof Error:
-        throw error.message;
-      default:
-        throw "Internal server error";
+      for (const video of pDATA.playlistVideos) vDATA.add(video);
+    } catch (error) {
+      console.log(colors.red("@error:"), error);
+      continue;
     }
   }
+  console.log(
+    colors.green("@info:"),
+    "total number of uncommon videos:",
+    colors.yellow(vDATA.size.toString())
+  );
+  for (const video of vDATA) {
+    try {
+      const engineData = await ytdlx({
+        query: video.videoLink,
+        autoSocks5,
+        verbose,
+      });
+      if (engineData === undefined) {
+        console.log(
+          colors.red("@error:"),
+          "unable to get response from youtube."
+        );
+        continue;
+      }
+      const title: string = engineData.metaTube.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path.join(process.cwd(), output) : process.cwd();
+      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+      let filename: string = "yt-dlx_(VideoHighest_";
+      const ffmpeg: proTubeCommand = await proTube({
+        vdata: await bigEntry(engineData.VideoStore),
+        ipAddress: engineData.ipAddress,
+      });
+      ffmpeg.withOutputFormat("matroska");
+      switch (filter) {
+        case "grayscale":
+          ffmpeg.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ffmpeg.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ffmpeg.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ffmpeg.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ffmpeg.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ffmpeg.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ffmpeg.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
+      await new Promise<void>((resolve, _reject) => {
+        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
+        ffmpeg.on("end", () => resolve());
+        ffmpeg.on("error", (error) => {
+          throw new Error(colors.red("@error: ") + error.message);
+        });
+        ffmpeg.run();
+      });
+    } catch (error) {
+      console.log(colors.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors.green("@info:"),
+    "❣️ Thank you for using",
+    colors.green("yt-dlx."),
+    "Consider",
+    colors.green("🌟starring"),
+    "the github repo",
+    colors.green("https://github.com/yt-dlx\n")
+  );
 }

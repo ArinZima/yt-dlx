@@ -13,7 +13,6 @@
 // domain,
 // }: grabber): Promise<string | undefined> {
 // const browser: Browser = await chromium.launch({ headless: true });
-// try {
 // const host = `${decodeURIComponent(domain)}/${decodeURIComponent(
 // route
 // )}?query=${decodeURIComponent(query)}`;
@@ -46,10 +45,6 @@
 // return JSON.stringify(payLoad);
 // } else {
 // await browser.close();
-// return undefined;
-// }
-// } catch (error) {
-// console.log(colors.red("@error:"), error);
 // return undefined;
 // }
 // }
