@@ -175,40 +175,53 @@
 // })
 // .run();
 // =============================================================================
-import * as fs from "fs";
-import * as path from "path";
-import { promisify } from "util";
-import { exec } from "child_process";
+// import ffmpeg from "fluent-ffmpeg";
 
-(async () => {
-  const jsonFilePath = path.join(process.cwd(), "metaTube.json");
-  let metaTube;
-  if (fs.existsSync(jsonFilePath)) {
-    const jsonData = fs.readFileSync(jsonFilePath, "utf8");
-    metaTube = JSON.parse(jsonData);
-  } else {
-    let maxT = 8;
-    let pLoc = "";
-    let dirC = process.cwd();
-    while (maxT > 0) {
-      const enginePath = path.join(dirC, "util", "engine");
-      if (fs.existsSync(enginePath)) {
-        pLoc = enginePath;
-        break;
-      } else {
-        dirC = path.join(dirC, "..");
-        maxT--;
-      }
-    }
-    pLoc += ` --proxy socks5://127.0.0.1:9050`;
-    pLoc += ` --dump-single-json "https://www.youtube.com/watch?v=AbFnsaDQMYQ"`;
-    pLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
-    pLoc += ` --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"`;
-    const metaCore = await promisify(exec)(pLoc);
-    metaTube = JSON.parse(metaCore.stdout.toString());
-    fs.writeFileSync(jsonFilePath, JSON.stringify(metaTube, null, 2));
-  }
-  await metaTube.formats.forEach((io) => {
-    console.info(io);
-  });
-})();
+// if (max2160pData !== null && max2160pManifestData !== null) {
+// console.log({ max2160pData, max2160pManifestData });
+// const ff = ffmpeg();
+// ff.input(max2160pManifestData.manifest_url);
+// ff.inputOptions(["-protocol_whitelist file,http,https,tcp,tls"]);
+// ff.outputOptions(["-c copy"]);
+// ff.output("output.mp4");
+// ff.videoCodec("copy");
+// ff.on("end", () => console.log("@ffmpeg: file merged."));
+// ff.on("start", (start) => console.log("@ffmpeg:", start));
+// ff.on("progress", (prog) => console.log("@ffmpeg:", prog));
+// ff.on("error", (error) => console.error("@error:", error.message));
+// ff.run();
+// } else console.log("@error: no data found.");
+
+// console.log("@video:", {
+// language_preference: op.language_preference,
+// downloader_options: op.downloader_options,
+// source_preference: op.source_preference,
+// audio_channels: op.audio_channels,
+// dynamic_range: op.dynamic_range,
+// http_headers: op.http_headers,
+// aspect_ratio: op.aspect_ratio,
+// format_note: op.format_note,
+// preference: op.preference,
+// resolution: op.resolution,
+// format_id: op.format_id,
+// container: op.container,
+// audio_ext: op.audio_ext,
+// video_ext: op.video_ext,
+// filesize: op.filesize,
+// language: op.language,
+// protocol: op.protocol,
+// has_drm: op.has_drm,
+// quality: op.quality,
+// height: op.height,
+// vcodec: op.vcodec,
+// acodec: op.acodec,
+// format: op.format,
+// width: op.width,
+// asr: op.asr,
+// fps: op.fps,
+// tbr: op.tbr,
+// url: op.url,
+// ext: op.ext,
+// vbr: op.vbr,
+// abr: op.abr,
+// });
