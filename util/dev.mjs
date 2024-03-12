@@ -21,7 +21,7 @@ const core = {
   "clean:base": "rm -rf node_modules temp shared others",
   "clean:client": "cd client && rm -rf node_modules .next",
   "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/engine",
-  make: "yarn make:base && yarn make:client && yarn postinstall",
+  make: "yarn make:base && yarn make:client",
   "make:base": "yarn install --verbose",
   "make:client": "cd client && yarn install --verbose",
   update: "yarn update:base && yarn update:client",
