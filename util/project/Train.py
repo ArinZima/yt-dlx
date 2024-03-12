@@ -4,7 +4,7 @@ import tensorflow as tf
 from loguru import logger
 from tensorflow import keras
 from colorama import init, Fore
-from kerastuner.tuners import Hyperband
+from keras_tuner.tuners import Hyperband
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import KFold
 
