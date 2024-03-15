@@ -75,7 +75,9 @@ class WaterPollutionModel:
         model.compile(optimizer=keras.optimizers.Adam(lr), loss="mse", metrics=["mae"])
         return model
 
-    def tune_model(self, max_trials=100, seed=None, project_name="model/general/core"):
+    def tune_model(
+        self, max_trials=100, seed=None, project_name="model/rs_general/core"
+    ):
         self.tuner = RandomSearch(
             self.build_model,
             max_trials=max_trials,
@@ -90,12 +92,12 @@ class WaterPollutionModel:
             validation_data=(self.X_test, self.y_test),
             callbacks=[
                 ModelCheckpoint(
-                    filepath="model/general/best_model.h5",
+                    filepath="model/rs_general/best_model.h5",
                     monitor="val_loss",
                     save_best_only=True,
                 ),
                 EarlyStopping(monitor="val_loss", patience=10),
-                TensorBoard(log_dir="./model/general/logs"),
+                TensorBoard(log_dir="./model/rs_general/logs"),
             ],
         )
 
@@ -109,17 +111,17 @@ class WaterPollutionModel:
             validation_data=(self.X_test, self.y_test),
             callbacks=[
                 ModelCheckpoint(
-                    filepath="model/general/best_model.h5",
+                    filepath="model/rs_general/best_model.h5",
                     monitor="val_loss",
                     save_best_only=True,
                 ),
                 EarlyStopping(monitor="val_loss", patience=10),
-                TensorBoard(log_dir="./model/general/logs"),
+                TensorBoard(log_dir="./model/rs_general/logs"),
             ],
         )
-        self.model.load_weights("model/general/best_model.h5")
+        self.model.load_weights("model/rs_general/best_model.h5")
 
-    def save_model_architecture(self, filename="model/general/architecture.json"):
+    def save_model_architecture(self, filename="model/rs_general/architecture.json"):
         model_json = self.model.to_json()
         with open(filename, "w") as json_file:
             json_file.write(model_json)
@@ -137,7 +139,7 @@ class WaterPollutionModel:
         plt.ylabel("Loss")
         plt.title("Training and Validation Loss")
         plt.legend()
-        plt.savefig("model/general/loss_plot.png")
+        plt.savefig("model/rs_general/loss_plot.png")
         plt.close()
 
     def plot_mae(self):
@@ -149,10 +151,12 @@ class WaterPollutionModel:
         plt.ylabel("MAE")
         plt.title("Training and Validation MAE")
         plt.legend()
-        plt.savefig("model/general/mae_plot.png")
+        plt.savefig("model/rs_general/mae_plot.png")
         plt.close()
 
-    def plot_model_architecture(self, filename="model/general/model_architecture.png"):
+    def plot_model_architecture(
+        self, filename="model/rs_general/model_architecture.png"
+    ):
         plot_model(
             self.model, to_file=filename, show_shapes=True, show_layer_names=True
         )
