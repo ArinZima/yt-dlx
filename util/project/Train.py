@@ -128,7 +128,7 @@ class WaterPollutionModel:
         print(f"Mean Absolute Error: {mae}")
 
     def plot_loss(self):
-        sns.set(style="whitegrid")
+        sns.set_theme(style="whitegrid")
         plt.figure(figsize=(10, 6))
         plt.plot(self.history.history["loss"], label="Training Loss")
         plt.plot(self.history.history["val_loss"], label="Validation Loss")
@@ -137,11 +137,10 @@ class WaterPollutionModel:
         plt.title("Training and Validation Loss")
         plt.legend()
         plt.savefig("model/full/loss_plot.png")
-        plt.show()
         plt.close()
 
     def plot_mae(self):
-        sns.set(style="whitegrid")
+        sns.set_theme(style="whitegrid")
         plt.figure(figsize=(10, 6))
         plt.plot(self.history.history["mae"], label="Training MAE")
         plt.plot(self.history.history["val_mae"], label="Validation MAE")
@@ -150,7 +149,6 @@ class WaterPollutionModel:
         plt.title("Training and Validation MAE")
         plt.legend()
         plt.savefig("model/full/mae_plot.png")
-        plt.show()
         plt.close()
 
 
