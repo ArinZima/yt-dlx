@@ -2,6 +2,7 @@ import pandas as pd
 import seaborn as sns
 from tensorflow import keras
 import matplotlib.pyplot as plt
+from keras.utils import plot_model
 from keras import layers, regularizers
 from keras_tuner.tuners import RandomSearch
 from sklearn.preprocessing import LabelEncoder
@@ -160,6 +161,11 @@ class WaterPollutionModel:
         plt.savefig("model/guwahati/mae_plot.png")
         plt.close()
 
+    def plot_model_architecture(self, filename="model/guwahati/model_architecture.png"):
+        plot_model(
+            self.model, to_file=filename, show_shapes=True, show_layer_names=True
+        )
+
 
 data_path = "db/Guwahati.csv"
 water_model = WaterPollutionModel(data_path)
@@ -171,3 +177,4 @@ water_model.save_model_architecture()
 water_model.evaluate_model()
 water_model.plot_loss()
 water_model.plot_mae()
+water_model.plot_model_architecture()
