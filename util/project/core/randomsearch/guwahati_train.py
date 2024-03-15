@@ -5,9 +5,18 @@ import matplotlib.pyplot as plt
 from keras.utils import plot_model
 from keras import layers, regularizers
 from keras_tuner.tuners import RandomSearch
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
+
+callbacks = [
+    ModelCheckpoint(
+        monitor="val_loss",
+        save_best_only=True,
+        filepath="model/rs_guwahati/best_model.h5",
+    ),
+    EarlyStopping(monitor="val_loss", patience=10),
+    TensorBoard(log_dir="./model/rs_guwahati/logs"),
+]
 
 
 class WaterPollutionModel:
@@ -18,7 +27,6 @@ class WaterPollutionModel:
         self.X_test = None
         self.y_train = None
         self.y_test = None
-        self.label_encoder = LabelEncoder()
         self.tuner = None
         self.model = None
         self.history = None
@@ -28,22 +36,8 @@ class WaterPollutionModel:
         self.data = self.data.dropna()
 
     def preprocess_data(self):
-        for col in self.data.columns:
-            if self.data[col].dtype == "object":
-                self.data[col] = self.label_encoder.fit_transform(self.data[col])
-        X = self.data.drop(
-            [
-                "STATION CODE",
-                "LOCATIONS",
-                "TEMPERATURE",
-                "pH",
-                "CONDUCTIVITY",
-                "BOD",
-                "NITRATE",
-                "YEAR",
-            ],
-            axis=1,
-        )
+        self.data = self.data.drop(["STATION CODE", "LOCATIONS", "YEAR"], axis=1)
+        X = self.data.drop(["CONDUCTIVITY"], axis=1)
         y = self.data["CONDUCTIVITY"]
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             X, y, test_size=0.2, random_state=42
@@ -53,29 +47,36 @@ class WaterPollutionModel:
         model = keras.Sequential()
         model.add(
             layers.Dense(
-                units=hp.Int("units_1", min_value=64, max_value=512, step=64),
-                activation="relu",
-                kernel_regularizer=regularizers.l2(0.001),
+                units=hp.Int("units_input", min_value=64, max_value=1024, step=64),
+                activation=hp.Choice(
+                    "activation_input", values=["relu", "tanh", "sigmoid"]
+                ),
+                kernel_regularizer=regularizers.l2(
+                    hp.Choice("l2_regularization_input", values=[0.001, 0.01, 0.1])
+                ),
                 input_dim=self.X_train.shape[1],
             )
         )
         model.add(
             layers.Dropout(
-                hp.Float("dropout_1", min_value=0.2, max_value=0.5, step=0.1)
+                hp.Float("dropout_input", min_value=0.2, max_value=0.5, step=0.1)
             )
         )
-
         for i in range(hp.Int("num_layers", 1, 4)):
             model.add(
                 layers.Dense(
-                    units=hp.Int(f"units_{i+2}", min_value=64, max_value=512, step=64),
-                    activation="relu",
-                    kernel_regularizer=regularizers.l2(0.001),
+                    units=hp.Int(f"units_{i+1}", min_value=64, max_value=1024, step=64),
+                    activation=hp.Choice(
+                        f"activation_{i+1}", values=["relu", "tanh", "sigmoid"]
+                    ),
+                    kernel_regularizer=regularizers.l2(
+                        hp.Choice(f"l2_regularization_{i+1}", values=[0.001, 0.01, 0.1])
+                    ),
                 )
             )
             model.add(
                 layers.Dropout(
-                    hp.Float(f"dropout_{i+2}", min_value=0.2, max_value=0.5, step=0.1)
+                    hp.Float(f"dropout_{i+1}", min_value=0.2, max_value=0.7, step=0.1)
                 )
             )
 
@@ -85,48 +86,32 @@ class WaterPollutionModel:
         return model
 
     def tune_model(
-        self, max_trials=100, seed=None, project_name="model/rs_guwahati/core"
+        self, max_trials=200, seed=None, project_name="model/rs_guwahati/core"
     ):
         self.tuner = RandomSearch(
             self.build_model,
-            max_trials=max_trials,
             seed=seed,
             objective="val_mae",
+            max_trials=max_trials,
             project_name=project_name,
         )
         self.tuner.search(
             self.X_train,
             self.y_train,
             epochs=max_trials,
+            callbacks=callbacks,
             validation_data=(self.X_test, self.y_test),
-            callbacks=[
-                ModelCheckpoint(
-                    filepath="model/rs_guwahati/best_model.h5",
-                    monitor="val_loss",
-                    save_best_only=True,
-                ),
-                EarlyStopping(monitor="val_loss", patience=10),
-                TensorBoard(log_dir="./model/rs_guwahati/logs"),
-            ],
         )
 
-    def train_best_model(self, epochs=100):
+    def train_best_model(self, epochs=200):
         best_hps = self.tuner.get_best_hyperparameters(num_trials=1)[0]
         self.model = self.tuner.hypermodel.build(best_hps)
         self.history = self.model.fit(
             self.X_train,
             self.y_train,
             epochs=epochs,
+            callbacks=callbacks,
             validation_data=(self.X_test, self.y_test),
-            callbacks=[
-                ModelCheckpoint(
-                    filepath="model/rs_guwahati/best_model.h5",
-                    monitor="val_loss",
-                    save_best_only=True,
-                ),
-                EarlyStopping(monitor="val_loss", patience=10),
-                TensorBoard(log_dir="./model/rs_guwahati/logs"),
-            ],
         )
         self.model.load_weights("model/rs_guwahati/best_model.h5")
 
@@ -137,7 +122,7 @@ class WaterPollutionModel:
 
     def evaluate_model(self):
         loss, mae = self.model.evaluate(self.X_test, self.y_test, verbose=0)
-        print(f"Mean Absolute Error: {mae}")
+        print(f"Mean Absolute Error: {mae} | Loss: {loss}")
 
     def plot_loss(self):
         sns.set_theme(style="whitegrid")

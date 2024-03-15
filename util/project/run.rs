@@ -13,7 +13,7 @@ fn main() {
     println!("2: python3 core/randomsearch/guwahati_train.py");
     println!("3: python3 core/randomsearch/general_train.py");
     println!("4: python3 core/wqi.py");
-    print!("< Enter your choice />\n:");
+    print!("Enter your choice: ");
     io::stdout().flush().unwrap();
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
