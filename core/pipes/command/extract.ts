@@ -4,11 +4,13 @@ import ytdlx from "../../base/Agent";
 export default async function extract({
   query,
   verbose,
+  autoSocks5,
 }: {
   query: string;
   verbose?: boolean;
+  autoSocks5?: boolean;
 }) {
-  const metaBody = await ytdlx({ query, verbose });
+  const metaBody = await ytdlx({ query, verbose, autoSocks5 });
   if (!metaBody) {
     return {
       message: "Unable to get response from YouTube...",

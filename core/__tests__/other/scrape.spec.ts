@@ -19,7 +19,7 @@ import type {
       query: "PERSONAL BY PLAZA",
       screenshot: false,
       autoSocks5: true,
-      verbose: true,
+      verbose: false,
       type: "video",
     })) as TypeVideo[];
     console.log(colors.green("@pass:"), "video search results received");
@@ -27,7 +27,7 @@ import type {
       query: metaTube[0]?.videoLink as string,
       screenshot: false,
       autoSocks5: true,
-      verbose: true,
+      verbose: false,
     })) as VideoInfoType;
     console.log(colors.green("@pass:"), "single video data received");
     metaTube = (await web.search.SearchVideos({
@@ -35,14 +35,14 @@ import type {
       screenshot: false,
       autoSocks5: true,
       type: "playlist",
-      verbose: true,
+      verbose: false,
     })) as TypePlaylist[];
     console.log(colors.green("@pass:"), "playlist search results received");
     metaTube = (await web.search.PlaylistInfo({
       query: metaTube[0]?.playlistLink as string,
       screenshot: false,
       autoSocks5: true,
-      verbose: true,
+      verbose: false,
     })) as PlaylistInfoType;
     console.log(colors.green("@pass:"), "single playlist data received");
   } catch (error: any) {

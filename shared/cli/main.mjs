@@ -7,8 +7,6 @@ import { z } from 'zod';
 import colors28 from 'colors';
 import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
-import spinClient from 'spinnies';
-import { randomUUID } from 'crypto';
 import { spawn, exec } from 'child_process';
 import * as fs2 from 'fs';
 import { promisify } from 'util';
@@ -116,16 +114,12 @@ async function SearchVideos(input) {
   await crawler(verbose, autoSocks5);
   let url;
   let $;
-  let spin = randomUUID();
   let content;
   let metaTube = [];
-  let spinnies = new spinClient();
   let videoElements;
   let playlistMeta = [];
   let TubeResp;
-  spinnies.add(spin, {
-    text: colors28.green("@scrape: ") + "booting chromium..."
-  });
+  console.log(colors28.green("@scrape:"), "booting chromium...");
   switch (input.type) {
     case "video":
       url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAQ%253D%253D";
@@ -133,16 +127,12 @@ async function SearchVideos(input) {
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
-      spinnies.update(spin, {
-        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
-      });
+      console.log(colors28.yellow("@scrape:"), "waiting for hydration...");
       if (screenshot) {
         await page.screenshot({
           path: "TypeVideo.png"
         });
-        spinnies.update(spin, {
-          text: colors28.yellow("@scrape: ") + "took snapshot..."
-        });
+        console.log(colors28.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = load(content);
@@ -175,9 +165,11 @@ async function SearchVideos(input) {
           description: $(vide).find(".metadata-snippet-text").text().trim() || void 0
         });
       });
-      spinnies.succeed(spin, {
-        text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
-      });
+      console.log(
+        colors28.green("@info:"),
+        colors28.white("scrapping done for"),
+        query
+      );
       TubeResp = metaTube;
       break;
     case "playlist":
@@ -186,16 +178,12 @@ async function SearchVideos(input) {
       for (let i = 0; i < 80; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
-      spinnies.update(spin, {
-        text: colors28.yellow("@scrape: ") + "waiting for hydration..."
-      });
+      console.log(colors28.yellow("@scrape:"), "waiting for hydration...");
       if (screenshot) {
         await page.screenshot({
           path: "TypePlaylist.png"
         });
-        spinnies.update(spin, {
-          text: colors28.yellow("@scrape: ") + "took snapshot..."
-        });
+        console.log(colors28.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = load(content);
@@ -212,15 +200,18 @@ async function SearchVideos(input) {
           videoCount: parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) || void 0
         });
       });
-      spinnies.succeed(spin, {
-        text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
-      });
+      console.log(
+        colors28.green("@info:"),
+        colors28.white("scrapping done for"),
+        query
+      );
       TubeResp = playlistMeta;
       break;
     default:
-      spinnies.fail(spin, {
-        text: colors28.red("@error: ") + colors28.white("wrong filter type provided.")
-      });
+      console.log(
+        colors28.red("@error:"),
+        colors28.white("wrong filter type provided.")
+      );
       TubeResp = void 0;
       break;
   }
@@ -233,7 +224,6 @@ process.on("uncaughtException", async () => await closers(browser));
 process.on("unhandledRejection", async () => await closers(browser));
 async function PlaylistInfo(input) {
   let query = "";
-  const spinnies = new spinClient();
   const QuerySchema = z.object({
     query: z.string().min(1).refine(
       async (input2) => {
@@ -271,25 +261,18 @@ async function PlaylistInfo(input) {
     input
   );
   let metaTube = [];
-  const spin = randomUUID();
   await crawler(verbose, autoSocks5);
-  spinnies.add(spin, {
-    text: colors28.green("@scrape: ") + "booting chromium..."
-  });
+  console.log(colors28.green("@scrape:"), "booting chromium...");
   await page.goto(query);
   for (let i = 0; i < 40; i++) {
     await page.evaluate(() => window.scrollBy(0, window.innerHeight));
   }
-  spinnies.update(spin, {
-    text: colors28.yellow("@scrape: ") + "waiting for hydration..."
-  });
+  console.log(colors28.yellow("@scrape:"), "waiting for hydration...");
   if (screenshot) {
     await page.screenshot({
       path: "FilterVideo.png"
     });
-    spinnies.update(spin, {
-      text: colors28.yellow("@scrape: ") + "took snapshot..."
-    });
+    console.log(colors28.yellow("@scrape:"), "took snapshot...");
   }
   const content = await page.content();
   const $ = load(content);
@@ -325,9 +308,11 @@ async function PlaylistInfo(input) {
       views: views.replace(/ views/g, "")
     });
   });
-  spinnies.succeed(spin, {
-    text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
-  });
+  console.log(
+    colors28.green("@info:"),
+    colors28.white("scrapping done for"),
+    query
+  );
   await closers(browser);
   return {
     playlistVideos: metaTube,
@@ -343,7 +328,6 @@ process.on("uncaughtException", async () => await closers(browser));
 process.on("unhandledRejection", async () => await closers(browser));
 async function VideoInfo(input) {
   let query = "";
-  const spinnies = new spinClient();
   const QuerySchema = z.object({
     query: z.string().min(1).refine(
       async (input2) => {
@@ -377,23 +361,16 @@ async function VideoInfo(input) {
   const { screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(
     input
   );
-  const spin = randomUUID();
+  console.log(colors28.green("@scrape:"), "booting chromium...");
   await crawler(verbose, autoSocks5);
-  spinnies.add(spin, {
-    text: colors28.green("@scrape: ") + "booting chromium..."
-  });
   await page.goto(query);
   for (let i = 0; i < 40; i++) {
     await page.evaluate(() => window.scrollBy(0, window.innerHeight));
   }
-  spinnies.update(spin, {
-    text: colors28.yellow("@scrape: ") + "waiting for hydration..."
-  });
+  console.log(colors28.yellow("@scrape:"), "waiting for hydration...");
   if (screenshot) {
     await page.screenshot({ path: "FilterVideo.png" });
-    spinnies.update(spin, {
-      text: colors28.yellow("@scrape: ") + "took snapshot..."
-    });
+    console.log(colors28.yellow("@scrape:"), "took snapshot...");
   }
   const videoId = await YouTubeID(query);
   await page.waitForSelector(
@@ -438,9 +415,11 @@ async function VideoInfo(input) {
     title: title.trim(),
     videoLink: "https://www.youtube.com/watch?v=" + videoId
   };
-  spinnies.succeed(spin, {
-    text: colors28.green("@info: ") + colors28.white("scrapping done for ") + query
-  });
+  console.log(
+    colors28.green("@info:"),
+    colors28.white("scrapping done for"),
+    query
+  );
   await closers(browser);
   return TubeResp;
 }
@@ -765,7 +744,7 @@ async function Engine({
 }
 
 // package.json
-var version = "5.13.0";
+var version = "5.16.0";
 
 // core/base/Agent.ts
 async function Agent({
@@ -857,9 +836,10 @@ async function Agent({
 // core/pipes/command/extract.ts
 async function extract({
   query,
-  verbose
+  verbose,
+  autoSocks5
 }) {
-  const metaBody = await Agent({ query, verbose });
+  const metaBody = await Agent({ query, verbose, autoSocks5 });
   if (!metaBody) {
     return {
       message: "Unable to get response from YouTube...",
@@ -4679,7 +4659,7 @@ var program = async () => {
       }
       const rox = spawn("sh", [
         "-c",
-        `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh && npx puppeteer browsers install chrome && node ${uLoc}/ffmpeg.mjs && node ${uLoc}/engine.mjs && chmod -R +x ${uLoc}/*`
+        `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh`
       ]);
       await Promise.all([
         new Promise((resolve, reject2) => {

@@ -43,7 +43,7 @@ const program = async () => {
       }
       const rox = spawn("sh", [
         "-c",
-        `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh && npx puppeteer browsers install chrome && node ${uLoc}/ffmpeg.mjs && node ${uLoc}/engine.mjs && chmod -R +x ${uLoc}/*`,
+        `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh`,
       ]);
       await Promise.all([
         new Promise<void>((resolve, reject) => {

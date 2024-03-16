@@ -21,7 +21,7 @@ const downloadAndExtract = async () => {
         response.body.on("data", (chunk) => {
           dSize += chunk.length;
           const progress = Math.round((dSize / tSize) * 100);
-          process.stdout.write(`@download progress: ${progress}%\r`);
+          process.stdout.write(`@download engine progress: ${progress}%\r`);
         });
         await new Promise((resolve, reject) => {
           response.body.pipe(writer);

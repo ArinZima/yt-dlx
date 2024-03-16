@@ -1,1 +1,0 @@
-Mean Absolute Error: 414.7796325683594

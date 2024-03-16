@@ -32,6 +32,7 @@ export default [
       }),
     ],
     external: [
+      "os",
       "fs",
       "path",
       "util",

@@ -2,8 +2,6 @@ import { z } from "zod";
 import colors from "colors";
 import { load } from "cheerio";
 import closers from "../closers";
-import spinClient from "spinnies";
-import { randomUUID } from "crypto";
 import YouTubeId from "../YouTubeId";
 import crawler, { browser, page } from "../crawler";
 
@@ -61,16 +59,12 @@ export default async function SearchVideos(
   await crawler(verbose, autoSocks5);
   let url: string;
   let $: cheerio.Root;
-  let spin = randomUUID();
   let content: string | Buffer;
   let metaTube: TypeVideo[] = [];
-  let spinnies = new spinClient();
   let videoElements: cheerio.Cheerio;
   let playlistMeta: TypePlaylist[] = [];
   let TubeResp: TypeVideo[] | TypePlaylist[] | undefined;
-  spinnies.add(spin, {
-    text: colors.green("@scrape: ") + "booting chromium...",
-  });
+  console.log(colors.green("@scrape:"), "booting chromium...");
   switch (input.type) {
     case "video":
       url =
@@ -81,16 +75,12 @@ export default async function SearchVideos(
       for (let i = 0; i < 40; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
-      spinnies.update(spin, {
-        text: colors.yellow("@scrape: ") + "waiting for hydration...",
-      });
+      console.log(colors.yellow("@scrape:"), "waiting for hydration...");
       if (screenshot) {
         await page.screenshot({
           path: "TypeVideo.png",
         });
-        spinnies.update(spin, {
-          text: colors.yellow("@scrape: ") + "took snapshot...",
-        });
+        console.log(colors.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = load(content);
@@ -135,10 +125,11 @@ export default async function SearchVideos(
             $(vide).find(".metadata-snippet-text").text().trim() || undefined,
         });
       });
-      spinnies.succeed(spin, {
-        text:
-          colors.green("@info: ") + colors.white("scrapping done for ") + query,
-      });
+      console.log(
+        colors.green("@info:"),
+        colors.white("scrapping done for"),
+        query
+      );
       TubeResp = metaTube;
       break;
     case "playlist":
@@ -150,16 +141,12 @@ export default async function SearchVideos(
       for (let i = 0; i < 80; i++) {
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
-      spinnies.update(spin, {
-        text: colors.yellow("@scrape: ") + "waiting for hydration...",
-      });
+      console.log(colors.yellow("@scrape:"), "waiting for hydration...");
       if (screenshot) {
         await page.screenshot({
           path: "TypePlaylist.png",
         });
-        spinnies.update(spin, {
-          text: colors.yellow("@scrape: ") + "took snapshot...",
-        });
+        console.log(colors.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = load(content);
@@ -196,17 +183,18 @@ export default async function SearchVideos(
             parseInt(vCount.replace(/ videos\nNOW PLAYING/g, "")) || undefined,
         });
       });
-      spinnies.succeed(spin, {
-        text:
-          colors.green("@info: ") + colors.white("scrapping done for ") + query,
-      });
+      console.log(
+        colors.green("@info:"),
+        colors.white("scrapping done for"),
+        query
+      );
       TubeResp = playlistMeta;
       break;
     default:
-      spinnies.fail(spin, {
-        text:
-          colors.red("@error: ") + colors.white("wrong filter type provided."),
-      });
+      console.log(
+        colors.red("@error:"),
+        colors.white("wrong filter type provided.")
+      );
       TubeResp = undefined;
       break;
   }

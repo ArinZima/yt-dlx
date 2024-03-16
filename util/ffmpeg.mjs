@@ -2,13 +2,7 @@ import fetch from "node-fetch";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { spawn } from "child_process";
-import {
-  createWriteStream,
-  existsSync,
-  readdirSync,
-  rmSync,
-  renameSync,
-} from "fs";
+import { createWriteStream, existsSync, rmSync, renameSync } from "fs";
 
 const downloadAndExtract = async () => {
   try {
@@ -42,7 +36,7 @@ const downloadAndExtract = async () => {
         response.body.on("data", (chunk) => {
           dSize += chunk.length;
           const progress = Math.round((dSize / tSize) * 100);
-          process.stdout.write(`@download progress: ${progress}%\r`);
+          process.stdout.write(`@download ffmpeg progress: ${progress}%\r`);
         });
         await new Promise((resolve, reject) => {
           response.body.pipe(writer);

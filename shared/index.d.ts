@@ -112,9 +112,10 @@ interface TubeConfig {
     };
 }
 
-declare function extract({ query, verbose, }: {
+declare function extract({ query, verbose, autoSocks5, }: {
     query: string;
     verbose?: boolean;
+    autoSocks5?: boolean;
 }): Promise<{
     audio_data: TubeConfig[];
     video_data: TubeConfig[];

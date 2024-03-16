@@ -2,8 +2,6 @@ import { z } from "zod";
 import colors from "colors";
 import { load } from "cheerio";
 import closers from "../closers";
-import spinClient from "spinnies";
-import { randomUUID } from "crypto";
 import YouTubeId from "../YouTubeId";
 import crawler, { browser, page } from "../crawler";
 
@@ -34,7 +32,6 @@ export default async function PlaylistInfo(
   input: InputYouTube
 ): Promise<PlaylistInfoType | undefined> {
   let query: string = "";
-  const spinnies = new spinClient();
   const QuerySchema = z.object({
     query: z
       .string()
@@ -75,25 +72,18 @@ export default async function PlaylistInfo(
     input
   );
   let metaTube: any[] = [];
-  const spin = randomUUID();
   await crawler(verbose, autoSocks5);
-  spinnies.add(spin, {
-    text: colors.green("@scrape: ") + "booting chromium...",
-  });
+  console.log(colors.green("@scrape:"), "booting chromium...");
   await page.goto(query);
   for (let i = 0; i < 40; i++) {
     await page.evaluate(() => window.scrollBy(0, window.innerHeight));
   }
-  spinnies.update(spin, {
-    text: colors.yellow("@scrape: ") + "waiting for hydration...",
-  });
+  console.log(colors.yellow("@scrape:"), "waiting for hydration...");
   if (screenshot) {
     await page.screenshot({
       path: "FilterVideo.png",
     });
-    spinnies.update(spin, {
-      text: colors.yellow("@scrape: ") + "took snapshot...",
-    });
+    console.log(colors.yellow("@scrape:"), "took snapshot...");
   }
   const content = await page.content();
   const $ = load(content);
@@ -142,9 +132,11 @@ export default async function PlaylistInfo(
       views: views.replace(/ views/g, ""),
     });
   });
-  spinnies.succeed(spin, {
-    text: colors.green("@info: ") + colors.white("scrapping done for ") + query,
-  });
+  console.log(
+    colors.green("@info:"),
+    colors.white("scrapping done for"),
+    query
+  );
   await closers(browser);
   return {
     playlistVideos: metaTube,
