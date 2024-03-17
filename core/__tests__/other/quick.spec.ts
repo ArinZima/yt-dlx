@@ -1,25 +1,36 @@
-console.clear();
-import fluent from "fluent-ffmpeg";
 import Agent from "../../base/Agent";
+import fluent from "fluent-ffmpeg";
+import * as os from "os";
+console.clear();
 
-async function ffmpeg(url: any, filename: any): Promise<void> {
+async function ffmpeg(
+  url: any,
+  filename: any,
+  ipAddress: string
+): Promise<void> {
   return new Promise(async (resolve, reject) => {
-    const ff = fluent(url);
-    ff.outputOptions("-c copy");
-    ff.output(filename);
-    ff.on("end", () => {
-      resolve();
-      process.stdout.write("\n");
-    });
-    ff.on("start", (command) => {
-      console.log("@command:", command);
-    });
-    ff.on("error", (error) => reject(error));
-    ff.on("progress", ({ percent }) => {
-      if (isNaN(percent)) return;
-      process.stdout.write(`\r@progress: ${filename} | ${percent.toFixed(2)}%`);
-    });
-    ff.run();
+    const numThreads = os.cpus().length * 2;
+    fluent(url)
+      .outputFormat("matroska")
+      .outputOptions("-c copy")
+      .addOption("-threads", numThreads.toString())
+      .addOption("-headers", "X-Forwarded-For: " + ipAddress)
+      .output(filename)
+      .on("end", () => {
+        resolve();
+        process.stdout.write("\n");
+      })
+      .on("start", (command) => {
+        console.log("@command:", command);
+      })
+      .on("error", (error) => reject(error))
+      .on("progress", ({ percent }) => {
+        if (isNaN(percent)) return;
+        process.stdout.write(
+          `\r@progress: ${filename} | ${percent.toFixed(2)}%`
+        );
+      })
+      .run();
   });
 }
 
@@ -32,8 +43,8 @@ async function ffmpeg(url: any, filename: any): Promise<void> {
   for (const videoArray of videoArrays) {
     for (const video of videoArray) {
       if (video?.url && video?.format) {
-        const filename = `${video.format}.mp4`;
-        await ffmpeg(video.url, filename);
+        const filename = `${video.format}.mkv`;
+        await ffmpeg(video.url, filename, Tube.ipAddress);
       }
     }
   }

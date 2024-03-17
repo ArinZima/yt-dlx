@@ -1,10 +1,8 @@
 import * as os from "os";
-import * as fs from "fs";
 import colors from "colors";
-import * as path from "path";
 import readline from "readline";
 import ffmpeg from "fluent-ffmpeg";
-import type TubeConfig from "../interface/TubeConfig";
+import type { EngineOutput } from "./Engine";
 import type { FfmpegCommand as proTubeCommand } from "fluent-ffmpeg";
 
 export type { proTubeCommand };
@@ -43,27 +41,10 @@ export default async function proTube({
   ipAddress,
 }: {
   ipAddress: string;
-  adata?: TubeConfig;
-  vdata?: TubeConfig;
+  adata?: EngineOutput;
+  vdata?: EngineOutput;
 }): Promise<proTubeCommand> {
-  let max: number = 6;
-  let dirC: string = __dirname;
   const ff: proTubeCommand = ffmpeg();
-  let ffprobepath: string, ffmpegpath: string;
-  while (max > 0) {
-    ffprobepath = path.join(dirC, "util", "ffmpeg", "bin", "ffprobe");
-    ffmpegpath = path.join(dirC, "util", "ffmpeg", "bin", "ffmpeg");
-    switch (true) {
-      case fs.existsSync(ffprobepath) && fs.existsSync(ffmpegpath):
-        ff.setFfprobePath(ffprobepath);
-        ff.setFfmpegPath(ffmpegpath);
-        max = 0;
-        break;
-      default:
-        dirC = path.join(dirC, "..");
-        max--;
-    }
-  }
   if (vdata && !adata) {
     ff.addInput(vdata.AVDownload.mediaurl);
     if (vdata.AVInfo.framespersecond) ff.withFPS(vdata.AVInfo.framespersecond);
@@ -93,7 +74,7 @@ export default async function proTube({
   );
   const numCores = os.cpus().length;
   const numThreads = numCores * 2;
-  ff.addOption("-preset", "ultrafast");
+  ff.outputOptions("-c copy");
   ff.addOption("-threads", numThreads.toString());
   ff.addOption("-headers", `X-Forwarded-For: ${ipAddress}`);
   ff.on("progress", (progress) => progressBar(progress));

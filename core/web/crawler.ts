@@ -5,7 +5,7 @@ export let page: Page;
 export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
   if (autoSocks5) {
     browser = await puppeteer.launch({
-      headless: verbose ? false : false,
+      headless: verbose ? false : true,
       ignoreHTTPSErrors: true,
       args: [
         "--no-zygote",
@@ -16,12 +16,12 @@ export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
         "--disable-dev-shm-usage",
         "--ignore-certificate-errors",
         "--allow-running-insecure-content",
-        "--proxy-server=socks5://127.0.0.1:9050",
+        // "--proxy-server=socks5://127.0.0.1:9050",
       ],
     });
   } else {
     browser = await puppeteer.launch({
-      headless: verbose ? false : false,
+      headless: verbose ? false : true,
       ignoreHTTPSErrors: true,
       args: [
         "--no-zygote",

@@ -41,9 +41,9 @@
     "start": "node util/dev.mjs",
     "prepublishOnly": "yarn clean:deps",
     "postinstall": "run-s download-files setup-permissions install-chrome",
-    "download-files": "node util/ffmpeg.mjs && node util/engine.mjs",
     "install-chrome": "npx puppeteer browsers install chrome",
-    "setup-permissions": "chmod -R +x util/*"
+    "setup-permissions": "chmod -R +x util/*",
+    "download-files": "node util/engine.mjs"
   },
   "dependencies": {
     "async-retry": "^1.3.3",
