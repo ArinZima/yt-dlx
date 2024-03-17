@@ -1,10 +1,12 @@
 import { z } from "zod";
+import * as os from "os";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
+import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
-import proTube from "../../../base/ffmpeg";
-import type { proTubeCommand } from "../../../base/ffmpeg";
+import type { FfmpegCommand } from "fluent-ffmpeg";
+import { progressBar } from "../../../base/progressBar";
 
 /**
  * AudioHighest function is designed for fetching lowest audio content from YouTube with various customization options.
@@ -39,6 +41,7 @@ const qconf = z.object({
     ])
     .optional(),
 });
+
 export default async function AudioLowest(input: {
   query: string;
   output?: string;
@@ -61,16 +64,13 @@ export default async function AudioLowest(input: {
     | "superslow"
     | "vaporwave"
     | "superspeed";
-}): Promise<void | {
-  filename: string;
-  ffmpeg: proTubeCommand;
-}> {
+}): Promise<void | { filename: string; ffmpeg: FfmpegCommand }> {
   const { query, output, stream, verbose, filter, autoSocks5 } =
     await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, autoSocks5 });
   if (engineData === undefined) {
     throw new Error(
-      colors.red("@error: ") + "unable to get response from youtube."
+      colors.red("@error: ") + "unable to get response from YouTube."
     );
   } else {
     const title: string = engineData.metaData.title.replace(
@@ -80,91 +80,107 @@ export default async function AudioLowest(input: {
     const folder = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
     let filename: string = "yt-dlx_(AudioLowest_";
-    const ffmpeg: proTubeCommand = await proTube({
-      adata: engineData.LowAudioDRC || engineData.LowAudio,
-      ipAddress: engineData.ipAddress,
-    });
-    ffmpeg.withOutputFormat("avi");
+    const numThreads = os.cpus().length * 2;
+    const ff: FfmpegCommand = ffmpeg();
+    const adata =
+      Array.isArray(engineData.LowAudioDRC) && engineData.LowAudioDRC.length > 0
+        ? engineData.LowAudioDRC[engineData.LowAudioDRC.length - 1]?.url
+        : Array.isArray(engineData.LowAudio) && engineData.LowAudio.length > 0
+        ? engineData.LowAudio[engineData.LowAudio.length - 1]?.url
+        : undefined;
+    // ff.outputOptions("-c copy");
+    ff.addOption("-threads", numThreads.toString());
+    ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+    if (adata) {
+      console.log(adata);
+      ff.input(adata.toString());
+    } else throw new Error(colors.red("@error: ") + "No audio data found.");
+    ff.withOutputFormat("avi");
     switch (filter) {
       case "bassboost":
-        ffmpeg.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+        ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
         filename += `bassboost)_${title}.avi`;
         break;
       case "echo":
-        ffmpeg.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+        ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
         filename += `echo)_${title}.avi`;
         break;
       case "flanger":
-        ffmpeg.withAudioFilter(["flanger"]);
+        ff.withAudioFilter(["flanger"]);
         filename += `flanger)_${title}.avi`;
         break;
       case "nightcore":
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+        ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
         filename += `nightcore)_${title}.avi`;
         break;
       case "panning":
-        ffmpeg.withAudioFilter(["apulsator=hz=0.08"]);
+        ff.withAudioFilter(["apulsator=hz=0.08"]);
         filename += `panning)_${title}.avi`;
         break;
       case "phaser":
-        ffmpeg.withAudioFilter(["aphaser=in_gain=0.4"]);
+        ff.withAudioFilter(["aphaser=in_gain=0.4"]);
         filename += `phaser)_${title}.avi`;
         break;
       case "reverse":
-        ffmpeg.withAudioFilter(["areverse"]);
+        ff.withAudioFilter(["areverse"]);
         filename += `reverse)_${title}.avi`;
         break;
       case "slow":
-        ffmpeg.withAudioFilter(["atempo=0.8"]);
+        ff.withAudioFilter(["atempo=0.8"]);
         filename += `slow)_${title}.avi`;
         break;
       case "speed":
-        ffmpeg.withAudioFilter(["atempo=2"]);
+        ff.withAudioFilter(["atempo=2"]);
         filename += `speed)_${title}.avi`;
         break;
       case "subboost":
-        ffmpeg.withAudioFilter(["asubboost"]);
+        ff.withAudioFilter(["asubboost"]);
         filename += `subboost)_${title}.avi`;
         break;
       case "superslow":
-        ffmpeg.withAudioFilter(["atempo=0.5"]);
+        ff.withAudioFilter(["atempo=0.5"]);
         filename += `superslow)_${title}.avi`;
         break;
       case "superspeed":
-        ffmpeg.withAudioFilter(["atempo=3"]);
+        ff.withAudioFilter(["atempo=3"]);
         filename += `superspeed)_${title}.avi`;
         break;
       case "surround":
-        ffmpeg.withAudioFilter(["surround"]);
+        ff.withAudioFilter(["surround"]);
         filename += `surround)_${title}.avi`;
         break;
       case "vaporwave":
-        ffmpeg.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+        ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
         filename += `vaporwave)_${title}.avi`;
         break;
       case "vibrato":
-        ffmpeg.withAudioFilter(["vibrato=f=6.5"]);
+        ff.withAudioFilter(["vibrato=f=6.5"]);
         filename += `vibrato)_${title}.avi`;
         break;
       default:
         filename += `)_${title}.avi`;
         break;
     }
+    ff.on("error", (error) => {
+      throw new Error(error.message);
+    });
+    ff.on("end", () => process.stdout.write("\n"));
+    ff.on("progress", (progress) => progressBar(progress));
     if (stream) {
       return {
-        ffmpeg,
+        ffmpeg: ff,
         filename: output
           ? path.join(folder, filename)
           : filename.replace("_)_", ")_"),
       };
     } else {
-      await new Promise<void>((resolve, _reject) => {
-        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", (error) => {
-          throw new Error(colors.red("@error: ") + error.message);
+      await new Promise<void>((resolve, reject) => {
+        ff.output(path.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          reject(new Error(colors.red("@error: ") + error.message));
         });
-        ffmpeg.run();
+        ff.run();
       });
     }
     console.log(
@@ -173,7 +189,7 @@ export default async function AudioLowest(input: {
       colors.green("yt-dlx."),
       "Consider",
       colors.green("🌟starring"),
-      "the github repo",
+      "the GitHub repo",
       colors.green("https://github.com/yt-dlx\n")
     );
   }
