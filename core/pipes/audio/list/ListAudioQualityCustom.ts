@@ -5,7 +5,6 @@ import * as path from "path";
 import web from "../../../web";
 import ytdlx from "../../../base/Agent";
 import proTube from "../../../base/ffmpeg";
-import bigEntry from "../../../base/bigEntry";
 import YouTubeID from "../../../web/YouTubeId";
 import type { proTubeCommand } from "../../../base/ffmpeg";
 
@@ -138,16 +137,18 @@ export default async function ListAudioQualityCustom(input: {
         );
         continue;
       }
-      const customData = engineData.AudioStore.filter(
-        (op) => op.AVDownload.formatnote === quality
-      );
+      const customData =
+        engineData.HighAudioDRC.filter((op) => op.format_note === quality) ||
+        engineData.HighAudio.filter((op) => op.format_note === quality) ||
+        engineData.LowAudioDRC.filter((op) => op.format_note === quality) ||
+        engineData.LowAudio.filter((op) => op.format_note === quality);
       if (!customData) {
         console.log(
           colors.red("@error: ") + quality + " not found in the video."
         );
         continue;
       }
-      const title: string = engineData.metaTube.title.replace(
+      const title: string = engineData.metaData.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
@@ -155,8 +156,8 @@ export default async function ListAudioQualityCustom(input: {
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;
       const ffmpeg: proTubeCommand = await proTube({
-        adata: await bigEntry(customData),
         ipAddress: engineData.ipAddress,
+        adata: customData,
       });
       ffmpeg.withOutputFormat("avi");
       switch (filter) {

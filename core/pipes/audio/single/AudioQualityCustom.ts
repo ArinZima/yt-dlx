@@ -4,7 +4,6 @@ import colors from "colors";
 import * as path from "path";
 import ytdlx from "../../../base/Agent";
 import proTube from "../../../base/ffmpeg";
-import bigEntry from "../../../base/bigEntry";
 import type { proTubeCommand } from "../../../base/ffmpeg";
 
 /**
@@ -76,23 +75,25 @@ export default async function AudioQualityCustom(input: {
       colors.red("@error: ") + "unable to get response from youtube."
     );
   } else {
-    const customData = engineData.AudioStore.filter(
-      (op) => op.AVDownload.formatnote === quality
-    );
+    const customData =
+      engineData.HighAudioDRC.filter((op) => op.format_note === quality) ||
+      engineData.HighAudio.filter((op) => op.format_note === quality) ||
+      engineData.LowAudioDRC.filter((op) => op.format_note === quality) ||
+      engineData.LowAudio.filter((op) => op.format_note === quality);
     if (!customData) {
       throw new Error(
         colors.red("@error: ") + quality + " not found in the video."
       );
     }
-    const title: string = engineData.metaTube.title.replace(
+    const title: string = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
     const folder = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
     const ffmpeg: proTubeCommand = await proTube({
-      adata: await bigEntry(customData),
       ipAddress: engineData.ipAddress,
+      adata: customData,
     });
     ffmpeg.withOutputFormat("avi");
     let filename: string = `yt-dlx_(AudioQualityCustom_${quality}`;

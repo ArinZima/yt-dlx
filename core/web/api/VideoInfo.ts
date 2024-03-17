@@ -64,7 +64,6 @@ export default async function VideoInfo(
   for (let i = 0; i < 40; i++) {
     await page.evaluate(() => window.scrollBy(0, window.innerHeight));
   }
-  console.log(colors.yellow("@scrape:"), "waiting for hydration...");
   if (screenshot) {
     await page.screenshot({ path: "FilterVideo.png" });
     console.log(colors.yellow("@scrape:"), "took snapshot...");

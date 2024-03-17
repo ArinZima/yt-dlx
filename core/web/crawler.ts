@@ -5,7 +5,7 @@ export let page: Page;
 export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
   if (autoSocks5) {
     browser = await puppeteer.launch({
-      headless: verbose ? false : true,
+      headless: verbose ? false : false,
       ignoreHTTPSErrors: true,
       args: [
         "--no-zygote",
@@ -21,7 +21,7 @@ export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
     });
   } else {
     browser = await puppeteer.launch({
-      headless: verbose ? false : true,
+      headless: verbose ? false : false,
       ignoreHTTPSErrors: true,
       args: [
         "--no-zygote",

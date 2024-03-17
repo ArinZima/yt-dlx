@@ -58,7 +58,7 @@ export default async function VideoLowest(input: {
       colors.red("@error: ") + "unable to get response from youtube."
     );
   } else {
-    const title: string = engineData.metaTube.title.replace(
+    const title: string = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
@@ -68,7 +68,7 @@ export default async function VideoLowest(input: {
       vdata: await lowEntry(engineData.VideoStore),
       ipAddress: engineData.ipAddress,
     });
-    ffmpeg.addInput(engineData.metaTube.thumbnail);
+    ffmpeg.addInput(engineData.metaData.thumbnail);
     ffmpeg.withOutputFormat("matroska");
     let filename: string = "yt-dlx_(VideoLowest_";
     switch (filter) {

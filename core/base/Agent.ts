@@ -10,7 +10,7 @@ import niptor from "./niptor";
 import Engine from "./Engine";
 import YouTubeID from "../web/YouTubeId";
 import { version } from "../../package.json";
-import type EngineResult from "../interface/EngineResult";
+import type { EngineOutput } from "./Engine";
 
 export default async function Agent({
   query,
@@ -20,7 +20,7 @@ export default async function Agent({
   query: string;
   verbose?: boolean;
   autoSocks5?: boolean;
-}): Promise<EngineResult> {
+}): Promise<EngineOutput> {
   console.log(
     colors.green("@info:"),
     "using",
@@ -40,7 +40,7 @@ export default async function Agent({
   ipAddress = nipTor.stdout.trim();
   if (autoSocks5) {
     nipTor = await niptor([
-      "systemctl restart tor && sleep 2 && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
+      "systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
     ]);
     if (nipTor.stdout.trim().length > 0) {
       console.log(
@@ -52,7 +52,7 @@ export default async function Agent({
       ipAddress = nipTor.stdout.trim();
     } else throw new Error("Unable to connect to Tor.");
   }
-  let respEngine: EngineResult | undefined = undefined;
+  let respEngine: EngineOutput | undefined = undefined;
   let videoId: string | undefined = await YouTubeID(query);
   let TubeBody: TypeVideo[] | VideoInfoType | TypePlaylist[] | PlaylistInfoType;
   if (!videoId) {

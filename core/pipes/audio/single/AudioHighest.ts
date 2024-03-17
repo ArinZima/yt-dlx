@@ -4,7 +4,6 @@ import colors from "colors";
 import * as path from "path";
 import ytdlx from "../../../base/Agent";
 import proTube from "../../../base/ffmpeg";
-import bigEntry from "../../../base/bigEntry";
 import type { proTubeCommand } from "../../../base/ffmpeg";
 
 /**
@@ -74,7 +73,7 @@ export default async function AudioHighest(input: {
       colors.red("@error: ") + "unable to get response from youtube."
     );
   } else {
-    const title: string = engineData.metaTube.title.replace(
+    const title: string = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
@@ -82,7 +81,7 @@ export default async function AudioHighest(input: {
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
     let filename: string = "yt-dlx_(AudioHighest_";
     const ffmpeg: proTubeCommand = await proTube({
-      adata: await bigEntry(engineData.AudioStore),
+      adata: engineData.HighAudioDRC || engineData.HighAudio,
       ipAddress: engineData.ipAddress,
     });
     ffmpeg.withOutputFormat("avi");
