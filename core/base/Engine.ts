@@ -12,12 +12,22 @@ export const sizeFormat: sizeFormat = (filesize: number): string | number => {
   const bytesPerMegabyte = 1024 * 1024;
   const bytesPerGigabyte = bytesPerMegabyte * 1024;
   const bytesPerTerabyte = bytesPerGigabyte * 1024;
-  if (filesize < bytesPerMegabyte) return filesize + " B";
-  else if (filesize < bytesPerGigabyte) {
-    return (filesize / bytesPerMegabyte).toFixed(2) + " MB";
-  } else if (filesize < bytesPerTerabyte) {
-    return (filesize / bytesPerGigabyte).toFixed(2) + " GB";
-  } else return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
+  let formattedSize: string | number;
+  switch (true) {
+    case filesize < bytesPerMegabyte:
+      formattedSize = filesize + " B";
+      break;
+    case filesize < bytesPerGigabyte:
+      formattedSize = (filesize / bytesPerMegabyte).toFixed(2) + " MB";
+      break;
+    case filesize < bytesPerTerabyte:
+      formattedSize = (filesize / bytesPerGigabyte).toFixed(2) + " GB";
+      break;
+    default:
+      formattedSize = (filesize / bytesPerTerabyte).toFixed(2) + " TB";
+      break;
+  }
+  return formattedSize;
 };
 
 export interface AudioFormat {
@@ -138,12 +148,15 @@ export default async function Engine({
     dirC = process.cwd();
   while (maxT > 0) {
     const enginePath = path.join(dirC, "util", "engine");
-    if (fs.existsSync(enginePath)) {
-      pLoc = enginePath;
-      break;
-    } else {
-      dirC = path.join(dirC, "..");
-      maxT--;
+    switch (true) {
+      case fs.existsSync(enginePath):
+        pLoc = enginePath;
+        maxT = 0;
+        break;
+      default:
+        dirC = path.join(dirC, "..");
+        maxT--;
+        break;
     }
   }
   const metaCore = await retry(
@@ -164,43 +177,54 @@ export default async function Engine({
   const i = JSON.parse(metaCore.stdout.toString());
   i.formats.forEach((tube: any) => {
     const rm = new Set(["storyboard", "Default"]);
-    if (
-      !rm.has(tube.format_note) &&
-      tube.protocol === "m3u8_native" &&
-      tube.vbr
-    ) {
-      if (
-        !LowManifest[tube.resolution] ||
-        tube.vbr < LowManifest[tube.resolution].vbr
-      )
-        LowManifest[tube.resolution] = tube;
-      if (
-        !HighManifest[tube.resolution] ||
-        tube.vbr > HighManifest[tube.resolution].vbr
-      )
-        HighManifest[tube.resolution] = tube;
-    }
-    if (rm.has(tube.format_note) || tube.filesize === undefined || null) return;
-    if (tube.format_note.includes("DRC")) {
-      if (LowAudio[tube.resolution] && !LowAudioDRC[tube.resolution]) {
-        LowAudioDRC[tube.resolution] = LowAudio[tube.resolution];
-      }
-      if (HighAudio[tube.resolution] && !HighAudioDRC[tube.resolution]) {
-        HighAudioDRC[tube.resolution] = HighAudio[tube.resolution];
-      }
-      LowAudioDRC[tube.format_note] = tube;
-      HighAudioDRC[tube.format_note] = tube;
-    } else if (tube.format_note.includes("HDR")) {
-      if (
-        !LowVideoHDR[tube.format_note] ||
-        tube.filesize < LowVideoHDR[tube.format_note].filesize
-      )
-        LowVideoHDR[tube.format_note] = tube;
-      if (
-        !HighVideoHDR[tube.format_note] ||
-        tube.filesize > HighVideoHDR[tube.format_note].filesize
-      )
-        HighVideoHDR[tube.format_note] = tube;
+    switch (true) {
+      case !rm.has(tube.format_note) &&
+        tube.protocol === "m3u8_native" &&
+        tube.vbr:
+        switch (true) {
+          case !LowManifest[tube.resolution] ||
+            tube.vbr < LowManifest[tube.resolution].vbr:
+            LowManifest[tube.resolution] = tube;
+            break;
+          case !HighManifest[tube.resolution] ||
+            tube.vbr > HighManifest[tube.resolution].vbr:
+            HighManifest[tube.resolution] = tube;
+            break;
+        }
+        break;
+      case rm.has(tube.format_note) ||
+        tube.filesize === undefined ||
+        tube.filesize === null:
+        return;
+      default:
+        switch (true) {
+          case tube.format_note.includes("DRC"):
+            switch (true) {
+              case LowAudio[tube.resolution] && !LowAudioDRC[tube.resolution]:
+                LowAudioDRC[tube.resolution] = LowAudio[tube.resolution];
+                break;
+              case HighAudio[tube.resolution] && !HighAudioDRC[tube.resolution]:
+                HighAudioDRC[tube.resolution] = HighAudio[tube.resolution];
+                break;
+            }
+            LowAudioDRC[tube.format_note] = tube;
+            HighAudioDRC[tube.format_note] = tube;
+            break;
+
+          case tube.format_note.includes("HDR"):
+            switch (true) {
+              case !LowVideoHDR[tube.format_note] ||
+                tube.filesize < LowVideoHDR[tube.format_note].filesize:
+                LowVideoHDR[tube.format_note] = tube;
+                break;
+              case !HighVideoHDR[tube.format_note] ||
+                tube.filesize > HighVideoHDR[tube.format_note].filesize:
+                HighVideoHDR[tube.format_note] = tube;
+                break;
+            }
+            break;
+        }
+        break;
     }
     const prevLowVideo = LowVideo[tube.format_note];
     const prevHighVideo = HighVideo[tube.format_note];
@@ -208,16 +232,24 @@ export default async function Engine({
     const prevHighAudio = HighAudio[tube.format_note];
     switch (true) {
       case tube.format_note.includes("p"):
-        if (!prevLowVideo || tube.filesize < prevLowVideo.filesize)
-          LowVideo[tube.format_note] = tube;
-        if (!prevHighVideo || tube.filesize > prevHighVideo.filesize)
-          HighVideo[tube.format_note] = tube;
+        switch (true) {
+          case !prevLowVideo || tube.filesize < prevLowVideo.filesize:
+            LowVideo[tube.format_note] = tube;
+            break;
+          case !prevHighVideo || tube.filesize > prevHighVideo.filesize:
+            HighVideo[tube.format_note] = tube;
+            break;
+        }
         break;
       default:
-        if (!prevLowAudio || tube.filesize < prevLowAudio.filesize)
-          LowAudio[tube.format_note] = tube;
-        if (!prevHighAudio || tube.filesize > prevHighAudio.filesize)
-          HighAudio[tube.format_note] = tube;
+        switch (true) {
+          case !prevLowAudio || tube.filesize < prevLowAudio.filesize:
+            LowAudio[tube.format_note] = tube;
+            break;
+          case !prevHighAudio || tube.filesize > prevHighAudio.filesize:
+            HighAudio[tube.format_note] = tube;
+            break;
+        }
         break;
     }
   });

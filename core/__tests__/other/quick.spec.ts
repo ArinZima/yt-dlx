@@ -1,34 +1,18 @@
 console.clear();
-import AudioHighest from "../../pipes/audio/single/AudioHighest";
-import AudioLowest from "../../pipes/audio/single/AudioLowest";
-import VideoHighest from "../../pipes/video/single/VideoHighest";
-import VideoLowest from "../../pipes/video/single/VideoLowest";
+import fs from "fs";
+import Agent from "../../base/Agent";
 
 (async () => {
-  await AudioHighest({
-    verbose: false,
+  const data = await Agent({
     autoSocks5: true,
     query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
   });
 
-  await AudioLowest({
-    verbose: false,
-    autoSocks5: true,
-    query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-  });
-
-  await VideoHighest({
-    verbose: false,
-    autoSocks5: true,
-    query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-  });
-
-  await VideoLowest({
-    verbose: false,
-    autoSocks5: true,
-    query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-  });
+  const jsonData = JSON.stringify(data, null, 2);
+  fs.writeFileSync("data.json", jsonData);
+  console.log("Data saved to data.json");
 })();
+
 // ===========================================================================
 // console.clear();
 // import { Client } from "youtubei";
