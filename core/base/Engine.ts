@@ -3,7 +3,7 @@ import * as path from "path";
 import retry from "async-retry";
 import { promisify } from "util";
 import { exec } from "child_process";
-
+// =====================================================================================
 export interface sizeFormat {
   (filesize: number): string | number;
 }
@@ -20,84 +20,11 @@ export const sizeFormat: sizeFormat = (filesize: number): string | number => {
   } else return (filesize / bytesPerTerabyte).toFixed(2) + " TB";
 };
 // =====================================================================================
-function propfilter(formats: any[]) {
-  return formats.filter((i) => {
-    return !i.format_note.includes("DRC") && !i.format_note.includes("HDR");
-  });
-}
-function pAudio(i: any) {
-  return {
-    filesize: i.filesize as number,
-    filesizeP: sizeFormat(i.filesize) as string,
-    asr: parseFloat(i.asr) as number,
-    format_id: i.format_id as string,
-    format_note: i.format_note as string,
-    has_drm: i.has_drm as boolean,
-    tbr: parseFloat(i.tbr) as number,
-    url: i.url as string,
-    ext: i.ext as string,
-    acodec: i.acodec as string,
-    container: i.container as string,
-    resolution: i.resolution as string,
-    audio_ext: i.audio_ext as string,
-    abr: parseFloat(i.abr) as number,
-    format: i.format as string,
-  };
-}
-function pVideo(i: any) {
-  return {
-    filesize: i.filesize as number,
-    filesizeP: sizeFormat(i.filesize) as string,
-    format_id: parseFloat(i.format_id) as number,
-    format_note: i.format_note as string,
-    fps: parseFloat(i.fps) as number,
-    height: parseFloat(i.height) as number,
-    width: parseFloat(i.width) as number,
-    has_drm: i.has_drm as boolean,
-    tbr: parseFloat(i.tbr) as number,
-    url: i.url as string,
-    ext: i.ext as string,
-    vcodec: i.vcodec as string,
-    dynamic_range: i.dynamic_range as string,
-    container: i.container as string,
-    resolution: i.resolution as string,
-    aspect_ratio: parseFloat(i.aspect_ratio) as number,
-    video_ext: i.video_ext as string,
-    vbr: parseFloat(i.vbr) as number,
-    format: i.format as string,
-  };
-}
-function pManifest(i: any) {
-  return {
-    format_id: parseFloat(i.format_id) as number,
-    url: i.url as string,
-    manifest_url: i.manifest_url as string,
-    tbr: parseFloat(i.tbr) as number,
-    ext: i.ext as string,
-    fps: parseFloat(i.fps) as number,
-    quality: parseFloat(i.quality) as number,
-    has_drm: i.has_drm as boolean,
-    width: parseFloat(i.width) as number,
-    height: parseFloat(i.height) as number,
-    vcodec: i.vcodec as string,
-    acodec: i.acodec as string,
-    dynamic_range: i.dynamic_range as string,
-    aspect_ratio: parseFloat(i.aspect_ratio) as number,
-    video_ext: i.video_ext as string,
-    audio_ext: i.audio_ext as string,
-    abr: parseFloat(i.abr) as number,
-    vbr: parseFloat(i.vbr) as number,
-    format: i.format as string,
-  };
-}
-// =====================================================================================
 export interface AudioFormat {
   filesize: number;
   filesizeP: string | number;
   asr: number;
-  format_id: string;
   format_note: string;
-  has_drm: boolean;
   tbr: number;
   url: string;
   ext: string;
@@ -111,12 +38,10 @@ export interface AudioFormat {
 export interface VideoFormat {
   filesize: number;
   filesizeP: string | number;
-  format_id: number;
   format_note: string;
   fps: number;
   height: number;
   width: number;
-  has_drm: boolean;
   tbr: number;
   url: string;
   ext: string;
@@ -130,23 +55,17 @@ export interface VideoFormat {
   format: string;
 }
 export interface ManifestFormat {
-  format_id: number;
   url: string;
   manifest_url: string;
   tbr: number;
   ext: string;
   fps: number;
-  quality: number;
-  has_drm: boolean;
   width: number;
   height: number;
   vcodec: string;
-  acodec: string;
   dynamic_range: string;
   aspect_ratio: number;
   video_ext: string;
-  audio_ext: string;
-  abr: number;
   vbr: number;
   format: string;
 }
@@ -174,16 +93,20 @@ export interface VideoInfo {
 export interface EngineOutput {
   ipAddress: string;
   metaData: VideoInfo;
+  LowestAudioFileSize: AudioFormat;
+  HighestAudioFileSize: AudioFormat;
+  LowestVideoFileSize: VideoFormat;
+  HighestVideoFileSize: VideoFormat;
+  LowAudioDRC: AudioFormat[];
+  HighAudioDRC: AudioFormat[];
   LowAudio: AudioFormat[];
   HighAudio: AudioFormat[];
+  LowVideoHDR: VideoFormat[];
+  HighVideoHDR: VideoFormat[];
   LowVideo: VideoFormat[];
   HighVideo: VideoFormat[];
   LowManifest: ManifestFormat[];
   HighManifest: ManifestFormat[];
-  LowAudioDRC: AudioFormat[];
-  HighAudioDRC: AudioFormat[];
-  LowVideoHDR: VideoFormat[];
-  HighVideoHDR: VideoFormat[];
 }
 // =====================================================================================
 export default async function Engine({
@@ -205,6 +128,10 @@ export default async function Engine({
   let HighAudioDRC: any = {};
   let LowVideoHDR: any = {};
   let HighVideoHDR: any = {};
+  let LowestAudioFileSize: AudioFormat | null = null;
+  let HighestAudioFileSize: AudioFormat | null = null;
+  let LowestVideoFileSize: VideoFormat | null = null;
+  let HighestVideoFileSize: VideoFormat | null = null;
   let maxT = 8,
     pLoc = "",
     dirC = process.cwd();
@@ -293,8 +220,297 @@ export default async function Engine({
         break;
     }
   });
+  (Object.values(LowAudio) as AudioFormat[]).forEach((audio: AudioFormat) => {
+    if (audio.filesize !== null) {
+      switch (true) {
+        case !LowestAudioFileSize ||
+          audio.filesize < LowestAudioFileSize.filesize:
+          LowestAudioFileSize = audio;
+          break;
+        case !HighestAudioFileSize ||
+          audio.filesize > HighestAudioFileSize.filesize:
+          HighestAudioFileSize = audio;
+          break;
+        default:
+          break;
+      }
+    }
+  });
+  (Object.values(LowVideo) as VideoFormat[]).forEach((video: VideoFormat) => {
+    if (video.filesize !== null) {
+      switch (true) {
+        case !LowestVideoFileSize ||
+          video.filesize < LowestVideoFileSize.filesize:
+          LowestVideoFileSize = video;
+          break;
+        case !HighestVideoFileSize ||
+          video.filesize > HighestVideoFileSize.filesize:
+          HighestVideoFileSize = video;
+          break;
+        default:
+          break;
+      }
+    }
+  });
+  function propfilter(formats: any[]) {
+    return formats.filter((i) => {
+      return !i.format_note.includes("DRC") && !i.format_note.includes("HDR");
+    });
+  }
   const payLoad: EngineOutput = {
     ipAddress,
+    LowestAudioFileSize: (() => {
+      const pop = LowestAudioFileSize || ({} as any);
+      pop.filesizeP = sizeFormat(pop.filesize);
+      delete pop.format_id;
+      delete pop.source_preference;
+      delete pop.has_drm;
+      delete pop.quality;
+      delete pop.fps;
+      delete pop.height;
+      delete pop.width;
+      delete pop.language;
+      delete pop.language_preference;
+      delete pop.preference;
+      delete pop.dynamic_range;
+      delete pop.downloader_options;
+      delete pop.protocol;
+      delete pop.aspect_ratio;
+      delete pop.vbr;
+      delete pop.vcodec;
+      delete pop.http_headers;
+      delete pop.video_ext;
+      return pop;
+    })(),
+    HighestAudioFileSize: (() => {
+      const pop = HighestAudioFileSize || ({} as any);
+      pop.filesizeP = sizeFormat(pop.filesize);
+      delete pop.format_id;
+      delete pop.source_preference;
+      delete pop.has_drm;
+      delete pop.quality;
+      delete pop.fps;
+      delete pop.height;
+      delete pop.width;
+      delete pop.language;
+      delete pop.language_preference;
+      delete pop.preference;
+      delete pop.dynamic_range;
+      delete pop.downloader_options;
+      delete pop.protocol;
+      delete pop.aspect_ratio;
+      delete pop.vbr;
+      delete pop.vcodec;
+      delete pop.http_headers;
+      delete pop.video_ext;
+      return pop;
+    })(),
+    LowestVideoFileSize: (() => {
+      const pop = LowestVideoFileSize || ({} as any);
+      pop.filesizeP = sizeFormat(pop.filesize);
+      delete pop.asr;
+      delete pop.format_id;
+      delete pop.has_drm;
+      delete pop.quality;
+      delete pop.source_preference;
+      delete pop.audio_channels;
+      delete pop.protocol;
+      delete pop.language;
+      delete pop.language_preference;
+      delete pop.preference;
+      delete pop.acodec;
+      delete pop.downloader_options;
+      delete pop.http_headers;
+      delete pop.audio_ext;
+      delete pop.abr;
+      return pop;
+    })(),
+    HighestVideoFileSize: (() => {
+      const pop = HighestVideoFileSize || ({} as any);
+      pop.filesizeP = sizeFormat(pop.filesize);
+      delete pop.asr;
+      delete pop.format_id;
+      delete pop.has_drm;
+      delete pop.quality;
+      delete pop.source_preference;
+      delete pop.audio_channels;
+      delete pop.protocol;
+      delete pop.language;
+      delete pop.language_preference;
+      delete pop.preference;
+      delete pop.acodec;
+      delete pop.downloader_options;
+      delete pop.http_headers;
+      delete pop.audio_ext;
+      delete pop.abr;
+      return pop;
+    })(),
+    LowAudioDRC: Object.values(LowAudioDRC).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      asr: parseFloat(i.asr) as number,
+      format_note: i.format_note as string,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      acodec: i.acodec as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      audio_ext: i.audio_ext as string,
+      abr: parseFloat(i.abr) as number,
+      format: i.format as string,
+    })),
+    HighAudioDRC: Object.values(HighAudioDRC).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      asr: parseFloat(i.asr) as number,
+      format_note: i.format_note as string,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      acodec: i.acodec as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      audio_ext: i.audio_ext as string,
+      abr: parseFloat(i.abr) as number,
+      format: i.format as string,
+    })),
+    LowAudio: propfilter(Object.values(LowAudio)).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      asr: parseFloat(i.asr) as number,
+      format_note: i.format_note as string,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      acodec: i.acodec as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      audio_ext: i.audio_ext as string,
+      abr: parseFloat(i.abr) as number,
+      format: i.format as string,
+    })),
+    HighAudio: propfilter(Object.values(HighAudio)).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      asr: parseFloat(i.asr) as number,
+      format_note: i.format_note as string,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      acodec: i.acodec as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      audio_ext: i.audio_ext as string,
+      abr: parseFloat(i.abr) as number,
+      format: i.format as string,
+    })),
+    LowVideoHDR: Object.values(LowVideoHDR).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      format_note: i.format_note as string,
+      fps: parseFloat(i.fps) as number,
+      height: parseFloat(i.height) as number,
+      width: parseFloat(i.width) as number,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      vcodec: i.vcodec as string,
+      dynamic_range: i.dynamic_range as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      aspect_ratio: parseFloat(i.aspect_ratio) as number,
+      video_ext: i.video_ext as string,
+      vbr: parseFloat(i.vbr) as number,
+      format: i.format as string,
+    })),
+    HighVideoHDR: Object.values(HighVideoHDR).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      format_note: i.format_note as string,
+      fps: parseFloat(i.fps) as number,
+      height: parseFloat(i.height) as number,
+      width: parseFloat(i.width) as number,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      vcodec: i.vcodec as string,
+      dynamic_range: i.dynamic_range as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      aspect_ratio: parseFloat(i.aspect_ratio) as number,
+      video_ext: i.video_ext as string,
+      vbr: parseFloat(i.vbr) as number,
+      format: i.format as string,
+    })),
+    LowVideo: propfilter(Object.values(LowVideo)).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      format_note: i.format_note as string,
+      fps: parseFloat(i.fps) as number,
+      height: parseFloat(i.height) as number,
+      width: parseFloat(i.width) as number,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      vcodec: i.vcodec as string,
+      dynamic_range: i.dynamic_range as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      aspect_ratio: parseFloat(i.aspect_ratio) as number,
+      video_ext: i.video_ext as string,
+      vbr: parseFloat(i.vbr) as number,
+      format: i.format as string,
+    })),
+    HighVideo: propfilter(Object.values(HighVideo)).map((i: any) => ({
+      filesize: i.filesize as number,
+      filesizeP: sizeFormat(i.filesize) as string,
+      format_note: i.format_note as string,
+      fps: parseFloat(i.fps) as number,
+      height: parseFloat(i.height) as number,
+      width: parseFloat(i.width) as number,
+      tbr: parseFloat(i.tbr) as number,
+      url: i.url as string,
+      ext: i.ext as string,
+      vcodec: i.vcodec as string,
+      dynamic_range: i.dynamic_range as string,
+      container: i.container as string,
+      resolution: i.resolution as string,
+      aspect_ratio: parseFloat(i.aspect_ratio) as number,
+      video_ext: i.video_ext as string,
+      vbr: parseFloat(i.vbr) as number,
+      format: i.format as string,
+    })),
+    LowManifest: Object.values(LowManifest).map((i: any) => ({
+      url: i.url as string,
+      manifest_url: i.manifest_url as string,
+      tbr: parseFloat(i.tbr) as number,
+      ext: i.ext as string,
+      fps: parseFloat(i.fps) as number,
+      width: parseFloat(i.width) as number,
+      height: parseFloat(i.height) as number,
+      vcodec: i.vcodec as string,
+      dynamic_range: i.dynamic_range as string,
+      aspect_ratio: parseFloat(i.aspect_ratio) as number,
+      video_ext: i.video_ext as string,
+      vbr: parseFloat(i.vbr) as number,
+      format: i.format as string,
+    })),
+    HighManifest: Object.values(HighManifest).map((i: any) => ({
+      url: i.url as string,
+      manifest_url: i.manifest_url as string,
+      tbr: parseFloat(i.tbr) as number,
+      ext: i.ext as string,
+      fps: parseFloat(i.fps) as number,
+      width: parseFloat(i.width) as number,
+      height: parseFloat(i.height) as number,
+      vcodec: i.vcodec as string,
+      dynamic_range: i.dynamic_range as string,
+      aspect_ratio: parseFloat(i.aspect_ratio) as number,
+      video_ext: i.video_ext as string,
+      vbr: parseFloat(i.vbr) as number,
+      format: i.format as string,
+    })),
     metaData: {
       id: i.id as string,
       title: i.title as string,
@@ -316,16 +532,6 @@ export default async function Engine({
       uploader_url: i.uploader_url as string,
       duration_string: i.duration_string as string,
     },
-    LowAudioDRC: Object.values(LowAudioDRC).map((i: any) => pAudio(i)),
-    HighAudioDRC: Object.values(HighAudioDRC).map((i: any) => pAudio(i)),
-    LowAudio: propfilter(Object.values(LowAudio)).map((i: any) => pAudio(i)),
-    HighAudio: propfilter(Object.values(HighAudio)).map((i: any) => pAudio(i)),
-    LowVideoHDR: Object.values(LowVideoHDR).map((i: any) => pVideo(i)),
-    HighVideoHDR: Object.values(HighVideoHDR).map((i: any) => pVideo(i)),
-    LowVideo: propfilter(Object.values(LowVideo)).map((i: any) => pVideo(i)),
-    HighVideo: propfilter(Object.values(HighVideo)).map((i: any) => pVideo(i)),
-    LowManifest: Object.values(LowManifest).map((i: any) => pManifest(i)),
-    HighManifest: Object.values(HighManifest).map((i: any) => pManifest(i)),
   };
   return payLoad;
 }

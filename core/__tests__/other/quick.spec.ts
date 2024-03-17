@@ -7,7 +7,6 @@ import Agent from "../../base/Agent";
     autoSocks5: true,
     query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
   });
-
   const jsonData = JSON.stringify(data, null, 2);
   fs.writeFileSync("data.json", jsonData);
   console.log("Data saved to data.json");
