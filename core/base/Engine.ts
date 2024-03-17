@@ -123,6 +123,14 @@ export interface EngineOutput {
   HighAudioDRC: AudioFormat[];
   LowVideoHDR: VideoFormat[];
   HighVideoHDR: VideoFormat[];
+  LowAudioFileSizeDataDRC: AudioFormat[];
+  HighAudioFileSizeDataDRC: AudioFormat[];
+  LowAudioFileSizeData: AudioFormat[];
+  HighAudioFileSizeData: AudioFormat[];
+  LowVideoFileSizeDataHDR: VideoFormat[];
+  HighVideoFileSizeDataHDR: VideoFormat[];
+  LowVideoFileSizeData: VideoFormat[];
+  HighVideoFileSizeData: VideoFormat[];
 }
 export default async function Engine({
   query,
@@ -143,6 +151,14 @@ export default async function Engine({
   let HighAudioDRC: any = {};
   let LowVideoHDR: any = {};
   let HighVideoHDR: any = {};
+  let LowAudioFileSizeDataDRC: any = {};
+  let HighAudioFileSizeDataDRC: any = {};
+  let LowAudioFileSizeData: any = {};
+  let HighAudioFileSizeData: any = {};
+  let LowVideoFileSizeDataHDR: any = {};
+  let HighVideoFileSizeDataHDR: any = {};
+  let LowVideoFileSizeData: any = {};
+  let HighVideoFileSizeData: any = {};
   let maxT = 8,
     pLoc = "",
     dirC = process.cwd();
@@ -252,7 +268,86 @@ export default async function Engine({
         }
         break;
     }
+    switch (true) {
+      case tube.format_note.includes("DRC"):
+        switch (true) {
+          case tube.filesize:
+            switch (true) {
+              case !LowAudioFileSizeDataDRC[tube.format_note] ||
+                tube.filesize <
+                  LowAudioFileSizeDataDRC[tube.format_note].filesize:
+                LowAudioFileSizeDataDRC[tube.format_note] = tube;
+                break;
+              case !HighAudioFileSizeDataDRC[tube.format_note] ||
+                tube.filesize >
+                  HighAudioFileSizeDataDRC[tube.format_note].filesize:
+                HighAudioFileSizeDataDRC[tube.format_note] = tube;
+                break;
+            }
+            break;
+        }
+        break;
+      case tube.format_note.includes("HDR"):
+        switch (true) {
+          case tube.filesize:
+            switch (true) {
+              case !LowVideoFileSizeDataHDR[tube.format_note] ||
+                tube.filesize <
+                  LowVideoFileSizeDataHDR[tube.format_note].filesize:
+                LowVideoFileSizeDataHDR[tube.format_note] = tube;
+                break;
+              case !HighVideoFileSizeDataHDR[tube.format_note] ||
+                tube.filesize >
+                  HighVideoFileSizeDataHDR[tube.format_note].filesize:
+                HighVideoFileSizeDataHDR[tube.format_note] = tube;
+                break;
+            }
+            break;
+          default:
+            switch (true) {
+              case !LowVideo[tube.format_note] ||
+                tube.filesize < LowVideo[tube.format_note].filesize:
+                LowVideo[tube.format_note] = tube;
+                break;
+              case !HighVideo[tube.format_note] ||
+                tube.filesize > HighVideo[tube.format_note].filesize:
+                HighVideo[tube.format_note] = tube;
+                break;
+            }
+            break;
+        }
+        break;
+      default:
+        switch (true) {
+          case tube.filesize:
+            switch (true) {
+              case !LowAudioFileSizeData[tube.format_note] ||
+                tube.filesize < LowAudioFileSizeData[tube.format_note].filesize:
+                LowAudioFileSizeData[tube.format_note] = tube;
+                break;
+              case !HighAudioFileSizeData[tube.format_note] ||
+                tube.filesize >
+                  HighAudioFileSizeData[tube.format_note].filesize:
+                HighAudioFileSizeData[tube.format_note] = tube;
+                break;
+            }
+            switch (true) {
+              case !LowVideoFileSizeData[tube.format_note] ||
+                tube.filesize < LowVideoFileSizeData[tube.format_note].filesize:
+                LowVideoFileSizeData[tube.format_note] = tube;
+                break;
+              case !HighVideoFileSizeData[tube.format_note] ||
+                tube.filesize >
+                  HighVideoFileSizeData[tube.format_note].filesize:
+                HighVideoFileSizeData[tube.format_note] = tube;
+                break;
+            }
+            break;
+        }
+        break;
+    }
   });
+
   function propfilter(formats: any[]) {
     return formats.filter((i) => {
       return !i.format_note.includes("DRC") && !i.format_note.includes("HDR");
@@ -335,6 +430,14 @@ export default async function Engine({
     LowVideo: mapVideo(LowVideo),
     HighManifest: mapManifest(HighManifest),
     LowManifest: mapManifest(LowManifest),
+    LowAudioFileSizeDataDRC: mapAudio(LowAudioFileSizeDataDRC),
+    HighAudioFileSizeDataDRC: mapAudio(HighAudioFileSizeDataDRC),
+    LowAudioFileSizeData: mapAudio(LowAudioFileSizeData),
+    HighAudioFileSizeData: mapAudio(HighAudioFileSizeData),
+    LowVideoFileSizeDataHDR: mapVideo(LowVideoFileSizeDataHDR),
+    HighVideoFileSizeDataHDR: mapVideo(HighVideoFileSizeDataHDR),
+    LowVideoFileSizeData: mapVideo(LowVideoFileSizeData),
+    HighVideoFileSizeData: mapVideo(HighVideoFileSizeData),
     ipAddress,
     metaData: {
       id: i.id as string,
