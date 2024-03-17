@@ -1,6 +1,9 @@
 console.clear();
 import AudioHighest from "../../pipes/audio/single/AudioHighest";
 import AudioLowest from "../../pipes/audio/single/AudioLowest";
+import VideoHighest from "../../pipes/video/single/VideoHighest";
+import VideoLowest from "../../pipes/video/single/VideoLowest";
+
 (async () => {
   await AudioHighest({
     verbose: false,
@@ -9,6 +12,18 @@ import AudioLowest from "../../pipes/audio/single/AudioLowest";
   });
 
   await AudioLowest({
+    verbose: false,
+    autoSocks5: true,
+    query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+  });
+
+  await VideoHighest({
+    verbose: false,
+    autoSocks5: true,
+    query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+  });
+
+  await VideoLowest({
     verbose: false,
     autoSocks5: true,
     query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",

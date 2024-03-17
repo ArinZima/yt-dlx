@@ -86,15 +86,14 @@ export default async function AudioHighest(input: {
       Array.isArray(engineData.HighAudioDRC) &&
       engineData.HighAudioDRC.length > 0
         ? engineData.HighAudioDRC[engineData.HighAudioDRC.length - 1]?.url
-        : Array.isArray(engineData.HighAudio) && engineData.HighAudio.length > 0
-        ? engineData.HighAudio[engineData.HighAudio.length - 1]?.url
-        : undefined;
-    // ff.outputOptions("-c copy");
+        : engineData.HighAudio[engineData.HighAudio.length - 1]?.url ??
+          undefined;
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     if (adata) {
       console.log(adata);
       ff.input(adata.toString());
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     } else throw new Error(colors.red("@error: ") + "No audio data found.");
     ff.withOutputFormat("avi");
     switch (filter) {

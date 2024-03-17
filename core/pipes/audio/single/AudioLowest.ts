@@ -84,16 +84,14 @@ export default async function AudioLowest(input: {
     const ff: FfmpegCommand = ffmpeg();
     const adata =
       Array.isArray(engineData.LowAudioDRC) && engineData.LowAudioDRC.length > 0
-        ? engineData.LowAudioDRC[engineData.LowAudioDRC.length - 1]?.url
-        : Array.isArray(engineData.LowAudio) && engineData.LowAudio.length > 0
-        ? engineData.LowAudio[engineData.LowAudio.length - 1]?.url
-        : undefined;
-    // ff.outputOptions("-c copy");
+        ? engineData.LowAudioDRC[0]?.url
+        : engineData.LowAudio[0]?.url ?? undefined;
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     if (adata) {
       console.log(adata);
       ff.input(adata.toString());
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     } else throw new Error(colors.red("@error: ") + "No audio data found.");
     ff.withOutputFormat("avi");
     switch (filter) {

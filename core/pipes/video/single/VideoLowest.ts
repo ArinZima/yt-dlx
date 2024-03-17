@@ -1,14 +1,15 @@
 import { z } from "zod";
+import * as os from "os";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
+import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
-import proTube from "../../../base/ffmpeg";
-import lowEntry from "../../../base/lowEntry";
-import type { proTubeCommand } from "../../../base/ffmpeg";
+import type { FfmpegCommand } from "fluent-ffmpeg";
+import { progressBar } from "../../../base/progressBar";
 
 /**
- * VideoHighest function is designed for fetching lowest video content from YouTube with various customization options.
+ * VideoLowest function is designed for fetching lowest video content from YouTube with various customization options.
  * It allows users to specify their search query, choose output format and apply video filters like invert, rotate90, grayscale, and more.
  * It also allows user to specify verbose output and adding proxies.
  * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
@@ -48,7 +49,7 @@ export default async function VideoLowest(input: {
     | "flipHorizontal";
 }): Promise<void | {
   filename: string;
-  ffmpeg: proTubeCommand;
+  ffmpeg: FfmpegCommand;
 }> {
   const { query, stream, verbose, output, filter, autoSocks5 } =
     await qconf.parseAsync(input);
@@ -64,63 +65,76 @@ export default async function VideoLowest(input: {
     );
     const folder = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-    const ffmpeg: proTubeCommand = await proTube({
-      vdata: await lowEntry(engineData.VideoStore),
-      ipAddress: engineData.ipAddress,
-    });
-    ffmpeg.addInput(engineData.metaData.thumbnail);
-    ffmpeg.withOutputFormat("matroska");
+
+    const numThreads = os.cpus().length * 2;
+    const ff: FfmpegCommand = ffmpeg();
+    const vdata =
+      Array.isArray(engineData.LowManifest) && engineData.LowManifest.length > 0
+        ? engineData.LowManifest[0]?.url
+        : undefined;
+    ff.outputOptions("-c copy");
+    ff.addOption("-threads", numThreads.toString());
+    if (vdata) {
+      console.log(vdata);
+      ff.input(vdata.toString());
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+    } else throw new Error(colors.red("@error: ") + "No video data found.");
+    ff.addInput(engineData.metaData.thumbnail);
+    ff.withOutputFormat("matroska");
     let filename: string = "yt-dlx_(VideoLowest_";
     switch (filter) {
       case "grayscale":
-        ffmpeg.withVideoFilter(
-          "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
-        );
+        ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
         filename += `grayscale)_${title}.mkv`;
         break;
       case "invert":
-        ffmpeg.withVideoFilter("negate");
+        ff.withVideoFilter("negate");
         filename += `invert)_${title}.mkv`;
         break;
       case "rotate90":
-        ffmpeg.withVideoFilter("rotate=PI/2");
+        ff.withVideoFilter("rotate=PI/2");
         filename += `rotate90)_${title}.mkv`;
         break;
       case "rotate180":
-        ffmpeg.withVideoFilter("rotate=PI");
+        ff.withVideoFilter("rotate=PI");
         filename += `rotate180)_${title}.mkv`;
         break;
       case "rotate270":
-        ffmpeg.withVideoFilter("rotate=3*PI/2");
+        ff.withVideoFilter("rotate=3*PI/2");
         filename += `rotate270)_${title}.mkv`;
         break;
       case "flipHorizontal":
-        ffmpeg.withVideoFilter("hflip");
+        ff.withVideoFilter("hflip");
         filename += `flipHorizontal)_${title}.mkv`;
         break;
       case "flipVertical":
-        ffmpeg.withVideoFilter("vflip");
+        ff.withVideoFilter("vflip");
         filename += `flipVertical)_${title}.mkv`;
         break;
       default:
         filename += `)_${title}.mkv`;
         break;
     }
+    ff.on("error", (error) => {
+      throw new Error(error.message);
+    });
+    ff.on("end", () => process.stdout.write("\n"));
+    ff.on("progress", (progress) => progressBar(progress));
     if (stream) {
       return {
-        ffmpeg,
+        ffmpeg: ff,
         filename: output
           ? path.join(folder, filename)
           : filename.replace("_)_", ")_"),
       };
     } else {
-      await new Promise<void>((resolve, _reject) => {
-        ffmpeg.output(path.join(folder, filename.replace("_)_", ")_")));
-        ffmpeg.on("end", () => resolve());
-        ffmpeg.on("error", (error) => {
-          throw new Error(colors.red("@error: ") + error.message);
+      await new Promise<void>((resolve, reject) => {
+        ff.output(path.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          reject(new Error(colors.red("@error: ") + error.message));
         });
-        ffmpeg.run();
+        ff.run();
       });
     }
     console.log(
