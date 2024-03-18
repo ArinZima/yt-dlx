@@ -20,12 +20,6 @@ export function progressBar(prog: any) {
     "% | " +
     color("@timemark: ") +
     prog.timemark;
-  if (prog.frames !== 0 && !isNaN(prog.frames)) {
-    output += " | " + color("@frames: ") + prog.frames;
-  }
-  if (prog.currentFps !== 0 && !isNaN(prog.currentFps)) {
-    output += " | " + color("@fps: ") + prog.currentFps;
-  }
   process.stdout.write(output);
   if (prog.timemark.includes("-")) process.stdout.write("\n\n");
 }

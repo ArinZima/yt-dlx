@@ -13,13 +13,37 @@
 // })();
 // ===========================================================================
 console.clear();
+import AudioLowest from "../../pipes/audio/single/AudioLowest";
+import AudioHighest from "../../pipes/audio/single/AudioHighest";
 import VideoLowest from "../../pipes/video/single/VideoLowest";
+import VideoHighest from "../../pipes/video/single/VideoHighest";
 
 (async () => {
   try {
+    await AudioHighest({
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+      autoSocks5: true,
+      verbose: false,
+      stream: false,
+    });
+
+    await AudioLowest({
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+      autoSocks5: true,
+      verbose: false,
+      stream: false,
+    });
+
+    await VideoHighest({
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+      autoSocks5: true,
+      verbose: false,
+      stream: false,
+    });
+
     await VideoLowest({
       query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-      autoSocks5: false,
+      autoSocks5: true,
       verbose: false,
       stream: false,
     });
