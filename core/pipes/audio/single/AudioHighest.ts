@@ -85,70 +85,69 @@ export default async function AudioHighest(input: {
     ff.input(engineData.AudioHighF.url);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    ff.withOutputFormat("avi");
     switch (filter) {
       case "bassboost":
         ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        filename += `bassboost)_${title}.avi`;
+        filename += `bassboost)_${title}.mp3`;
         break;
       case "echo":
         ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        filename += `echo)_${title}.avi`;
+        filename += `echo)_${title}.mp3`;
         break;
       case "flanger":
         ff.withAudioFilter(["flanger"]);
-        filename += `flanger)_${title}.avi`;
+        filename += `flanger)_${title}.mp3`;
         break;
       case "nightcore":
         ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        filename += `nightcore)_${title}.avi`;
+        filename += `nightcore)_${title}.mp3`;
         break;
       case "panning":
         ff.withAudioFilter(["apulsator=hz=0.08"]);
-        filename += `panning)_${title}.avi`;
+        filename += `panning)_${title}.mp3`;
         break;
       case "phaser":
         ff.withAudioFilter(["aphaser=in_gain=0.4"]);
-        filename += `phaser)_${title}.avi`;
+        filename += `phaser)_${title}.mp3`;
         break;
       case "reverse":
         ff.withAudioFilter(["areverse"]);
-        filename += `reverse)_${title}.avi`;
+        filename += `reverse)_${title}.mp3`;
         break;
       case "slow":
         ff.withAudioFilter(["atempo=0.8"]);
-        filename += `slow)_${title}.avi`;
+        filename += `slow)_${title}.mp3`;
         break;
       case "speed":
         ff.withAudioFilter(["atempo=2"]);
-        filename += `speed)_${title}.avi`;
+        filename += `speed)_${title}.mp3`;
         break;
       case "subboost":
         ff.withAudioFilter(["asubboost"]);
-        filename += `subboost)_${title}.avi`;
+        filename += `subboost)_${title}.mp3`;
         break;
       case "superslow":
         ff.withAudioFilter(["atempo=0.5"]);
-        filename += `superslow)_${title}.avi`;
+        filename += `superslow)_${title}.mp3`;
         break;
       case "superspeed":
         ff.withAudioFilter(["atempo=3"]);
-        filename += `superspeed)_${title}.avi`;
+        filename += `superspeed)_${title}.mp3`;
         break;
       case "surround":
         ff.withAudioFilter(["surround"]);
-        filename += `surround)_${title}.avi`;
+        filename += `surround)_${title}.mp3`;
         break;
       case "vaporwave":
         ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        filename += `vaporwave)_${title}.avi`;
+        filename += `vaporwave)_${title}.mp3`;
         break;
       case "vibrato":
         ff.withAudioFilter(["vibrato=f=6.5"]);
-        filename += `vibrato)_${title}.avi`;
+        filename += `vibrato)_${title}.mp3`;
         break;
       default:
-        filename += `)_${title}.avi`;
+        filename += `)_${title}.mp3`;
         break;
     }
     ff.on("error", (error) => {

@@ -256,19 +256,19 @@ export default async function Engine({
   const payLoad: EngineOutput = {
     ipAddress,
     AudioLowF: (() => {
-      const i = AudioLowF || ({} as any);
+      const i = AudioLowF || ({} as AudioFormat);
       return nAudio(i);
     })(),
     AudioHighF: (() => {
-      const i = AudioHighF || ({} as any);
+      const i = AudioHighF || ({} as AudioFormat);
       return nAudio(i);
     })(),
     VideoLowF: (() => {
-      const i = VideoLowF || ({} as any);
+      const i = VideoLowF || ({} as VideoFormat);
       return nVideo(i);
     })(),
     VideoHighF: (() => {
-      const i = VideoHighF || ({} as any);
+      const i = VideoHighF || ({} as VideoFormat);
       return nVideo(i);
     })(),
     AudioLowDRC: Object.values(AudioLowDRC).map((i: any) => pAudio(i)),

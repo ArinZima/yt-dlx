@@ -58,7 +58,6 @@ export default async function VideoInfo(
   const { screenshot, verbose, autoSocks5 } = await QuerySchema.parseAsync(
     input
   );
-  console.log(colors.green("@scrape:"), "booting chromium...");
   await crawler(verbose, autoSocks5);
   await page.goto(query);
   for (let i = 0; i < 40; i++) {
@@ -117,7 +116,7 @@ export default async function VideoInfo(
   console.log(
     colors.green("@info:"),
     colors.white("scrapping done for"),
-    query
+    colors.green(query)
   );
   await closers(browser);
   return TubeResp;

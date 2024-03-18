@@ -64,7 +64,6 @@ export default async function SearchVideos(
   let videoElements: cheerio.Cheerio;
   let playlistMeta: TypePlaylist[] = [];
   let TubeResp: TypeVideo[] | TypePlaylist[] | undefined;
-  console.log(colors.green("@scrape:"), "booting chromium...");
   switch (input.type) {
     case "video":
       url =
@@ -127,7 +126,7 @@ export default async function SearchVideos(
       console.log(
         colors.green("@info:"),
         colors.white("scrapping done for"),
-        query
+        colors.green(query)
       );
       TubeResp = metaTube;
       break;
@@ -184,7 +183,7 @@ export default async function SearchVideos(
       console.log(
         colors.green("@info:"),
         colors.white("scrapping done for"),
-        query
+        colors.green(query)
       );
       TubeResp = playlistMeta;
       break;

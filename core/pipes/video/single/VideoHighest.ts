@@ -74,7 +74,6 @@ export default async function VideoHighest(input: {
         ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
         : undefined;
     ff.outputOptions("-c copy");
-    ff.withOutputFormat("matroska");
     ff.addInput(engineData.metaData.thumbnail);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
@@ -85,34 +84,34 @@ export default async function VideoHighest(input: {
     switch (filter) {
       case "grayscale":
         ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-        filename += `grayscale)_${title}.mkv`;
+        filename += `grayscale)_${title}.mp4`;
         break;
       case "invert":
         ff.withVideoFilter("negate");
-        filename += `invert)_${title}.mkv`;
+        filename += `invert)_${title}.mp4`;
         break;
       case "rotate90":
         ff.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mkv`;
+        filename += `rotate90)_${title}.mp4`;
         break;
       case "rotate180":
         ff.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mkv`;
+        filename += `rotate180)_${title}.mp4`;
         break;
       case "rotate270":
         ff.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mkv`;
+        filename += `rotate270)_${title}.mp4`;
         break;
       case "flipHorizontal":
         ff.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mkv`;
+        filename += `flipHorizontal)_${title}.mp4`;
         break;
       case "flipVertical":
         ff.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mkv`;
+        filename += `flipVertical)_${title}.mp4`;
         break;
       default:
-        filename += `)_${title}.mkv`;
+        filename += `)_${title}.mp4`;
         break;
     }
     ff.on("error", (error) => {

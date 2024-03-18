@@ -73,7 +73,6 @@ export default async function PlaylistInfo(
   );
   let metaTube: any[] = [];
   await crawler(verbose, autoSocks5);
-  console.log(colors.green("@scrape:"), "booting chromium...");
   await page.goto(query);
   for (let i = 0; i < 40; i++) {
     await page.evaluate(() => window.scrollBy(0, window.innerHeight));
@@ -134,7 +133,7 @@ export default async function PlaylistInfo(
   console.log(
     colors.green("@info:"),
     colors.white("scrapping done for"),
-    query
+    colors.green(query)
   );
   await closers(browser);
   return {
