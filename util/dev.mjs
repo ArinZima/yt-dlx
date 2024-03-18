@@ -10,7 +10,7 @@ const colors = {
 };
 
 const core = {
-  renew: "yarn clean && yarn make && yarn update && yarn build",
+  remake: "yarn clean && yarn make && yarn update && yarn build",
   "install:deps": "chmod +x ./util/deps.sh && ./util/deps.sh",
   "install:socks5": "chmod +x ./util/socks5.sh && ./util/socks5.sh",
   "client:dev": "cd client && yarn dev",
