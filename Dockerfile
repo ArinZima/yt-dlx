@@ -21,5 +21,4 @@ WORKDIR /app
 COPY . .
 RUN apt update && apt install -y tor nyx
 RUN pip3 install --no-cache-dir yt-dlp youtube-dl
-RUN yarn remake
 CMD ["node", "util/wakeLock.mjs"]
