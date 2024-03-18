@@ -69,19 +69,18 @@ export default async function VideoHighest(input: {
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
     const vdata =
-      Array.isArray(engineData.HighManifest) &&
-      engineData.HighManifest.length > 0
-        ? engineData.HighManifest[engineData.HighManifest.length - 1]?.url
+      Array.isArray(engineData.ManifestHigh) &&
+      engineData.ManifestHigh.length > 0
+        ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
         : undefined;
     ff.outputOptions("-c copy");
-    ff.addOption("-threads", numThreads.toString());
-    if (vdata) {
-      console.log(vdata);
-      ff.input(vdata.toString());
-      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    } else throw new Error(colors.red("@error: ") + "No video data found.");
-    ff.addInput(engineData.metaData.thumbnail);
     ff.withOutputFormat("matroska");
+    ff.addInput(engineData.metaData.thumbnail);
+    ff.addOption("-threads", numThreads.toString());
+    ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+    if (vdata) {
+      ff.input(vdata.toString());
+    } else throw new Error(colors.red("@error: ") + "no video data found.");
     let filename: string = "yt-dlx_(VideoHighest_";
     switch (filter) {
       case "grayscale":

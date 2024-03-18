@@ -69,18 +69,17 @@ export default async function VideoLowest(input: {
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
     const vdata =
-      Array.isArray(engineData.LowManifest) && engineData.LowManifest.length > 0
-        ? engineData.LowManifest[0]?.url
+      Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
+        ? engineData.ManifestLow[0]?.url
         : undefined;
     ff.outputOptions("-c copy");
-    ff.addOption("-threads", numThreads.toString());
-    if (vdata) {
-      console.log(vdata);
-      ff.input(vdata.toString());
-      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    } else throw new Error(colors.red("@error: ") + "No video data found.");
-    ff.addInput(engineData.metaData.thumbnail);
     ff.withOutputFormat("matroska");
+    ff.addInput(engineData.metaData.thumbnail);
+    ff.addOption("-threads", numThreads.toString());
+    ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+    if (vdata) {
+      ff.input(vdata.toString());
+    } else throw new Error(colors.red("@error: ") + "no video data found.");
     let filename: string = "yt-dlx_(VideoLowest_";
     switch (filter) {
       case "grayscale":

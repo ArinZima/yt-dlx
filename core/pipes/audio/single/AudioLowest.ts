@@ -82,17 +82,9 @@ export default async function AudioLowest(input: {
     let filename: string = "yt-dlx_(AudioLowest_";
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
-    const adata =
-      Array.isArray(engineData.LowAudioDRC) && engineData.LowAudioDRC.length > 0
-        ? engineData.LowAudioDRC[0]?.url
-        : engineData.LowAudio[0]?.url ?? undefined;
+    ff.input(engineData.AudioLowF.url);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    if (adata) {
-      console.log(adata);
-      ff.input(adata.toString());
-      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    } else throw new Error(colors.red("@error: ") + "No audio data found.");
     ff.withOutputFormat("avi");
     switch (filter) {
       case "bassboost":

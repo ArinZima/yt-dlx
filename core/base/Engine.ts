@@ -131,10 +131,10 @@ export default async function Engine({
     AudioHighDRC: any = {},
     VideoLowHDR: any = {},
     VideoHighHDR: any = {},
-    AudioLowF: AudioFormat | null = null,
-    AudioHighF: AudioFormat | null = null,
-    VideoLowF: VideoFormat | null = null,
-    VideoHighF: VideoFormat | null = null;
+    AudioLowF: AudioFormat | any = null,
+    AudioHighF: AudioFormat | any = null,
+    VideoLowF: VideoFormat | any = null,
+    VideoHighF: VideoFormat | any = null;
   while (maxT > 0) {
     const enginePath = path.join(dirC, "util", "engine");
     if (fs.existsSync(enginePath)) {

@@ -82,19 +82,9 @@ export default async function AudioHighest(input: {
     let filename: string = "yt-dlx_(AudioHighest_";
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
-    const adata =
-      Array.isArray(engineData.HighAudioDRC) &&
-      engineData.HighAudioDRC.length > 0
-        ? engineData.HighAudioDRC[engineData.HighAudioDRC.length - 1]?.url
-        : engineData.HighAudio[engineData.HighAudio.length - 1]?.url ??
-          undefined;
+    ff.input(engineData.AudioHighF.url);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    if (adata) {
-      console.log(adata);
-      ff.input(adata.toString());
-      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    } else throw new Error(colors.red("@error: ") + "No audio data found.");
     ff.withOutputFormat("avi");
     switch (filter) {
       case "bassboost":

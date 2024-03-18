@@ -1,17 +1,56 @@
+// console.clear();
+// import fs from "fs";
+// import Agent from "../../base/Agent";
+
+// (async () => {
+// const data = await Agent({
+// autoSocks5: true,
+// query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+// });
+// const jsonData = JSON.stringify(data, null, 2);
+// fs.writeFileSync("data.json", jsonData);
+// console.log("Data saved to data.json");
+// })();
+// ===========================================================================
 console.clear();
-import fs from "fs";
-import Agent from "../../base/Agent";
+import AudioHighest from "../../pipes/audio/single/AudioHighest";
+import AudioLowest from "../../pipes/audio/single/AudioLowest";
+import VideoHighest from "../../pipes/video/single/VideoHighest";
+import VideoLowest from "../../pipes/video/single/VideoLowest";
 
 (async () => {
-  const data = await Agent({
-    autoSocks5: true,
-    query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-  });
-  const jsonData = JSON.stringify(data, null, 2);
-  fs.writeFileSync("data.json", jsonData);
-  console.log("Data saved to data.json");
-})();
+  try {
+    await AudioHighest({
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+      autoSocks5: false,
+      verbose: false,
+      stream: false,
+    });
 
+    await AudioLowest({
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+      autoSocks5: false,
+      verbose: false,
+      stream: false,
+    });
+
+    await VideoHighest({
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+      autoSocks5: false,
+      verbose: false,
+      stream: false,
+    });
+
+    await VideoLowest({
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+      autoSocks5: false,
+      verbose: false,
+      stream: false,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+})();
 // ===========================================================================
 // console.clear();
 // import { Client } from "youtubei";
