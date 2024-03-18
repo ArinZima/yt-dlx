@@ -13,79 +13,81 @@
 // })();
 // ===========================================================================
 console.clear();
-import AudioLowest from "../../pipes/audio/single/AudioLowest";
-import AudioHighest from "../../pipes/audio/single/AudioHighest";
-import VideoLowest from "../../pipes/video/single/VideoLowest";
-import VideoHighest from "../../pipes/video/single/VideoHighest";
+import { green } from "colors";
+import { Client } from "youtubei";
 
 (async () => {
+  const youtube = new Client();
   try {
-    await AudioHighest({
-      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-      autoSocks5: true,
-      verbose: false,
-      stream: false,
+    const VideosSearch = await youtube.search("Houdini", { type: "video" });
+    const videoItems = VideosSearch.items.map((item) => ({
+      id: item.id,
+      title: item.title,
+      isLive: item.isLive,
+      duration: item.duration,
+      viewCount: item.viewCount,
+      uploadDate: item.uploadDate,
+      channelid: item.channel?.id,
+      channelname: item.channel?.name,
+      description: item.description,
+      thumbnails: item.thumbnails,
+    }));
+    console.log(green("videoItems:"), videoItems);
+    // ==================================================
+    const ListsSearch = await youtube.search("Houdini", { type: "playlist" });
+    const playlistItems = ListsSearch.items.map((item) => ({
+      id: item.id,
+      title: item.title,
+      videoCount: item.videoCount,
+      thumbnails: item.thumbnails,
+    }));
+    console.log(green("playlistItems:"), playlistItems);
+    // ==================================================
+    const VideoSingle: any = await youtube.getVideo("dQw4w9WgXcQ");
+    console.log(green("VideoSingle:"), {
+      id: VideoSingle.id,
+      title: VideoSingle.title,
+      thumbnails: VideoSingle.thumbnails,
+      uploadDate: VideoSingle.uploadDate,
+      description: VideoSingle.description,
+      duration: VideoSingle.duration,
+      isLive: VideoSingle.isLiveContent,
+      viewCount: VideoSingle.viewCount,
+      channelid: VideoSingle.channel.id,
+      channelname: VideoSingle.channel.name,
+      tags: VideoSingle.tags,
+      likeCount: VideoSingle.likeCount,
     });
-
-    await AudioLowest({
-      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-      autoSocks5: true,
-      verbose: false,
-      stream: false,
-    });
-
-    await VideoHighest({
-      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-      autoSocks5: true,
-      verbose: false,
-      stream: false,
-    });
-
-    await VideoLowest({
-      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-      autoSocks5: true,
-      verbose: false,
-      stream: false,
-    });
+    // ==================================================
+    const VideosRelated: any = await youtube.getVideo("dQw4w9WgXcQ");
+    const relatedItems = VideosRelated.related.items.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      isLive: item.isLive,
+      duration: item.duration,
+      uploadDate: item.uploadDate,
+      thumbnails: item.thumbnails,
+    }));
+    console.log(green("relatedItems:"), relatedItems);
+    // ==================================================
+    const SingleList: any = await youtube.getPlaylist(
+      "PLY50G60VnAbyeVmUyGjXdBy0LjleYsjys"
+    );
+    const playlistVideos = SingleList.videos.items.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      isLive: item.isLive,
+      duration: item.duration,
+      thumbnails: item.thumbnails,
+    }));
+    console.log(
+      green("playlist.id: ") + SingleList.id,
+      green("playlist.title: ") + SingleList.title,
+      green("playlist.videoCount: ") + SingleList.videoCount,
+      green("playlistVideos"),
+      playlistVideos
+    );
   } catch (error) {
-    console.error(error);
+    console.error("Error occurred:", error);
   }
 })();
-// ===========================================================================
-// console.clear();
-// import { Client } from "youtubei";
-// (async () => {
-// try {
-// const youtube = new Client();
-// const videos = await youtube.search("Houdini", {
-// type: "video",
-// });
-// videos.items.forEach((item) => {
-// console.log({
-// id: item.id,
-// title: item.title,
-// thumbnails: item.thumbnails,
-// uploadDate: item.uploadDate,
-// description: item.description,
-// duration: item.duration,
-// isLive: item.isLive,
-// viewCount: item.viewCount,
-// channelid: item.channel?.id,
-// channelname: item.channel?.name,
-// });
-// });
-// const playlist = await youtube.search("Houdini", {
-// type: "playlist",
-// });
-// playlist.items.forEach((item) => {
-// console.log({
-// id: item.id,
-// title: item.title,
-// videoCount: item.videoCount,
-// thumbnails: item.thumbnails,
-// });
-// });
-// } catch (error) {
-// console.error("Error occurred:", error);
-// }
-// })();
