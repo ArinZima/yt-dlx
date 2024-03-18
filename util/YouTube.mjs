@@ -70,7 +70,7 @@ async function downloadAndMerge(urlObj, outputFilePath) {
 (async () => {
   for (const urlObj of urls) {
     try {
-      const outputFilePath = await downloadAndMerge(urlObj, "public");
+      await downloadAndMerge(urlObj, "public");
     } catch (error) {
       console.error("Error processing file:", error);
     }

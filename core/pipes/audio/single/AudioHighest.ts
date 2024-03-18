@@ -82,7 +82,8 @@ export default async function AudioHighest(input: {
     let filename: string = "yt-dlx_(AudioHighest_";
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
-    ff.input(engineData.AudioHighF.url);
+    ff.addInput(engineData.AudioHighF.url);
+    ff.addInput(engineData.metaData.thumbnail);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     switch (filter) {

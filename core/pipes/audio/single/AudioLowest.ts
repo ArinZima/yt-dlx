@@ -82,7 +82,8 @@ export default async function AudioLowest(input: {
     let filename: string = "yt-dlx_(AudioLowest_";
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
-    ff.input(engineData.AudioLowF.url);
+    ff.addInput(engineData.AudioLowF.url);
+    ff.addInput(engineData.metaData.thumbnail);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     switch (filter) {

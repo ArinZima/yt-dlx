@@ -74,12 +74,10 @@ export default async function VideoHighest(input: {
         ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
         : undefined;
     ff.outputOptions("-c copy");
-    ff.addInput(engineData.metaData.thumbnail);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    if (vdata) {
-      ff.input(vdata.toString());
-    } else throw new Error(colors.red("@error: ") + "no video data found.");
+    if (vdata) ff.addInput(vdata.toString());
+    else throw new Error(colors.red("@error: ") + "no video data found.");
     let filename: string = "yt-dlx_(VideoHighest_";
     switch (filter) {
       case "grayscale":

@@ -70,16 +70,13 @@ export default async function VideoLowest(input: {
     const ff: FfmpegCommand = ffmpeg();
     const vdata =
       Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
-        ? engineData.ManifestLow[0]
+        ? engineData.ManifestLow[0]?.url
         : undefined;
-    console.log(vdata);
     ff.outputOptions("-c copy");
-    ff.addInput(engineData.metaData.thumbnail);
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    if (vdata) {
-      ff.input(vdata.url);
-    } else throw new Error(colors.red("@error: ") + "no video data found.");
+    if (vdata) ff.addInput(vdata.toString());
+    else throw new Error(colors.red("@error: ") + "no video data found.");
     let filename: string = "yt-dlx_(VideoLowest_";
     switch (filter) {
       case "grayscale":
