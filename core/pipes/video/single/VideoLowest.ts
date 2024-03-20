@@ -74,7 +74,7 @@ export default async function VideoLowest(input: {
       Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
         ? engineData.ManifestLow[0]?.url
         : undefined;
-    ff.outputOptions("-c copy");
+    ff.videoCodec("copy");
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     if (vdata) ff.addInput(vdata.toString());
@@ -116,9 +116,9 @@ export default async function VideoLowest(input: {
     ff.on("error", (error) => {
       throw new Error(error.message);
     });
-    ff.on("start", (command) => {
+    ff.on("start", (comd) => {
       startTime = new Date();
-      if (verbose) console.info(colors.green("@command:"), command);
+      if (verbose) console.info(colors.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
