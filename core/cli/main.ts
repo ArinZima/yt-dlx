@@ -13,13 +13,10 @@ const proTube = minimist(process.argv.slice(2), {
     h: "help",
     e: "extract",
     v: "version",
-    // f: "list-formats",
     vl: "video-lowest",
     al: "audio-lowest",
     vh: "video_highest",
     ah: "audio-highest",
-    avl: "audio-video-lowest",
-    avh: "audio-video-highest",
   },
 });
 let uLoc: string = "";
@@ -203,40 +200,6 @@ const program = async () => {
         console.error(colors.red("error: no query"));
       } else
         await ytdlx.VideoOnly.Single.Lowest({
-          query: proTube.query,
-        })
-          .then((data: any) => {
-            console.log(data);
-            process.exit();
-          })
-          .catch((error: string) => {
-            console.error(colors.red(error));
-            process.exit();
-          });
-      break;
-    case "audio-video-highest":
-    case "avh":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors.red("error: no query"));
-      } else
-        await ytdlx.AudioVideo.Single.Highest({
-          query: proTube.query,
-        })
-          .then((data: any) => {
-            console.log(data);
-            process.exit();
-          })
-          .catch((error: string) => {
-            console.error(colors.red(error));
-            process.exit();
-          });
-      break;
-    case "audio-video-lowest":
-    case "avl":
-      if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors.red("error: no query"));
-      } else
-        await ytdlx.AudioVideo.Single.Lowest({
           query: proTube.query,
         })
           .then((data: any) => {

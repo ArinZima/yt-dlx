@@ -14,11 +14,6 @@ import VideoHighest from "./pipes/video/single/VideoHighest";
 // import ListVideoLowest from "./pipes/video/list/ListVideoLowest";
 // import ListVideoHighest from "./pipes/video/list/ListVideoHighest";
 
-import AudioVideoLowest from "./pipes/mix/single/AudioVideoLowest";
-import AudioVideoHighest from "./pipes/mix/single/AudioVideoHighest";
-// import ListAudioVideoHighest from "./pipes/mix/list/ListAudioVideoHighest";
-// import ListAudioVideoLowest from "./pipes/mix/list/ListAudioVideoLowest";
-
 const ytdlx = {
   search: {
     browser: {
@@ -58,16 +53,6 @@ const ytdlx = {
     // List: {
     // Lowest: ListVideoLowest,
     // Highest: ListVideoHighest,
-    // },
-  },
-  AudioVideo: {
-    Single: {
-      Lowest: AudioVideoLowest,
-      Highest: AudioVideoHighest,
-    },
-    // List: {
-    // Lowest: ListAudioVideoHighest,
-    // Highest: ListAudioVideoLowest,
     // },
   },
 };
