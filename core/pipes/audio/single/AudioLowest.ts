@@ -5,11 +5,12 @@ import colors from "colors";
 import * as path from "path";
 import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
+import formatTime from "../../../base/formatTime";
 import type { FfmpegCommand } from "fluent-ffmpeg";
-import { progressBar } from "../../../base/progressBar";
+import calculateETA from "../../../base/calculateETA";
 
 /**
- * AudioHighest function is designed for fetching lowest audio content from YouTube with various customization options.
+ * AudioLowest function is designed for fetching lowest audio content from YouTube with various customization options.
  * It allows users to specify their search query, choose output format and apply audio filters like echo, flanger, nightcore, and more.
  * It also allows user to specify verbose output and adding proxies.
  * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
@@ -65,6 +66,7 @@ export default async function AudioLowest(input: {
     | "vaporwave"
     | "superspeed";
 }): Promise<void | { filename: string; ffmpeg: FfmpegCommand }> {
+  let startTime: Date;
   const { query, output, stream, verbose, filter, onionTor } =
     await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, onionTor });
@@ -154,8 +156,27 @@ export default async function AudioLowest(input: {
     ff.on("error", (error) => {
       throw new Error(error.message);
     });
+    ff.on("start", (command) => {
+      startTime = new Date();
+      if (verbose) console.info(colors.green("@command:"), command);
+    });
     ff.on("end", () => process.stdout.write("\n"));
-    ff.on("progress", (progress) => progressBar(progress));
+    ff.on("progress", ({ percent, timemark }) => {
+      let color = colors.green;
+      if (isNaN(percent)) percent = 0;
+      if (percent > 98) percent = 100;
+      if (percent < 25) color = colors.red;
+      else if (percent < 50) color = colors.yellow;
+      const width = Math.floor(process.stdout.columns / 4);
+      const scomp = Math.round((width * percent) / 100);
+      const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+      process.stdout.write(
+        `\r${color("@progbar:")} ${progb}` +
+          ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
+          ` ${color("| @timemark:")} ${timemark}` +
+          ` ${color("| @eta:")} ${formatTime(calculateETA(startTime, percent))}`
+      );
+    });
     if (stream) {
       return {
         ffmpeg: ff,

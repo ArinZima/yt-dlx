@@ -6,14 +6,14 @@ import AudioHighest from "../../pipes/audio/single/AudioHighest";
   try {
     await AudioLowest({
       verbose: false,
-      onionTor: false,
+      onionTor: true,
       output: "public",
       query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
     });
 
     await AudioHighest({
       verbose: false,
-      onionTor: false,
+      onionTor: true,
       output: "public",
       query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
     });
