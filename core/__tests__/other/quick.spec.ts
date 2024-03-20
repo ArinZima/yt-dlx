@@ -1,27 +1,36 @@
-// console.clear();
-// import fs from "fs";
-// import Agent from "../../base/Agent";
-
-// (async () => {
-// const data = await Agent({
-// onionTor: true,
-// query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-// });
-// const jsonData = JSON.stringify(data, null, 2);
-// fs.writeFileSync("data.json", jsonData);
-// console.log("Data saved to data.json");
-// })();
-// ===========================================================================
 console.clear();
+import AudioVideoLowest from "../../pipes/mix/single/AudioVideoLowest";
 import AudioVideoHighest from "../../pipes/mix/single/AudioVideoHighest";
+
+import AudioLowest from "../../pipes/audio/single/AudioLowest";
+import AudioHighest from "../../pipes/audio/single/AudioHighest";
+
 (async () => {
   try {
-    await AudioVideoHighest({
-      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+    await AudioVideoLowest({
+      verbose: true,
       onionTor: true,
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+    });
+
+    await AudioVideoHighest({
+      verbose: true,
+      onionTor: true,
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+    });
+
+    await AudioLowest({
+      verbose: true,
+      onionTor: true,
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+    });
+
+    await AudioHighest({
+      verbose: true,
+      onionTor: true,
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
     });
   } catch (error) {
     console.error(error);
   }
 })();
-// ===========================================================================
