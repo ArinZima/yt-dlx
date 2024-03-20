@@ -134,7 +134,13 @@ export default async function ListVideoHighest(input: {
       let filename: string = "yt-dlx_(VideoHighest_";
       const numThreads = os.cpus().length * 2;
       const ff: FfmpegCommand = ffmpeg();
-      ff.addInput(engineData.VideoHighF.url);
+      const vdata =
+        Array.isArray(engineData.ManifestHigh) &&
+        engineData.ManifestHigh.length > 0
+          ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
+          : undefined;
+      if (vdata) ff.addInput(vdata.toString());
+      else throw new Error(colors.red("@error: ") + "no video data found.");
       ff.outputOptions(["-c", "copy"]);
       ff.addOption("-threads", numThreads.toString());
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);

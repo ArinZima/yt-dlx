@@ -69,7 +69,13 @@ export default async function VideoHighest(input: {
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
-    ff.addInput(engineData.VideoHighF.url);
+    const vdata =
+      Array.isArray(engineData.ManifestHigh) &&
+      engineData.ManifestHigh.length > 0
+        ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
+        : undefined;
+    if (vdata) ff.addInput(vdata.toString());
+    else throw new Error(colors.red("@error: ") + "no video data found.");
     ff.outputOptions(["-c", "copy"]);
     ff.withOutputFormat("matroska");
     ff.addOption("-threads", numThreads.toString());

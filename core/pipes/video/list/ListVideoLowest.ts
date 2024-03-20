@@ -134,7 +134,13 @@ export default async function ListVideoLowest(input: {
       let filename: string = "yt-dlx_(VideoLowest_";
       const numThreads = os.cpus().length * 2;
       const ff: FfmpegCommand = ffmpeg();
-      ff.addInput(engineData.VideoLowF.url);
+      const vdata =
+        Array.isArray(engineData.ManifestLow) &&
+        engineData.ManifestLow.length > 0
+          ? engineData.ManifestLow[0]?.url
+          : undefined;
+      if (vdata) ff.addInput(vdata.toString());
+      else throw new Error(colors.red("@error: ") + "no video data found.");
       ff.outputOptions(["-c", "copy"]);
       ff.addOption("-threads", numThreads.toString());
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
