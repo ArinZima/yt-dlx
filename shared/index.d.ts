@@ -285,6 +285,22 @@ declare function AudioHighest(input: {
     ffmpeg: FfmpegCommand;
 }>;
 
+declare function ListAudioLowest(input: {
+    query: string[];
+    output?: string;
+    verbose?: boolean;
+    onionTor?: boolean;
+    filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
+}): Promise<void>;
+
+declare function ListAudioHighest(input: {
+    query: string[];
+    output?: string;
+    verbose?: boolean;
+    onionTor?: boolean;
+    filter?: "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "reverse" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed";
+}): Promise<void>;
+
 declare function VideoLowest(input: {
     query: string;
     output?: string;
@@ -301,6 +317,28 @@ declare function VideoHighest(input: {
     query: string;
     output?: string;
     stream?: boolean;
+    verbose?: boolean;
+    onionTor?: boolean;
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
+}): Promise<void | {
+    filename: string;
+    ffmpeg: FfmpegCommand;
+}>;
+
+declare function ListVideoLowest(input: {
+    query: string[];
+    output?: string;
+    verbose?: boolean;
+    onionTor?: boolean;
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
+}): Promise<void | {
+    filename: string;
+    ffmpeg: FfmpegCommand;
+}>;
+
+declare function ListVideoHighest(input: {
+    query: string[];
+    output?: string;
     verbose?: boolean;
     onionTor?: boolean;
     filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
@@ -334,11 +372,19 @@ declare const ytdlx: {
             Lowest: typeof AudioLowest;
             Highest: typeof AudioHighest;
         };
+        List: {
+            Lowest: typeof ListAudioLowest;
+            Highest: typeof ListAudioHighest;
+        };
     };
     VideoOnly: {
         Single: {
             Lowest: typeof VideoLowest;
             Highest: typeof VideoHighest;
+        };
+        List: {
+            Lowest: typeof ListVideoLowest;
+            Highest: typeof ListVideoHighest;
         };
     };
 };

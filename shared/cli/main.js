@@ -2,12 +2,12 @@
 'use strict';
 
 var zod = require('zod');
-var colors12 = require('colors');
+var colors10 = require('colors');
 var cheerio = require('cheerio');
 var puppeteer = require('puppeteer');
 var child_process = require('child_process');
 var fs2 = require('fs');
-var path6 = require('path');
+var path10 = require('path');
 var retry = require('async-retry');
 var util = require('util');
 var os = require('os');
@@ -34,10 +34,10 @@ function _interopNamespace(e) {
   return Object.freeze(n);
 }
 
-var colors12__default = /*#__PURE__*/_interopDefault(colors12);
+var colors10__default = /*#__PURE__*/_interopDefault(colors10);
 var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
 var fs2__namespace = /*#__PURE__*/_interopNamespace(fs2);
-var path6__namespace = /*#__PURE__*/_interopNamespace(path6);
+var path10__namespace = /*#__PURE__*/_interopNamespace(path10);
 var retry__default = /*#__PURE__*/_interopDefault(retry);
 var os__namespace = /*#__PURE__*/_interopNamespace(os);
 var ffmpeg__default = /*#__PURE__*/_interopDefault(ffmpeg);
@@ -160,7 +160,7 @@ async function VideoInfo(input) {
   }
   if (screenshot) {
     await page.screenshot({ path: "FilterVideo.png" });
-    console.log(colors12__default.default.yellow("@scrape:"), "took snapshot...");
+    console.log(colors10__default.default.yellow("@scrape:"), "took snapshot...");
   }
   const videoId = await YouTubeID(query);
   await page.waitForSelector(
@@ -206,9 +206,9 @@ async function VideoInfo(input) {
     videoLink: "https://www.youtube.com/watch?v=" + videoId
   };
   console.log(
-    colors12__default.default.green("@info:"),
-    colors12__default.default.white("scrapping done for"),
-    colors12__default.default.green(query)
+    colors10__default.default.green("@info:"),
+    colors10__default.default.white("scrapping done for"),
+    colors10__default.default.green(query)
   );
   await closers(browser);
   return TubeResp;
@@ -254,7 +254,7 @@ async function SearchVideos(input) {
         await page.screenshot({
           path: "TypeVideo.png"
         });
-        console.log(colors12__default.default.yellow("@scrape:"), "took snapshot...");
+        console.log(colors10__default.default.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = cheerio.load(content);
@@ -288,9 +288,9 @@ async function SearchVideos(input) {
         });
       });
       console.log(
-        colors12__default.default.green("@info:"),
-        colors12__default.default.white("scrapping done for"),
-        colors12__default.default.green(query)
+        colors10__default.default.green("@info:"),
+        colors10__default.default.white("scrapping done for"),
+        colors10__default.default.green(query)
       );
       TubeResp = metaTube;
       break;
@@ -304,7 +304,7 @@ async function SearchVideos(input) {
         await page.screenshot({
           path: "TypePlaylist.png"
         });
-        console.log(colors12__default.default.yellow("@scrape:"), "took snapshot...");
+        console.log(colors10__default.default.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = cheerio.load(content);
@@ -322,16 +322,16 @@ async function SearchVideos(input) {
         });
       });
       console.log(
-        colors12__default.default.green("@info:"),
-        colors12__default.default.white("scrapping done for"),
-        colors12__default.default.green(query)
+        colors10__default.default.green("@info:"),
+        colors10__default.default.white("scrapping done for"),
+        colors10__default.default.green(query)
       );
       TubeResp = playlistMeta;
       break;
     default:
       console.log(
-        colors12__default.default.red("@error:"),
-        colors12__default.default.white("wrong filter type provided.")
+        colors10__default.default.red("@error:"),
+        colors10__default.default.white("wrong filter type provided.")
       );
       TubeResp = void 0;
       break;
@@ -389,7 +389,7 @@ async function PlaylistInfo(input) {
     await page.screenshot({
       path: "FilterVideo.png"
     });
-    console.log(colors12__default.default.yellow("@scrape:"), "took snapshot...");
+    console.log(colors10__default.default.yellow("@scrape:"), "took snapshot...");
   }
   const content = await page.content();
   const $ = cheerio.load(content);
@@ -426,9 +426,9 @@ async function PlaylistInfo(input) {
     });
   });
   console.log(
-    colors12__default.default.green("@info:"),
-    colors12__default.default.white("scrapping done for"),
-    colors12__default.default.green(query)
+    colors10__default.default.green("@info:"),
+    colors10__default.default.white("scrapping done for"),
+    colors10__default.default.green(query)
   );
   await closers(browser);
   return {
@@ -524,16 +524,16 @@ var web = {
 var web_default = web;
 function help() {
   console.log(
-    colors12__default.default.green("@info:"),
+    colors10__default.default.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors12__default.default.green("yt-dlx."),
+    colors10__default.default.green("yt-dlx."),
     "Consider",
-    colors12__default.default.green("\u{1F31F}starring"),
+    colors10__default.default.green("\u{1F31F}starring"),
     "the github repo",
-    colors12__default.default.green("https://github.com/yt-dlx\n")
+    colors10__default.default.green("https://github.com/yt-dlx\n")
   );
   return Promise.resolve(
-    colors12__default.default.bold.white(`
+    colors10__default.default.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -735,12 +735,12 @@ async function Engine({
   let pLoc = "";
   let maxT = 8;
   while (maxT > 0) {
-    const enginePath = path6__namespace.join(dirC, "util", "engine");
+    const enginePath = path10__namespace.join(dirC, "util", "engine");
     if (fs2__namespace.existsSync(enginePath)) {
       pLoc = enginePath;
       break;
     } else {
-      dirC = path6__namespace.join(dirC, "..");
+      dirC = path10__namespace.join(dirC, "..");
       maxT--;
     }
   }
@@ -997,19 +997,19 @@ async function Agent({
   onionTor
 }) {
   console.log(
-    colors12__default.default.green("@info:"),
+    colors10__default.default.green("@info:"),
     "using",
-    colors12__default.default.green("yt-dlx"),
+    colors10__default.default.green("yt-dlx"),
     "version",
-    colors12__default.default.green(version)
+    colors10__default.default.green(version)
   );
   let nipTor;
   let ipAddress = void 0;
   nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
   console.log(
-    colors12__default.default.green("@info:"),
+    colors10__default.default.green("@info:"),
     "system",
-    colors12__default.default.green("ipAddress"),
+    colors10__default.default.green("ipAddress"),
     nipTor.stdout.trim()
   );
   ipAddress = nipTor.stdout.trim();
@@ -1019,9 +1019,9 @@ async function Agent({
     ]);
     if (nipTor.stdout.trim().length > 0) {
       console.log(
-        colors12__default.default.green("@info:"),
+        colors10__default.default.green("@info:"),
         "socks5",
-        colors12__default.default.green("ipAddress"),
+        colors10__default.default.green("ipAddress"),
         nipTor.stdout.trim()
       );
       ipAddress = nipTor.stdout.trim();
@@ -1037,9 +1037,9 @@ async function Agent({
       throw new Error("Unable to get response!");
     else {
       console.log(
-        colors12__default.default.green("@info:"),
+        colors10__default.default.green("@info:"),
         `preparing payload for`,
-        colors12__default.default.green(TubeBody[0].title)
+        colors10__default.default.green(TubeBody[0].title)
       );
       respEngine = await Engine({
         query: `https://www.youtube.com/watch?v=${TubeBody[0].id}`,
@@ -1054,9 +1054,9 @@ async function Agent({
       throw new Error("Unable to get response!");
     else {
       console.log(
-        colors12__default.default.green("@info:"),
+        colors10__default.default.green("@info:"),
         `preparing payload for`,
-        colors12__default.default.green(TubeBody.title)
+        colors10__default.default.green(TubeBody.title)
       );
       respEngine = await Engine({
         query: `https://www.youtube.com/watch?v=${TubeBody.id}`,
@@ -1179,13 +1179,13 @@ async function extract({
     }
   };
   console.log(
-    colors12__default.default.green("@info:"),
+    colors10__default.default.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors12__default.default.green("yt-dlx."),
+    colors10__default.default.green("yt-dlx."),
     "Consider",
-    colors12__default.default.green("\u{1F31F}starring"),
+    colors10__default.default.green("\u{1F31F}starring"),
     "the github repo",
-    colors12__default.default.green("https://github.com/yt-dlx\n")
+    colors10__default.default.green("https://github.com/yt-dlx\n")
   );
   return payload;
 }
@@ -1928,7 +1928,7 @@ async function extract_playlist_videos({
     const query = await YouTubeID(listLink);
     if (query === void 0) {
       console.error(
-        colors12__default.default.bold.red("@error: "),
+        colors10__default.default.bold.red("@error: "),
         "invalid youtube playlist url:",
         listLink
       );
@@ -1937,7 +1937,7 @@ async function extract_playlist_videos({
       const playlistId = await YouTubeID(query);
       if (!playlistId) {
         console.error(
-          colors12__default.default.bold.red("@error: "),
+          colors10__default.default.bold.red("@error: "),
           "incorrect playlist link.",
           query
         );
@@ -1948,16 +1948,16 @@ async function extract_playlist_videos({
       });
       if (!resp) {
         console.error(
-          colors12__default.default.bold.red("@error: "),
+          colors10__default.default.bold.red("@error: "),
           "unable to get response from youtube for",
           query
         );
         return;
       } else {
         console.log(
-          colors12__default.default.green("@info:"),
+          colors10__default.default.green("@info:"),
           "total videos in playlist",
-          colors12__default.default.green(resp.playlistTitle),
+          colors10__default.default.green(resp.playlistTitle),
           resp.playlistVideoCount
         );
         await eachSeries$1(resp.playlistVideos, async (vid) => {
@@ -1966,7 +1966,7 @@ async function extract_playlist_videos({
           });
           counter++;
           console.log(
-            colors12__default.default.green("@info:"),
+            colors10__default.default.green("@info:"),
             "added",
             counter + "/" + resp.playlistVideoCount
           );
@@ -1976,13 +1976,13 @@ async function extract_playlist_videos({
     }
   });
   console.log(
-    colors12__default.default.green("@info:"),
+    colors10__default.default.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors12__default.default.green("yt-dlx."),
+    colors10__default.default.green("yt-dlx."),
     "Consider",
-    colors12__default.default.green("\u{1F31F}starring"),
+    colors10__default.default.green("\u{1F31F}starring"),
     "the github repo",
-    colors12__default.default.green("https://github.com/yt-dlx\n")
+    colors10__default.default.green("https://github.com/yt-dlx\n")
   );
   return metaTubeArr;
 }
@@ -2036,14 +2036,14 @@ async function AudioLowest(input) {
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors12__default.default.red("@error: ") + "unable to get response from YouTube."
+      colors10__default.default.red("@error: ") + "unable to get response from YouTube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path6__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     let filename = "yt-dlx_(AudioLowest_";
@@ -2051,72 +2051,73 @@ async function AudioLowest(input) {
     const ff = ffmpeg__default.default();
     ff.addInput(engineData.AudioLowF.url);
     ff.addInput(engineData.metaData.thumbnail);
-    ff.audioCodec("copy");
+    ff.outputOptions(["-c", "copy"]);
+    ff.withOutputFormat("avi");
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     switch (filter2) {
       case "bassboost":
         ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        filename += `bassboost)_${title}.mp3`;
+        filename += `bassboost)_${title}.avi`;
         break;
       case "echo":
         ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        filename += `echo)_${title}.mp3`;
+        filename += `echo)_${title}.avi`;
         break;
       case "flanger":
         ff.withAudioFilter(["flanger"]);
-        filename += `flanger)_${title}.mp3`;
+        filename += `flanger)_${title}.avi`;
         break;
       case "nightcore":
         ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        filename += `nightcore)_${title}.mp3`;
+        filename += `nightcore)_${title}.avi`;
         break;
       case "panning":
         ff.withAudioFilter(["apulsator=hz=0.08"]);
-        filename += `panning)_${title}.mp3`;
+        filename += `panning)_${title}.avi`;
         break;
       case "phaser":
         ff.withAudioFilter(["aphaser=in_gain=0.4"]);
-        filename += `phaser)_${title}.mp3`;
+        filename += `phaser)_${title}.avi`;
         break;
       case "reverse":
         ff.withAudioFilter(["areverse"]);
-        filename += `reverse)_${title}.mp3`;
+        filename += `reverse)_${title}.avi`;
         break;
       case "slow":
         ff.withAudioFilter(["atempo=0.8"]);
-        filename += `slow)_${title}.mp3`;
+        filename += `slow)_${title}.avi`;
         break;
       case "speed":
         ff.withAudioFilter(["atempo=2"]);
-        filename += `speed)_${title}.mp3`;
+        filename += `speed)_${title}.avi`;
         break;
       case "subboost":
         ff.withAudioFilter(["asubboost"]);
-        filename += `subboost)_${title}.mp3`;
+        filename += `subboost)_${title}.avi`;
         break;
       case "superslow":
         ff.withAudioFilter(["atempo=0.5"]);
-        filename += `superslow)_${title}.mp3`;
+        filename += `superslow)_${title}.avi`;
         break;
       case "superspeed":
         ff.withAudioFilter(["atempo=3"]);
-        filename += `superspeed)_${title}.mp3`;
+        filename += `superspeed)_${title}.avi`;
         break;
       case "surround":
         ff.withAudioFilter(["surround"]);
-        filename += `surround)_${title}.mp3`;
+        filename += `surround)_${title}.avi`;
         break;
       case "vaporwave":
         ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        filename += `vaporwave)_${title}.mp3`;
+        filename += `vaporwave)_${title}.avi`;
         break;
       case "vibrato":
         ff.withAudioFilter(["vibrato=f=6.5"]);
-        filename += `vibrato)_${title}.mp3`;
+        filename += `vibrato)_${title}.avi`;
         break;
       default:
-        filename += `)_${title}.mp3`;
+        filename += `)_${title}.avi`;
         break;
     }
     ff.on("error", (error) => {
@@ -2125,19 +2126,19 @@ async function AudioLowest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors12__default.default.green("@comd:"), comd);
+        console.info(colors10__default.default.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors12__default.default.green;
+      let color = colors10__default.default.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors12__default.default.red;
+        color = colors10__default.default.red;
       else if (percent < 50)
-        color = colors12__default.default.yellow;
+        color = colors10__default.default.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2148,26 +2149,26 @@ async function AudioLowest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path6__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path10__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path6__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors12__default.default.red("@error: ") + error.message));
+          reject2(new Error(colors10__default.default.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors12__default.default.green("@info:"),
+      colors10__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors12__default.default.green("yt-dlx."),
+      colors10__default.default.green("yt-dlx."),
       "Consider",
-      colors12__default.default.green("\u{1F31F}starring"),
+      colors10__default.default.green("\u{1F31F}starring"),
       "the GitHub repo",
-      colors12__default.default.green("https://github.com/yt-dlx\n")
+      colors10__default.default.green("https://github.com/yt-dlx\n")
     );
   }
 }
@@ -2201,14 +2202,14 @@ async function AudioHighest(input) {
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors12__default.default.red("@error: ") + "unable to get response from YouTube."
+      colors10__default.default.red("@error: ") + "unable to get response from YouTube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path6__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     let filename = "yt-dlx_(AudioHighest_";
@@ -2216,72 +2217,73 @@ async function AudioHighest(input) {
     const ff = ffmpeg__default.default();
     ff.addInput(engineData.AudioHighF.url);
     ff.addInput(engineData.metaData.thumbnail);
-    ff.audioCodec("copy");
+    ff.outputOptions(["-c", "copy"]);
+    ff.withOutputFormat("avi");
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     switch (filter2) {
       case "bassboost":
         ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-        filename += `bassboost)_${title}.mp3`;
+        filename += `bassboost)_${title}.avi`;
         break;
       case "echo":
         ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-        filename += `echo)_${title}.mp3`;
+        filename += `echo)_${title}.avi`;
         break;
       case "flanger":
         ff.withAudioFilter(["flanger"]);
-        filename += `flanger)_${title}.mp3`;
+        filename += `flanger)_${title}.avi`;
         break;
       case "nightcore":
         ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-        filename += `nightcore)_${title}.mp3`;
+        filename += `nightcore)_${title}.avi`;
         break;
       case "panning":
         ff.withAudioFilter(["apulsator=hz=0.08"]);
-        filename += `panning)_${title}.mp3`;
+        filename += `panning)_${title}.avi`;
         break;
       case "phaser":
         ff.withAudioFilter(["aphaser=in_gain=0.4"]);
-        filename += `phaser)_${title}.mp3`;
+        filename += `phaser)_${title}.avi`;
         break;
       case "reverse":
         ff.withAudioFilter(["areverse"]);
-        filename += `reverse)_${title}.mp3`;
+        filename += `reverse)_${title}.avi`;
         break;
       case "slow":
         ff.withAudioFilter(["atempo=0.8"]);
-        filename += `slow)_${title}.mp3`;
+        filename += `slow)_${title}.avi`;
         break;
       case "speed":
         ff.withAudioFilter(["atempo=2"]);
-        filename += `speed)_${title}.mp3`;
+        filename += `speed)_${title}.avi`;
         break;
       case "subboost":
         ff.withAudioFilter(["asubboost"]);
-        filename += `subboost)_${title}.mp3`;
+        filename += `subboost)_${title}.avi`;
         break;
       case "superslow":
         ff.withAudioFilter(["atempo=0.5"]);
-        filename += `superslow)_${title}.mp3`;
+        filename += `superslow)_${title}.avi`;
         break;
       case "superspeed":
         ff.withAudioFilter(["atempo=3"]);
-        filename += `superspeed)_${title}.mp3`;
+        filename += `superspeed)_${title}.avi`;
         break;
       case "surround":
         ff.withAudioFilter(["surround"]);
-        filename += `surround)_${title}.mp3`;
+        filename += `surround)_${title}.avi`;
         break;
       case "vaporwave":
         ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-        filename += `vaporwave)_${title}.mp3`;
+        filename += `vaporwave)_${title}.avi`;
         break;
       case "vibrato":
         ff.withAudioFilter(["vibrato=f=6.5"]);
-        filename += `vibrato)_${title}.mp3`;
+        filename += `vibrato)_${title}.avi`;
         break;
       default:
-        filename += `)_${title}.mp3`;
+        filename += `)_${title}.avi`;
         break;
     }
     ff.on("error", (error) => {
@@ -2290,19 +2292,19 @@ async function AudioHighest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors12__default.default.green("@comd:"), comd);
+        console.info(colors10__default.default.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors12__default.default.green;
+      let color = colors10__default.default.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors12__default.default.red;
+        color = colors10__default.default.red;
       else if (percent < 50)
-        color = colors12__default.default.yellow;
+        color = colors10__default.default.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2313,30 +2315,482 @@ async function AudioHighest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path6__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path10__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path6__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors12__default.default.red("@error: ") + error.message));
+          reject2(new Error(colors10__default.default.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors12__default.default.green("@info:"),
+      colors10__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors12__default.default.green("yt-dlx."),
+      colors10__default.default.green("yt-dlx."),
       "Consider",
-      colors12__default.default.green("\u{1F31F}starring"),
+      colors10__default.default.green("\u{1F31F}starring"),
       "the GitHub repo",
-      colors12__default.default.green("https://github.com/yt-dlx\n")
+      colors10__default.default.green("https://github.com/yt-dlx\n")
     );
   }
 }
 var qconf3 = zod.z.object({
+  output: zod.z.string().optional(),
+  verbose: zod.z.boolean().optional(),
+  onionTor: zod.z.boolean().optional(),
+  query: zod.z.array(
+    zod.z.string().min(1).refine(
+      async (input) => {
+        switch (true) {
+          case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+            input
+          ):
+            const resultLink = await YouTubeID(input);
+            if (resultLink !== void 0)
+              return true;
+            break;
+          default:
+            const resultId = await YouTubeID(
+              `https://www.youtube.com/playlist?list=${input}`
+            );
+            if (resultId !== void 0)
+              return true;
+            break;
+        }
+        return false;
+      },
+      {
+        message: "Query must be a valid YouTube Playlist Link or ID."
+      }
+    )
+  ).min(1),
+  filter: zod.z.enum([
+    "echo",
+    "slow",
+    "speed",
+    "phaser",
+    "flanger",
+    "panning",
+    "reverse",
+    "vibrato",
+    "subboost",
+    "surround",
+    "bassboost",
+    "nightcore",
+    "superslow",
+    "vaporwave",
+    "superspeed"
+  ]).optional()
+});
+async function ListAudioLowest(input) {
+  let startTime;
+  const { query, output, verbose, filter: filter2, onionTor } = await qconf3.parseAsync(
+    input
+  );
+  const vDATA = /* @__PURE__ */ new Set();
+  for (const pURL of query) {
+    try {
+      const pDATA = await web_default.browserLess.playlistVideos({
+        playlistId: await YouTubeID(pURL)
+      });
+      if (pDATA === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          pURL
+        );
+        continue;
+      }
+      for (const video of pDATA.playlistVideos)
+        vDATA.add(video);
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "total number of uncommon videos:",
+    colors10__default.default.yellow(vDATA.size.toString())
+  );
+  for (const video of vDATA) {
+    try {
+      const engineData = await Agent({
+        query: video.videoLink,
+        onionTor,
+        verbose
+      });
+      if (engineData === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          video.videoLink
+        );
+        continue;
+      }
+      const title = engineData.metaData.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
+      let filename = "yt-dlx_(AudioLowest_";
+      const numThreads = os__namespace.cpus().length * 2;
+      const ff = ffmpeg__default.default();
+      ff.addInput(engineData.AudioLowF.url);
+      ff.addInput(engineData.metaData.thumbnail);
+      ff.outputOptions(["-c", "copy"]);
+      ff.withOutputFormat("avi");
+      ff.addOption("-threads", numThreads.toString());
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+      switch (filter2) {
+        case "bassboost":
+          ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          filename += `bassboost)_${title}.avi`;
+          break;
+        case "echo":
+          ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          filename += `echo)_${title}.avi`;
+          break;
+        case "flanger":
+          ff.withAudioFilter(["flanger"]);
+          filename += `flanger)_${title}.avi`;
+          break;
+        case "nightcore":
+          ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          filename += `nightcore)_${title}.avi`;
+          break;
+        case "panning":
+          ff.withAudioFilter(["apulsator=hz=0.08"]);
+          filename += `panning)_${title}.avi`;
+          break;
+        case "phaser":
+          ff.withAudioFilter(["aphaser=in_gain=0.4"]);
+          filename += `phaser)_${title}.avi`;
+          break;
+        case "reverse":
+          ff.withAudioFilter(["areverse"]);
+          filename += `reverse)_${title}.avi`;
+          break;
+        case "slow":
+          ff.withAudioFilter(["atempo=0.8"]);
+          filename += `slow)_${title}.avi`;
+          break;
+        case "speed":
+          ff.withAudioFilter(["atempo=2"]);
+          filename += `speed)_${title}.avi`;
+          break;
+        case "subboost":
+          ff.withAudioFilter(["asubboost"]);
+          filename += `subboost)_${title}.avi`;
+          break;
+        case "superslow":
+          ff.withAudioFilter(["atempo=0.5"]);
+          filename += `superslow)_${title}.avi`;
+          break;
+        case "superspeed":
+          ff.withAudioFilter(["atempo=3"]);
+          filename += `superspeed)_${title}.avi`;
+          break;
+        case "surround":
+          ff.withAudioFilter(["surround"]);
+          filename += `surround)_${title}.avi`;
+          break;
+        case "vaporwave":
+          ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          filename += `vaporwave)_${title}.avi`;
+          break;
+        case "vibrato":
+          ff.withAudioFilter(["vibrato=f=6.5"]);
+          filename += `vibrato)_${title}.avi`;
+          break;
+        default:
+          filename += `)_${title}.avi`;
+          break;
+      }
+      ff.on("error", (error) => {
+        throw new Error(error.message);
+      });
+      ff.on("start", (comd) => {
+        startTime = /* @__PURE__ */ new Date();
+        if (verbose)
+          console.info(colors10__default.default.green("@comd:"), comd);
+      });
+      ff.on("end", () => process.stdout.write("\n"));
+      ff.on("progress", ({ percent, timemark }) => {
+        let color = colors10__default.default.green;
+        if (isNaN(percent))
+          percent = 0;
+        if (percent > 98)
+          percent = 100;
+        if (percent < 25)
+          color = colors10__default.default.red;
+        else if (percent < 50)
+          color = colors10__default.default.yellow;
+        const width = Math.floor(process.stdout.columns / 4);
+        const scomp = Math.round(width * percent / 100);
+        const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+        process.stdout.write(
+          `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(
+            calculateETA(startTime, percent)
+          )}`
+        );
+      });
+      await new Promise((resolve, _reject) => {
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          throw new Error(colors10__default.default.red("@error: ") + error.message);
+        });
+        ff.run();
+      });
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "\u2763\uFE0F Thank you for using",
+    colors10__default.default.green("yt-dlx."),
+    "Consider",
+    colors10__default.default.green("\u{1F31F}starring"),
+    "the github repo",
+    colors10__default.default.green("https://github.com/yt-dlx\n")
+  );
+}
+var qconf4 = zod.z.object({
+  output: zod.z.string().optional(),
+  verbose: zod.z.boolean().optional(),
+  onionTor: zod.z.boolean().optional(),
+  query: zod.z.array(
+    zod.z.string().min(1).refine(
+      async (input) => {
+        switch (true) {
+          case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+            input
+          ):
+            const resultLink = await YouTubeID(input);
+            if (resultLink !== void 0)
+              return true;
+            break;
+          default:
+            const resultId = await YouTubeID(
+              `https://www.youtube.com/playlist?list=${input}`
+            );
+            if (resultId !== void 0)
+              return true;
+            break;
+        }
+        return false;
+      },
+      {
+        message: "Query must be a valid YouTube Playlist Link or ID."
+      }
+    )
+  ).min(1),
+  filter: zod.z.enum([
+    "echo",
+    "slow",
+    "speed",
+    "phaser",
+    "flanger",
+    "panning",
+    "reverse",
+    "vibrato",
+    "subboost",
+    "surround",
+    "bassboost",
+    "nightcore",
+    "superslow",
+    "vaporwave",
+    "superspeed"
+  ]).optional()
+});
+async function ListAudioHighest(input) {
+  let startTime;
+  const { query, output, verbose, filter: filter2, onionTor } = await qconf4.parseAsync(
+    input
+  );
+  const vDATA = /* @__PURE__ */ new Set();
+  for (const pURL of query) {
+    try {
+      const pDATA = await web_default.browserLess.playlistVideos({
+        playlistId: await YouTubeID(pURL)
+      });
+      if (pDATA === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          pURL
+        );
+        continue;
+      }
+      for (const video of pDATA.playlistVideos)
+        vDATA.add(video);
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "total number of uncommon videos:",
+    colors10__default.default.yellow(vDATA.size.toString())
+  );
+  for (const video of vDATA) {
+    try {
+      const engineData = await Agent({
+        query: video.videoLink,
+        onionTor,
+        verbose
+      });
+      if (engineData === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          video.videoLink
+        );
+        continue;
+      }
+      const title = engineData.metaData.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
+      let filename = "yt-dlx_(AudioHighest_";
+      const numThreads = os__namespace.cpus().length * 2;
+      const ff = ffmpeg__default.default();
+      ff.addInput(engineData.AudioHighF.url);
+      ff.addInput(engineData.metaData.thumbnail);
+      ff.outputOptions(["-c", "copy"]);
+      ff.withOutputFormat("avi");
+      ff.addOption("-threads", numThreads.toString());
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+      switch (filter2) {
+        case "bassboost":
+          ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+          filename += `bassboost)_${title}.avi`;
+          break;
+        case "echo":
+          ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+          filename += `echo)_${title}.avi`;
+          break;
+        case "flanger":
+          ff.withAudioFilter(["flanger"]);
+          filename += `flanger)_${title}.avi`;
+          break;
+        case "nightcore":
+          ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+          filename += `nightcore)_${title}.avi`;
+          break;
+        case "panning":
+          ff.withAudioFilter(["apulsator=hz=0.08"]);
+          filename += `panning)_${title}.avi`;
+          break;
+        case "phaser":
+          ff.withAudioFilter(["aphaser=in_gain=0.4"]);
+          filename += `phaser)_${title}.avi`;
+          break;
+        case "reverse":
+          ff.withAudioFilter(["areverse"]);
+          filename += `reverse)_${title}.avi`;
+          break;
+        case "slow":
+          ff.withAudioFilter(["atempo=0.8"]);
+          filename += `slow)_${title}.avi`;
+          break;
+        case "speed":
+          ff.withAudioFilter(["atempo=2"]);
+          filename += `speed)_${title}.avi`;
+          break;
+        case "subboost":
+          ff.withAudioFilter(["asubboost"]);
+          filename += `subboost)_${title}.avi`;
+          break;
+        case "superslow":
+          ff.withAudioFilter(["atempo=0.5"]);
+          filename += `superslow)_${title}.avi`;
+          break;
+        case "superspeed":
+          ff.withAudioFilter(["atempo=3"]);
+          filename += `superspeed)_${title}.avi`;
+          break;
+        case "surround":
+          ff.withAudioFilter(["surround"]);
+          filename += `surround)_${title}.avi`;
+          break;
+        case "vaporwave":
+          ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+          filename += `vaporwave)_${title}.avi`;
+          break;
+        case "vibrato":
+          ff.withAudioFilter(["vibrato=f=6.5"]);
+          filename += `vibrato)_${title}.avi`;
+          break;
+        default:
+          filename += `)_${title}.avi`;
+          break;
+      }
+      ff.on("error", (error) => {
+        throw new Error(error.message);
+      });
+      ff.on("start", (comd) => {
+        startTime = /* @__PURE__ */ new Date();
+        if (verbose)
+          console.info(colors10__default.default.green("@comd:"), comd);
+      });
+      ff.on("end", () => process.stdout.write("\n"));
+      ff.on("progress", ({ percent, timemark }) => {
+        let color = colors10__default.default.green;
+        if (isNaN(percent))
+          percent = 0;
+        if (percent > 98)
+          percent = 100;
+        if (percent < 25)
+          color = colors10__default.default.red;
+        else if (percent < 50)
+          color = colors10__default.default.yellow;
+        const width = Math.floor(process.stdout.columns / 4);
+        const scomp = Math.round(width * percent / 100);
+        const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+        process.stdout.write(
+          `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(
+            calculateETA(startTime, percent)
+          )}`
+        );
+      });
+      await new Promise((resolve, _reject) => {
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          throw new Error(colors10__default.default.red("@error: ") + error.message);
+        });
+        ff.run();
+      });
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "\u2763\uFE0F Thank you for using",
+    colors10__default.default.green("yt-dlx."),
+    "Consider",
+    colors10__default.default.green("\u{1F31F}starring"),
+    "the github repo",
+    colors10__default.default.green("https://github.com/yt-dlx\n")
+  );
+}
+var qconf5 = zod.z.object({
   query: zod.z.string().min(1),
   output: zod.z.string().optional(),
   stream: zod.z.boolean().optional(),
@@ -2354,62 +2808,59 @@ var qconf3 = zod.z.object({
 });
 async function VideoLowest(input) {
   let startTime;
-  const { query, stream, verbose, output, filter: filter2, onionTor } = await qconf3.parseAsync(input);
+  const { query, stream, verbose, output, filter: filter2, onionTor } = await qconf5.parseAsync(input);
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors12__default.default.red("@error: ") + "unable to get response from youtube."
+      colors10__default.default.red("@error: ") + "unable to get response from youtube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path6__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     const numThreads = os__namespace.cpus().length * 2;
     const ff = ffmpeg__default.default();
-    const vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0 ? engineData.ManifestLow[0]?.url : void 0;
-    ff.videoCodec("copy");
+    ff.addInput(engineData.VideoLowF.url);
+    ff.outputOptions(["-c", "copy"]);
+    ff.withOutputFormat("matroska");
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    if (vdata)
-      ff.addInput(vdata.toString());
-    else
-      throw new Error(colors12__default.default.red("@error: ") + "no video data found.");
     let filename = "yt-dlx_(VideoLowest_";
     switch (filter2) {
       case "grayscale":
         ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-        filename += `grayscale)_${title}.mp4`;
+        filename += `grayscale)_${title}.mkv`;
         break;
       case "invert":
         ff.withVideoFilter("negate");
-        filename += `invert)_${title}.mp4`;
+        filename += `invert)_${title}.mkv`;
         break;
       case "rotate90":
         ff.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mp4`;
+        filename += `rotate90)_${title}.mkv`;
         break;
       case "rotate180":
         ff.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mp4`;
+        filename += `rotate180)_${title}.mkv`;
         break;
       case "rotate270":
         ff.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mp4`;
+        filename += `rotate270)_${title}.mkv`;
         break;
       case "flipHorizontal":
         ff.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mp4`;
+        filename += `flipHorizontal)_${title}.mkv`;
         break;
       case "flipVertical":
         ff.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mp4`;
+        filename += `flipVertical)_${title}.mkv`;
         break;
       default:
-        filename += `)_${title}.mp4`;
+        filename += `)_${title}.mkv`;
         break;
     }
     ff.on("error", (error) => {
@@ -2418,19 +2869,19 @@ async function VideoLowest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors12__default.default.green("@comd:"), comd);
+        console.info(colors10__default.default.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors12__default.default.green;
+      let color = colors10__default.default.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors12__default.default.red;
+        color = colors10__default.default.red;
       else if (percent < 50)
-        color = colors12__default.default.yellow;
+        color = colors10__default.default.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2441,30 +2892,30 @@ async function VideoLowest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path6__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path10__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path6__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors12__default.default.red("@error: ") + error.message));
+          reject2(new Error(colors10__default.default.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors12__default.default.green("@info:"),
+      colors10__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors12__default.default.green("yt-dlx."),
+      colors10__default.default.green("yt-dlx."),
       "Consider",
-      colors12__default.default.green("\u{1F31F}starring"),
+      colors10__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors12__default.default.green("https://github.com/yt-dlx\n")
+      colors10__default.default.green("https://github.com/yt-dlx\n")
     );
   }
 }
-var qconf4 = zod.z.object({
+var qconf6 = zod.z.object({
   query: zod.z.string().min(1),
   output: zod.z.string().optional(),
   stream: zod.z.boolean().optional(),
@@ -2482,62 +2933,59 @@ var qconf4 = zod.z.object({
 });
 async function VideoHighest(input) {
   let startTime;
-  const { query, stream, verbose, output, filter: filter2, onionTor } = await qconf4.parseAsync(input);
+  const { query, stream, verbose, output, filter: filter2, onionTor } = await qconf6.parseAsync(input);
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors12__default.default.red("@error: ") + "unable to get response from youtube."
+      colors10__default.default.red("@error: ") + "unable to get response from youtube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path6__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     const numThreads = os__namespace.cpus().length * 2;
     const ff = ffmpeg__default.default();
-    const vdata = Array.isArray(engineData.ManifestHigh) && engineData.ManifestHigh.length > 0 ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url : void 0;
-    ff.videoCodec("copy");
+    ff.addInput(engineData.VideoHighF.url);
+    ff.outputOptions(["-c", "copy"]);
+    ff.withOutputFormat("matroska");
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    if (vdata)
-      ff.addInput(vdata.toString());
-    else
-      throw new Error(colors12__default.default.red("@error: ") + "no video data found.");
     let filename = "yt-dlx_(VideoHighest_";
     switch (filter2) {
       case "grayscale":
         ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-        filename += `grayscale)_${title}.mp4`;
+        filename += `grayscale)_${title}.mkv`;
         break;
       case "invert":
         ff.withVideoFilter("negate");
-        filename += `invert)_${title}.mp4`;
+        filename += `invert)_${title}.mkv`;
         break;
       case "rotate90":
         ff.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mp4`;
+        filename += `rotate90)_${title}.mkv`;
         break;
       case "rotate180":
         ff.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mp4`;
+        filename += `rotate180)_${title}.mkv`;
         break;
       case "rotate270":
         ff.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mp4`;
+        filename += `rotate270)_${title}.mkv`;
         break;
       case "flipHorizontal":
         ff.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mp4`;
+        filename += `flipHorizontal)_${title}.mkv`;
         break;
       case "flipVertical":
         ff.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mp4`;
+        filename += `flipVertical)_${title}.mkv`;
         break;
       default:
-        filename += `)_${title}.mp4`;
+        filename += `)_${title}.mkv`;
         break;
     }
     ff.on("error", (error) => {
@@ -2546,19 +2994,19 @@ async function VideoHighest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors12__default.default.green("@comd:"), comd);
+        console.info(colors10__default.default.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors12__default.default.green;
+      let color = colors10__default.default.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors12__default.default.red;
+        color = colors10__default.default.red;
       else if (percent < 50)
-        color = colors12__default.default.yellow;
+        color = colors10__default.default.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2569,28 +3017,400 @@ async function VideoHighest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path6__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path10__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path6__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors12__default.default.red("@error: ") + error.message));
+          reject2(new Error(colors10__default.default.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors12__default.default.green("@info:"),
+      colors10__default.default.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors12__default.default.green("yt-dlx."),
+      colors10__default.default.green("yt-dlx."),
       "Consider",
-      colors12__default.default.green("\u{1F31F}starring"),
+      colors10__default.default.green("\u{1F31F}starring"),
       "the github repo",
-      colors12__default.default.green("https://github.com/yt-dlx\n")
+      colors10__default.default.green("https://github.com/yt-dlx\n")
     );
   }
+}
+var qconf7 = zod.z.object({
+  output: zod.z.string().optional(),
+  verbose: zod.z.boolean().optional(),
+  onionTor: zod.z.boolean().optional(),
+  query: zod.z.array(
+    zod.z.string().min(1).refine(
+      async (input) => {
+        switch (true) {
+          case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+            input
+          ):
+            const resultLink = await YouTubeID(input);
+            if (resultLink !== void 0)
+              return true;
+            break;
+          default:
+            const resultId = await YouTubeID(
+              `https://www.youtube.com/playlist?list=${input}`
+            );
+            if (resultId !== void 0)
+              return true;
+            break;
+        }
+        return false;
+      },
+      {
+        message: "Query must be a valid YouTube Playlist Link or ID."
+      }
+    )
+  ).min(1),
+  filter: zod.z.enum([
+    "invert",
+    "rotate90",
+    "rotate270",
+    "grayscale",
+    "rotate180",
+    "flipVertical",
+    "flipHorizontal"
+  ]).optional()
+});
+async function ListVideoLowest(input) {
+  let startTime;
+  const { query, verbose, output, filter: filter2, onionTor } = await qconf7.parseAsync(
+    input
+  );
+  const vDATA = /* @__PURE__ */ new Set();
+  for (const pURL of query) {
+    try {
+      const pDATA = await web_default.browserLess.playlistVideos({
+        playlistId: await YouTubeID(pURL)
+      });
+      if (pDATA === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          pURL
+        );
+        continue;
+      }
+      for (const video of pDATA.playlistVideos)
+        vDATA.add(video);
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "total number of uncommon videos:",
+    colors10__default.default.yellow(vDATA.size.toString())
+  );
+  for (const video of vDATA) {
+    try {
+      const engineData = await Agent({
+        query: video.videoLink,
+        onionTor,
+        verbose
+      });
+      if (engineData === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube."
+        );
+        continue;
+      }
+      const title = engineData.metaData.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
+      let filename = "yt-dlx_(VideoLowest_";
+      const numThreads = os__namespace.cpus().length * 2;
+      const ff = ffmpeg__default.default();
+      ff.addInput(engineData.VideoLowF.url);
+      ff.outputOptions(["-c", "copy"]);
+      ff.addOption("-threads", numThreads.toString());
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+      ff.withOutputFormat("matroska");
+      switch (filter2) {
+        case "grayscale":
+          ff.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ff.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ff.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ff.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ff.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ff.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ff.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
+      ff.on("error", (error) => {
+        throw new Error(error.message);
+      });
+      ff.on("start", (comd) => {
+        startTime = /* @__PURE__ */ new Date();
+        if (verbose)
+          console.info(colors10__default.default.green("@comd:"), comd);
+      });
+      ff.on("end", () => process.stdout.write("\n"));
+      ff.on("progress", ({ percent, timemark }) => {
+        let color = colors10__default.default.green;
+        if (isNaN(percent))
+          percent = 0;
+        if (percent > 98)
+          percent = 100;
+        if (percent < 25)
+          color = colors10__default.default.red;
+        else if (percent < 50)
+          color = colors10__default.default.yellow;
+        const width = Math.floor(process.stdout.columns / 4);
+        const scomp = Math.round(width * percent / 100);
+        const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+        process.stdout.write(
+          `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(
+            calculateETA(startTime, percent)
+          )}`
+        );
+      });
+      await new Promise((resolve, _reject) => {
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          throw new Error(colors10__default.default.red("@error: ") + error.message);
+        });
+        ff.run();
+      });
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "\u2763\uFE0F Thank you for using",
+    colors10__default.default.green("yt-dlx."),
+    "Consider",
+    colors10__default.default.green("\u{1F31F}starring"),
+    "the github repo",
+    colors10__default.default.green("https://github.com/yt-dlx\n")
+  );
+}
+var qconf8 = zod.z.object({
+  output: zod.z.string().optional(),
+  verbose: zod.z.boolean().optional(),
+  onionTor: zod.z.boolean().optional(),
+  query: zod.z.array(
+    zod.z.string().min(1).refine(
+      async (input) => {
+        switch (true) {
+          case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+            input
+          ):
+            const resultLink = await YouTubeID(input);
+            if (resultLink !== void 0)
+              return true;
+            break;
+          default:
+            const resultId = await YouTubeID(
+              `https://www.youtube.com/playlist?list=${input}`
+            );
+            if (resultId !== void 0)
+              return true;
+            break;
+        }
+        return false;
+      },
+      {
+        message: "Query must be a valid YouTube Playlist Link or ID."
+      }
+    )
+  ).min(1),
+  filter: zod.z.enum([
+    "invert",
+    "rotate90",
+    "rotate270",
+    "grayscale",
+    "rotate180",
+    "flipVertical",
+    "flipHorizontal"
+  ]).optional()
+});
+async function ListVideoHighest(input) {
+  let startTime;
+  const { query, verbose, output, filter: filter2, onionTor } = await qconf8.parseAsync(
+    input
+  );
+  const vDATA = /* @__PURE__ */ new Set();
+  for (const pURL of query) {
+    try {
+      const pDATA = await web_default.browserLess.playlistVideos({
+        playlistId: await YouTubeID(pURL)
+      });
+      if (pDATA === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          pURL
+        );
+        continue;
+      }
+      for (const video of pDATA.playlistVideos)
+        vDATA.add(video);
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "total number of uncommon videos:",
+    colors10__default.default.yellow(vDATA.size.toString())
+  );
+  for (const video of vDATA) {
+    try {
+      const engineData = await Agent({
+        query: video.videoLink,
+        onionTor,
+        verbose
+      });
+      if (engineData === void 0) {
+        console.log(
+          colors10__default.default.red("@error:"),
+          "unable to get response from youtube."
+        );
+        continue;
+      }
+      const title = engineData.metaData.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path10__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
+      let filename = "yt-dlx_(VideoHighest_";
+      const numThreads = os__namespace.cpus().length * 2;
+      const ff = ffmpeg__default.default();
+      ff.addInput(engineData.VideoHighF.url);
+      ff.outputOptions(["-c", "copy"]);
+      ff.addOption("-threads", numThreads.toString());
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+      ff.withOutputFormat("matroska");
+      switch (filter2) {
+        case "grayscale":
+          ff.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ff.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ff.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ff.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ff.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ff.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ff.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
+      ff.on("error", (error) => {
+        throw new Error(error.message);
+      });
+      ff.on("start", (comd) => {
+        startTime = /* @__PURE__ */ new Date();
+        if (verbose)
+          console.info(colors10__default.default.green("@comd:"), comd);
+      });
+      ff.on("end", () => process.stdout.write("\n"));
+      ff.on("progress", ({ percent, timemark }) => {
+        let color = colors10__default.default.green;
+        if (isNaN(percent))
+          percent = 0;
+        if (percent > 98)
+          percent = 100;
+        if (percent < 25)
+          color = colors10__default.default.red;
+        else if (percent < 50)
+          color = colors10__default.default.yellow;
+        const width = Math.floor(process.stdout.columns / 4);
+        const scomp = Math.round(width * percent / 100);
+        const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+        process.stdout.write(
+          `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(
+            calculateETA(startTime, percent)
+          )}`
+        );
+      });
+      await new Promise((resolve, _reject) => {
+        ff.output(path10__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          throw new Error(colors10__default.default.red("@error: ") + error.message);
+        });
+        ff.run();
+      });
+    } catch (error) {
+      console.log(colors10__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors10__default.default.green("@info:"),
+    "\u2763\uFE0F Thank you for using",
+    colors10__default.default.green("yt-dlx."),
+    "Consider",
+    colors10__default.default.green("\u{1F31F}starring"),
+    "the github repo",
+    colors10__default.default.green("https://github.com/yt-dlx\n")
+  );
 }
 
 // core/index.ts
@@ -2619,21 +3439,21 @@ var ytdlx = {
     Single: {
       Lowest: AudioLowest,
       Highest: AudioHighest
+    },
+    List: {
+      Lowest: ListAudioLowest,
+      Highest: ListAudioHighest
     }
-    // List: {
-    // Lowest: ListAudioLowest,
-    // Highest: ListAudioHighest,
-    // },
   },
   VideoOnly: {
     Single: {
       Lowest: VideoLowest,
       Highest: VideoHighest
+    },
+    List: {
+      Lowest: ListVideoLowest,
+      Highest: ListVideoHighest
     }
-    // List: {
-    // Lowest: ListVideoLowest,
-    // Highest: ListVideoHighest,
-    // },
   }
 };
 var core_default = ytdlx;
@@ -2657,12 +3477,12 @@ var program = async () => {
   switch (command) {
     case "install:deps":
       while (maxTries > 0) {
-        const enginePath = path6__namespace.join(currentDir, "util");
+        const enginePath = path10__namespace.join(currentDir, "util");
         if (fs2__namespace.existsSync(enginePath)) {
           uLoc = enginePath;
           break;
         } else {
-          currentDir = path6__namespace.join(currentDir, "..");
+          currentDir = path10__namespace.join(currentDir, "..");
           maxTries--;
         }
       }
@@ -2673,7 +3493,7 @@ var program = async () => {
       await Promise.all([
         new Promise((resolve, reject2) => {
           rox.stdout.on("data", (stdout) => {
-            console.log(colors12__default.default.green("@stdout:"), stdout.toString().trim());
+            console.log(colors10__default.default.green("@stdout:"), stdout.toString().trim());
           });
           rox.on("close", (code) => {
             if (code === 0)
@@ -2684,7 +3504,7 @@ var program = async () => {
         }),
         new Promise((resolve, reject2) => {
           rox.stderr.on("data", (stderr) => {
-            console.log(colors12__default.default.yellow("@stderr:"), stderr.toString().trim());
+            console.log(colors10__default.default.yellow("@stderr:"), stderr.toString().trim());
           });
           rox.on("close", (code) => {
             if (code === 0)
@@ -2697,12 +3517,12 @@ var program = async () => {
       break;
     case "install:socks5":
       while (maxTries > 0) {
-        const enginePath = path6__namespace.join(currentDir, "util");
+        const enginePath = path10__namespace.join(currentDir, "util");
         if (fs2__namespace.existsSync(enginePath)) {
           uLoc = enginePath;
           break;
         } else {
-          currentDir = path6__namespace.join(currentDir, "..");
+          currentDir = path10__namespace.join(currentDir, "..");
           maxTries--;
         }
       }
@@ -2713,7 +3533,7 @@ var program = async () => {
       await Promise.all([
         new Promise((resolve, reject2) => {
           xrox.stdout.on("data", (stdout) => {
-            console.log(colors12__default.default.green("@stdout:"), stdout.toString().trim());
+            console.log(colors10__default.default.green("@stdout:"), stdout.toString().trim());
           });
           xrox.on("close", (code) => {
             if (code === 0)
@@ -2724,7 +3544,7 @@ var program = async () => {
         }),
         new Promise((resolve, reject2) => {
           xrox.stderr.on("data", (stderr) => {
-            console.log(colors12__default.default.yellow("@stderr:"), stderr.toString().trim());
+            console.log(colors10__default.default.yellow("@stderr:"), stderr.toString().trim());
           });
           xrox.on("close", (code) => {
             if (code === 0)
@@ -2737,7 +3557,7 @@ var program = async () => {
       break;
     case "version":
     case "v":
-      console.error(colors12__default.default.green("Installed Version: yt-dlx@" + version));
+      console.error(colors10__default.default.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -2748,7 +3568,7 @@ var program = async () => {
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors12__default.default.red("error: no query"));
+        console.error(colors10__default.default.red("error: no query"));
       } else
         await core_default.info.extract({
           query: proTube.query
@@ -2756,14 +3576,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors12__default.default.red(error));
+          console.error(colors10__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors12__default.default.red("error: no query"));
+        console.error(colors10__default.default.red("error: no query"));
       } else
         await core_default.AudioOnly.Single.Highest({
           query: proTube.query
@@ -2771,14 +3591,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors12__default.default.red(error));
+          console.error(colors10__default.default.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors12__default.default.red("error: no query"));
+        console.error(colors10__default.default.red("error: no query"));
       } else
         await core_default.AudioOnly.Single.Lowest({
           query: proTube.query
@@ -2786,14 +3606,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors12__default.default.red(error));
+          console.error(colors10__default.default.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors12__default.default.red("error: no query"));
+        console.error(colors10__default.default.red("error: no query"));
       } else
         await core_default.VideoOnly.Single.Highest({
           query: proTube.query
@@ -2801,14 +3621,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors12__default.default.red(error));
+          console.error(colors10__default.default.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors12__default.default.red("error: no query"));
+        console.error(colors10__default.default.red("error: no query"));
       } else
         await core_default.VideoOnly.Single.Lowest({
           query: proTube.query
@@ -2816,7 +3636,7 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors12__default.default.red(error));
+          console.error(colors10__default.default.red(error));
           process.exit();
         });
       break;

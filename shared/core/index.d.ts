@@ -3,8 +3,12 @@ import extract from "./pipes/command/extract";
 import extract_playlist_videos from "./pipes/command/extract_playlist_videos";
 import AudioLowest from "./pipes/audio/single/AudioLowest";
 import AudioHighest from "./pipes/audio/single/AudioHighest";
+import ListAudioLowest from "./pipes/audio/list/ListAudioLowest";
+import ListAudioHighest from "./pipes/audio/list/ListAudioHighest";
 import VideoLowest from "./pipes/video/single/VideoLowest";
 import VideoHighest from "./pipes/video/single/VideoHighest";
+import ListVideoLowest from "./pipes/video/list/ListVideoLowest";
+import ListVideoHighest from "./pipes/video/list/ListVideoHighest";
 declare const ytdlx: {
     search: {
         browser: {
@@ -30,11 +34,19 @@ declare const ytdlx: {
             Lowest: typeof AudioLowest;
             Highest: typeof AudioHighest;
         };
+        List: {
+            Lowest: typeof ListAudioLowest;
+            Highest: typeof ListAudioHighest;
+        };
     };
     VideoOnly: {
         Single: {
             Lowest: typeof VideoLowest;
             Highest: typeof VideoHighest;
+        };
+        List: {
+            Lowest: typeof ListVideoLowest;
+            Highest: typeof ListVideoHighest;
         };
     };
 };
