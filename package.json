@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "5.19.0",
+  "version": "5.20.0",
   "types": "shared/index.d.ts",
   "main": "shared/index.cjs.js",
   "module": "shared/index.esm.js",
