@@ -4,10 +4,10 @@ import colors from "colors";
 (async () => {
   try {
     console.log(colors.blue("@test:"), "Lowest audio");
-    await ytdlx().AudioOnly().Single().Lowest({
+    await ytdlx.AudioOnly.Single.Lowest({
       stream: false,
       verbose: false,
-      autoSocks5: true,
+      onionTor: true,
       output: "public/audio",
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });

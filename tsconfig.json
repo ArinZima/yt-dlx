@@ -30,6 +30,6 @@
     "strictPropertyInitialization": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "shared", "client"],
-  "include": ["core/**/*.ts", "core/**/*.js", "core/**/*.mjs"]
+  "include": ["core/**/*.ts"],
+  "exclude": ["node_modules", "shared", "client"]
 }

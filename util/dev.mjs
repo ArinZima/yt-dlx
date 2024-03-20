@@ -32,12 +32,12 @@ const core = {
     "rm -rf shared temp && tsup --config tsup.config.ts && rollup -c rollup.config.mjs",
   "build:client": "cd client && rm -rf .next temp && yarn build",
   test: "yarn test:scrape && yarn test:full && yarn test:cli",
+  "test:scrape":
+    "rm -rf temp others && tsup --config tsup.config.ts core/__tests__/other/scrape.spec.ts --outDir temp && node temp/scrape.spec.js",
+  "test:spec":
+    "rm -rf temp others && tsup --config tsup.config.ts core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
   "test:cli":
     "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
-  "test:scrape":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/other/scrape.spec.js",
-  "test:spec":
-    "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/other/quick.spec.js",
   "test:full":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/runner.js",
   "test:audio":

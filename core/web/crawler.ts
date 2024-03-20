@@ -2,8 +2,8 @@ import puppeteer, { Browser, Page } from "puppeteer";
 export let browser: Browser;
 export let page: Page;
 
-export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
-  if (autoSocks5) {
+export default async function crawler(verbose?: boolean, onionTor?: boolean) {
+  if (onionTor) {
     browser = await puppeteer.launch({
       headless: verbose ? false : true,
       ignoreHTTPSErrors: true,
@@ -16,7 +16,7 @@ export default async function crawler(verbose?: boolean, autoSocks5?: boolean) {
         "--disable-dev-shm-usage",
         "--ignore-certificate-errors",
         "--allow-running-insecure-content",
-        // "--proxy-server=socks5://127.0.0.1:9050",
+        "--proxy-server=socks5://127.0.0.1:9050",
       ],
     });
   } else {

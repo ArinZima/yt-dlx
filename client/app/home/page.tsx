@@ -81,7 +81,7 @@ export default function Component() {
             href="/pkg"
             className="text-red-600 cursor-pointer text-3xl mr-2"
           >
-            yt-dlx
+            yt-dlp
           </Link>
         </div>
       </nav>
@@ -99,7 +99,7 @@ export default function Component() {
             >
               powered by
               <TbDiamondFilled size={20} />
-              <span className="font-bold not-italic text-red-600">yt-dlx</span>
+              <span className="font-bold not-italic text-red-600">yt-dlp</span>
             </Link>
             <h1 className="text-[180px] xl:text-[300px] font-bold animate-pulse text-shadow-lg shadow-pink-600 font-AspireDemibold text-transparent bg-clip-text bg-gradient-to-r from-[#c7595e] via-fuchsia-700 to-violet-700">
               Mixly
@@ -238,7 +238,7 @@ export default function Component() {
                           href="/pkg"
                           className="flex items-center justify-center p-2 bg-pink-700/50 hover:bg-pink-700/60 text-white/90 mt-0.5 w-full text-sm gap-1 rounded"
                         >
-                          powered by <TbDiamondFilled size={20} /> yt-dlx{" "}
+                          powered by <TbDiamondFilled size={20} /> yt-dlp{" "}
                         </Link>
                         {/* <audio
 controls
@@ -380,7 +380,7 @@ className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
       <footer className="pt-20 pb-6 flex flex-wrap items-baseline justify-center">
         <span className="text-pink-600 text-3xl mr-2">
           Mixly <span className="text-[#C4C4C4] text-lg">&</span>{" "}
-          <span className="text-red-600">yt-dlx</span>
+          <span className="text-red-600">yt-dlp</span>
         </span>
         <span className="mt-2 text-sm font-light text-[#C4C4C4]">
           Copyright © 2023

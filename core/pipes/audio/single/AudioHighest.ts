@@ -20,7 +20,7 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  autoSocks5: z.boolean().optional(),
+  onionTor: z.boolean().optional(),
   filter: z
     .enum([
       "echo",
@@ -47,7 +47,7 @@ export default async function AudioHighest(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
-  autoSocks5?: boolean;
+  onionTor?: boolean;
   filter?:
     | "echo"
     | "slow"
@@ -65,9 +65,9 @@ export default async function AudioHighest(input: {
     | "vaporwave"
     | "superspeed";
 }): Promise<void | { filename: string; ffmpeg: FfmpegCommand }> {
-  const { query, output, stream, verbose, filter, autoSocks5 } =
+  const { query, output, stream, verbose, filter, onionTor } =
     await qconf.parseAsync(input);
-  const engineData = await ytdlx({ query, verbose, autoSocks5 });
+  const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
     throw new Error(
       colors.red("@error: ") + "unable to get response from YouTube."

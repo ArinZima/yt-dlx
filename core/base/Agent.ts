@@ -1,9 +1,3 @@
-import type {
-  TypeVideo,
-  TypePlaylist,
-  VideoInfoType,
-  PlaylistInfoType,
-} from "../web";
 import web from "../web";
 import colors from "colors";
 import niptor from "./niptor";
@@ -15,11 +9,11 @@ import type { EngineOutput } from "./Engine";
 export default async function Agent({
   query,
   verbose,
-  autoSocks5,
+  onionTor,
 }: {
   query: string;
   verbose?: boolean;
-  autoSocks5?: boolean;
+  onionTor?: boolean;
 }): Promise<EngineOutput> {
   console.log(
     colors.green("@info:"),
@@ -28,6 +22,7 @@ export default async function Agent({
     "version",
     colors.green(version)
   );
+  verbose;
   let nipTor;
   let ipAddress: string | undefined = undefined;
   nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
@@ -38,62 +33,51 @@ export default async function Agent({
     nipTor.stdout.trim()
   );
   ipAddress = nipTor.stdout.trim();
-  if (autoSocks5) {
+  if (onionTor) {
     nipTor = await niptor([
       "systemctl restart tor && curl --socks5-hostname 127.0.0.1:9050 https://checkip.amazonaws.com --insecure",
     ]);
     if (nipTor.stdout.trim().length > 0) {
       console.log(
         colors.green("@info:"),
-        "autoSocks5",
+        "Socks5",
         colors.green("ipAddress"),
         nipTor.stdout.trim()
       );
       ipAddress = nipTor.stdout.trim();
     } else throw new Error("Unable to connect to Tor.");
   }
+  let TubeBody;
   let respEngine: EngineOutput | undefined = undefined;
   let videoId: string | undefined = await YouTubeID(query);
-  let TubeBody: TypeVideo[] | VideoInfoType | TypePlaylist[] | PlaylistInfoType;
   if (!videoId) {
-    TubeBody = (await web.search.SearchVideos({
-      type: "video",
-      autoSocks5,
-      verbose,
-      query,
-    })) as TypeVideo[];
-    if (!TubeBody[0]) {
-      throw new Error("Unable to get response from YouTube.");
-    } else {
+    TubeBody = await web.browserLess.searchVideos({ query });
+    if (!TubeBody[0]) throw new Error("Unable to get response!");
+    else {
       console.log(
         colors.green("@info:"),
         `preparing payload for`,
         colors.green(TubeBody[0].title as string)
       );
       respEngine = await Engine({
-        query: TubeBody[0].videoLink,
-        autoSocks5,
+        query: `https://www.youtube.com/watch?v=${TubeBody[0].id}`,
+        onionTor,
         ipAddress,
       });
       return respEngine;
     }
   } else {
-    TubeBody = (await web.search.VideoInfo({
-      autoSocks5,
-      verbose,
-      query,
-    })) as VideoInfoType;
-    if (!TubeBody) {
-      throw new Error("Unable to get response from YouTube.");
-    } else {
+    TubeBody = await web.browserLess.singleVideo({ videoId });
+    if (!TubeBody) throw new Error("Unable to get response!");
+    else {
       console.log(
         colors.green("@info:"),
         `preparing payload for`,
         colors.green(TubeBody.title)
       );
       respEngine = await Engine({
-        query: TubeBody.videoLink,
-        autoSocks5,
+        query: `https://www.youtube.com/watch?v=${TubeBody.id}`,
+        onionTor,
         ipAddress,
       });
       return respEngine;

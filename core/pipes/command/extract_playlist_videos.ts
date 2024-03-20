@@ -3,18 +3,15 @@ import web from "../../web";
 import * as async from "async";
 import ytdlx from "../../base/Agent";
 import YouTubeID from "../../web/YouTubeId";
-import type { PlaylistInfoType } from "../../web/";
-import type EngineResult from "../../interface/EngineResult";
+import type { EngineOutput } from "../../base/Engine";
 
 export default async function extract_playlist_videos({
-  autoSocks5,
   playlistUrls,
 }: {
-  autoSocks5?: boolean;
   playlistUrls: string[];
-}): Promise<EngineResult[]> {
+}): Promise<EngineOutput[]> {
   let counter = 0;
-  const metaTubeArr: EngineResult[] = [];
+  const metaTubeArr: EngineOutput[] = [];
   await async.eachSeries(playlistUrls, async (listLink) => {
     const query: string | undefined = await YouTubeID(listLink);
     if (query === undefined) {
@@ -25,11 +22,19 @@ export default async function extract_playlist_videos({
       );
       return;
     } else {
-      const resp: PlaylistInfoType | undefined = await web.search.PlaylistInfo({
-        query,
-        autoSocks5,
+      const playlistId = await YouTubeID(query);
+      if (!playlistId) {
+        console.error(
+          colors.bold.red("@error: "),
+          "incorrect playlist link.",
+          query
+        );
+        return;
+      }
+      const resp = await web.browserLess.playlistVideos({
+        playlistId,
       });
-      if (resp === undefined) {
+      if (!resp) {
         console.error(
           colors.bold.red("@error: "),
           "unable to get response from youtube for",
@@ -43,7 +48,7 @@ export default async function extract_playlist_videos({
           colors.green(resp.playlistTitle),
           resp.playlistVideoCount
         );
-        await async.eachSeries(resp.playlistVideos, async (vid) => {
+        await async.eachSeries(resp.playlistVideos, async (vid: any) => {
           const metaTube = await ytdlx({
             query: vid.videoLink,
           });

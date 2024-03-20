@@ -20,7 +20,7 @@ const qconf = z.object({
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
-  autoSocks5: z.boolean().optional(),
+  onionTor: z.boolean().optional(),
   filter: z
     .enum([
       "invert",
@@ -38,7 +38,7 @@ export default async function VideoLowest(input: {
   output?: string;
   stream?: boolean;
   verbose?: boolean;
-  autoSocks5?: boolean;
+  onionTor?: boolean;
   filter?:
     | "invert"
     | "rotate90"
@@ -51,9 +51,9 @@ export default async function VideoLowest(input: {
   filename: string;
   ffmpeg: FfmpegCommand;
 }> {
-  const { query, stream, verbose, output, filter, autoSocks5 } =
+  const { query, stream, verbose, output, filter, onionTor } =
     await qconf.parseAsync(input);
-  const engineData = await ytdlx({ query, verbose, autoSocks5 });
+  const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
     throw new Error(
       colors.red("@error: ") + "unable to get response from youtube."

@@ -1,16 +1,17 @@
 import colors from "colors";
 import ytdlx from "../../base/Agent";
+import type { EngineOutput } from "../../base/Engine";
 
 export default async function extract({
   query,
   verbose,
-  autoSocks5,
+  onionTor,
 }: {
   query: string;
   verbose?: boolean;
-  autoSocks5?: boolean;
+  onionTor?: boolean;
 }) {
-  const metaBody = await ytdlx({ query, verbose, autoSocks5 });
+  const metaBody: EngineOutput = await ytdlx({ query, verbose, onionTor });
   if (!metaBody) {
     return {
       message: "Unable to get response from YouTube...",
@@ -18,7 +19,7 @@ export default async function extract({
     };
   }
   const uploadDate = new Date(
-    metaBody.metaTube.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")
+    metaBody.metaData.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")
   );
   const currentDate = new Date();
   const daysAgo = Math.floor(
@@ -30,10 +31,10 @@ export default async function extract({
     day: "numeric",
   });
   const uploadAgoObject = calculateUploadAgo(daysAgo);
-  const videoTimeInSeconds = metaBody.metaTube.duration;
+  const videoTimeInSeconds = metaBody.metaData.duration;
   const videoDuration = calculateVideoDuration(videoTimeInSeconds);
-  const viewCountFormatted = formatCount(metaBody.metaTube.view_count);
-  const likeCountFormatted = formatCount(metaBody.metaTube.like_count);
+  const viewCountFormatted = formatCount(metaBody.metaData.view_count);
+  const likeCountFormatted = formatCount(metaBody.metaData.like_count);
   function calculateUploadAgo(days: number) {
     const years = Math.floor(days / 365);
     const months = Math.floor((days % 365) / 30);
@@ -69,40 +70,51 @@ export default async function extract({
     return `${count}`;
   }
   const payload = {
-    audio_data: metaBody.AudioStore,
-    video_data: metaBody.VideoStore,
-    hdrvideo_data: metaBody.HDRVideoStore,
+    AudioLowF: metaBody.AudioLowF,
+    AudioHighF: metaBody.AudioHighF,
+    VideoLowF: metaBody.VideoLowF,
+    VideoHighF: metaBody.VideoHighF,
+    AudioLowDRC: metaBody.AudioLowDRC,
+    AudioHighDRC: metaBody.AudioHighDRC,
+    AudioLow: metaBody.AudioLow,
+    AudioHigh: metaBody.AudioHigh,
+    VideoLowHDR: metaBody.VideoLowHDR,
+    VideoHighHDR: metaBody.VideoHighHDR,
+    VideoLow: metaBody.VideoLow,
+    VideoHigh: metaBody.VideoHigh,
+    ManifestLow: metaBody.ManifestLow,
+    ManifestHigh: metaBody.ManifestHigh,
     meta_data: {
-      id: metaBody.metaTube.id,
-      original_url: metaBody.metaTube.original_url,
-      webpage_url: metaBody.metaTube.webpage_url,
-      title: metaBody.metaTube.title,
-      view_count: metaBody.metaTube.view_count,
-      like_count: metaBody.metaTube.like_count,
+      id: metaBody.metaData.id,
+      original_url: metaBody.metaData.original_url,
+      webpage_url: metaBody.metaData.webpage_url,
+      title: metaBody.metaData.title,
+      view_count: metaBody.metaData.view_count,
+      like_count: metaBody.metaData.like_count,
       view_count_formatted: viewCountFormatted,
       like_count_formatted: likeCountFormatted,
-      uploader: metaBody.metaTube.uploader,
-      uploader_id: metaBody.metaTube.uploader_id,
-      uploader_url: metaBody.metaTube.uploader_url,
-      thumbnail: metaBody.metaTube.thumbnail,
-      categories: metaBody.metaTube.categories,
+      uploader: metaBody.metaData.uploader,
+      uploader_id: metaBody.metaData.uploader_id,
+      uploader_url: metaBody.metaData.uploader_url,
+      thumbnail: metaBody.metaData.thumbnail,
+      categories: metaBody.metaData.categories,
       time: videoTimeInSeconds,
       duration: videoDuration,
-      age_limit: metaBody.metaTube.age_limit,
-      live_status: metaBody.metaTube.live_status,
-      description: metaBody.metaTube.description,
-      full_description: metaBody.metaTube.description,
+      age_limit: metaBody.metaData.age_limit,
+      live_status: metaBody.metaData.live_status,
+      description: metaBody.metaData.description,
+      full_description: metaBody.metaData.description,
       upload_date: prettyDate,
       upload_ago: daysAgo,
       upload_ago_formatted: uploadAgoObject,
-      comment_count: metaBody.metaTube.comment_count,
-      comment_count_formatted: formatCount(metaBody.metaTube.comment_count),
-      channel_id: metaBody.metaTube.channel_id,
-      channel_name: metaBody.metaTube.channel,
-      channel_url: metaBody.metaTube.channel_url,
-      channel_follower_count: metaBody.metaTube.channel_follower_count,
+      comment_count: metaBody.metaData.comment_count,
+      comment_count_formatted: formatCount(metaBody.metaData.comment_count),
+      channel_id: metaBody.metaData.channel_id,
+      channel_name: metaBody.metaData.channel,
+      channel_url: metaBody.metaData.channel_url,
+      channel_follower_count: metaBody.metaData.channel_follower_count,
       channel_follower_count_formatted: formatCount(
-        metaBody.metaTube.channel_follower_count
+        metaBody.metaData.channel_follower_count
       ),
     },
   };

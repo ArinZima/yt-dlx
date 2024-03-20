@@ -84,6 +84,10 @@ export interface VideoInfo {
   channel_url: string;
   webpage_url: string;
   live_status: boolean;
+  view_count: number;
+  like_count: number;
+  comment_count: number;
+  channel_follower_count: number;
   upload_date: string;
   uploader_id: string;
   original_url: string;
@@ -112,11 +116,11 @@ export interface EngineOutput {
 export default async function Engine({
   query,
   ipAddress,
-  autoSocks5,
+  onionTor,
 }: {
   query: string;
   ipAddress: string;
-  autoSocks5: boolean | undefined;
+  onionTor: boolean | undefined;
 }) {
   let dirC = process.cwd(),
     maxT = 8,
@@ -147,7 +151,7 @@ export default async function Engine({
   }
   const metaCore = await retry(
     async () => {
-      if (autoSocks5) pLoc += ` --proxy "socks5://127.0.0.1:9050"`;
+      if (onionTor) pLoc += ` --proxy "socks5://127.0.0.1:9050"`;
       pLoc += ` --dump-single-json "${query}"`;
       pLoc += ` --no-check-certificate --prefer-insecure --no-call-home --skip-download --no-warnings --geo-bypass`;
       pLoc += ` --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"`;
@@ -292,6 +296,10 @@ export default async function Engine({
       channel_id: i.channel_id as string,
       categories: i.categories as string[],
       display_id: i.display_id as string,
+      view_count: i.view_count as number,
+      like_count: i.like_count as number,
+      comment_count: i.comment_count as number,
+      channel_follower_count: i.channel_follower_count as number,
       description: i.description as string,
       channel_url: i.channel_url as string,
       webpage_url: i.webpage_url as string,
