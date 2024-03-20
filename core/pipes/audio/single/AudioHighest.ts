@@ -171,7 +171,7 @@ export default async function AudioHighest(input: {
       const scomp = Math.round((width * percent) / 100);
       const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
       process.stdout.write(
-        `\r${color("@progbar:")} ${progb}` +
+        `\r${color("@prog:")} ${progb}` +
           ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
           ` ${color("| @timemark:")} ${timemark}` +
           ` ${color("| @eta:")} ${formatTime(calculateETA(startTime, percent))}`
