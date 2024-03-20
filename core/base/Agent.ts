@@ -40,7 +40,7 @@ export default async function Agent({
     if (nipTor.stdout.trim().length > 0) {
       console.log(
         colors.green("@info:"),
-        "Socks5",
+        "socks5",
         colors.green("ipAddress"),
         nipTor.stdout.trim()
       );
