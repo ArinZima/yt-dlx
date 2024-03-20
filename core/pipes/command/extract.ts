@@ -70,6 +70,7 @@ export default async function extract({
     return `${count}`;
   }
   const payload = {
+    ipAddress: metaBody.ipAddress,
     AudioLowF: metaBody.AudioLowF,
     AudioHighF: metaBody.AudioHighF,
     VideoLowF: metaBody.VideoLowF,
