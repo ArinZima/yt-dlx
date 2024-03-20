@@ -69,48 +69,43 @@ export default async function VideoHighest(input: {
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
     const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
-    const vdata =
-      Array.isArray(engineData.ManifestHigh) &&
-      engineData.ManifestHigh.length > 0
-        ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
-        : undefined;
-    ff.videoCodec("copy");
+    ff.addInput(engineData.VideoHighF.url);
+    ff.outputOptions(["-c", "copy"]);
+    ff.withOutputFormat("matroska");
     ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    if (vdata) ff.addInput(vdata.toString());
-    else throw new Error(colors.red("@error: ") + "no video data found.");
     let filename: string = "yt-dlx_(VideoHighest_";
     switch (filter) {
       case "grayscale":
         ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-        filename += `grayscale)_${title}.mp4`;
+        filename += `grayscale)_${title}.mkv`;
         break;
       case "invert":
         ff.withVideoFilter("negate");
-        filename += `invert)_${title}.mp4`;
+        filename += `invert)_${title}.mkv`;
         break;
       case "rotate90":
         ff.withVideoFilter("rotate=PI/2");
-        filename += `rotate90)_${title}.mp4`;
+        filename += `rotate90)_${title}.mkv`;
         break;
       case "rotate180":
         ff.withVideoFilter("rotate=PI");
-        filename += `rotate180)_${title}.mp4`;
+        filename += `rotate180)_${title}.mkv`;
         break;
       case "rotate270":
         ff.withVideoFilter("rotate=3*PI/2");
-        filename += `rotate270)_${title}.mp4`;
+        filename += `rotate270)_${title}.mkv`;
         break;
       case "flipHorizontal":
         ff.withVideoFilter("hflip");
-        filename += `flipHorizontal)_${title}.mp4`;
+        filename += `flipHorizontal)_${title}.mkv`;
         break;
       case "flipVertical":
         ff.withVideoFilter("vflip");
-        filename += `flipVertical)_${title}.mp4`;
+        filename += `flipVertical)_${title}.mkv`;
         break;
       default:
-        filename += `)_${title}.mp4`;
+        filename += `)_${title}.mkv`;
         break;
     }
     ff.on("error", (error) => {
