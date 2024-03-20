@@ -122,23 +122,23 @@ export default async function Engine({
   ipAddress: string;
   onionTor: boolean | undefined;
 }) {
-  let dirC = process.cwd(),
-    maxT = 8,
-    pLoc = "",
-    AudioLow: any = {},
-    AudioHigh: any = {},
-    VideoLow: any = {},
-    VideoHigh: any = {},
-    ManifestLow: any = {},
-    ManifestHigh: any = {},
-    AudioLowDRC: any = {},
-    AudioHighDRC: any = {},
-    VideoLowHDR: any = {},
-    VideoHighHDR: any = {},
-    AudioLowF: AudioFormat | any = null,
-    AudioHighF: AudioFormat | any = null,
-    VideoLowF: VideoFormat | any = null,
-    VideoHighF: VideoFormat | any = null;
+  let AudioLow: any = {};
+  let AudioHigh: any = {};
+  let VideoLow: any = {};
+  let VideoHigh: any = {};
+  let ManifestLow: any = {};
+  let ManifestHigh: any = {};
+  let AudioLowDRC: any = {};
+  let AudioHighDRC: any = {};
+  let VideoLowHDR: any = {};
+  let VideoHighHDR: any = {};
+  let AudioLowF: AudioFormat | any = null;
+  let AudioHighF: AudioFormat | any = null;
+  let VideoLowF: VideoFormat | any = null;
+  let VideoHighF: VideoFormat | any = null;
+  let dirC = __dirname || process.cwd();
+  let pLoc = "";
+  let maxT = 8;
   while (maxT > 0) {
     const enginePath = path.join(dirC, "util", "engine");
     if (fs.existsSync(enginePath)) {

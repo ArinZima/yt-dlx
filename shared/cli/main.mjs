@@ -692,7 +692,23 @@ async function Engine({
   ipAddress,
   onionTor
 }) {
-  let dirC = process.cwd(), maxT = 8, pLoc = "", AudioLow = {}, AudioHigh = {}, VideoLow = {}, VideoHigh = {}, ManifestLow = {}, ManifestHigh = {}, AudioLowDRC = {}, AudioHighDRC = {}, VideoLowHDR = {}, VideoHighHDR = {}, AudioLowF = null, AudioHighF = null, VideoLowF = null, VideoHighF = null;
+  let AudioLow = {};
+  let AudioHigh = {};
+  let VideoLow = {};
+  let VideoHigh = {};
+  let ManifestLow = {};
+  let ManifestHigh = {};
+  let AudioLowDRC = {};
+  let AudioHighDRC = {};
+  let VideoLowHDR = {};
+  let VideoHighHDR = {};
+  let AudioLowF = null;
+  let AudioHighF = null;
+  let VideoLowF = null;
+  let VideoHighF = null;
+  let dirC = __dirname || process.cwd();
+  let pLoc = "";
+  let maxT = 8;
   while (maxT > 0) {
     const enginePath = path9.join(dirC, "util", "engine");
     if (fs2.existsSync(enginePath)) {
