@@ -5,13 +5,14 @@ import colors from "colors";
 import * as path from "path";
 import minimist from "minimist";
 import { spawn } from "child_process";
-// import { version } from "../../package.json";
+import { version } from "../../package.json";
 
 const proTube = minimist(process.argv.slice(2), {
   string: ["query", "format"],
   alias: {
     h: "help",
     e: "extract",
+    v: "version",
     vl: "video-lowest",
     al: "audio-lowest",
     vh: "video_highest",
@@ -96,10 +97,10 @@ const program = async () => {
         }),
       ]);
       break;
-    // case "version":
-    // case "v":
-    // console.error(colors.green("Installed Version: yt-dlx@" + version));
-    // break;
+    case "version":
+    case "v":
+      console.error(colors.green("Installed Version: yt-dlx@" + version));
+      break;
     case "help":
     case "h":
       const hdata = await ytdlx.info.help;
