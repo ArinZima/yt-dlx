@@ -16,7 +16,7 @@ export default async function extract_playlist_videos({
     const query: string | undefined = await YouTubeID(listLink);
     if (query === undefined) {
       console.error(
-        colors.bold.red("@error: "),
+        colors.red("@error: "),
         "invalid youtube playlist url:",
         listLink
       );
@@ -25,7 +25,7 @@ export default async function extract_playlist_videos({
       const playlistId = await YouTubeID(query);
       if (!playlistId) {
         console.error(
-          colors.bold.red("@error: "),
+          colors.red("@error: "),
           "incorrect playlist link.",
           query
         );
@@ -36,7 +36,7 @@ export default async function extract_playlist_videos({
       });
       if (!resp) {
         console.error(
-          colors.bold.red("@error: "),
+          colors.red("@error: "),
           "unable to get response from youtube for",
           query
         );
