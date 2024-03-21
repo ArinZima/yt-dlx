@@ -26,11 +26,11 @@ export default async function niptor(args: string[]) {
               colors.red("@error: ") +
                 `not able to connect to the server. if using ${colors.yellow(
                   "onionTor"
-                )}, maybe check if ${colors.yellow(
-                  "tor"
-                )} is properly installed by running ${colors.yellow(
+                )}, maybe try running ${colors.yellow(
                   "npx yt-dlx install:socks5"
-                )}`
+                )}. make sure yt-dlx is always running with ${colors.yellow(
+                  "sudo privileges"
+                )}!`
             )
           );
       });
@@ -46,11 +46,11 @@ export default async function niptor(args: string[]) {
               colors.red("@error: ") +
                 `not able to connect to the server. if using ${colors.yellow(
                   "onionTor"
-                )}, maybe check if ${colors.yellow(
-                  "tor"
-                )} is properly installed by running ${colors.yellow(
+                )}, maybe try running ${colors.yellow(
                   "npx yt-dlx install:socks5"
-                )}`
+                )}. make sure yt-dlx is always running with ${colors.yellow(
+                  "sudo privileges"
+                )}!`
             )
           );
       });
