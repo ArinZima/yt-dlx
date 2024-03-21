@@ -21,5 +21,4 @@ RUN npm i -g yarn yt-dlx
 WORKDIR /app
 COPY . .
 RUN service tor start
-RUN yarn remake
-CMD ["node", "util/wakeLock.js"]
+CMD yarn remake && node util/wakeLock.js
