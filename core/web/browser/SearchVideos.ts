@@ -58,11 +58,11 @@ export default async function SearchVideos(
     input
   );
   await crawler(verbose, onionTor);
+  let $: any;
   let url: string;
-  let $: cheerio.Root;
   let content: string | Buffer;
+  let videoElements: any;
   let metaTube: TypeVideo[] = [];
-  let videoElements: cheerio.Cheerio;
   let playlistMeta: TypePlaylist[] = [];
   let TubeResp: TypeVideo[] | TypePlaylist[] | undefined;
   switch (input.type) {
@@ -149,7 +149,7 @@ export default async function SearchVideos(
       content = await page.content();
       $ = load(content);
       const playlistElements = $("ytd-playlist-renderer");
-      playlistElements.each((_index, element) => {
+      playlistElements.each((_index: any, element: any) => {
         const playlistLink: any = $(element)
           .find(".style-scope.ytd-playlist-renderer #view-more a")
           .attr("href");

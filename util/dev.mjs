@@ -26,9 +26,9 @@ const core = {
   "update:client":
     "cd client && yarn install --verbose && yarn upgrade --latest",
   build: "yarn build:base && yarn build:client",
-  "build:base:cjs": "tsc -p ./config/tsconfig.cjs.json",
-  "build:base:esm": "tsc -p ./config/tsconfig.esm.json",
-  "build:base:types": "tsc -p ./config/tsconfig.types.json",
+  "build:base:cjs": "tsc -p ./config/cjs.json",
+  "build:base:esm": "tsc -p ./config/esm.json",
+  "build:base:types": "tsc -p ./config/types.json",
   "build:client": "cd client && rm -rf .next temp && yarn build",
   "build:base":
     "rm -rf shared temp && yarn build:base:cjs && yarn build:base:esm && yarn build:base:types",
@@ -47,7 +47,6 @@ const core = {
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
-  start: "node util/dev.mjs",
   prepublishOnly: "yarn clean:deps",
   postinstall: "run-s download-files setup-permissions install-chrome",
   "install-chrome": "npx puppeteer browsers install chrome",
