@@ -3,7 +3,6 @@ const { createWriteStream, existsSync } = require("fs");
 
 (async () => {
   try {
-    const __filename = __filename;
     const __dirname = dirname(__filename);
     const filepath = join(__dirname, "engine");
     switch (true) {
