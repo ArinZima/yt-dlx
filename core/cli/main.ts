@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+import ytdlx from "..";
 import * as fs from "fs";
-import ytdlx from "../main";
 import colors from "colors";
 import * as path from "path";
 import minimist from "minimist";
