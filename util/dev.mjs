@@ -47,6 +47,7 @@ const core = {
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/video.js",
   "test:mix":
     "rm -rf temp others && tsup --config tsup.config.ts core --outDir temp && node temp/__tests__/mix.js",
+  dev: "tsc -w --noEmit",
   prepublishOnly: "yarn clean:deps",
   postinstall: "run-s download-files setup-permissions install-chrome",
   "install-chrome": "npx puppeteer browsers install chrome",
