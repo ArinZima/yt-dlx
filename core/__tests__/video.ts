@@ -9,7 +9,7 @@ function runTestFiles(folderPath: string) {
   files.forEach((file) => {
     const filePath = join(folderPath, file);
     if (lstatSync(filePath).isDirectory()) {
-      if (file === "video") runTestFiles(filePath);
+      if (file === "Video") runTestFiles(filePath);
     } else if (file.endsWith(".test.js")) {
       console.log(colors.yellow("@testing:"), filePath);
       const result = spawnSync("node", [filePath], { stdio: "inherit" });
