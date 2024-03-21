@@ -135,7 +135,7 @@ export default async function ListVideoHighest(input: {
           : undefined;
       if (vdata) ff.addInput(vdata.toString());
       else throw new Error(colors.red("@error: ") + "no video data found.");
-      ff.outputOptions(["-c", "copy"]);
+      ff.outputOptions("-c copy");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       ff.withOutputFormat("matroska");
       switch (filter) {

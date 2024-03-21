@@ -133,7 +133,7 @@ export default async function ListAudioVideoHighest(input: {
       ff.addInput(engineData.AudioHighF.url);
       if (vdata) ff.addInput(vdata.toString());
       else throw new Error(colors.red("@error: ") + "no video data found.");
-      ff.outputOptions(["-c", "copy"]);
+      ff.outputOptions("-c copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       ff.withOutputFormat("matroska");

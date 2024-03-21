@@ -65,7 +65,7 @@ export default async function AudioVideoLowest(input: {
     ff.addInput(engineData.AudioLowF.url);
     if (vdata) ff.addInput(vdata.toString());
     else throw new Error(colors.red("@error: ") + "no video data found.");
-    ff.outputOptions(["-c", "copy"]);
+    ff.outputOptions("-c copy");
     ff.withOutputFormat("matroska");
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     let filename: string = "yt-dlx_(AudioVideoLowest_";

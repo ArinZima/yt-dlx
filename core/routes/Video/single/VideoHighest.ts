@@ -72,7 +72,7 @@ export default async function VideoHighest(input: {
         : undefined;
     if (vdata) ff.addInput(vdata.toString());
     else throw new Error(colors.red("@error: ") + "no video data found.");
-    ff.outputOptions(["-c", "copy"]);
+    ff.outputOptions("-c copy");
     ff.withOutputFormat("matroska");
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     let filename: string = "yt-dlx_(VideoHighest_";

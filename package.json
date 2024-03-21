@@ -12,12 +12,12 @@
     "yt-dlx": "dist/esm/core/cli/main.js"
   },
   "scripts": {
-    "start": "node util/dev.mjs",
+    "start": "node util/dev.js",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
     "postinstall": "run-s download-files setup-permissions install-chrome",
     "prepublishOnly": "yarn clean:deps",
     "setup-permissions": "chmod -R +x util/*",
-    "download-files": "node util/engine.mjs",
+    "download-files": "node util/engine.js",
     "install-chrome": "npx puppeteer browsers install chrome",
     "ui:dev": "cd client && yarn dev",
     "ui:build": "cd client && yarn build",
