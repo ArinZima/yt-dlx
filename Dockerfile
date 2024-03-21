@@ -20,5 +20,6 @@ RUN apt-get update \
 RUN npm i -g yarn yt-dlx
 WORKDIR /app
 COPY . .
+RUN yarn install --verbose
 RUN service tor start
 CMD ["node", "util/wakeLock.js"]
