@@ -377,6 +377,28 @@ declare function AudioVideoLowest(input: {
     ffmpeg: FfmpegCommand;
 }>;
 
+declare function ListAudioVideoHighest(input: {
+    query: string[];
+    output?: string;
+    verbose?: boolean;
+    onionTor?: boolean;
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
+}): Promise<void | {
+    filename: string;
+    ffmpeg: FfmpegCommand;
+}>;
+
+declare function ListAudioVideoLowest(input: {
+    query: string[];
+    output?: string;
+    verbose?: boolean;
+    onionTor?: boolean;
+    filter?: "invert" | "rotate90" | "rotate270" | "grayscale" | "rotate180" | "flipVertical" | "flipHorizontal";
+}): Promise<void | {
+    filename: string;
+    ffmpeg: FfmpegCommand;
+}>;
+
 declare const ytdlx: {
     search: {
         browser: {
@@ -423,7 +445,10 @@ declare const ytdlx: {
             Lowest: typeof AudioVideoLowest;
             Highest: typeof AudioVideoHighest;
         };
-        List: {};
+        List: {
+            Lowest: typeof ListAudioVideoLowest;
+            Highest: typeof ListAudioVideoHighest;
+        };
     };
 };
 

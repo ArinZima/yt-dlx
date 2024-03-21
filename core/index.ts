@@ -16,6 +16,8 @@ import ListVideoHighest from "./pipes/Video/list/ListVideoHighest";
 
 import AudioVideoHighest from "./pipes/AudioVideo/single/AudioVideoHighest";
 import AudioVideoLowest from "./pipes/AudioVideo/single/AudioVideoLowest";
+import ListAudioVideoHighest from "./pipes/AudioVideo/list/ListAudioVideoHighest";
+import ListAudioVideoLowest from "./pipes/AudioVideo/list/ListAudioVideoLowest";
 
 const ytdlx = {
   search: {
@@ -63,7 +65,10 @@ const ytdlx = {
       Lowest: AudioVideoLowest,
       Highest: AudioVideoHighest,
     },
-    List: {},
+    List: {
+      Lowest: ListAudioVideoLowest,
+      Highest: ListAudioVideoHighest,
+    },
   },
 };
 export default ytdlx;

@@ -1181,7 +1181,7 @@ function calculateETA(startTime, percent) {
  * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
  * audio manipulation using FFmpeg, and error handling for a smooth user experience.
  */
-const qconf$9 = z.object({
+const qconf$b = z.object({
     query: z.string().min(1),
     output: z.string().optional(),
     stream: z.boolean().optional(),
@@ -1209,7 +1209,7 @@ const qconf$9 = z.object({
 });
 async function AudioLowest(input) {
     let startTime;
-    const { query, output, stream, verbose, filter, onionTor } = await qconf$9.parseAsync(input);
+    const { query, output, stream, verbose, filter, onionTor } = await qconf$b.parseAsync(input);
     const engineData = await Agent({ query, verbose, onionTor });
     if (engineData === undefined) {
         throw new Error(colors.red("@error: ") + "unable to get response from YouTube.");
@@ -1347,7 +1347,7 @@ async function AudioLowest(input) {
  * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
  * audio manipulation using FFmpeg, and error handling for a smooth user experience.
  */
-const qconf$8 = z.object({
+const qconf$a = z.object({
     query: z.string().min(1),
     output: z.string().optional(),
     stream: z.boolean().optional(),
@@ -1375,7 +1375,7 @@ const qconf$8 = z.object({
 });
 async function AudioHighest(input) {
     let startTime;
-    const { query, output, stream, verbose, filter, onionTor } = await qconf$8.parseAsync(input);
+    const { query, output, stream, verbose, filter, onionTor } = await qconf$a.parseAsync(input);
     const engineData = await Agent({ query, verbose, onionTor });
     if (engineData === undefined) {
         throw new Error(colors.red("@error: ") + "unable to get response from YouTube.");
@@ -1506,7 +1506,7 @@ async function AudioHighest(input) {
     }
 }
 
-const qconf$7 = z.object({
+const qconf$9 = z.object({
     output: z.string().optional(),
     verbose: z.boolean().optional(),
     onionTor: z.boolean().optional(),
@@ -1554,7 +1554,7 @@ const qconf$7 = z.object({
 });
 async function ListAudioLowest(input) {
     let startTime;
-    const { query, output, verbose, filter, onionTor } = await qconf$7.parseAsync(input);
+    const { query, output, verbose, filter, onionTor } = await qconf$9.parseAsync(input);
     const vDATA = new Set();
     for (const pURL of query) {
         try {
@@ -1705,7 +1705,7 @@ async function ListAudioLowest(input) {
     console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
 }
 
-const qconf$6 = z.object({
+const qconf$8 = z.object({
     output: z.string().optional(),
     verbose: z.boolean().optional(),
     onionTor: z.boolean().optional(),
@@ -1753,7 +1753,7 @@ const qconf$6 = z.object({
 });
 async function ListAudioHighest(input) {
     let startTime;
-    const { query, output, verbose, filter, onionTor } = await qconf$6.parseAsync(input);
+    const { query, output, verbose, filter, onionTor } = await qconf$8.parseAsync(input);
     const vDATA = new Set();
     for (const pURL of query) {
         try {
@@ -1911,7 +1911,7 @@ async function ListAudioHighest(input) {
  * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
  * video manipulation using FFmpeg, and error handling for a smooth user experience.
  */
-const qconf$5 = z.object({
+const qconf$7 = z.object({
     query: z.string().min(1),
     output: z.string().optional(),
     stream: z.boolean().optional(),
@@ -1931,7 +1931,7 @@ const qconf$5 = z.object({
 });
 async function VideoLowest(input) {
     let startTime;
-    const { query, stream, verbose, output, filter, onionTor } = await qconf$5.parseAsync(input);
+    const { query, stream, verbose, output, filter, onionTor } = await qconf$7.parseAsync(input);
     const engineData = await Agent({ query, verbose, onionTor });
     if (engineData === undefined) {
         throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -2042,7 +2042,7 @@ async function VideoLowest(input) {
  * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
  * video manipulation using FFmpeg, and error handling for a smooth user experience.
  */
-const qconf$4 = z.object({
+const qconf$6 = z.object({
     query: z.string().min(1),
     output: z.string().optional(),
     stream: z.boolean().optional(),
@@ -2062,7 +2062,7 @@ const qconf$4 = z.object({
 });
 async function VideoHighest(input) {
     let startTime;
-    const { query, stream, verbose, output, filter, onionTor } = await qconf$4.parseAsync(input);
+    const { query, stream, verbose, output, filter, onionTor } = await qconf$6.parseAsync(input);
     const engineData = await Agent({ query, verbose, onionTor });
     if (engineData === undefined) {
         throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -2167,7 +2167,7 @@ async function VideoHighest(input) {
     }
 }
 
-const qconf$3 = z.object({
+const qconf$5 = z.object({
     output: z.string().optional(),
     verbose: z.boolean().optional(),
     onionTor: z.boolean().optional(),
@@ -2207,7 +2207,7 @@ const qconf$3 = z.object({
 });
 async function ListVideoLowest(input) {
     let startTime;
-    const { query, verbose, output, filter, onionTor } = await qconf$3.parseAsync(input);
+    const { query, verbose, output, filter, onionTor } = await qconf$5.parseAsync(input);
     const vDATA = new Set();
     for (const pURL of query) {
         try {
@@ -2332,7 +2332,7 @@ async function ListVideoLowest(input) {
     console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
 }
 
-const qconf$2 = z.object({
+const qconf$4 = z.object({
     output: z.string().optional(),
     verbose: z.boolean().optional(),
     onionTor: z.boolean().optional(),
@@ -2372,7 +2372,7 @@ const qconf$2 = z.object({
 });
 async function ListVideoHighest(input) {
     let startTime;
-    const { query, verbose, output, filter, onionTor } = await qconf$2.parseAsync(input);
+    const { query, verbose, output, filter, onionTor } = await qconf$4.parseAsync(input);
     const vDATA = new Set();
     for (const pURL of query) {
         try {
@@ -2497,7 +2497,7 @@ async function ListVideoHighest(input) {
     console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
 }
 
-const qconf$1 = z.object({
+const qconf$3 = z.object({
     query: z.string().min(1),
     output: z.string().optional(),
     stream: z.boolean().optional(),
@@ -2517,7 +2517,7 @@ const qconf$1 = z.object({
 });
 async function AudioVideoHighest(input) {
     let startTime;
-    const { query, stream, verbose, output, filter, onionTor } = await qconf$1.parseAsync(input);
+    const { query, stream, verbose, output, filter, onionTor } = await qconf$3.parseAsync(input);
     const engineData = await Agent({ query, verbose, onionTor });
     if (engineData === undefined) {
         throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -2623,7 +2623,7 @@ async function AudioVideoHighest(input) {
     }
 }
 
-const qconf = z.object({
+const qconf$2 = z.object({
     query: z.string().min(1),
     output: z.string().optional(),
     stream: z.boolean().optional(),
@@ -2643,7 +2643,7 @@ const qconf = z.object({
 });
 async function AudioVideoLowest(input) {
     let startTime;
-    const { query, stream, verbose, output, filter, onionTor } = await qconf.parseAsync(input);
+    const { query, stream, verbose, output, filter, onionTor } = await qconf$2.parseAsync(input);
     const engineData = await Agent({ query, verbose, onionTor });
     if (engineData === undefined) {
         throw new Error(colors.red("@error: ") + "unable to get response from youtube.");
@@ -2748,6 +2748,340 @@ async function AudioVideoLowest(input) {
     }
 }
 
+const qconf$1 = z.object({
+    output: z.string().optional(),
+    verbose: z.boolean().optional(),
+    onionTor: z.boolean().optional(),
+    query: z
+        .array(z
+        .string()
+        .min(1)
+        .refine(async (input) => {
+        switch (true) {
+            case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(input):
+                const resultLink = await YouTubeID(input);
+                if (resultLink !== undefined)
+                    return true;
+                break;
+            default:
+                const resultId = await YouTubeID(`https://www.youtube.com/playlist?list=${input}`);
+                if (resultId !== undefined)
+                    return true;
+                break;
+        }
+        return false;
+    }, {
+        message: "Query must be a valid YouTube Playlist Link or ID.",
+    }))
+        .min(1),
+    filter: z
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
+});
+async function ListAudioVideoHighest(input) {
+    let startTime;
+    const { query, verbose, output, filter, onionTor } = await qconf$1.parseAsync(input);
+    const vDATA = new Set();
+    for (const pURL of query) {
+        try {
+            const pDATA = await web.browserLess.playlistVideos({
+                playlistId: (await YouTubeID(pURL)),
+            });
+            if (pDATA === undefined) {
+                console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
+                continue;
+            }
+            for (const video of pDATA.playlistVideos)
+                vDATA.add(video);
+        }
+        catch (error) {
+            console.log(colors.red("@error:"), error);
+            continue;
+        }
+    }
+    console.log(colors.green("@info:"), "total number of uncommon videos:", colors.yellow(vDATA.size.toString()));
+    for (const video of vDATA) {
+        try {
+            const engineData = await Agent({
+                query: video.videoLink,
+                onionTor,
+                verbose,
+            });
+            if (engineData === undefined) {
+                console.log(colors.red("@error:"), "unable to get response from youtube.");
+                continue;
+            }
+            const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
+            const folder = output ? path.join(process.cwd(), output) : process.cwd();
+            if (!fs.existsSync(folder))
+                fs.mkdirSync(folder, { recursive: true });
+            let filename = "yt-dlx_(AudioVideoHighest_";
+            const ff = ffmpeg();
+            const vdata = Array.isArray(engineData.ManifestHigh) &&
+                engineData.ManifestHigh.length > 0
+                ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
+                : undefined;
+            ff.addInput(engineData.AudioHighF.url);
+            if (vdata)
+                ff.addInput(vdata.toString());
+            else
+                throw new Error(colors.red("@error: ") + "no video data found.");
+            ff.outputOptions(["-c", "copy"]);
+            ff.withOutputFormat("matroska");
+            ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+            ff.withOutputFormat("matroska");
+            switch (filter) {
+                case "grayscale":
+                    ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                    break;
+                case "invert":
+                    ff.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                    break;
+                case "rotate90":
+                    ff.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                    break;
+                case "rotate180":
+                    ff.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                    break;
+                case "rotate270":
+                    ff.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                    break;
+                case "flipHorizontal":
+                    ff.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                    break;
+                case "flipVertical":
+                    ff.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                    break;
+                default:
+                    filename += `)_${title}.mkv`;
+                    break;
+            }
+            ff.on("error", (error) => {
+                throw new Error(error.message);
+            });
+            ff.on("start", (comd) => {
+                startTime = new Date();
+                if (verbose)
+                    console.info(colors.green("@comd:"), comd);
+            });
+            ff.on("end", () => process.stdout.write("\n"));
+            ff.on("progress", ({ percent, timemark }) => {
+                let color = colors.green;
+                if (isNaN(percent))
+                    percent = 0;
+                if (percent > 98)
+                    percent = 100;
+                if (percent < 25)
+                    color = colors.red;
+                else if (percent < 50)
+                    color = colors.yellow;
+                const width = Math.floor(process.stdout.columns / 4);
+                const scomp = Math.round((width * percent) / 100);
+                const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+                process.stdout.write(`\r${color("@prog:")} ${progb}` +
+                    ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
+                    ` ${color("| @timemark:")} ${timemark}` +
+                    ` ${color("| @eta:")} ${formatTime(calculateETA(startTime, percent))}`);
+            });
+            await new Promise((resolve, _reject) => {
+                ff.output(path.join(folder, filename.replace("_)_", ")_")));
+                ff.on("end", () => resolve());
+                ff.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
+                ff.run();
+            });
+        }
+        catch (error) {
+            console.log(colors.red("@error:"), error);
+            continue;
+        }
+    }
+    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
+}
+
+const qconf = z.object({
+    output: z.string().optional(),
+    verbose: z.boolean().optional(),
+    onionTor: z.boolean().optional(),
+    query: z
+        .array(z
+        .string()
+        .min(1)
+        .refine(async (input) => {
+        switch (true) {
+            case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(input):
+                const resultLink = await YouTubeID(input);
+                if (resultLink !== undefined)
+                    return true;
+                break;
+            default:
+                const resultId = await YouTubeID(`https://www.youtube.com/playlist?list=${input}`);
+                if (resultId !== undefined)
+                    return true;
+                break;
+        }
+        return false;
+    }, {
+        message: "Query must be a valid YouTube Playlist Link or ID.",
+    }))
+        .min(1),
+    filter: z
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
+});
+async function ListAudioVideoLowest(input) {
+    let startTime;
+    const { query, verbose, output, filter, onionTor } = await qconf.parseAsync(input);
+    const vDATA = new Set();
+    for (const pURL of query) {
+        try {
+            const pDATA = await web.browserLess.playlistVideos({
+                playlistId: (await YouTubeID(pURL)),
+            });
+            if (pDATA === undefined) {
+                console.log(colors.red("@error:"), "unable to get response from youtube for", pURL);
+                continue;
+            }
+            for (const video of pDATA.playlistVideos)
+                vDATA.add(video);
+        }
+        catch (error) {
+            console.log(colors.red("@error:"), error);
+            continue;
+        }
+    }
+    console.log(colors.green("@info:"), "total number of uncommon videos:", colors.yellow(vDATA.size.toString()));
+    for (const video of vDATA) {
+        try {
+            const engineData = await Agent({
+                query: video.videoLink,
+                onionTor,
+                verbose,
+            });
+            if (engineData === undefined) {
+                console.log(colors.red("@error:"), "unable to get response from youtube.");
+                continue;
+            }
+            const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
+            const folder = output ? path.join(process.cwd(), output) : process.cwd();
+            if (!fs.existsSync(folder))
+                fs.mkdirSync(folder, { recursive: true });
+            let filename = "yt-dlx_(AudioVideoLowest_";
+            const ff = ffmpeg();
+            const vdata = Array.isArray(engineData.ManifestLow) &&
+                engineData.ManifestLow.length > 0
+                ? engineData.ManifestLow[0]?.url
+                : undefined;
+            ff.addInput(engineData.AudioLowF.url);
+            if (vdata)
+                ff.addInput(vdata.toString());
+            else
+                throw new Error(colors.red("@error: ") + "no video data found.");
+            ff.outputOptions(["-c", "copy"]);
+            ff.withOutputFormat("matroska");
+            ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+            ff.withOutputFormat("matroska");
+            switch (filter) {
+                case "grayscale":
+                    ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+                    filename += `grayscale)_${title}.mkv`;
+                    break;
+                case "invert":
+                    ff.withVideoFilter("negate");
+                    filename += `invert)_${title}.mkv`;
+                    break;
+                case "rotate90":
+                    ff.withVideoFilter("rotate=PI/2");
+                    filename += `rotate90)_${title}.mkv`;
+                    break;
+                case "rotate180":
+                    ff.withVideoFilter("rotate=PI");
+                    filename += `rotate180)_${title}.mkv`;
+                    break;
+                case "rotate270":
+                    ff.withVideoFilter("rotate=3*PI/2");
+                    filename += `rotate270)_${title}.mkv`;
+                    break;
+                case "flipHorizontal":
+                    ff.withVideoFilter("hflip");
+                    filename += `flipHorizontal)_${title}.mkv`;
+                    break;
+                case "flipVertical":
+                    ff.withVideoFilter("vflip");
+                    filename += `flipVertical)_${title}.mkv`;
+                    break;
+                default:
+                    filename += `)_${title}.mkv`;
+                    break;
+            }
+            ff.on("error", (error) => {
+                throw new Error(error.message);
+            });
+            ff.on("start", (comd) => {
+                startTime = new Date();
+                if (verbose)
+                    console.info(colors.green("@comd:"), comd);
+            });
+            ff.on("end", () => process.stdout.write("\n"));
+            ff.on("progress", ({ percent, timemark }) => {
+                let color = colors.green;
+                if (isNaN(percent))
+                    percent = 0;
+                if (percent > 98)
+                    percent = 100;
+                if (percent < 25)
+                    color = colors.red;
+                else if (percent < 50)
+                    color = colors.yellow;
+                const width = Math.floor(process.stdout.columns / 4);
+                const scomp = Math.round((width * percent) / 100);
+                const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+                process.stdout.write(`\r${color("@prog:")} ${progb}` +
+                    ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
+                    ` ${color("| @timemark:")} ${timemark}` +
+                    ` ${color("| @eta:")} ${formatTime(calculateETA(startTime, percent))}`);
+            });
+            await new Promise((resolve, _reject) => {
+                ff.output(path.join(folder, filename.replace("_)_", ")_")));
+                ff.on("end", () => resolve());
+                ff.on("error", (error) => {
+                    throw new Error(colors.red("@error: ") + error.message);
+                });
+                ff.run();
+            });
+        }
+        catch (error) {
+            console.log(colors.red("@error:"), error);
+            continue;
+        }
+    }
+    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
+}
+
 const ytdlx = {
     search: {
         browser: {
@@ -2794,7 +3128,10 @@ const ytdlx = {
             Lowest: AudioVideoLowest,
             Highest: AudioVideoHighest,
         },
-        List: {},
+        List: {
+            Lowest: ListAudioVideoLowest,
+            Highest: ListAudioVideoHighest,
+        },
     },
 };
 

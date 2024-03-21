@@ -7,7 +7,7 @@ var cheerio = require('cheerio');
 var puppeteer = require('puppeteer');
 var child_process = require('child_process');
 var fs2 = require('fs');
-var path12 = require('path');
+var path14 = require('path');
 var retry = require('async-retry');
 var util = require('util');
 var ffmpeg = require('fluent-ffmpeg');
@@ -36,7 +36,7 @@ function _interopNamespace(e) {
 var colors15__default = /*#__PURE__*/_interopDefault(colors15);
 var puppeteer__default = /*#__PURE__*/_interopDefault(puppeteer);
 var fs2__namespace = /*#__PURE__*/_interopNamespace(fs2);
-var path12__namespace = /*#__PURE__*/_interopNamespace(path12);
+var path14__namespace = /*#__PURE__*/_interopNamespace(path14);
 var retry__default = /*#__PURE__*/_interopDefault(retry);
 var ffmpeg__default = /*#__PURE__*/_interopDefault(ffmpeg);
 var minimist__default = /*#__PURE__*/_interopDefault(minimist);
@@ -733,12 +733,12 @@ async function Engine({
   let pLoc = "";
   let maxT = 8;
   while (maxT > 0) {
-    const enginePath = path12__namespace.join(dirC, "util", "engine");
+    const enginePath = path14__namespace.join(dirC, "util", "engine");
     if (fs2__namespace.existsSync(enginePath)) {
       pLoc = enginePath;
       break;
     } else {
-      dirC = path12__namespace.join(dirC, "..");
+      dirC = path14__namespace.join(dirC, "..");
       maxT--;
     }
   }
@@ -2082,7 +2082,7 @@ async function AudioLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     let filename = "yt-dlx_(AudioLowest_";
@@ -2186,11 +2186,11 @@ async function AudioLowest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path12__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path14__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           reject2(new Error(colors15__default.default.red("@error: ") + error.message));
@@ -2246,7 +2246,7 @@ async function AudioHighest(input) {
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     let filename = "yt-dlx_(AudioHighest_";
@@ -2350,11 +2350,11 @@ async function AudioHighest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path12__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path14__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           reject2(new Error(colors15__default.default.red("@error: ") + error.message));
@@ -2471,7 +2471,7 @@ async function ListAudioLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioLowest_";
@@ -2575,7 +2575,7 @@ async function ListAudioLowest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           throw new Error(colors15__default.default.red("@error: ") + error.message);
@@ -2695,7 +2695,7 @@ async function ListAudioHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioHighest_";
@@ -2799,7 +2799,7 @@ async function ListAudioHighest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           throw new Error(colors15__default.default.red("@error: ") + error.message);
@@ -2850,7 +2850,7 @@ async function VideoLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     const ff = ffmpeg__default.default();
@@ -2925,11 +2925,11 @@ async function VideoLowest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path12__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path14__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           reject2(new Error(colors15__default.default.red("@error: ") + error.message));
@@ -2977,7 +2977,7 @@ async function VideoHighest(input) {
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     const ff = ffmpeg__default.default();
@@ -3052,11 +3052,11 @@ async function VideoHighest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path12__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path14__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           reject2(new Error(colors15__default.default.red("@error: ") + error.message));
@@ -3164,7 +3164,7 @@ async function ListVideoLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(VideoLowest_";
@@ -3241,7 +3241,7 @@ async function ListVideoLowest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           throw new Error(colors15__default.default.red("@error: ") + error.message);
@@ -3352,7 +3352,7 @@ async function ListVideoHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
       if (!fs2__namespace.existsSync(folder))
         fs2__namespace.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(VideoHighest_";
@@ -3429,7 +3429,7 @@ async function ListVideoHighest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           throw new Error(colors15__default.default.red("@error: ") + error.message);
@@ -3480,7 +3480,7 @@ async function AudioVideoHighest(input) {
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     const ff = ffmpeg__default.default();
@@ -3556,11 +3556,11 @@ async function AudioVideoHighest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path12__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path14__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           reject2(new Error(colors15__default.default.red("@error: ") + error.message));
@@ -3608,7 +3608,7 @@ async function AudioVideoLowest(input) {
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path12__namespace.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
     if (!fs2__namespace.existsSync(folder))
       fs2__namespace.mkdirSync(folder, { recursive: true });
     const ff = ffmpeg__default.default();
@@ -3684,11 +3684,11 @@ async function AudioVideoLowest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path12__namespace.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path14__namespace.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path12__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
           reject2(new Error(colors15__default.default.red("@error: ") + error.message));
@@ -3706,6 +3706,386 @@ async function AudioVideoLowest(input) {
       colors15__default.default.green("https://github.com/yt-dlx\n")
     );
   }
+}
+var qconf11 = zod.z.object({
+  output: zod.z.string().optional(),
+  verbose: zod.z.boolean().optional(),
+  onionTor: zod.z.boolean().optional(),
+  query: zod.z.array(
+    zod.z.string().min(1).refine(
+      async (input) => {
+        switch (true) {
+          case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+            input
+          ):
+            const resultLink = await YouTubeID(input);
+            if (resultLink !== void 0)
+              return true;
+            break;
+          default:
+            const resultId = await YouTubeID(
+              `https://www.youtube.com/playlist?list=${input}`
+            );
+            if (resultId !== void 0)
+              return true;
+            break;
+        }
+        return false;
+      },
+      {
+        message: "Query must be a valid YouTube Playlist Link or ID."
+      }
+    )
+  ).min(1),
+  filter: zod.z.enum([
+    "invert",
+    "rotate90",
+    "rotate270",
+    "grayscale",
+    "rotate180",
+    "flipVertical",
+    "flipHorizontal"
+  ]).optional()
+});
+async function ListAudioVideoHighest(input) {
+  let startTime;
+  const { query, verbose, output, filter: filter2, onionTor } = await qconf11.parseAsync(
+    input
+  );
+  const vDATA = /* @__PURE__ */ new Set();
+  for (const pURL of query) {
+    try {
+      const pDATA = await web_default.browserLess.playlistVideos({
+        playlistId: await YouTubeID(pURL)
+      });
+      if (pDATA === void 0) {
+        console.log(
+          colors15__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          pURL
+        );
+        continue;
+      }
+      for (const video of pDATA.playlistVideos)
+        vDATA.add(video);
+    } catch (error) {
+      console.log(colors15__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors15__default.default.green("@info:"),
+    "total number of uncommon videos:",
+    colors15__default.default.yellow(vDATA.size.toString())
+  );
+  for (const video of vDATA) {
+    try {
+      const engineData = await Agent({
+        query: video.videoLink,
+        onionTor,
+        verbose
+      });
+      if (engineData === void 0) {
+        console.log(
+          colors15__default.default.red("@error:"),
+          "unable to get response from youtube."
+        );
+        continue;
+      }
+      const title = engineData.metaData.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
+      let filename = "yt-dlx_(AudioVideoHighest_";
+      const ff = ffmpeg__default.default();
+      const vdata = Array.isArray(engineData.ManifestHigh) && engineData.ManifestHigh.length > 0 ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url : void 0;
+      ff.addInput(engineData.AudioHighF.url);
+      if (vdata)
+        ff.addInput(vdata.toString());
+      else
+        throw new Error(colors15__default.default.red("@error: ") + "no video data found.");
+      ff.outputOptions(["-c", "copy"]);
+      ff.withOutputFormat("matroska");
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+      ff.withOutputFormat("matroska");
+      switch (filter2) {
+        case "grayscale":
+          ff.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ff.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ff.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ff.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ff.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ff.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ff.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
+      ff.on("error", (error) => {
+        throw new Error(error.message);
+      });
+      ff.on("start", (comd) => {
+        startTime = /* @__PURE__ */ new Date();
+        if (verbose)
+          console.info(colors15__default.default.green("@comd:"), comd);
+      });
+      ff.on("end", () => process.stdout.write("\n"));
+      ff.on("progress", ({ percent, timemark }) => {
+        let color = colors15__default.default.green;
+        if (isNaN(percent))
+          percent = 0;
+        if (percent > 98)
+          percent = 100;
+        if (percent < 25)
+          color = colors15__default.default.red;
+        else if (percent < 50)
+          color = colors15__default.default.yellow;
+        const width = Math.floor(process.stdout.columns / 4);
+        const scomp = Math.round(width * percent / 100);
+        const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+        process.stdout.write(
+          `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(
+            calculateETA(startTime, percent)
+          )}`
+        );
+      });
+      await new Promise((resolve, _reject) => {
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          throw new Error(colors15__default.default.red("@error: ") + error.message);
+        });
+        ff.run();
+      });
+    } catch (error) {
+      console.log(colors15__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors15__default.default.green("@info:"),
+    "\u2763\uFE0F Thank you for using",
+    colors15__default.default.green("yt-dlx."),
+    "Consider",
+    colors15__default.default.green("\u{1F31F}starring"),
+    "the github repo",
+    colors15__default.default.green("https://github.com/yt-dlx\n")
+  );
+}
+var qconf12 = zod.z.object({
+  output: zod.z.string().optional(),
+  verbose: zod.z.boolean().optional(),
+  onionTor: zod.z.boolean().optional(),
+  query: zod.z.array(
+    zod.z.string().min(1).refine(
+      async (input) => {
+        switch (true) {
+          case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
+            input
+          ):
+            const resultLink = await YouTubeID(input);
+            if (resultLink !== void 0)
+              return true;
+            break;
+          default:
+            const resultId = await YouTubeID(
+              `https://www.youtube.com/playlist?list=${input}`
+            );
+            if (resultId !== void 0)
+              return true;
+            break;
+        }
+        return false;
+      },
+      {
+        message: "Query must be a valid YouTube Playlist Link or ID."
+      }
+    )
+  ).min(1),
+  filter: zod.z.enum([
+    "invert",
+    "rotate90",
+    "rotate270",
+    "grayscale",
+    "rotate180",
+    "flipVertical",
+    "flipHorizontal"
+  ]).optional()
+});
+async function ListAudioVideoLowest(input) {
+  let startTime;
+  const { query, verbose, output, filter: filter2, onionTor } = await qconf12.parseAsync(
+    input
+  );
+  const vDATA = /* @__PURE__ */ new Set();
+  for (const pURL of query) {
+    try {
+      const pDATA = await web_default.browserLess.playlistVideos({
+        playlistId: await YouTubeID(pURL)
+      });
+      if (pDATA === void 0) {
+        console.log(
+          colors15__default.default.red("@error:"),
+          "unable to get response from youtube for",
+          pURL
+        );
+        continue;
+      }
+      for (const video of pDATA.playlistVideos)
+        vDATA.add(video);
+    } catch (error) {
+      console.log(colors15__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors15__default.default.green("@info:"),
+    "total number of uncommon videos:",
+    colors15__default.default.yellow(vDATA.size.toString())
+  );
+  for (const video of vDATA) {
+    try {
+      const engineData = await Agent({
+        query: video.videoLink,
+        onionTor,
+        verbose
+      });
+      if (engineData === void 0) {
+        console.log(
+          colors15__default.default.red("@error:"),
+          "unable to get response from youtube."
+        );
+        continue;
+      }
+      const title = engineData.metaData.title.replace(
+        /[^a-zA-Z0-9_]+/g,
+        "_"
+      );
+      const folder = output ? path14__namespace.join(process.cwd(), output) : process.cwd();
+      if (!fs2__namespace.existsSync(folder))
+        fs2__namespace.mkdirSync(folder, { recursive: true });
+      let filename = "yt-dlx_(AudioVideoLowest_";
+      const ff = ffmpeg__default.default();
+      const vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0 ? engineData.ManifestLow[0]?.url : void 0;
+      ff.addInput(engineData.AudioLowF.url);
+      if (vdata)
+        ff.addInput(vdata.toString());
+      else
+        throw new Error(colors15__default.default.red("@error: ") + "no video data found.");
+      ff.outputOptions(["-c", "copy"]);
+      ff.withOutputFormat("matroska");
+      ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+      ff.withOutputFormat("matroska");
+      switch (filter2) {
+        case "grayscale":
+          ff.withVideoFilter(
+            "colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3"
+          );
+          filename += `grayscale)_${title}.mkv`;
+          break;
+        case "invert":
+          ff.withVideoFilter("negate");
+          filename += `invert)_${title}.mkv`;
+          break;
+        case "rotate90":
+          ff.withVideoFilter("rotate=PI/2");
+          filename += `rotate90)_${title}.mkv`;
+          break;
+        case "rotate180":
+          ff.withVideoFilter("rotate=PI");
+          filename += `rotate180)_${title}.mkv`;
+          break;
+        case "rotate270":
+          ff.withVideoFilter("rotate=3*PI/2");
+          filename += `rotate270)_${title}.mkv`;
+          break;
+        case "flipHorizontal":
+          ff.withVideoFilter("hflip");
+          filename += `flipHorizontal)_${title}.mkv`;
+          break;
+        case "flipVertical":
+          ff.withVideoFilter("vflip");
+          filename += `flipVertical)_${title}.mkv`;
+          break;
+        default:
+          filename += `)_${title}.mkv`;
+          break;
+      }
+      ff.on("error", (error) => {
+        throw new Error(error.message);
+      });
+      ff.on("start", (comd) => {
+        startTime = /* @__PURE__ */ new Date();
+        if (verbose)
+          console.info(colors15__default.default.green("@comd:"), comd);
+      });
+      ff.on("end", () => process.stdout.write("\n"));
+      ff.on("progress", ({ percent, timemark }) => {
+        let color = colors15__default.default.green;
+        if (isNaN(percent))
+          percent = 0;
+        if (percent > 98)
+          percent = 100;
+        if (percent < 25)
+          color = colors15__default.default.red;
+        else if (percent < 50)
+          color = colors15__default.default.yellow;
+        const width = Math.floor(process.stdout.columns / 4);
+        const scomp = Math.round(width * percent / 100);
+        const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+        process.stdout.write(
+          `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(
+            calculateETA(startTime, percent)
+          )}`
+        );
+      });
+      await new Promise((resolve, _reject) => {
+        ff.output(path14__namespace.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          throw new Error(colors15__default.default.red("@error: ") + error.message);
+        });
+        ff.run();
+      });
+    } catch (error) {
+      console.log(colors15__default.default.red("@error:"), error);
+      continue;
+    }
+  }
+  console.log(
+    colors15__default.default.green("@info:"),
+    "\u2763\uFE0F Thank you for using",
+    colors15__default.default.green("yt-dlx."),
+    "Consider",
+    colors15__default.default.green("\u{1F31F}starring"),
+    "the github repo",
+    colors15__default.default.green("https://github.com/yt-dlx\n")
+  );
 }
 
 // core/index.ts
@@ -3755,7 +4135,10 @@ var ytdlx = {
       Lowest: AudioVideoLowest,
       Highest: AudioVideoHighest
     },
-    List: {}
+    List: {
+      Lowest: ListAudioVideoLowest,
+      Highest: ListAudioVideoHighest
+    }
   }
 };
 var core_default = ytdlx;
@@ -3779,12 +4162,12 @@ var program = async () => {
   switch (command) {
     case "install:deps":
       while (maxTries > 0) {
-        const enginePath = path12__namespace.join(currentDir, "util");
+        const enginePath = path14__namespace.join(currentDir, "util");
         if (fs2__namespace.existsSync(enginePath)) {
           uLoc = enginePath;
           break;
         } else {
-          currentDir = path12__namespace.join(currentDir, "..");
+          currentDir = path14__namespace.join(currentDir, "..");
           maxTries--;
         }
       }
@@ -3819,12 +4202,12 @@ var program = async () => {
       break;
     case "install:socks5":
       while (maxTries > 0) {
-        const enginePath = path12__namespace.join(currentDir, "util");
+        const enginePath = path14__namespace.join(currentDir, "util");
         if (fs2__namespace.existsSync(enginePath)) {
           uLoc = enginePath;
           break;
         } else {
-          currentDir = path12__namespace.join(currentDir, "..");
+          currentDir = path14__namespace.join(currentDir, "..");
           maxTries--;
         }
       }

@@ -12,6 +12,8 @@ import ListVideoLowest from "./pipes/Video/list/ListVideoLowest";
 import ListVideoHighest from "./pipes/Video/list/ListVideoHighest";
 import AudioVideoHighest from "./pipes/AudioVideo/single/AudioVideoHighest";
 import AudioVideoLowest from "./pipes/AudioVideo/single/AudioVideoLowest";
+import ListAudioVideoHighest from "./pipes/AudioVideo/list/ListAudioVideoHighest";
+import ListAudioVideoLowest from "./pipes/AudioVideo/list/ListAudioVideoLowest";
 declare const ytdlx: {
     search: {
         browser: {
@@ -58,7 +60,10 @@ declare const ytdlx: {
             Lowest: typeof AudioVideoLowest;
             Highest: typeof AudioVideoHighest;
         };
-        List: {};
+        List: {
+            Lowest: typeof ListAudioVideoLowest;
+            Highest: typeof ListAudioVideoHighest;
+        };
     };
 };
 export default ytdlx;
