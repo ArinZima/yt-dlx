@@ -1,4 +1,3 @@
-import { z } from "zod";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -10,61 +9,14 @@ import formatTime from "../../../base/formatTime";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 import calculateETA from "../../../base/calculateETA";
 
-const qconf = z.object({
-  output: z.string().optional(),
-  resolution: z.enum(["high", "medium", "low", "ultralow"]),
-  verbose: z.boolean().optional(),
-  onionTor: z.boolean().optional(),
-  query: z
-    .array(
-      z
-        .string()
-        .min(1)
-        .refine(
-          async (input) => {
-            switch (true) {
-              case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(
-                input
-              ):
-                const resultLink = await YouTubeID(input);
-                if (resultLink !== undefined) return true;
-                break;
-              default:
-                const resultId = await YouTubeID(
-                  `https://www.youtube.com/playlist?list=${input}`
-                );
-                if (resultId !== undefined) return true;
-                break;
-            }
-            return false;
-          },
-          {
-            message: "Query must be a valid YouTube Playlist Link or ID.",
-          }
-        )
-    )
-    .min(1),
-  filter: z
-    .enum([
-      "echo",
-      "slow",
-      "speed",
-      "phaser",
-      "flanger",
-      "panning",
-      "reverse",
-      "vibrato",
-      "subboost",
-      "surround",
-      "bassboost",
-      "nightcore",
-      "superslow",
-      "vaporwave",
-      "superspeed",
-    ])
-    .optional(),
-});
-export default async function ListAudioCustom(input: {
+export default async function ListAudioCustom({
+  query,
+  resolution,
+  output,
+  verbose,
+  filter,
+  onionTor,
+}: {
   query: string[];
   output?: string;
   verbose?: boolean;
@@ -88,8 +40,6 @@ export default async function ListAudioCustom(input: {
     | "superspeed";
 }): Promise<void> {
   let startTime: Date;
-  const { query, resolution, output, verbose, filter, onionTor } =
-    await qconf.parseAsync(input);
   const vDATA = new Set<{
     ago: string;
     title: string;

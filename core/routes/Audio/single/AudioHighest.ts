@@ -1,4 +1,3 @@
-import { z } from "zod";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -8,34 +7,14 @@ import formatTime from "../../../base/formatTime";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 import calculateETA from "../../../base/calculateETA";
 
-const qconf = z.object({
-  query: z.string().min(1),
-  output: z.string().optional(),
-  stream: z.boolean().optional(),
-  verbose: z.boolean().optional(),
-  onionTor: z.boolean().optional(),
-  filter: z
-    .enum([
-      "echo",
-      "slow",
-      "speed",
-      "phaser",
-      "flanger",
-      "panning",
-      "reverse",
-      "vibrato",
-      "subboost",
-      "surround",
-      "bassboost",
-      "nightcore",
-      "superslow",
-      "vaporwave",
-      "superspeed",
-    ])
-    .optional(),
-});
-
-export default async function AudioHighest(input: {
+export default async function AudioHighest({
+  query,
+  output,
+  stream,
+  verbose,
+  filter,
+  onionTor,
+}: {
   query: string;
   output?: string;
   stream?: boolean;
@@ -59,8 +38,6 @@ export default async function AudioHighest(input: {
     | "superspeed";
 }): Promise<void | { filename: string; ffmpeg: FfmpegCommand }> {
   let startTime: Date;
-  const { query, output, stream, verbose, filter, onionTor } =
-    await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
     throw new Error(colors.red("@error: ") + "Unable to get response!");

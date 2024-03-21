@@ -1,5 +1,5 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export default function ListAudioVideoLowest(input: {
+export default function ListAudioVideoLowest({ query, verbose, output, filter, onionTor, }: {
     query: string[];
     output?: string;
     verbose?: boolean;

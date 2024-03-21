@@ -35,7 +35,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zod_1 = require("zod");
 const fs = __importStar(require("fs"));
 const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
@@ -43,43 +42,9 @@ const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const Agent_1 = __importDefault(require("../../../base/Agent"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
-const qconf = zod_1.z.object({
-    query: zod_1.z.string().min(1),
-    resolution: zod_1.z.enum([
-        "144p",
-        "240p",
-        "360p",
-        "480p",
-        "720p",
-        "1080p",
-        "1440p",
-        "2160p",
-        "3072p",
-        "4320p",
-        "6480p",
-        "8640p",
-        "12000p",
-    ]),
-    output: zod_1.z.string().optional(),
-    stream: zod_1.z.boolean().optional(),
-    verbose: zod_1.z.boolean().optional(),
-    onionTor: zod_1.z.boolean().optional(),
-    filter: zod_1.z
-        .enum([
-        "invert",
-        "rotate90",
-        "rotate270",
-        "grayscale",
-        "rotate180",
-        "flipVertical",
-        "flipHorizontal",
-    ])
-        .optional(),
-});
-function AudioVideoCustom(input) {
-    return __awaiter(this, void 0, void 0, function* () {
+function AudioVideoCustom(_a) {
+    return __awaiter(this, arguments, void 0, function* ({ query, resolution, stream, verbose, output, filter, onionTor, }) {
         let startTime;
-        const { query, resolution, stream, verbose, output, filter, onionTor } = yield qconf.parseAsync(input);
         const engineData = yield (0, Agent_1.default)({ query, verbose, onionTor });
         if (engineData === undefined) {
             throw new Error(colors_1.default.red("@error: ") + "Unable to get response!");

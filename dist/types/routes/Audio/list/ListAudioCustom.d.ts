@@ -1,4 +1,4 @@
-export default function ListAudioCustom(input: {
+export default function ListAudioCustom({ query, resolution, output, verbose, filter, onionTor, }: {
     query: string[];
     output?: string;
     verbose?: boolean;

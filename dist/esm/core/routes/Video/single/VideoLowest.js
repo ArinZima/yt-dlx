@@ -34,7 +34,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { z } from "zod";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -42,46 +41,26 @@ import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
-var qconf = z.object({
-    query: z.string().min(1),
-    output: z.string().optional(),
-    stream: z.boolean().optional(),
-    verbose: z.boolean().optional(),
-    onionTor: z.boolean().optional(),
-    filter: z
-        .enum([
-        "invert",
-        "rotate90",
-        "rotate270",
-        "grayscale",
-        "rotate180",
-        "flipVertical",
-        "flipHorizontal",
-    ])
-        .optional(),
-});
-export default function VideoLowest(input) {
-    return __awaiter(this, void 0, void 0, function () {
-        var startTime, _a, query, stream, verbose, output, filter, onionTor, engineData, title, folder_1, ff_1, vdata, filename_1;
-        var _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0: return [4 /*yield*/, qconf.parseAsync(input)];
+export default function VideoLowest(_a) {
+    return __awaiter(this, arguments, void 0, function (_b) {
+        var startTime, engineData, title, folder_1, ff_1, vdata, filename_1;
+        var _c;
+        var query = _b.query, stream = _b.stream, verbose = _b.verbose, output = _b.output, filter = _b.filter, onionTor = _b.onionTor;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0: return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
                 case 1:
-                    _a = _c.sent(), query = _a.query, stream = _a.stream, verbose = _a.verbose, output = _a.output, filter = _a.filter, onionTor = _a.onionTor;
-                    return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
-                case 2:
-                    engineData = _c.sent();
-                    if (!(engineData === undefined)) return [3 /*break*/, 3];
+                    engineData = _d.sent();
+                    if (!(engineData === undefined)) return [3 /*break*/, 2];
                     throw new Error(colors.red("@error: ") + "Unable to get response!");
-                case 3:
+                case 2:
                     title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
                     folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
                     ff_1 = ffmpeg();
                     vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
-                        ? (_b = engineData.ManifestLow[0]) === null || _b === void 0 ? void 0 : _b.url
+                        ? (_c = engineData.ManifestLow[0]) === null || _c === void 0 ? void 0 : _c.url
                         : undefined;
                     if (vdata)
                         ff_1.addInput(vdata.toString());
@@ -152,14 +131,14 @@ export default function VideoLowest(input) {
                             " ".concat(color("| @timemark:"), " ").concat(timemark) +
                             " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime, percent))));
                     });
-                    if (!stream) return [3 /*break*/, 4];
+                    if (!stream) return [3 /*break*/, 3];
                     return [2 /*return*/, {
                             ffmpeg: ff_1,
                             filename: output
                                 ? path.join(folder_1, filename_1)
                                 : filename_1.replace("_)_", ")_"),
                         }];
-                case 4: return [4 /*yield*/, new Promise(function (resolve, reject) {
+                case 3: return [4 /*yield*/, new Promise(function (resolve, reject) {
                         ff_1.output(path.join(folder_1, filename_1.replace("_)_", ")_")));
                         ff_1.on("end", function () { return resolve(); });
                         ff_1.on("error", function (error) {
@@ -167,13 +146,13 @@ export default function VideoLowest(input) {
                         });
                         ff_1.run();
                     })];
+                case 4:
+                    _d.sent();
+                    _d.label = 5;
                 case 5:
-                    _c.sent();
-                    _c.label = 6;
-                case 6:
                     console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
-                    _c.label = 7;
-                case 7: return [2 /*return*/];
+                    _d.label = 6;
+                case 6: return [2 /*return*/];
             }
         });
     });

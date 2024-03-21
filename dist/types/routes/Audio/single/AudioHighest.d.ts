@@ -1,5 +1,5 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export default function AudioHighest(input: {
+export default function AudioHighest({ query, output, stream, verbose, filter, onionTor, }: {
     query: string;
     output?: string;
     stream?: boolean;

@@ -35,7 +35,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zod_1 = require("zod");
 const fs = __importStar(require("fs"));
 const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
@@ -45,63 +44,9 @@ const Agent_1 = __importDefault(require("../../../base/Agent"));
 const YouTubeId_1 = __importDefault(require("../../../web/YouTubeId"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
-const qconf = zod_1.z.object({
-    output: zod_1.z.string().optional(),
-    resolution: zod_1.z.enum([
-        "144p",
-        "240p",
-        "360p",
-        "480p",
-        "720p",
-        "1080p",
-        "1440p",
-        "2160p",
-        "3072p",
-        "4320p",
-        "6480p",
-        "8640p",
-        "12000p",
-    ]),
-    verbose: zod_1.z.boolean().optional(),
-    onionTor: zod_1.z.boolean().optional(),
-    query: zod_1.z
-        .array(zod_1.z
-        .string()
-        .min(1)
-        .refine((input) => __awaiter(void 0, void 0, void 0, function* () {
-        switch (true) {
-            case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(input):
-                const resultLink = yield (0, YouTubeId_1.default)(input);
-                if (resultLink !== undefined)
-                    return true;
-                break;
-            default:
-                const resultId = yield (0, YouTubeId_1.default)(`https://www.youtube.com/playlist?list=${input}`);
-                if (resultId !== undefined)
-                    return true;
-                break;
-        }
-        return false;
-    }), {
-        message: "Query must be a valid YouTube Playlist Link or ID.",
-    }))
-        .min(1),
-    filter: zod_1.z
-        .enum([
-        "invert",
-        "rotate90",
-        "rotate270",
-        "grayscale",
-        "rotate180",
-        "flipVertical",
-        "flipHorizontal",
-    ])
-        .optional(),
-});
-function ListAudioVideoCustom(input) {
-    return __awaiter(this, void 0, void 0, function* () {
+function ListAudioVideoCustom(_a) {
+    return __awaiter(this, arguments, void 0, function* ({ query, resolution, verbose, output, filter, onionTor, }) {
         let startTime;
-        const { query, resolution, verbose, output, filter, onionTor } = yield qconf.parseAsync(input);
         const vDATA = new Set();
         for (const pURL of query) {
             try {

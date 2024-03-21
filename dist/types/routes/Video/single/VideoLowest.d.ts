@@ -1,5 +1,5 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export default function VideoLowest(input: {
+export default function VideoLowest({ query, stream, verbose, output, filter, onionTor, }: {
     query: string;
     output?: string;
     stream?: boolean;

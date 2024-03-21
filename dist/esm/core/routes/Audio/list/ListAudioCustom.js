@@ -45,7 +45,6 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-import { z } from "zod";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -55,143 +54,84 @@ import ytdlx from "../../../base/Agent";
 import YouTubeID from "../../../web/YouTubeId";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
-var qconf = z.object({
-    output: z.string().optional(),
-    resolution: z.enum(["high", "medium", "low", "ultralow"]),
-    verbose: z.boolean().optional(),
-    onionTor: z.boolean().optional(),
-    query: z
-        .array(z
-        .string()
-        .min(1)
-        .refine(function (input) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, resultLink, resultId;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+export default function ListAudioCustom(_a) {
+    return __awaiter(this, arguments, void 0, function (_b) {
+        var startTime, vDATA, query_1, query_1_1, pURL, pDATA, _c, _d, _e, _f, video, error_1, e_1_1, _loop_1, vDATA_1, vDATA_1_1, video, e_2_1;
+        var e_1, _g, _h, e_3, _j, e_2, _k;
+        var query = _b.query, resolution = _b.resolution, output = _b.output, verbose = _b.verbose, filter = _b.filter, onionTor = _b.onionTor;
+        return __generator(this, function (_l) {
+            switch (_l.label) {
                 case 0:
-                    _a = true;
-                    switch (_a) {
-                        case /^(https?:\/\/)?(www\.)?(youtube\.com\/(playlist\?|embed\/|v\/|channel\/)(list=)?)([a-zA-Z0-9_-]+)/.test(input): return [3 /*break*/, 1];
-                    }
-                    return [3 /*break*/, 3];
-                case 1: return [4 /*yield*/, YouTubeID(input)];
-                case 2:
-                    resultLink = _b.sent();
-                    if (resultLink !== undefined)
-                        return [2 /*return*/, true];
-                    return [3 /*break*/, 5];
-                case 3: return [4 /*yield*/, YouTubeID("https://www.youtube.com/playlist?list=".concat(input))];
-                case 4:
-                    resultId = _b.sent();
-                    if (resultId !== undefined)
-                        return [2 /*return*/, true];
-                    return [3 /*break*/, 5];
-                case 5: return [2 /*return*/, false];
-            }
-        });
-    }); }, {
-        message: "Query must be a valid YouTube Playlist Link or ID.",
-    }))
-        .min(1),
-    filter: z
-        .enum([
-        "echo",
-        "slow",
-        "speed",
-        "phaser",
-        "flanger",
-        "panning",
-        "reverse",
-        "vibrato",
-        "subboost",
-        "surround",
-        "bassboost",
-        "nightcore",
-        "superslow",
-        "vaporwave",
-        "superspeed",
-    ])
-        .optional(),
-});
-export default function ListAudioCustom(input) {
-    return __awaiter(this, void 0, void 0, function () {
-        var startTime, _a, query, resolution, output, verbose, filter, onionTor, vDATA, query_1, query_1_1, pURL, pDATA, _b, _c, _d, _e, video, error_1, e_1_1, _loop_1, vDATA_1, vDATA_1_1, video, e_2_1;
-        var e_1, _f, _g, e_3, _h, e_2, _j;
-        return __generator(this, function (_k) {
-            switch (_k.label) {
-                case 0: return [4 /*yield*/, qconf.parseAsync(input)];
-                case 1:
-                    _a = _k.sent(), query = _a.query, resolution = _a.resolution, output = _a.output, verbose = _a.verbose, filter = _a.filter, onionTor = _a.onionTor;
                     vDATA = new Set();
-                    _k.label = 2;
-                case 2:
-                    _k.trys.push([2, 10, 11, 12]);
+                    _l.label = 1;
+                case 1:
+                    _l.trys.push([1, 9, 10, 11]);
                     query_1 = __values(query), query_1_1 = query_1.next();
-                    _k.label = 3;
-                case 3:
-                    if (!!query_1_1.done) return [3 /*break*/, 9];
+                    _l.label = 2;
+                case 2:
+                    if (!!query_1_1.done) return [3 /*break*/, 8];
                     pURL = query_1_1.value;
-                    _k.label = 4;
-                case 4:
-                    _k.trys.push([4, 7, , 8]);
-                    _c = (_b = web.browserLess).playlistVideos;
-                    _g = {};
+                    _l.label = 3;
+                case 3:
+                    _l.trys.push([3, 6, , 7]);
+                    _d = (_c = web.browserLess).playlistVideos;
+                    _h = {};
                     return [4 /*yield*/, YouTubeID(pURL)];
-                case 5: return [4 /*yield*/, _c.apply(_b, [(_g.playlistId = (_k.sent()),
-                            _g)])];
-                case 6:
-                    pDATA = _k.sent();
+                case 4: return [4 /*yield*/, _d.apply(_c, [(_h.playlistId = (_l.sent()),
+                            _h)])];
+                case 5:
+                    pDATA = _l.sent();
                     if (pDATA === undefined) {
                         console.log(colors.red("@error:"), "Unable to get response for", pURL);
-                        return [3 /*break*/, 8];
+                        return [3 /*break*/, 7];
                     }
                     try {
-                        for (_d = (e_3 = void 0, __values(pDATA.playlistVideos)), _e = _d.next(); !_e.done; _e = _d.next()) {
-                            video = _e.value;
+                        for (_e = (e_3 = void 0, __values(pDATA.playlistVideos)), _f = _e.next(); !_f.done; _f = _e.next()) {
+                            video = _f.value;
                             vDATA.add(video);
                         }
                     }
                     catch (e_3_1) { e_3 = { error: e_3_1 }; }
                     finally {
                         try {
-                            if (_e && !_e.done && (_h = _d.return)) _h.call(_d);
+                            if (_f && !_f.done && (_j = _e.return)) _j.call(_e);
                         }
                         finally { if (e_3) throw e_3.error; }
                     }
-                    return [3 /*break*/, 8];
-                case 7:
-                    error_1 = _k.sent();
+                    return [3 /*break*/, 7];
+                case 6:
+                    error_1 = _l.sent();
                     console.log(colors.red("@error:"), error_1);
-                    return [3 /*break*/, 8];
-                case 8:
+                    return [3 /*break*/, 7];
+                case 7:
                     query_1_1 = query_1.next();
-                    return [3 /*break*/, 3];
-                case 9: return [3 /*break*/, 12];
-                case 10:
-                    e_1_1 = _k.sent();
+                    return [3 /*break*/, 2];
+                case 8: return [3 /*break*/, 11];
+                case 9:
+                    e_1_1 = _l.sent();
                     e_1 = { error: e_1_1 };
-                    return [3 /*break*/, 12];
-                case 11:
+                    return [3 /*break*/, 11];
+                case 10:
                     try {
-                        if (query_1_1 && !query_1_1.done && (_f = query_1.return)) _f.call(query_1);
+                        if (query_1_1 && !query_1_1.done && (_g = query_1.return)) _g.call(query_1);
                     }
                     finally { if (e_1) throw e_1.error; }
                     return [7 /*endfinally*/];
-                case 12:
+                case 11:
                     console.log(colors.green("@info:"), "total number of uncommon videos:", colors.yellow(vDATA.size.toString()));
                     _loop_1 = function (video) {
                         var engineData, title, folder_1, filename_1, ff_1, adata, error_2;
-                        return __generator(this, function (_l) {
-                            switch (_l.label) {
+                        return __generator(this, function (_m) {
+                            switch (_m.label) {
                                 case 0:
-                                    _l.trys.push([0, 3, , 4]);
+                                    _m.trys.push([0, 3, , 4]);
                                     return [4 /*yield*/, ytdlx({
                                             query: video.videoLink,
                                             onionTor: onionTor,
                                             verbose: verbose,
                                         })];
                                 case 1:
-                                    engineData = _l.sent();
+                                    engineData = _m.sent();
                                     if (engineData === undefined) {
                                         console.log(colors.red("@error:"), "Unable to get response for", video.videoLink);
                                         return [2 /*return*/, "continue"];
@@ -316,43 +256,43 @@ export default function ListAudioCustom(input) {
                                             ff_1.run();
                                         })];
                                 case 2:
-                                    _l.sent();
+                                    _m.sent();
                                     return [3 /*break*/, 4];
                                 case 3:
-                                    error_2 = _l.sent();
+                                    error_2 = _m.sent();
                                     console.log(colors.red("@error:"), error_2);
                                     return [2 /*return*/, "continue"];
                                 case 4: return [2 /*return*/];
                             }
                         });
                     };
-                    _k.label = 13;
-                case 13:
-                    _k.trys.push([13, 18, 19, 20]);
+                    _l.label = 12;
+                case 12:
+                    _l.trys.push([12, 17, 18, 19]);
                     vDATA_1 = __values(vDATA), vDATA_1_1 = vDATA_1.next();
-                    _k.label = 14;
-                case 14:
-                    if (!!vDATA_1_1.done) return [3 /*break*/, 17];
+                    _l.label = 13;
+                case 13:
+                    if (!!vDATA_1_1.done) return [3 /*break*/, 16];
                     video = vDATA_1_1.value;
                     return [5 /*yield**/, _loop_1(video)];
+                case 14:
+                    _l.sent();
+                    _l.label = 15;
                 case 15:
-                    _k.sent();
-                    _k.label = 16;
-                case 16:
                     vDATA_1_1 = vDATA_1.next();
-                    return [3 /*break*/, 14];
-                case 17: return [3 /*break*/, 20];
-                case 18:
-                    e_2_1 = _k.sent();
+                    return [3 /*break*/, 13];
+                case 16: return [3 /*break*/, 19];
+                case 17:
+                    e_2_1 = _l.sent();
                     e_2 = { error: e_2_1 };
-                    return [3 /*break*/, 20];
-                case 19:
+                    return [3 /*break*/, 19];
+                case 18:
                     try {
-                        if (vDATA_1_1 && !vDATA_1_1.done && (_j = vDATA_1.return)) _j.call(vDATA_1);
+                        if (vDATA_1_1 && !vDATA_1_1.done && (_k = vDATA_1.return)) _k.call(vDATA_1);
                     }
                     finally { if (e_2) throw e_2.error; }
                     return [7 /*endfinally*/];
-                case 20:
+                case 19:
                     console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
                     return [2 /*return*/];
             }

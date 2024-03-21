@@ -1,4 +1,4 @@
-export default function ListAudioLowest(input: {
+export default function ListAudioLowest({ query, output, verbose, filter, onionTor, }: {
     query: string[];
     output?: string;
     verbose?: boolean;

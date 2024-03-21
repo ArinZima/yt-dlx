@@ -1,5 +1,5 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export default function ListAudioVideoHighest(input: {
+export default function ListAudioVideoHighest({ query, verbose, output, filter, onionTor, }: {
     query: string[];
     output?: string;
     verbose?: boolean;

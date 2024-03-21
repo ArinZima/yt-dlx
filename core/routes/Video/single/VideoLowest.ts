@@ -1,4 +1,3 @@
-import { z } from "zod";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -8,25 +7,14 @@ import formatTime from "../../../base/formatTime";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 import calculateETA from "../../../base/calculateETA";
 
-const qconf = z.object({
-  query: z.string().min(1),
-  output: z.string().optional(),
-  stream: z.boolean().optional(),
-  verbose: z.boolean().optional(),
-  onionTor: z.boolean().optional(),
-  filter: z
-    .enum([
-      "invert",
-      "rotate90",
-      "rotate270",
-      "grayscale",
-      "rotate180",
-      "flipVertical",
-      "flipHorizontal",
-    ])
-    .optional(),
-});
-export default async function VideoLowest(input: {
+export default async function VideoLowest({
+  query,
+  stream,
+  verbose,
+  output,
+  filter,
+  onionTor,
+}: {
   query: string;
   output?: string;
   stream?: boolean;
@@ -45,8 +33,6 @@ export default async function VideoLowest(input: {
   ffmpeg: FfmpegCommand;
 }> {
   let startTime: Date;
-  const { query, stream, verbose, output, filter, onionTor } =
-    await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
     throw new Error(colors.red("@error: ") + "Unable to get response!");

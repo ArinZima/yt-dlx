@@ -1,5 +1,5 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export default function VideoCustom(input: {
+export default function VideoCustom({ query, resolution, stream, verbose, output, filter, onionTor, }: {
     query: string;
     output?: string;
     stream?: boolean;

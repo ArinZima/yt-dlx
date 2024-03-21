@@ -1,5 +1,5 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export default function ListAudioVideoCustom(input: {
+export default function ListAudioVideoCustom({ query, resolution, verbose, output, filter, onionTor, }: {
     query: string[];
     output?: string;
     verbose?: boolean;

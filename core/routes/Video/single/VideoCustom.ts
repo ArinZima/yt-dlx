@@ -1,4 +1,3 @@
-import { z } from "zod";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -8,40 +7,15 @@ import formatTime from "../../../base/formatTime";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 import calculateETA from "../../../base/calculateETA";
 
-const qconf = z.object({
-  query: z.string().min(1),
-  resolution: z.enum([
-    "144p",
-    "240p",
-    "360p",
-    "480p",
-    "720p",
-    "1080p",
-    "1440p",
-    "2160p",
-    "3072p",
-    "4320p",
-    "6480p",
-    "8640p",
-    "12000p",
-  ]),
-  output: z.string().optional(),
-  stream: z.boolean().optional(),
-  verbose: z.boolean().optional(),
-  onionTor: z.boolean().optional(),
-  filter: z
-    .enum([
-      "invert",
-      "rotate90",
-      "rotate270",
-      "grayscale",
-      "rotate180",
-      "flipVertical",
-      "flipHorizontal",
-    ])
-    .optional(),
-});
-export default async function VideoCustom(input: {
+export default async function VideoCustom({
+  query,
+  resolution,
+  stream,
+  verbose,
+  output,
+  filter,
+  onionTor,
+}: {
   query: string;
   output?: string;
   stream?: boolean;
@@ -74,8 +48,6 @@ export default async function VideoCustom(input: {
   ffmpeg: FfmpegCommand;
 }> {
   let startTime: Date;
-  const { query, resolution, stream, verbose, output, filter, onionTor } =
-    await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
     throw new Error(colors.red("@error: ") + "Unable to get response!");

@@ -1,5 +1,5 @@
 import type { FfmpegCommand } from "fluent-ffmpeg";
-export default function AudioCustom(input: {
+export default function AudioCustom({ query, resolution, output, stream, verbose, filter, onionTor, }: {
     query: string;
     output?: string;
     stream?: boolean;

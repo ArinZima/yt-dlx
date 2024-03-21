@@ -1,4 +1,4 @@
-export default function ListAudioHighest(input: {
+export default function ListAudioHighest({ query, output, verbose, filter, onionTor, }: {
     query: string[];
     output?: string;
     verbose?: boolean;
