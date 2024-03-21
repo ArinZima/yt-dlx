@@ -18,7 +18,7 @@ RUN apt-get update \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm i -g yarn yt-dlx
+RUN npm i -g yarn yt-dlx --force
 WORKDIR /app
 COPY . .
 RUN service tor start
