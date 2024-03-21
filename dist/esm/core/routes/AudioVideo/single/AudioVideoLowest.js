@@ -81,22 +81,16 @@ export default function AudioVideoLowest(_a) {
                 case 1:
                     engineData = _d.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 2];
-                    throw new Error(colors.red("@error: ") + "Unable to get response!");
+                    throw new Error("".concat(colors.red("@error:"), " unable to get response!"));
                 case 2:
                     title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                    folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
+                    folder_1 = output ? path.join(__dirname, output) : __dirname;
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
                     ff_1 = ffmpeg();
-                    vdata = Array.isArray(engineData.ManifestLow) &&
-                        engineData.ManifestLow.length > 0
-                        ? (_c = engineData.ManifestLow[0]) === null || _c === void 0 ? void 0 : _c.url
-                        : undefined;
+                    vdata = (_c = engineData.ManifestLow[0]) === null || _c === void 0 ? void 0 : _c.url;
                     ff_1.addInput(engineData.AudioLowF.url);
-                    if (vdata)
-                        ff_1.addInput(vdata.toString());
-                    else
-                        throw new Error(colors.red("@error: ") + "no video data found.");
+                    ff_1.addInput(vdata.toString());
                     ff_1.outputOptions("-c copy");
                     ff_1.withOutputFormat("matroska");
                     ff_1.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);

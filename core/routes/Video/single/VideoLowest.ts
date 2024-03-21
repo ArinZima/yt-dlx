@@ -50,22 +50,17 @@ export default async function VideoLowest({
     let startTime: Date;
     const engineData = await ytdlx({ query, verbose, onionTor });
     if (engineData === undefined) {
-      throw new Error(colors.red("@error: ") + "unable to get response!");
+      throw new Error(`${colors.red("@error:")} unable to get response!`);
     } else {
       const title: string = engineData.metaData.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path.join(__dirname, output) : __dirname;
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const ff: FfmpegCommand = ffmpeg();
-      const vdata =
-        Array.isArray(engineData.ManifestLow) &&
-        engineData.ManifestLow.length > 0
-          ? engineData.ManifestLow[0]?.url
-          : undefined;
-      if (vdata) ff.addInput(vdata.toString());
-      else throw new Error(colors.red("@error: ") + "no video data found.");
+      const vdata = engineData.ManifestLow[0].url;
+      ff.addInput(vdata.toString());
       ff.outputOptions("-c copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);

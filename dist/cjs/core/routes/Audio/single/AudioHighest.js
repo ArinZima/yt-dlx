@@ -76,11 +76,11 @@ function AudioHighest(_a) {
             let startTime;
             const engineData = yield (0, Agent_1.default)({ query, verbose, onionTor });
             if (engineData === undefined) {
-                throw new Error(colors_1.default.red("@error: ") + "Unable to get response!");
+                throw new Error(`${colors_1.default.red("@error:")} unable to get response!`);
             }
             else {
                 const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                const folder = output ? path.join(process.cwd(), output) : process.cwd();
+                const folder = output ? path.join(__dirname, output) : __dirname;
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
                 let filename = "yt-dlx_(AudioHighest_";

@@ -50,23 +50,19 @@ export default async function AudioVideoHighest({
     let startTime: Date;
     const engineData = await ytdlx({ query, verbose, onionTor });
     if (engineData === undefined) {
-      throw new Error(colors.red("@error: ") + "Unable to get response!");
+      throw new Error(`${colors.red("@error:")} unable to get response!`);
     } else {
       const title: string = engineData.metaData.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path.join(__dirname, output) : __dirname;
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       const ff: FfmpegCommand = ffmpeg();
       const vdata =
-        Array.isArray(engineData.ManifestHigh) &&
-        engineData.ManifestHigh.length > 0
-          ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url
-          : undefined;
+        engineData.ManifestHigh[engineData.ManifestHigh.length - 1].url;
       ff.addInput(engineData.AudioHighF.url);
-      if (vdata) ff.addInput(vdata.toString());
-      else throw new Error(colors.red("@error: ") + "no video data found.");
+      ff.addInput(vdata.toString());
       ff.outputOptions("-c copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);

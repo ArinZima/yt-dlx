@@ -116,9 +116,7 @@ export default async function ListAudioVideoCustom({
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output
-          ? path.join(process.cwd(), output)
-          : process.cwd();
+        const folder = output ? path.join(__dirname, output) : __dirname;
         if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
         let filename: string = `yt-dlx_(AudioVideoCustom_${resolution}_`;
         const ff: FfmpegCommand = ffmpeg();

@@ -114,9 +114,7 @@ export default async function ListAudioCustom({
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output
-          ? path.join(process.cwd(), output)
-          : process.cwd();
+        const folder = output ? path.join(__dirname, output) : __dirname;
         if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
         let filename: string = `yt-dlx_(AudioCustom_${resolution}_`;
         const ff: FfmpegCommand = ffmpeg();
@@ -124,11 +122,12 @@ export default async function ListAudioCustom({
           i.format.includes(resolution.replace("p", "").toString())
         );
         if (adata) ff.addInput(adata.url.toString());
-        else
+        else {
           throw new Error(
             colors.red("@error: ") +
               "no audio data found. use list_formats() maybe?"
           );
+        }
         ff.addInput(engineData.metaData.thumbnail);
         ff.outputOptions("-c copy");
         ff.withOutputFormat("avi");

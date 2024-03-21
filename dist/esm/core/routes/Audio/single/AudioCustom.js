@@ -90,10 +90,10 @@ export default function AudioCustom(_a) {
                 case 1:
                     engineData = _c.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 2];
-                    throw new Error(colors.red("@error: ") + "Unable to get response!");
+                    throw new Error("".concat(colors.red("@error:"), " unable to get response!"));
                 case 2:
                     title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                    folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
+                    folder_1 = output ? path.join(__dirname, output) : __dirname;
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
                     filename_1 = "yt-dlx_(AudioCustom_".concat(resolution, "_");
@@ -103,9 +103,9 @@ export default function AudioCustom(_a) {
                     });
                     if (adata)
                         ff_1.addInput(adata.url.toString());
-                    else
-                        throw new Error(colors.red("@error: ") +
-                            "no audio data found. use list_formats() maybe?");
+                    else {
+                        throw new Error("".concat(colors.red("@error:"), " no audio data found. use list_formats() maybe?"));
+                    }
                     ff_1.addInput(engineData.metaData.thumbnail);
                     ff_1.outputOptions("-c copy");
                     ff_1.withOutputFormat("avi");

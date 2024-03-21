@@ -49,108 +49,132 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import web from "../../../web";
+import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
 import YouTubeID from "../../../web/YouTubeId";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
+var ZodSchema = z.object({
+    output: z.string().optional(),
+    verbose: z.boolean().optional(),
+    onionTor: z.boolean().optional(),
+    query: z.array(z.string().min(2)),
+    filter: z
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
+});
 export default function ListVideoHighest(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
-        var startTime, vDATA, query_1, query_1_1, pURL, pDATA, _c, _d, _e, _f, video, error_1, e_1_1, _loop_1, vDATA_1, vDATA_1_1, video, e_2_1;
-        var e_1, _g, _h, e_3, _j, e_2, _k;
-        var _l;
+        var startTime_1, vDATA, query_1, query_1_1, pURL, playlistId, pDATA, _c, _d, video, error_1, e_1_1, _loop_1, vDATA_1, vDATA_1_1, video, e_2_1, error_2;
+        var e_1, _e, e_3, _f, e_2, _g;
         var query = _b.query, verbose = _b.verbose, output = _b.output, filter = _b.filter, onionTor = _b.onionTor;
-        return __generator(this, function (_m) {
-            switch (_m.label) {
+        return __generator(this, function (_h) {
+            switch (_h.label) {
                 case 0:
+                    _h.trys.push([0, 22, 23, 24]);
+                    ZodSchema.parse({
+                        query: query,
+                        verbose: verbose,
+                        output: output,
+                        filter: filter,
+                        onionTor: onionTor,
+                    });
                     vDATA = new Set();
-                    _m.label = 1;
+                    _h.label = 1;
                 case 1:
-                    _m.trys.push([1, 9, 10, 11]);
+                    _h.trys.push([1, 11, 12, 13]);
                     query_1 = __values(query), query_1_1 = query_1.next();
-                    _m.label = 2;
+                    _h.label = 2;
                 case 2:
-                    if (!!query_1_1.done) return [3 /*break*/, 8];
+                    if (!!query_1_1.done) return [3 /*break*/, 10];
                     pURL = query_1_1.value;
-                    _m.label = 3;
+                    _h.label = 3;
                 case 3:
-                    _m.trys.push([3, 6, , 7]);
-                    _d = (_c = web.browserLess).playlistVideos;
-                    _h = {};
+                    _h.trys.push([3, 8, , 9]);
                     return [4 /*yield*/, YouTubeID(pURL)];
-                case 4: return [4 /*yield*/, _d.apply(_c, [(_h.playlistId = (_m.sent()),
-                            _h)])];
-                case 5:
-                    pDATA = _m.sent();
+                case 4:
+                    playlistId = _h.sent();
+                    if (!!playlistId) return [3 /*break*/, 5];
+                    console.log(colors.red("@error: "), "@error: invalid playlist", pURL);
+                    return [3 /*break*/, 9];
+                case 5: return [4 /*yield*/, web.browserLess.playlistVideos({
+                        playlistId: playlistId,
+                    })];
+                case 6:
+                    pDATA = _h.sent();
                     if (pDATA === undefined) {
-                        console.log(colors.red("@error:"), "Unable to get response for", pURL);
-                        return [3 /*break*/, 7];
+                        console.log(colors.red("@error:"), "unable to get response for", pURL);
+                        return [3 /*break*/, 9];
                     }
                     try {
-                        for (_e = (e_3 = void 0, __values(pDATA.playlistVideos)), _f = _e.next(); !_f.done; _f = _e.next()) {
-                            video = _f.value;
+                        for (_c = (e_3 = void 0, __values(pDATA.playlistVideos)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                            video = _d.value;
                             vDATA.add(video);
                         }
                     }
                     catch (e_3_1) { e_3 = { error: e_3_1 }; }
                     finally {
                         try {
-                            if (_f && !_f.done && (_j = _e.return)) _j.call(_e);
+                            if (_d && !_d.done && (_f = _c.return)) _f.call(_c);
                         }
                         finally { if (e_3) throw e_3.error; }
                     }
-                    return [3 /*break*/, 7];
-                case 6:
-                    error_1 = _m.sent();
-                    console.log(colors.red("@error:"), error_1);
-                    return [3 /*break*/, 7];
-                case 7:
+                    _h.label = 7;
+                case 7: return [3 /*break*/, 9];
+                case 8:
+                    error_1 = _h.sent();
+                    console.log(colors.red("@error:"), error_1.message);
+                    return [3 /*break*/, 9];
+                case 9:
                     query_1_1 = query_1.next();
                     return [3 /*break*/, 2];
-                case 8: return [3 /*break*/, 11];
-                case 9:
-                    e_1_1 = _m.sent();
+                case 10: return [3 /*break*/, 13];
+                case 11:
+                    e_1_1 = _h.sent();
                     e_1 = { error: e_1_1 };
-                    return [3 /*break*/, 11];
-                case 10:
+                    return [3 /*break*/, 13];
+                case 12:
                     try {
-                        if (query_1_1 && !query_1_1.done && (_g = query_1.return)) _g.call(query_1);
+                        if (query_1_1 && !query_1_1.done && (_e = query_1.return)) _e.call(query_1);
                     }
                     finally { if (e_1) throw e_1.error; }
                     return [7 /*endfinally*/];
-                case 11:
+                case 13:
                     console.log(colors.green("@info:"), "total number of uncommon videos:", colors.yellow(vDATA.size.toString()));
                     _loop_1 = function (video) {
-                        var engineData, title, folder_1, filename_1, ff_1, vdata, error_2;
-                        return __generator(this, function (_o) {
-                            switch (_o.label) {
+                        var engineData, title, folder_1, filename_1, ff_1, vdata, error_3;
+                        return __generator(this, function (_j) {
+                            switch (_j.label) {
                                 case 0:
-                                    _o.trys.push([0, 3, , 4]);
+                                    _j.trys.push([0, 3, , 4]);
                                     return [4 /*yield*/, ytdlx({
                                             query: video.videoLink,
                                             onionTor: onionTor,
                                             verbose: verbose,
                                         })];
                                 case 1:
-                                    engineData = _o.sent();
+                                    engineData = _j.sent();
                                     if (engineData === undefined) {
                                         console.log(colors.red("@error:"), "unable to get response from youtube.");
                                         return [2 /*return*/, "continue"];
                                     }
                                     title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                                    folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
+                                    folder_1 = output ? path.join(__dirname, output) : __dirname;
                                     if (!fs.existsSync(folder_1))
                                         fs.mkdirSync(folder_1, { recursive: true });
                                     filename_1 = "yt-dlx_(VideoHighest_";
                                     ff_1 = ffmpeg();
-                                    vdata = Array.isArray(engineData.ManifestHigh) &&
-                                        engineData.ManifestHigh.length > 0
-                                        ? (_l = engineData.ManifestHigh[engineData.ManifestHigh.length - 1]) === null || _l === void 0 ? void 0 : _l.url
-                                        : undefined;
-                                    if (vdata)
-                                        ff_1.addInput(vdata.toString());
-                                    else
-                                        throw new Error(colors.red("@error: ") + "no video data found.");
+                                    vdata = engineData.ManifestHigh[engineData.ManifestHigh.length - 1].url;
+                                    ff_1.addInput(vdata.toString());
                                     ff_1.outputOptions("-c copy");
                                     ff_1.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
                                     ff_1.withOutputFormat("matroska");
@@ -191,7 +215,7 @@ export default function ListVideoHighest(_a) {
                                         throw new Error(error.message);
                                     });
                                     ff_1.on("start", function (comd) {
-                                        startTime = new Date();
+                                        startTime_1 = new Date();
                                         if (verbose)
                                             console.info(colors.green("@comd:"), comd);
                                     });
@@ -213,7 +237,7 @@ export default function ListVideoHighest(_a) {
                                         process.stdout.write("\r".concat(color("@prog:"), " ").concat(progb) +
                                             " ".concat(color("| @percent:"), " ").concat(percent.toFixed(2), "%") +
                                             " ".concat(color("| @timemark:"), " ").concat(timemark) +
-                                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime, percent))));
+                                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime_1, percent))));
                                     });
                                     return [4 /*yield*/, new Promise(function (resolve, _reject) {
                                             ff_1.output(path.join(folder_1, filename_1.replace("_)_", ")_")));
@@ -224,45 +248,58 @@ export default function ListVideoHighest(_a) {
                                             ff_1.run();
                                         })];
                                 case 2:
-                                    _o.sent();
+                                    _j.sent();
                                     return [3 /*break*/, 4];
                                 case 3:
-                                    error_2 = _o.sent();
-                                    console.log(colors.red("@error:"), error_2);
+                                    error_3 = _j.sent();
+                                    console.log(colors.red("@error:"), error_3);
                                     return [2 /*return*/, "continue"];
                                 case 4: return [2 /*return*/];
                             }
                         });
                     };
-                    _m.label = 12;
-                case 12:
-                    _m.trys.push([12, 17, 18, 19]);
+                    _h.label = 14;
+                case 14:
+                    _h.trys.push([14, 19, 20, 21]);
                     vDATA_1 = __values(vDATA), vDATA_1_1 = vDATA_1.next();
-                    _m.label = 13;
-                case 13:
-                    if (!!vDATA_1_1.done) return [3 /*break*/, 16];
+                    _h.label = 15;
+                case 15:
+                    if (!!vDATA_1_1.done) return [3 /*break*/, 18];
                     video = vDATA_1_1.value;
                     return [5 /*yield**/, _loop_1(video)];
-                case 14:
-                    _m.sent();
-                    _m.label = 15;
-                case 15:
-                    vDATA_1_1 = vDATA_1.next();
-                    return [3 /*break*/, 13];
-                case 16: return [3 /*break*/, 19];
+                case 16:
+                    _h.sent();
+                    _h.label = 17;
                 case 17:
-                    e_2_1 = _m.sent();
+                    vDATA_1_1 = vDATA_1.next();
+                    return [3 /*break*/, 15];
+                case 18: return [3 /*break*/, 21];
+                case 19:
+                    e_2_1 = _h.sent();
                     e_2 = { error: e_2_1 };
-                    return [3 /*break*/, 19];
-                case 18:
+                    return [3 /*break*/, 21];
+                case 20:
                     try {
-                        if (vDATA_1_1 && !vDATA_1_1.done && (_k = vDATA_1.return)) _k.call(vDATA_1);
+                        if (vDATA_1_1 && !vDATA_1_1.done && (_g = vDATA_1.return)) _g.call(vDATA_1);
                     }
                     finally { if (e_2) throw e_2.error; }
                     return [7 /*endfinally*/];
-                case 19:
-                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
-                    return [2 /*return*/];
+                case 21: return [3 /*break*/, 24];
+                case 22:
+                    error_2 = _h.sent();
+                    switch (true) {
+                        case error_2 instanceof ZodError:
+                            console.error(colors.red("@zod-error:"), error_2.errors);
+                            break;
+                        default:
+                            console.error(colors.red("@error:"), error_2.message);
+                            break;
+                    }
+                    return [3 /*break*/, 24];
+                case 23:
+                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the GitHub repo", colors.green("https://github.com/yt-dlx\n"));
+                    return [7 /*endfinally*/];
+                case 24: return [2 /*return*/];
             }
         });
     });

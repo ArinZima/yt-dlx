@@ -63,12 +63,11 @@ var ZodSchema = z.object({
 export default function VideoLowest(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var startTime_1, engineData, title, folder_1, ff_1, vdata, filename_1, error_1;
-        var _c;
         var query = _b.query, stream = _b.stream, verbose = _b.verbose, output = _b.output, filter = _b.filter, onionTor = _b.onionTor;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
-                    _d.trys.push([0, 6, 7, 8]);
+                    _c.trys.push([0, 6, 7, 8]);
                     ZodSchema.parse({
                         query: query,
                         stream: stream,
@@ -79,23 +78,17 @@ export default function VideoLowest(_a) {
                     });
                     return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
                 case 1:
-                    engineData = _d.sent();
+                    engineData = _c.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 2];
-                    throw new Error(colors.red("@error: ") + "Unable to get response!");
+                    throw new Error("".concat(colors.red("@error:"), " unable to get response!"));
                 case 2:
                     title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                    folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
+                    folder_1 = output ? path.join(__dirname, output) : __dirname;
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
                     ff_1 = ffmpeg();
-                    vdata = Array.isArray(engineData.ManifestLow) &&
-                        engineData.ManifestLow.length > 0
-                        ? (_c = engineData.ManifestLow[0]) === null || _c === void 0 ? void 0 : _c.url
-                        : undefined;
-                    if (vdata)
-                        ff_1.addInput(vdata.toString());
-                    else
-                        throw new Error(colors.red("@error: ") + "no video data found.");
+                    vdata = engineData.ManifestLow[0].url;
+                    ff_1.addInput(vdata.toString());
                     ff_1.outputOptions("-c copy");
                     ff_1.withOutputFormat("matroska");
                     ff_1.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
@@ -177,11 +170,11 @@ export default function VideoLowest(_a) {
                         ff_1.run();
                     })];
                 case 4:
-                    _d.sent();
-                    _d.label = 5;
+                    _c.sent();
+                    _c.label = 5;
                 case 5: return [3 /*break*/, 8];
                 case 6:
-                    error_1 = _d.sent();
+                    error_1 = _c.sent();
                     switch (true) {
                         case error_1 instanceof ZodError:
                             console.error(colors.red("@zod-error:"), error_1.errors);

@@ -63,7 +63,6 @@ const ZodSchema = zod_1.z.object({
 });
 function AudioVideoHighest(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, stream, verbose, output, filter, onionTor, }) {
-        var _b;
         try {
             ZodSchema.parse({
                 query,
@@ -76,23 +75,17 @@ function AudioVideoHighest(_a) {
             let startTime;
             const engineData = yield (0, Agent_1.default)({ query, verbose, onionTor });
             if (engineData === undefined) {
-                throw new Error(colors_1.default.red("@error: ") + "Unable to get response!");
+                throw new Error(`${colors_1.default.red("@error:")} unable to get response!`);
             }
             else {
                 const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                const folder = output ? path.join(process.cwd(), output) : process.cwd();
+                const folder = output ? path.join(__dirname, output) : __dirname;
                 if (!fs.existsSync(folder))
                     fs.mkdirSync(folder, { recursive: true });
                 const ff = (0, fluent_ffmpeg_1.default)();
-                const vdata = Array.isArray(engineData.ManifestHigh) &&
-                    engineData.ManifestHigh.length > 0
-                    ? (_b = engineData.ManifestHigh[engineData.ManifestHigh.length - 1]) === null || _b === void 0 ? void 0 : _b.url
-                    : undefined;
+                const vdata = engineData.ManifestHigh[engineData.ManifestHigh.length - 1].url;
                 ff.addInput(engineData.AudioHighF.url);
-                if (vdata)
-                    ff.addInput(vdata.toString());
-                else
-                    throw new Error(colors_1.default.red("@error: ") + "no video data found.");
+                ff.addInput(vdata.toString());
                 ff.outputOptions("-c copy");
                 ff.withOutputFormat("matroska");
                 ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);

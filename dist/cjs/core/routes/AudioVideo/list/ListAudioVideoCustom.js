@@ -46,10 +46,10 @@ const YouTubeId_1 = __importDefault(require("../../../web/YouTubeId"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
 const ZodSchema = zod_1.z.object({
-    query: zod_1.z.string().min(2),
     output: zod_1.z.string().optional(),
     verbose: zod_1.z.boolean().optional(),
     onionTor: zod_1.z.boolean().optional(),
+    query: zod_1.z.array(zod_1.z.string().min(2)),
     resolution: zod_1.z.enum([
         "144p",
         "240p",
@@ -92,18 +92,25 @@ function ListAudioVideoCustom(_a) {
             const vDATA = new Set();
             for (const pURL of query) {
                 try {
-                    const pDATA = yield web_1.default.browserLess.playlistVideos({
-                        playlistId: (yield (0, YouTubeId_1.default)(pURL)),
-                    });
-                    if (pDATA === undefined) {
-                        console.log(colors_1.default.red("@error:"), "Unable to get response for", pURL);
+                    const playlistId = yield (0, YouTubeId_1.default)(pURL);
+                    if (!playlistId) {
+                        console.log(colors_1.default.red("@error: "), "@error: invalid playlist", pURL);
                         continue;
                     }
-                    for (const video of pDATA.playlistVideos)
-                        vDATA.add(video);
+                    else {
+                        const pDATA = yield web_1.default.browserLess.playlistVideos({
+                            playlistId,
+                        });
+                        if (pDATA === undefined) {
+                            console.log(colors_1.default.red("@error:"), "unable to get response for", pURL);
+                            continue;
+                        }
+                        for (const video of pDATA.playlistVideos)
+                            vDATA.add(video);
+                    }
                 }
                 catch (error) {
-                    console.log(colors_1.default.red("@error:"), error);
+                    console.log(colors_1.default.red("@error:"), error.message);
                     continue;
                 }
             }
@@ -116,13 +123,11 @@ function ListAudioVideoCustom(_a) {
                         verbose,
                     });
                     if (engineData === undefined) {
-                        console.log(colors_1.default.red("@error:"), "Unable to get response!");
+                        console.log(colors_1.default.red("@error:"), "unable to get response!");
                         continue;
                     }
                     const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                    const folder = output
-                        ? path.join(process.cwd(), output)
-                        : process.cwd();
+                    const folder = output ? path.join(__dirname, output) : __dirname;
                     if (!fs.existsSync(folder))
                         fs.mkdirSync(folder, { recursive: true });
                     let filename = `yt-dlx_(AudioVideoCustom_${resolution}_`;

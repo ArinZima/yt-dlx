@@ -105,9 +105,7 @@ export default async function ListAudioLowest({
           /[^a-zA-Z0-9_]+/g,
           "_"
         );
-        const folder = output
-          ? path.join(process.cwd(), output)
-          : process.cwd();
+        const folder = output ? path.join(__dirname, output) : __dirname;
         if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
         let filename: string = "yt-dlx_(AudioLowest_";
         const ff: FfmpegCommand = ffmpeg();
