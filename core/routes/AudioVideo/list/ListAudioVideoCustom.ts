@@ -11,10 +11,10 @@ import type { FfmpegCommand } from "fluent-ffmpeg";
 import calculateETA from "../../../base/calculateETA";
 
 const ZodSchema = z.object({
-  query: z.string().min(2),
   output: z.string().optional(),
   verbose: z.boolean().optional(),
   onionTor: z.boolean().optional(),
+  query: z.array(z.string().min(2)),
   resolution: z.enum([
     "144p",
     "240p",
