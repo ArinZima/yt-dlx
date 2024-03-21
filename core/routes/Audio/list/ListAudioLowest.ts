@@ -58,20 +58,26 @@ export default async function ListAudioLowest({
     }>();
     for (const pURL of query) {
       try {
-        const pDATA = await web.browserLess.playlistVideos({
-          playlistId: (await YouTubeID(pURL)) as string,
-        });
-        if (pDATA === undefined) {
-          console.log(
-            colors.red("@error:"),
-            "Unable to get response for",
-            pURL
-          );
+        const playlistId = await YouTubeID(pURL);
+        if (!playlistId) {
+          console.log(colors.red("@error: "), "@error: invalid playlist", pURL);
           continue;
+        } else {
+          const pDATA = await web.browserLess.playlistVideos({
+            playlistId,
+          });
+          if (pDATA === undefined) {
+            console.log(
+              colors.red("@error:"),
+              "unable to get response for",
+              pURL
+            );
+            continue;
+          }
+          for (const video of pDATA.playlistVideos) vDATA.add(video);
         }
-        for (const video of pDATA.playlistVideos) vDATA.add(video);
-      } catch (error) {
-        console.log(colors.red("@error:"), error);
+      } catch (error: any) {
+        console.log(colors.red("@error:"), error.message);
         continue;
       }
     }
@@ -90,7 +96,7 @@ export default async function ListAudioLowest({
         if (engineData === undefined) {
           console.log(
             colors.red("@error:"),
-            "Unable to get response for",
+            "unable to get response for",
             video.videoLink
           );
           continue;
