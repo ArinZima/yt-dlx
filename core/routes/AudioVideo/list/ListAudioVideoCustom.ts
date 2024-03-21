@@ -78,10 +78,10 @@ export default async function ListAudioVideoCustom({
           console.log(colors.red("@error: "), "@error: invalid playlist", pURL);
           continue;
         } else {
-          const pDATA = await web.browserLess.playlistVideos({
+          const punique = await web.browserLess.playlistVideos({
             playlistId,
           });
-          if (pDATA === undefined) {
+          if (punique === undefined) {
             console.log(
               colors.red("@error:"),
               "unable to get response for",
@@ -89,7 +89,7 @@ export default async function ListAudioVideoCustom({
             );
             continue;
           }
-          for (const video of pDATA.playlistVideos) unique.add(video);
+          for (const video of punique.playlistVideos) unique.add(video);
         }
       } catch (error: any) {
         console.log(colors.red("@error:"), error.message);
