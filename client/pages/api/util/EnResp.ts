@@ -1,4 +1,4 @@
-// import ytdlp from "yt-dlp";
+// import ytdlx from "yt-dlx";
 // import type { NextApiRequest, NextApiResponse } from "next";
 
 // export default async function handler(
@@ -12,7 +12,7 @@
 // .send("Invalid request. yturl parameter is missing.");
 // }
 // const yturl = decodeURIComponent(req.body.yturl as string);
-// const EnResp = await ytdlp.info.getRaw({
+// const EnResp = await ytdlx.info.getRaw({
 // url: yturl,
 // });
 // const fprem = (data: any[]) =>

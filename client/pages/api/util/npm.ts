@@ -8,7 +8,7 @@ export default async function handler(
   try {
     const npmmeta = () => {
       let pkginfo: any = {};
-      execSync("npm show yt-dlp", { encoding: "utf-8" })
+      execSync("npm show yt-dlx", { encoding: "utf-8" })
         .split("\n")
         .forEach((line) => {
           let keyValue = line.split(":");

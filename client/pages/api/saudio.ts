@@ -1,5 +1,5 @@
 // import chalk from "chalk";
-// import ytdlp from "yt-dlp";
+// import ytdlx from "yt-dlx";
 // import type { NextApiRequest, NextApiResponse } from "next";
 // export const config = {
 // api: {
@@ -16,7 +16,7 @@
 // const format = decodeURIComponent(request.query.format as string);
 // console.log(chalk.greenBright.bold("❓ Url:"), chalk.italic(url));
 // console.log(chalk.greenBright.bold("❓ Format:"), chalk.italic(format));
-// await ytdlp.stream.audio.custom({
+// await ytdlx.stream.audio.custom({
 // url,
 // format,
 // collector: response,
