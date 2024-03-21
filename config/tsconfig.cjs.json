@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "outDir": "shared/cjs",
+    "moduleResolution": "Node"
+  },
+  "include": ["core/**/*.ts"],
+  "exclude": ["node_modules", "shared", "client"]
+}
