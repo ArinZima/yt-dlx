@@ -1,8 +1,8 @@
 console.clear();
-import AudioLowest from "../../pipes/Audio/single/AudioLowest";
-import AudioHighest from "../../pipes/Audio/single/AudioHighest";
-import VideoLowest from "../../pipes/Video/single/VideoLowest";
-import VideoHighest from "../../pipes/Video/single/VideoHighest";
+import AudioLowest from "../../routes/Audio/single/AudioLowest";
+import AudioHighest from "../../routes/Audio/single/AudioHighest";
+import VideoLowest from "../../routes/Video/single/VideoLowest";
+import VideoHighest from "../../routes/Video/single/VideoHighest";
 
 (async () => {
   try {

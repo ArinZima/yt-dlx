@@ -1,22 +1,22 @@
 import web from "./web";
-import help from "./pipes/command/help";
-import extract from "./pipes/command/extract";
-import list_formats from "./pipes/command/list_formats";
+import help from "./routes/command/help";
+import extract from "./routes/command/extract";
+import list_formats from "./routes/command/list_formats";
 
-import AudioLowest from "./pipes/Audio/single/AudioLowest";
-import AudioHighest from "./pipes/Audio/single/AudioHighest";
-import ListAudioLowest from "./pipes/Audio/list/ListAudioLowest";
-import ListAudioHighest from "./pipes/Audio/list/ListAudioHighest";
+import AudioLowest from "./routes/Audio/single/AudioLowest";
+import AudioHighest from "./routes/Audio/single/AudioHighest";
+import ListAudioLowest from "./routes/Audio/list/ListAudioLowest";
+import ListAudioHighest from "./routes/Audio/list/ListAudioHighest";
 
-import VideoLowest from "./pipes/Video/single/VideoLowest";
-import VideoHighest from "./pipes/Video/single/VideoHighest";
-import ListVideoLowest from "./pipes/Video/list/ListVideoLowest";
-import ListVideoHighest from "./pipes/Video/list/ListVideoHighest";
+import VideoLowest from "./routes/Video/single/VideoLowest";
+import VideoHighest from "./routes/Video/single/VideoHighest";
+import ListVideoLowest from "./routes/Video/list/ListVideoLowest";
+import ListVideoHighest from "./routes/Video/list/ListVideoHighest";
 
-import AudioVideoHighest from "./pipes/AudioVideo/single/AudioVideoHighest";
-import AudioVideoLowest from "./pipes/AudioVideo/single/AudioVideoLowest";
-import ListAudioVideoHighest from "./pipes/AudioVideo/list/ListAudioVideoHighest";
-import ListAudioVideoLowest from "./pipes/AudioVideo/list/ListAudioVideoLowest";
+import AudioVideoHighest from "./routes/AudioVideo/single/AudioVideoHighest";
+import AudioVideoLowest from "./routes/AudioVideo/single/AudioVideoLowest";
+import ListAudioVideoHighest from "./routes/AudioVideo/list/ListAudioVideoHighest";
+import ListAudioVideoLowest from "./routes/AudioVideo/list/ListAudioVideoLowest";
 
 const ytdlx = {
   search: {
