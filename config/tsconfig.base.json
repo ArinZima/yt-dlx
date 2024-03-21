@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "noEmit": true,
-    "allowJs": true,
     "checkJs": true,
+    "allowJs": true,
     "sourceMap": true,
     "declaration": true,
     "alwaysStrict": true,
@@ -12,20 +11,25 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "declarationMap": true,
+    "removeComments": false,
     "esModuleInterop": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "noImplicitReturns": true,
+    "downlevelIteration": true,
+    "moduleResolution": "node",
     "noUnusedParameters": true,
     "noImplicitOverride": true,
+    "emitDeclarationOnly": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
+    "experimentalDecorators": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
     "strictPropertyInitialization": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["core/**/*.ts"],
-  "exclude": ["node_modules", "shared", "client"]
+  "include": ["../core/**/*.ts"],
+  "exclude": ["../node_modules", "../shared", "../client"]
 }

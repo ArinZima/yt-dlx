@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "outDir": "shared/cjs",
-    "moduleResolution": "Node"
+    "target": "es2015",
+    "module": "commonjs",
+    "outDir": "../shared/cjs"
   },
-  "include": ["core/**/*.ts"],
-  "exclude": ["node_modules", "shared", "client"]
+  "extends": "./tsconfig.base.json"
 }

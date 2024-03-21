@@ -11,6 +11,10 @@
     "yt-dlx": "shared/cli/main.js"
   },
   "scripts": {
+    "ts:cjs": "tsc -p ./config/tsconfig.cjs.json",
+    "ts:esm": "tsc -p ./config/tsconfig.esm.json",
+    "ts:types": "tsc -p ./config/tsconfig.types.json",
+    "ts": "yarn ts:cjs && yarn ts:esm && yarn ts:types",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
     "install:deps": "chmod +x ./util/deps.sh && ./util/deps.sh",
     "install:socks5": "chmod +x ./util/socks5.sh && ./util/socks5.sh",
@@ -53,7 +57,7 @@
     "cheerio": "^1.0.0-rc.12",
     "colors": "^1.4.0",
     "crypto": "^1.0.1",
-    "express": "^4.19.0",
+    "express": "^5.0.0-beta.2",
     "fluent-ffmpeg": "^2.1.2",
     "minimist": "^1.2.8",
     "node-cron": "^3.0.3",
@@ -88,8 +92,9 @@
     "rollup-plugin-progress": "^1.1.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.2",
+    "tsc": "^2.0.4",
     "tsup": "^8.0.2",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.3"
   },
   "files": [
     "util",
