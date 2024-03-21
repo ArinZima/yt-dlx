@@ -12,7 +12,6 @@ import calculateETA from "../../../base/calculateETA";
 
 const ZodSchema = z.object({
   output: z.string().optional(),
-  stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
   onionTor: z.boolean().optional(),
   query: z.array(z.string().min(2)),
@@ -41,7 +40,6 @@ const ZodSchema = z.object({
 export default async function ListAudioCustom({
   query,
   output,
-  stream,
   filter,
   verbose,
   onionTor,
@@ -51,7 +49,6 @@ export default async function ListAudioCustom({
     ZodSchema.parse({
       query,
       output,
-      stream,
       filter,
       verbose,
       onionTor,
