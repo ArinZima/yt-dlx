@@ -69,13 +69,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@types/node-fetch": "latest",
-    "jest-extended": "latest",
-    "rimraf": "latest",
-    "typescript": "latest",
-    "vite": "latest",
-    "vitest": "latest",
     "@types/async": "latest",
     "@types/async-retry": "latest",
     "@types/axios": "latest",
@@ -85,11 +78,18 @@
     "@types/express": "latest",
     "@types/fluent-ffmpeg": "latest",
     "@types/minimist": "latest",
+    "@types/node": "latest",
     "@types/node-cron": "latest",
+    "@types/node-fetch": "latest",
     "@types/readline-sync": "latest",
     "@types/speedometer": "latest",
+    "jest-extended": "latest",
+    "rimraf": "latest",
     "ts-node": "latest",
-    "tsc": "latest"
+    "tsc": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest"
   },
   "files": [
     "util",
