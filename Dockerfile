@@ -21,5 +21,4 @@ RUN apt-get update \
 RUN npm i -g yarn yt-dlx --force
 WORKDIR /app
 COPY . .
-RUN service tor start
-CMD yarn remake && node util/wakeLock.js
+CMD tor
