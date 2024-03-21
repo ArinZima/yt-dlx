@@ -14,7 +14,7 @@ export default async function extract({
   const metaBody: EngineOutput = await ytdlx({ query, verbose, onionTor });
   if (!metaBody) {
     return {
-      message: "Unable to get response from YouTube...",
+      message: "Unable to get response!",
       status: 500,
     };
   }
