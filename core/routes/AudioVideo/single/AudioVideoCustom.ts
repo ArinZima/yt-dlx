@@ -9,7 +9,7 @@ import type { FfmpegCommand } from "fluent-ffmpeg";
 import calculateETA from "../../../base/calculateETA";
 
 const ZodSchema = z.object({
-  query: z.string(),
+  query: z.string().min(2),
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
