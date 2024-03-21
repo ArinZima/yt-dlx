@@ -44,7 +44,7 @@ export default async function ListVideoHighest({
       onionTor,
     });
     let startTime: Date;
-    const vDATA = new Set<{
+    const unique = new Set<{
       ago: string;
       title: string;
       views: string;
@@ -72,7 +72,7 @@ export default async function ListVideoHighest({
             );
             continue;
           }
-          for (const video of pDATA.playlistVideos) vDATA.add(video);
+          for (const video of pDATA.playlistVideos) unique.add(video);
         }
       } catch (error: any) {
         console.log(colors.red("@error:"), error.message);
@@ -82,9 +82,9 @@ export default async function ListVideoHighest({
     console.log(
       colors.green("@info:"),
       "total number of uncommon videos:",
-      colors.yellow(vDATA.size.toString())
+      colors.yellow(unique.size.toString())
     );
-    for (const video of vDATA) {
+    for (const video of unique) {
       try {
         const engineData = await ytdlx({
           query: video.videoLink,
