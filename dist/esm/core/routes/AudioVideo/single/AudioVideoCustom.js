@@ -37,17 +37,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
+var ZodSchema = z.object({
+    query: z.string().min(2),
+    output: z.string().optional(),
+    stream: z.boolean().optional(),
+    verbose: z.boolean().optional(),
+    onionTor: z.boolean().optional(),
+    resolution: z.enum([
+        "144p",
+        "240p",
+        "360p",
+        "480p",
+        "720p",
+        "1080p",
+        "1440p",
+        "2160p",
+        "3072p",
+        "4320p",
+        "6480p",
+        "8640p",
+        "12000p",
+    ]),
+    filter: z
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
+});
 export default function AudioVideoCustom(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
-        var startTime, engineData, title, folder_1, filename_1, ff_1, vdata;
+        var startTime_1, engineData, title, folder_1, filename_1, ff_1, vdata, error_1;
         var query = _b.query, resolution = _b.resolution, stream = _b.stream, verbose = _b.verbose, output = _b.output, filter = _b.filter, onionTor = _b.onionTor;
         return __generator(this, function (_c) {
             switch (_c.label) {
-                case 0: return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
+                case 0:
+                    _c.trys.push([0, 6, 7, 8]);
+                    ZodSchema.parse({
+                        query: query,
+                        resolution: resolution,
+                        stream: stream,
+                        verbose: verbose,
+                        output: output,
+                        filter: filter,
+                        onionTor: onionTor,
+                    });
+                    return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
                 case 1:
                     engineData = _c.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 2];
@@ -108,7 +153,7 @@ export default function AudioVideoCustom(_a) {
                         throw new Error(error.message);
                     });
                     ff_1.on("start", function (comd) {
-                        startTime = new Date();
+                        startTime_1 = new Date();
                         if (verbose)
                             console.info(colors.green("@comd:"), comd);
                     });
@@ -130,7 +175,7 @@ export default function AudioVideoCustom(_a) {
                         process.stdout.write("\r".concat(color("@prog:"), " ").concat(progb) +
                             " ".concat(color("| @percent:"), " ").concat(percent.toFixed(2), "%") +
                             " ".concat(color("| @timemark:"), " ").concat(timemark) +
-                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime, percent))));
+                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime_1, percent))));
                     });
                     if (!stream) return [3 /*break*/, 3];
                     return [2 /*return*/, {
@@ -150,10 +195,22 @@ export default function AudioVideoCustom(_a) {
                 case 4:
                     _c.sent();
                     _c.label = 5;
-                case 5:
-                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
-                    _c.label = 6;
-                case 6: return [2 /*return*/];
+                case 5: return [3 /*break*/, 8];
+                case 6:
+                    error_1 = _c.sent();
+                    switch (true) {
+                        case error_1 instanceof ZodError:
+                            console.error(colors.red("@zod-error:"), error_1.errors);
+                            break;
+                        default:
+                            console.error(colors.red("@error:"), error_1.message);
+                            break;
+                    }
+                    return [3 /*break*/, 8];
+                case 7:
+                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the GitHub repo", colors.green("https://github.com/yt-dlx\n"));
+                    return [7 /*endfinally*/];
+                case 8: return [2 /*return*/];
             }
         });
     });

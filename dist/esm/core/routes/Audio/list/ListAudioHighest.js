@@ -49,19 +49,47 @@ import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import web from "../../../web";
+import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
 import YouTubeID from "../../../web/YouTubeId";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
+var ZodSchema = z.object({
+    output: z.string().optional(),
+    verbose: z.boolean().optional(),
+    onionTor: z.boolean().optional(),
+    query: z.array(z.string().min(2)),
+    filter: z
+        .enum([
+        "echo",
+        "slow",
+        "speed",
+        "phaser",
+        "flanger",
+        "panning",
+        "reverse",
+        "vibrato",
+        "subboost",
+        "surround",
+        "bassboost",
+        "nightcore",
+        "superslow",
+        "vaporwave",
+        "superspeed",
+    ])
+        .optional(),
+});
 export default function ListAudioHighest(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
-        var startTime, vDATA, query_1, query_1_1, pURL, pDATA, _c, _d, _e, _f, video, error_1, e_1_1, _loop_1, vDATA_1, vDATA_1_1, video, e_2_1;
+        var startTime_1, vDATA, query_1, query_1_1, pURL, pDATA, _c, _d, _e, _f, video, error_1, e_1_1, _loop_1, vDATA_1, vDATA_1_1, video, e_2_1, error_2;
         var e_1, _g, _h, e_3, _j, e_2, _k;
         var query = _b.query, output = _b.output, verbose = _b.verbose, filter = _b.filter, onionTor = _b.onionTor;
         return __generator(this, function (_l) {
             switch (_l.label) {
                 case 0:
+                    _l.trys.push([0, 20, 21, 22]);
+                    ZodSchema.parse({ query: query, output: output, verbose: verbose, filter: filter, onionTor: onionTor });
                     vDATA = new Set();
                     _l.label = 1;
                 case 1:
@@ -120,7 +148,7 @@ export default function ListAudioHighest(_a) {
                 case 11:
                     console.log(colors.green("@info:"), "total number of uncommon videos:", colors.yellow(vDATA.size.toString()));
                     _loop_1 = function (video) {
-                        var engineData, title, folder_1, filename_1, ff_1, error_2;
+                        var engineData, title, folder_1, filename_1, ff_1, error_3;
                         return __generator(this, function (_m) {
                             switch (_m.label) {
                                 case 0:
@@ -137,7 +165,9 @@ export default function ListAudioHighest(_a) {
                                         return [2 /*return*/, "continue"];
                                     }
                                     title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-                                    folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
+                                    folder_1 = output
+                                        ? path.join(process.cwd(), output)
+                                        : process.cwd();
                                     if (!fs.existsSync(folder_1))
                                         fs.mkdirSync(folder_1, { recursive: true });
                                     filename_1 = "yt-dlx_(AudioHighest_";
@@ -216,7 +246,7 @@ export default function ListAudioHighest(_a) {
                                         throw new Error(error.message);
                                     });
                                     ff_1.on("start", function (comd) {
-                                        startTime = new Date();
+                                        startTime_1 = new Date();
                                         if (verbose)
                                             console.info(colors.green("@comd:"), comd);
                                     });
@@ -238,7 +268,7 @@ export default function ListAudioHighest(_a) {
                                         process.stdout.write("\r".concat(color("@prog:"), " ").concat(progb) +
                                             " ".concat(color("| @percent:"), " ").concat(percent.toFixed(2), "%") +
                                             " ".concat(color("| @timemark:"), " ").concat(timemark) +
-                                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime, percent))));
+                                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime_1, percent))));
                                     });
                                     return [4 /*yield*/, new Promise(function (resolve, _reject) {
                                             ff_1.output(path.join(folder_1, filename_1.replace("_)_", ")_")));
@@ -252,8 +282,8 @@ export default function ListAudioHighest(_a) {
                                     _m.sent();
                                     return [3 /*break*/, 4];
                                 case 3:
-                                    error_2 = _m.sent();
-                                    console.log(colors.red("@error:"), error_2);
+                                    error_3 = _m.sent();
+                                    console.log(colors.red("@error:"), error_3);
                                     return [2 /*return*/, "continue"];
                                 case 4: return [2 /*return*/];
                             }
@@ -285,9 +315,22 @@ export default function ListAudioHighest(_a) {
                     }
                     finally { if (e_2) throw e_2.error; }
                     return [7 /*endfinally*/];
-                case 19:
-                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
-                    return [2 /*return*/];
+                case 19: return [3 /*break*/, 22];
+                case 20:
+                    error_2 = _l.sent();
+                    switch (true) {
+                        case error_2 instanceof ZodError:
+                            console.error(colors.red("@zod-error:"), error_2.errors);
+                            break;
+                        default:
+                            console.error(colors.red("@error:"), error_2.message);
+                            break;
+                    }
+                    return [3 /*break*/, 22];
+                case 21:
+                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the GitHub repo", colors.green("https://github.com/yt-dlx\n"));
+                    return [7 /*endfinally*/];
+                case 22: return [2 /*return*/];
             }
         });
     });

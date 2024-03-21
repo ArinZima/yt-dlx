@@ -37,17 +37,47 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
+var ZodSchema = z.object({
+    query: z.string().min(2),
+    output: z.string().optional(),
+    stream: z.boolean().optional(),
+    verbose: z.boolean().optional(),
+    onionTor: z.boolean().optional(),
+    filter: z
+        .enum([
+        "echo",
+        "slow",
+        "speed",
+        "phaser",
+        "flanger",
+        "panning",
+        "reverse",
+        "vibrato",
+        "subboost",
+        "surround",
+        "bassboost",
+        "nightcore",
+        "superslow",
+        "vaporwave",
+        "superspeed",
+    ])
+        .optional(),
+});
 export default function AudioHighest(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
-        var startTime, engineData, title, folder_1, filename_1, ff_1;
+        var startTime_1, engineData, title, folder_1, filename_1, ff_1, error_1;
         var query = _b.query, output = _b.output, stream = _b.stream, verbose = _b.verbose, filter = _b.filter, onionTor = _b.onionTor;
         return __generator(this, function (_c) {
             switch (_c.label) {
-                case 0: return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
+                case 0:
+                    _c.trys.push([0, 6, 7, 8]);
+                    ZodSchema.parse({ query: query, output: output, stream: stream, verbose: verbose, filter: filter, onionTor: onionTor });
+                    return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
                 case 1:
                     engineData = _c.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 2];
@@ -133,7 +163,7 @@ export default function AudioHighest(_a) {
                         throw new Error(error.message);
                     });
                     ff_1.on("start", function (comd) {
-                        startTime = new Date();
+                        startTime_1 = new Date();
                         if (verbose)
                             console.info(colors.green("@comd:"), comd);
                     });
@@ -155,7 +185,7 @@ export default function AudioHighest(_a) {
                         process.stdout.write("\r".concat(color("@prog:"), " ").concat(progb) +
                             " ".concat(color("| @percent:"), " ").concat(percent.toFixed(2), "%") +
                             " ".concat(color("| @timemark:"), " ").concat(timemark) +
-                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime, percent))));
+                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime_1, percent))));
                     });
                     if (!stream) return [3 /*break*/, 3];
                     return [2 /*return*/, {
@@ -175,10 +205,22 @@ export default function AudioHighest(_a) {
                 case 4:
                     _c.sent();
                     _c.label = 5;
-                case 5:
+                case 5: return [3 /*break*/, 8];
+                case 6:
+                    error_1 = _c.sent();
+                    switch (true) {
+                        case error_1 instanceof ZodError:
+                            console.error(colors.red("@zod-error:"), error_1.errors);
+                            break;
+                        default:
+                            console.error(colors.red("@error:"), error_1.message);
+                            break;
+                    }
+                    return [3 /*break*/, 8];
+                case 7:
                     console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the GitHub repo", colors.green("https://github.com/yt-dlx\n"));
-                    _c.label = 6;
-                case 6: return [2 /*return*/];
+                    return [7 /*endfinally*/];
+                case 8: return [2 /*return*/];
             }
         });
     });

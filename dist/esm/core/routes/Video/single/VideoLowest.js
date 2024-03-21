@@ -37,18 +37,47 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
+import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
+var ZodSchema = z.object({
+    query: z.string().min(2),
+    output: z.string().optional(),
+    stream: z.boolean().optional(),
+    verbose: z.boolean().optional(),
+    onionTor: z.boolean().optional(),
+    filter: z
+        .enum([
+        "invert",
+        "rotate90",
+        "rotate270",
+        "grayscale",
+        "rotate180",
+        "flipVertical",
+        "flipHorizontal",
+    ])
+        .optional(),
+});
 export default function VideoLowest(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
-        var startTime, engineData, title, folder_1, ff_1, vdata, filename_1;
+        var startTime_1, engineData, title, folder_1, ff_1, vdata, filename_1, error_1;
         var _c;
         var query = _b.query, stream = _b.stream, verbose = _b.verbose, output = _b.output, filter = _b.filter, onionTor = _b.onionTor;
         return __generator(this, function (_d) {
             switch (_d.label) {
-                case 0: return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
+                case 0:
+                    _d.trys.push([0, 6, 7, 8]);
+                    ZodSchema.parse({
+                        query: query,
+                        stream: stream,
+                        verbose: verbose,
+                        output: output,
+                        filter: filter,
+                        onionTor: onionTor,
+                    });
+                    return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
                 case 1:
                     engineData = _d.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 2];
@@ -59,7 +88,8 @@ export default function VideoLowest(_a) {
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
                     ff_1 = ffmpeg();
-                    vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
+                    vdata = Array.isArray(engineData.ManifestLow) &&
+                        engineData.ManifestLow.length > 0
                         ? (_c = engineData.ManifestLow[0]) === null || _c === void 0 ? void 0 : _c.url
                         : undefined;
                     if (vdata)
@@ -107,7 +137,7 @@ export default function VideoLowest(_a) {
                         throw new Error(error.message);
                     });
                     ff_1.on("start", function (comd) {
-                        startTime = new Date();
+                        startTime_1 = new Date();
                         if (verbose)
                             console.info(colors.green("@comd:"), comd);
                     });
@@ -129,7 +159,7 @@ export default function VideoLowest(_a) {
                         process.stdout.write("\r".concat(color("@prog:"), " ").concat(progb) +
                             " ".concat(color("| @percent:"), " ").concat(percent.toFixed(2), "%") +
                             " ".concat(color("| @timemark:"), " ").concat(timemark) +
-                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime, percent))));
+                            " ".concat(color("| @eta:"), " ").concat(formatTime(calculateETA(startTime_1, percent))));
                     });
                     if (!stream) return [3 /*break*/, 3];
                     return [2 /*return*/, {
@@ -149,10 +179,22 @@ export default function VideoLowest(_a) {
                 case 4:
                     _d.sent();
                     _d.label = 5;
-                case 5:
-                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
-                    _d.label = 6;
-                case 6: return [2 /*return*/];
+                case 5: return [3 /*break*/, 8];
+                case 6:
+                    error_1 = _d.sent();
+                    switch (true) {
+                        case error_1 instanceof ZodError:
+                            console.error(colors.red("@zod-error:"), error_1.errors);
+                            break;
+                        default:
+                            console.error(colors.red("@error:"), error_1.message);
+                            break;
+                    }
+                    return [3 /*break*/, 8];
+                case 7:
+                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the GitHub repo", colors.green("https://github.com/yt-dlx\n"));
+                    return [7 /*endfinally*/];
+                case 8: return [2 /*return*/];
             }
         });
     });
