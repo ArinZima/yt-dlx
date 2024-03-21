@@ -1,5 +1,5 @@
 # FROM mcr.microsoft.com/playwright
-FROM nide:latest
+FROM node:latest
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     git \
