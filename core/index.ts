@@ -1,7 +1,11 @@
-import web from "./web";
 import help from "./routes/command/help";
 import extract from "./routes/command/extract";
 import list_formats from "./routes/command/list_formats";
+
+import video_data from "./routes/command/video_data";
+import search_videos from "./routes/command/search_videos";
+import playlist_data from "./routes/command/playlist_data";
+import search_playlists from "./routes/command/search_playlists";
 
 import AudioLowest from "./routes/Audio/single/AudioLowest";
 import AudioHighest from "./routes/Audio/single/AudioHighest";
@@ -19,18 +23,14 @@ import ListAudioVideoHighest from "./routes/AudioVideo/list/ListAudioVideoHighes
 import ListAudioVideoLowest from "./routes/AudioVideo/list/ListAudioVideoLowest";
 
 const ytdlx = {
-  search: {
-    browser: {
-      SearchVideos: web.browser.SearchVideos,
-      PlaylistInfo: web.browser.PlaylistInfo,
-      VideoInfo: web.browser.VideoInfo,
+  ytSearch: {
+    video: {
+      single: video_data,
+      multiple: search_videos,
     },
-    browserLess: {
-      playlistVideos: web.browserLess.playlistVideos,
-      relatedVideos: web.browserLess.relatedVideos,
-      searchPlaylists: web.browserLess.searchPlaylists,
-      searchVideos: web.browserLess.searchVideos,
-      singleVideo: web.browserLess.singleVideo,
+    playlist: {
+      single: playlist_data,
+      multiple: search_playlists,
     },
   },
   info: {
