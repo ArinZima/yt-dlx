@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "resolveJsonModule": true,
+    "types": ["vitest/globals"]
+  },
+  "include": ["core/**/*.ts"],
+  "extends": "./config/base.json"
+}
