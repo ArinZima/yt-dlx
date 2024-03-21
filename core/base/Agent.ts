@@ -16,7 +16,7 @@ export default async function Agent({
   onionTor?: boolean;
 }): Promise<EngineOutput> {
   console.log(
-    colors.green("@info:"),
+    colors.green("\n@info:"),
     "using",
     colors.green("yt-dlx"),
     "version",
