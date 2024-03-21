@@ -3,8 +3,8 @@ import colors from "colors";
 import niptor from "./niptor";
 import Engine from "./Engine";
 import YouTubeID from "../web/YouTubeId";
-// import { version } from "../../package.json";
 import type { EngineOutput } from "./Engine";
+import { version } from "../../package.json";
 
 export default async function Agent({
   query,
@@ -15,13 +15,13 @@ export default async function Agent({
   verbose?: boolean;
   onionTor?: boolean;
 }): Promise<EngineOutput> {
-  // console.log(
-  // colors.green("@info:"),
-  // "using",
-  // colors.green("yt-dlx"),
-  // "version",
-  // colors.green(version)
-  // );
+  console.log(
+    colors.green("@info:"),
+    "using",
+    colors.green("yt-dlx"),
+    "version",
+    colors.green(version)
+  );
   verbose;
   let nipTor;
   let ipAddress: string | undefined = undefined;

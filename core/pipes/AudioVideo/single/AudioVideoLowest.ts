@@ -49,9 +49,7 @@ export default async function AudioVideoLowest(input: {
     await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
-    throw new Error(
-      colors.red("@error: ") + "unable to get response from youtube."
-    );
+    throw new Error(colors.red("@error: ") + "Unable to get response!");
   } else {
     const title: string = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,

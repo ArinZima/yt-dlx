@@ -105,11 +105,7 @@ export default async function ListAudioLowest(input: {
         playlistId: (await YouTubeID(pURL)) as string,
       });
       if (pDATA === undefined) {
-        console.log(
-          colors.red("@error:"),
-          "unable to get response from youtube for",
-          pURL
-        );
+        console.log(colors.red("@error:"), "Unable to get response for", pURL);
         continue;
       }
       for (const video of pDATA.playlistVideos) vDATA.add(video);
@@ -133,7 +129,7 @@ export default async function ListAudioLowest(input: {
       if (engineData === undefined) {
         console.log(
           colors.red("@error:"),
-          "unable to get response from youtube for",
+          "Unable to get response for",
           video.videoLink
         );
         continue;

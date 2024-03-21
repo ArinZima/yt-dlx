@@ -2,6 +2,26 @@ import colors from "colors";
 import ytdlx from "../../base/Agent";
 import type { EngineOutput } from "../../base/Engine";
 
+function pTable(title: string, data: any[]) {
+  console.log(colors.green(title));
+  data.forEach((item) => {
+    console.log(
+      " ".repeat(4),
+      item.filesizeP.padEnd(10),
+      "|",
+      item.format_note
+    );
+  });
+  console.log("");
+}
+function pManifestTable(title: string, data: any[]) {
+  console.log(colors.green(title));
+  data.forEach((item) => {
+    console.log(" ".repeat(4), item.format.padEnd(10), "|", item.tbr);
+  });
+  console.log("");
+}
+
 export default async function list_formats({
   query,
   verbose,
@@ -15,37 +35,15 @@ export default async function list_formats({
   if (!metaBody) {
     throw new Error("@error: Unable to get response from YouTube.");
   } else {
-    console.log("");
-    printTable("AudioLow", metaBody.AudioLow);
-    printTable("AudioLowDRC", metaBody.AudioLowDRC);
-    printTable("AudioHigh", metaBody.AudioHigh);
-    printTable("AudioHighDRC", metaBody.AudioHighDRC);
-    printTable("VideoLow", metaBody.VideoLow);
-    printTable("VideoLowHDR", metaBody.VideoLowHDR);
-    printTable("VideoHigh", metaBody.VideoHigh);
-    printTable("VideoHighHDR", metaBody.VideoHighHDR);
-    printManifestTable("ManifestLow", metaBody.ManifestLow);
-    printManifestTable("ManifestHigh", metaBody.ManifestHigh);
+    pTable("@AudioLow:", metaBody.AudioLow);
+    pTable("@AudioLowDRC:", metaBody.AudioLowDRC);
+    pTable("@AudioHigh:", metaBody.AudioHigh);
+    pTable("@AudioHighDRC:", metaBody.AudioHighDRC);
+    pTable("@VideoLow:", metaBody.VideoLow);
+    pTable("@VideoLowHDR:", metaBody.VideoLowHDR);
+    pTable("@VideoHigh:", metaBody.VideoHigh);
+    pTable("@VideoHighHDR:", metaBody.VideoHighHDR);
+    pManifestTable("@ManifestLow:", metaBody.ManifestLow);
+    pManifestTable("@ManifestHigh:", metaBody.ManifestHigh);
   }
-}
-
-function printTable(title: string, data: any[]) {
-  console.log(colors.green(title) + ":");
-  data.forEach((item) => {
-    console.log(
-      " ".repeat(4),
-      item.filesizeP.padEnd(10),
-      "|",
-      item.format_note
-    );
-  });
-  console.log("");
-}
-
-function printManifestTable(title: string, data: any[]) {
-  console.log(colors.green(title) + ":");
-  data.forEach((item) => {
-    console.log(" ".repeat(4), item.format.padEnd(10), "|", item.tbr);
-  });
-  console.log("");
 }
