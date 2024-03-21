@@ -10,39 +10,50 @@ const colors = {
 };
 
 const core = {
-  "remake": "yarn clean && yarn make && yarn update && yarn build",
+  remake: "yarn clean && yarn make && yarn update && yarn build",
+  prepublishOnly: "yarn clean:deps",
+  postinstall: "run-s download-files setup-permissions install-chrome",
+  "install-chrome": "npx puppeteer browsers install chrome",
+  "setup-permissions": "chmod -R +x util/*",
+  "download-files": "node util/engine.mjs",
   "client:dev": "cd client && yarn dev",
   "client:build": "cd client && yarn build",
   "client:start": "cd client && yarn start",
-  "clean": "yarn clean:base && yarn clean:client && yarn clean:deps",
+  clean: "yarn clean:base && yarn clean:client && yarn clean:deps",
   "clean:base": "rimraf node_modules temp dist others",
   "clean:client": "cd client && rimraf node_modules .next",
   "clean:deps": "rimraf util/ffmpeg.tar.xz util/ffmpeg util/engine",
-  "make": "yarn make:base && yarn make:client",
+  make: "yarn make:base && yarn make:client",
   "make:base": "yarn install --verbose",
   "make:client": "cd client && yarn install --verbose",
-  "update": "yarn update:base && yarn update:client",
+  update: "yarn update:base && yarn update:client",
   "update:base": "yarn install --verbose && yarn upgrade --latest",
-  "update:client": "cd client && yarn install --verbose && yarn upgrade --latest",
-  "build": "yarn build:base && yarn build:client",
+  "update:client":
+    "cd client && yarn install --verbose && yarn upgrade --latest",
+  build: "yarn build:base && yarn build:client",
   "build:base:cjs": "tsc -p ./config/cjs.json",
   "build:base:esm": "tsc -p ./config/esm.json",
   "build:base:types": "tsc -p ./config/types.json",
   "build:client": "cd client && rimraf .next temp && yarn build",
-  "build:base": "rimraf dist temp && yarn build:base:cjs && yarn build:base:esm && yarn build:base:types",
-  "test": "yarn test:scrape && yarn test:full && yarn test:cli",
-  "test:cli": "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
-  "test:scrape": "rimraf temp others && tsup 'core/__tests__/other/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'",
-  "test:spec": "rimraf temp others && tsup 'core/__tests__/other/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
-  "test:full": "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/runner.js'",
-  "test:audio": "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/audio.js'",
-  "test:video": "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/video.js'",
-  "test:mix": "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/mix.js'",
-  "prepublishOnly": "yarn clean:deps",
-  "postinstall": "run-s download-files setup-permissions install-chrome",
-  "install-chrome": "npx puppeteer browsers install chrome",
-  "setup-permissions": "chmod -R +x util/*",
-  "download-files": "node util/engine.mjs"
+  "build:base":
+    "rimraf dist temp && yarn build:base:cjs && yarn build:base:esm && yarn build:base:types",
+  test: "yarn test:scrape && yarn test:full && yarn test:cli",
+  "test:cli":
+    "yarn link && yt version && yt-dlx audio-lowest --query 'PERSONAL BY PLAZA' && yt-dlx al --query 'SuaeRys5tTc' && yarn unlink",
+  "test:scrape":
+    "rimraf temp others && tsup 'core/__tests__/other/scrape.spec.ts' --outDir 'temp' && node 'temp/scrape.spec.js'",
+  "test:spec":
+    "rimraf temp others && tsup 'core/__tests__/other/quick.spec.ts' --outDir 'temp' && node 'temp/quick.spec.js'",
+  "test:command":
+    "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/command.js'",
+  "test:full":
+    "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/runner.js'",
+  "test:audio":
+    "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/audio.js'",
+  "test:video":
+    "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/video.js'",
+  "test:mix":
+    "rimraf temp others && tsup 'core' --outDir 'temp' && node 'temp/__tests__/mix.js'",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
