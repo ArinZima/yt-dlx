@@ -92,7 +92,11 @@ export default async function VideoCustom(input: {
     );
     ff.addInput(engineData.AudioHighF.url);
     if (vdata) ff.addInput(vdata.url.toString());
-    else throw new Error(colors.red("@error: ") + "no video data found.");
+    else
+      throw new Error(
+        colors.red("@error: ") +
+          "no video data found. use list_formats() maybe?"
+      );
     ff.outputOptions("-c copy");
     ff.withOutputFormat("matroska");
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);

@@ -10,6 +10,7 @@ import calculateETA from "../../../base/calculateETA";
 
 const qconf = z.object({
   query: z.string().min(1),
+  resolution: z.enum(["high", "medium", "low", "ultralow"]),
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -41,6 +42,7 @@ export default async function AudioCustom(input: {
   stream?: boolean;
   verbose?: boolean;
   onionTor?: boolean;
+  resolution: "high" | "medium" | "low" | "ultralow";
   filter?:
     | "echo"
     | "slow"
@@ -59,7 +61,7 @@ export default async function AudioCustom(input: {
     | "superspeed";
 }): Promise<void | { filename: string; ffmpeg: FfmpegCommand }> {
   let startTime: Date;
-  const { query, output, stream, verbose, filter, onionTor } =
+  const { query, resolution, output, stream, verbose, filter, onionTor } =
     await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
@@ -71,9 +73,17 @@ export default async function AudioCustom(input: {
     );
     const folder = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-    let filename: string = "yt-dlx_(AudioCustom_";
+    let filename: string = `yt-dlx_(AudioCustom_${resolution}_`;
     const ff: FfmpegCommand = ffmpeg();
-    ff.addInput(engineData.AudioHighF.url);
+    const adata = engineData.AudioHigh.find((i) =>
+      i.format.includes(resolution.replace("p", "").toString())
+    );
+    if (adata) ff.addInput(adata.url.toString());
+    else
+      throw new Error(
+        colors.red("@error: ") +
+          "no audio data found. use list_formats() maybe?"
+      );
     ff.addInput(engineData.metaData.thumbnail);
     ff.outputOptions("-c copy");
     ff.withOutputFormat("avi");

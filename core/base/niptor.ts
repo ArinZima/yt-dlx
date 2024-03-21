@@ -1,3 +1,4 @@
+import colors from "colors";
 import { spawn } from "child_process";
 
 async function checkSudo() {
@@ -19,7 +20,19 @@ export default async function niptor(args: string[]) {
       prox.stdout.on("data", (data) => stdoutData.push(data));
       prox.on("close", (code) => {
         if (code === 0) resolve(Buffer.concat(stdoutData).toString());
-        else reject(new Error("Try running npx yt-dlx install:socks5"));
+        else
+          reject(
+            new Error(
+              colors.red("@error: ") +
+                `not able to connect to the server. if using ${colors.yellow(
+                  "onionTor"
+                )}, maybe check if ${colors.yellow(
+                  "tor"
+                )} is properly installed by running ${colors.yellow(
+                  "npx yt-dlx install:socks5"
+                )}`
+            )
+          );
       });
     }),
     new Promise<string>((resolve, reject) => {
@@ -27,7 +40,19 @@ export default async function niptor(args: string[]) {
       prox.stderr.on("data", (data) => stderrData.push(data));
       prox.on("close", (code) => {
         if (code === 0) resolve(Buffer.concat(stderrData).toString());
-        else reject(new Error("Try running npx yt-dlx install:socks5"));
+        else
+          reject(
+            new Error(
+              colors.red("@error: ") +
+                `not able to connect to the server. if using ${colors.yellow(
+                  "onionTor"
+                )}, maybe check if ${colors.yellow(
+                  "tor"
+                )} is properly installed by running ${colors.yellow(
+                  "npx yt-dlx install:socks5"
+                )}`
+            )
+          );
       });
     }),
   ]);

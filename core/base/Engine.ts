@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import colors from "colors";
 import * as path from "path";
 import retry from "async-retry";
 import { promisify } from "util";
@@ -148,6 +149,12 @@ export default async function Engine({
       dirC = path.join(dirC, "..");
       maxT--;
     }
+  }
+  if (pLoc === "") {
+    throw new Error(
+      colors.red("@error: ") +
+        "Could not find engine file. maybe re-install yt-dlx?"
+    );
   }
   const config = {
     factor: 2,
