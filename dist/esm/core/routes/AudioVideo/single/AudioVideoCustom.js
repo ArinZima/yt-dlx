@@ -77,7 +77,7 @@ var qconf = z.object({
 });
 export default function AudioVideoCustom(input) {
     return __awaiter(this, void 0, void 0, function () {
-        var startTime, _a, query, resolution, stream, verbose, output, filter, onionTor, engineData, title, folder_1, ff_1, vdata, filename_1;
+        var startTime, _a, query, resolution, stream, verbose, output, filter, onionTor, engineData, title, folder_1, filename_1, ff_1, vdata;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0: return [4 /*yield*/, qconf.parseAsync(input)];
@@ -93,6 +93,7 @@ export default function AudioVideoCustom(input) {
                     folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
+                    filename_1 = "yt-dlx_(AudioVideoCustom_".concat(resolution, "_");
                     ff_1 = ffmpeg();
                     vdata = engineData.ManifestHigh.find(function (i) {
                         return i.format.includes(resolution.replace("p", "").toString());
@@ -106,7 +107,6 @@ export default function AudioVideoCustom(input) {
                     ff_1.outputOptions("-c copy");
                     ff_1.withOutputFormat("matroska");
                     ff_1.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-                    filename_1 = "yt-dlx_(AudioVideoCustom_".concat(resolution, "_");
                     switch (filter) {
                         case "grayscale":
                             ff_1.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");

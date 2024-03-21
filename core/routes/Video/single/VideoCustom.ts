@@ -86,6 +86,7 @@ export default async function VideoCustom(input: {
     );
     const folder = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+    let filename: string = `yt-dlx_(VideoCustom_${resolution}_`;
     const ff: FfmpegCommand = ffmpeg();
     const vdata = engineData.ManifestHigh.find((i) =>
       i.format.includes(resolution.replace("p", "").toString())
@@ -100,7 +101,6 @@ export default async function VideoCustom(input: {
     ff.outputOptions("-c copy");
     ff.withOutputFormat("matroska");
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    let filename: string = `yt-dlx_(VideoCustom_${resolution}_`;
     switch (filter) {
       case "grayscale":
         ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");

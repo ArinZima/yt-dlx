@@ -10,16 +10,19 @@ import AudioHighest from "./routes/Audio/single/AudioHighest";
 import AudioCustom from "./routes/Audio/single/AudioCustom";
 import ListAudioLowest from "./routes/Audio/list/ListAudioLowest";
 import ListAudioHighest from "./routes/Audio/list/ListAudioHighest";
+import ListAudioCustom from "./routes/Audio/list/ListAudioCustom";
 import VideoLowest from "./routes/Video/single/VideoLowest";
 import VideoHighest from "./routes/Video/single/VideoHighest";
 import VideoCustom from "./routes/Video/single/VideoCustom";
 import ListVideoLowest from "./routes/Video/list/ListVideoLowest";
 import ListVideoHighest from "./routes/Video/list/ListVideoHighest";
+import ListVideoCustom from "./routes/Video/list/ListVideoCustom";
 import AudioVideoHighest from "./routes/AudioVideo/single/AudioVideoHighest";
 import AudioVideoLowest from "./routes/AudioVideo/single/AudioVideoLowest";
 import AudioVideoCustom from "./routes/AudioVideo/single/AudioVideoCustom";
 import ListAudioVideoHighest from "./routes/AudioVideo/list/ListAudioVideoHighest";
 import ListAudioVideoLowest from "./routes/AudioVideo/list/ListAudioVideoLowest";
+import ListAudioVideoCustom from "./routes/AudioVideo/list/ListAudioVideoCustom";
 declare const ytdlx: {
     ytSearch: {
         video: {
@@ -45,6 +48,7 @@ declare const ytdlx: {
         List: {
             Lowest: typeof ListAudioLowest;
             Highest: typeof ListAudioHighest;
+            Custom: typeof ListAudioCustom;
         };
     };
     VideoOnly: {
@@ -56,6 +60,7 @@ declare const ytdlx: {
         List: {
             Lowest: typeof ListVideoLowest;
             Highest: typeof ListVideoHighest;
+            Custom: typeof ListVideoCustom;
         };
     };
     AudioVideo: {
@@ -67,6 +72,7 @@ declare const ytdlx: {
         List: {
             Lowest: typeof ListAudioVideoLowest;
             Highest: typeof ListAudioVideoHighest;
+            Custom: typeof ListAudioVideoCustom;
         };
     };
 };
