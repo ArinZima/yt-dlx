@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "target": "ES2015",
-    "resolveJsonModule": true,
-    "types": ["vitest/globals"]
-  },
-  "extends": "./config/tsconfig.base.json"
-}
