@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/playwright
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     git \
+    tor \
     wget \
     curl \
     unzip \
@@ -19,6 +20,5 @@ RUN apt-get update \
 RUN npm i -g yarn yt-dlx
 WORKDIR /app
 COPY . .
-RUN apt update && apt install -y tor nyx
-RUN pip3 install --no-cache-dir yt-dlp youtube-dl
+RUN pkill tor && service tor start
 CMD ["node", "util/wakeLock.mjs"]
