@@ -1,6 +1,6 @@
+"use strict";
 // import { version } from "../../package.json";
 // import { exec } from "child_process";
-
 // exec("npm show yt-dlx version", (_error, stdout) => {
 // let logger = "";
 // const latestVersion = stdout.trim();

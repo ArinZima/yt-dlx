@@ -41,13 +41,12 @@ import colors from "colors";
 import * as path from "path";
 import minimist from "minimist";
 import { spawn } from "child_process";
-import { version } from "../../package.json";
+// import { version } from "../../package.json";
 var proTube = minimist(process.argv.slice(2), {
     string: ["query", "format"],
     alias: {
         h: "help",
         e: "extract",
-        v: "version",
         vl: "video-lowest",
         al: "audio-lowest",
         vh: "video_highest",
@@ -67,22 +66,20 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                 switch (_a) {
                     case "install:deps": return [3 /*break*/, 1];
                     case "install:socks5": return [3 /*break*/, 3];
-                    case "version": return [3 /*break*/, 5];
-                    case "v": return [3 /*break*/, 5];
-                    case "help": return [3 /*break*/, 6];
-                    case "h": return [3 /*break*/, 6];
-                    case "extract": return [3 /*break*/, 8];
-                    case "e": return [3 /*break*/, 8];
-                    case "audio-highest": return [3 /*break*/, 12];
-                    case "ah": return [3 /*break*/, 12];
-                    case "audio-lowest": return [3 /*break*/, 16];
-                    case "al": return [3 /*break*/, 16];
-                    case "video_highest": return [3 /*break*/, 20];
-                    case "vh": return [3 /*break*/, 20];
-                    case "video-lowest": return [3 /*break*/, 24];
-                    case "vl": return [3 /*break*/, 24];
+                    case "help": return [3 /*break*/, 5];
+                    case "h": return [3 /*break*/, 5];
+                    case "extract": return [3 /*break*/, 7];
+                    case "e": return [3 /*break*/, 7];
+                    case "audio-highest": return [3 /*break*/, 11];
+                    case "ah": return [3 /*break*/, 11];
+                    case "audio-lowest": return [3 /*break*/, 15];
+                    case "al": return [3 /*break*/, 15];
+                    case "video_highest": return [3 /*break*/, 19];
+                    case "vh": return [3 /*break*/, 19];
+                    case "video-lowest": return [3 /*break*/, 23];
+                    case "vl": return [3 /*break*/, 23];
                 }
-                return [3 /*break*/, 28];
+                return [3 /*break*/, 27];
             case 1:
                 while (maxTries > 0) {
                     enginePath = path.join(currentDir, "util");
@@ -125,7 +122,7 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     ])];
             case 2:
                 _b.sent();
-                return [3 /*break*/, 29];
+                return [3 /*break*/, 28];
             case 3:
                 while (maxTries > 0) {
                     enginePath = path.join(currentDir, "util");
@@ -168,21 +165,18 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     ])];
             case 4:
                 _b.sent();
-                return [3 /*break*/, 29];
-            case 5:
-                console.error(colors.green("Installed Version: yt-dlx@" + version));
-                return [3 /*break*/, 29];
-            case 6: return [4 /*yield*/, ytdlx.info.help];
-            case 7:
+                return [3 /*break*/, 28];
+            case 5: return [4 /*yield*/, ytdlx.info.help];
+            case 6:
                 hdata = _b.sent();
                 console.log(hdata);
                 process.exit();
-                return [3 /*break*/, 29];
-            case 8:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 9];
+                return [3 /*break*/, 28];
+            case 7:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 8];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 11];
-            case 9: return [4 /*yield*/, ytdlx.info
+                return [3 /*break*/, 10];
+            case 8: return [4 /*yield*/, ytdlx.info
                     .extract({
                     query: proTube.query,
                 })
@@ -194,15 +188,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 10:
+            case 9:
                 _b.sent();
-                _b.label = 11;
-            case 11: return [3 /*break*/, 29];
-            case 12:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 13];
+                _b.label = 10;
+            case 10: return [3 /*break*/, 28];
+            case 11:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 12];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 15];
-            case 13: return [4 /*yield*/, ytdlx.AudioOnly.Single.Highest({
+                return [3 /*break*/, 14];
+            case 12: return [4 /*yield*/, ytdlx.AudioOnly.Single.Highest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -213,15 +207,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 14:
+            case 13:
                 _b.sent();
-                _b.label = 15;
-            case 15: return [3 /*break*/, 29];
-            case 16:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 17];
+                _b.label = 14;
+            case 14: return [3 /*break*/, 28];
+            case 15:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 16];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 19];
-            case 17: return [4 /*yield*/, ytdlx.AudioOnly.Single.Lowest({
+                return [3 /*break*/, 18];
+            case 16: return [4 /*yield*/, ytdlx.AudioOnly.Single.Lowest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -232,15 +226,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 18:
+            case 17:
                 _b.sent();
-                _b.label = 19;
-            case 19: return [3 /*break*/, 29];
-            case 20:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 21];
+                _b.label = 18;
+            case 18: return [3 /*break*/, 28];
+            case 19:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 20];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 23];
-            case 21: return [4 /*yield*/, ytdlx.VideoOnly.Single.Highest({
+                return [3 /*break*/, 22];
+            case 20: return [4 /*yield*/, ytdlx.VideoOnly.Single.Highest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -251,15 +245,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 22:
+            case 21:
                 _b.sent();
-                _b.label = 23;
-            case 23: return [3 /*break*/, 29];
-            case 24:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 25];
+                _b.label = 22;
+            case 22: return [3 /*break*/, 28];
+            case 23:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 24];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 27];
-            case 25: return [4 /*yield*/, ytdlx.VideoOnly.Single.Lowest({
+                return [3 /*break*/, 26];
+            case 24: return [4 /*yield*/, ytdlx.VideoOnly.Single.Lowest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -270,16 +264,16 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 26:
+            case 25:
                 _b.sent();
-                _b.label = 27;
-            case 27: return [3 /*break*/, 29];
-            case 28:
+                _b.label = 26;
+            case 26: return [3 /*break*/, 28];
+            case 27:
                 data = ytdlx.info.help;
                 console.log(data);
                 process.exit();
-                return [3 /*break*/, 29];
-            case 29: return [2 /*return*/];
+                return [3 /*break*/, 28];
+            case 28: return [2 /*return*/];
         }
     });
 }); };

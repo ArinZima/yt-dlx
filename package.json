@@ -1,14 +1,15 @@
 {
   "name": "yt-dlx",
+  "license": "MIT",
   "version": "6.0.0",
-  "main": "shared/core/cjs/index.js",
-  "module": "shared/core/esm/index.js",
+  "main": "shared/cjs/index.js",
+  "module": "shared/esm/index.js",
   "types": "shared/typings/index.d.ts",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "bin": {
-    "yt": "shared/esm/core/cli/main.js",
-    "ytdlx": "shared/esm/core/cli/main.js",
-    "yt-dlx": "shared/esm/core/cli/main.js"
+    "yt": "shared/cjs/cli/main.js",
+    "ytdlx": "shared/cjs/cli/main.js",
+    "yt-dlx": "shared/cjs/cli/main.js"
   },
   "scripts": {
     "remake": "yarn clean && yarn make && yarn update && yarn build",

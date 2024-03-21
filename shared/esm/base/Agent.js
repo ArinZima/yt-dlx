@@ -39,7 +39,6 @@ import colors from "colors";
 import niptor from "./niptor";
 import Engine from "./Engine";
 import YouTubeID from "../web/YouTubeId";
-import { version } from "../../package.json";
 export default function Agent(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var nipTor, ipAddress, TubeBody, respEngine, videoId;
@@ -47,7 +46,13 @@ export default function Agent(_a) {
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    console.log(colors.green("@info:"), "using", colors.green("yt-dlx"), "version", colors.green(version));
+                    // console.log(
+                    // colors.green("@info:"),
+                    // "using",
+                    // colors.green("yt-dlx"),
+                    // "version",
+                    // colors.green(version)
+                    // );
                     verbose;
                     ipAddress = undefined;
                     return [4 /*yield*/, niptor(["curl https://checkip.amazonaws.com --insecure"])];

@@ -42,13 +42,12 @@ const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
 const minimist_1 = __importDefault(require("minimist"));
 const child_process_1 = require("child_process");
-const package_json_1 = require("../../package.json");
+// import { version } from "../../package.json";
 const proTube = (0, minimist_1.default)(process.argv.slice(2), {
     string: ["query", "format"],
     alias: {
         h: "help",
         e: "extract",
-        v: "version",
         vl: "video-lowest",
         al: "audio-lowest",
         vh: "video_highest",
@@ -143,10 +142,10 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 }),
             ]);
             break;
-        case "version":
-        case "v":
-            console.error(colors_1.default.green("Installed Version: yt-dlx@" + package_json_1.version));
-            break;
+        // case "version":
+        // case "v":
+        // console.error(colors.green("Installed Version: yt-dlx@" + version));
+        // break;
         case "help":
         case "h":
             const hdata = yield __1.default.info.help;

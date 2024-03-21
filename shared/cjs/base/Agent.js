@@ -17,10 +17,15 @@ const colors_1 = __importDefault(require("colors"));
 const niptor_1 = __importDefault(require("./niptor"));
 const Engine_1 = __importDefault(require("./Engine"));
 const YouTubeId_1 = __importDefault(require("../web/YouTubeId"));
-const package_json_1 = require("../../package.json");
 function Agent(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, verbose, onionTor, }) {
-        console.log(colors_1.default.green("@info:"), "using", colors_1.default.green("yt-dlx"), "version", colors_1.default.green(package_json_1.version));
+        // console.log(
+        // colors.green("@info:"),
+        // "using",
+        // colors.green("yt-dlx"),
+        // "version",
+        // colors.green(version)
+        // );
         verbose;
         let nipTor;
         let ipAddress = undefined;
