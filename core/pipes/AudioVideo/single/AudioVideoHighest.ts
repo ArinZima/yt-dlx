@@ -1,5 +1,4 @@
 import { z } from "zod";
-import * as os from "os";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -60,7 +59,6 @@ export default async function AudioVideoHighest(input: {
     );
     const folder = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-    const numThreads = os.cpus().length * 2;
     const ff: FfmpegCommand = ffmpeg();
     const vdata =
       Array.isArray(engineData.ManifestHigh) &&
@@ -72,7 +70,6 @@ export default async function AudioVideoHighest(input: {
     else throw new Error(colors.red("@error: ") + "no video data found.");
     ff.outputOptions(["-c", "copy"]);
     ff.withOutputFormat("matroska");
-    ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     let filename: string = "yt-dlx_(AudioVideoHighest_";
     switch (filter) {

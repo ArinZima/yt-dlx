@@ -1,21 +1,20 @@
 #!/usr/bin/env node
 import { fileURLToPath } from 'url';
-import * as path11 from 'path';
-import path11__default from 'path';
+import * as path13 from 'path';
+import path13__default from 'path';
 import { z } from 'zod';
-import colors10 from 'colors';
+import colors15 from 'colors';
 import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
 import { spawn, exec } from 'child_process';
 import * as fs2 from 'fs';
 import retry from 'async-retry';
 import { promisify } from 'util';
-import * as os from 'os';
 import ffmpeg from 'fluent-ffmpeg';
 import minimist from 'minimist';
 
 var getFilename = () => fileURLToPath(import.meta.url);
-var getDirname = () => path11__default.dirname(getFilename());
+var getDirname = () => path13__default.dirname(getFilename());
 var __dirname = /* @__PURE__ */ getDirname();
 async function closers(browser2) {
   const pages = await browser2.pages();
@@ -134,7 +133,7 @@ async function VideoInfo(input) {
   }
   if (screenshot) {
     await page.screenshot({ path: "FilterVideo.png" });
-    console.log(colors10.yellow("@scrape:"), "took snapshot...");
+    console.log(colors15.yellow("@scrape:"), "took snapshot...");
   }
   const videoId = await YouTubeID(query);
   await page.waitForSelector(
@@ -180,9 +179,9 @@ async function VideoInfo(input) {
     videoLink: "https://www.youtube.com/watch?v=" + videoId
   };
   console.log(
-    colors10.green("@info:"),
-    colors10.white("scrapping done for"),
-    colors10.green(query)
+    colors15.green("@info:"),
+    colors15.white("scrapping done for"),
+    colors15.green(query)
   );
   await closers(browser);
   return TubeResp;
@@ -228,7 +227,7 @@ async function SearchVideos(input) {
         await page.screenshot({
           path: "TypeVideo.png"
         });
-        console.log(colors10.yellow("@scrape:"), "took snapshot...");
+        console.log(colors15.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = load(content);
@@ -262,9 +261,9 @@ async function SearchVideos(input) {
         });
       });
       console.log(
-        colors10.green("@info:"),
-        colors10.white("scrapping done for"),
-        colors10.green(query)
+        colors15.green("@info:"),
+        colors15.white("scrapping done for"),
+        colors15.green(query)
       );
       TubeResp = metaTube;
       break;
@@ -278,7 +277,7 @@ async function SearchVideos(input) {
         await page.screenshot({
           path: "TypePlaylist.png"
         });
-        console.log(colors10.yellow("@scrape:"), "took snapshot...");
+        console.log(colors15.yellow("@scrape:"), "took snapshot...");
       }
       content = await page.content();
       $ = load(content);
@@ -296,16 +295,16 @@ async function SearchVideos(input) {
         });
       });
       console.log(
-        colors10.green("@info:"),
-        colors10.white("scrapping done for"),
-        colors10.green(query)
+        colors15.green("@info:"),
+        colors15.white("scrapping done for"),
+        colors15.green(query)
       );
       TubeResp = playlistMeta;
       break;
     default:
       console.log(
-        colors10.red("@error:"),
-        colors10.white("wrong filter type provided.")
+        colors15.red("@error:"),
+        colors15.white("wrong filter type provided.")
       );
       TubeResp = void 0;
       break;
@@ -363,7 +362,7 @@ async function PlaylistInfo(input) {
     await page.screenshot({
       path: "FilterVideo.png"
     });
-    console.log(colors10.yellow("@scrape:"), "took snapshot...");
+    console.log(colors15.yellow("@scrape:"), "took snapshot...");
   }
   const content = await page.content();
   const $ = load(content);
@@ -400,9 +399,9 @@ async function PlaylistInfo(input) {
     });
   });
   console.log(
-    colors10.green("@info:"),
-    colors10.white("scrapping done for"),
-    colors10.green(query)
+    colors15.green("@info:"),
+    colors15.white("scrapping done for"),
+    colors15.green(query)
   );
   await closers(browser);
   return {
@@ -498,16 +497,16 @@ var web = {
 var web_default = web;
 function help() {
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors10.green("yt-dlx."),
+    colors15.green("yt-dlx."),
     "Consider",
-    colors10.green("\u{1F31F}starring"),
+    colors15.green("\u{1F31F}starring"),
     "the github repo",
-    colors10.green("https://github.com/yt-dlx\n")
+    colors15.green("https://github.com/yt-dlx\n")
   );
   return Promise.resolve(
-    colors10.bold.white(`
+    colors15.bold.white(`
 \u2715\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2715
 \u2503                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   \u2503
 \u2503                                            (License: MIT)                                                    \u2503
@@ -709,12 +708,12 @@ async function Engine({
   let pLoc = "";
   let maxT = 8;
   while (maxT > 0) {
-    const enginePath = path11.join(dirC, "util", "engine");
+    const enginePath = path13.join(dirC, "util", "engine");
     if (fs2.existsSync(enginePath)) {
       pLoc = enginePath;
       break;
     } else {
-      dirC = path11.join(dirC, "..");
+      dirC = path13.join(dirC, "..");
       maxT--;
     }
   }
@@ -971,19 +970,19 @@ async function Agent({
   onionTor
 }) {
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "using",
-    colors10.green("yt-dlx"),
+    colors15.green("yt-dlx"),
     "version",
-    colors10.green(version)
+    colors15.green(version)
   );
   let nipTor;
   let ipAddress = void 0;
   nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "system",
-    colors10.green("ipAddress"),
+    colors15.green("ipAddress"),
     nipTor.stdout.trim()
   );
   ipAddress = nipTor.stdout.trim();
@@ -993,9 +992,9 @@ async function Agent({
     ]);
     if (nipTor.stdout.trim().length > 0) {
       console.log(
-        colors10.green("@info:"),
+        colors15.green("@info:"),
         "socks5",
-        colors10.green("ipAddress"),
+        colors15.green("ipAddress"),
         nipTor.stdout.trim()
       );
       ipAddress = nipTor.stdout.trim();
@@ -1011,9 +1010,9 @@ async function Agent({
       throw new Error("Unable to get response!");
     else {
       console.log(
-        colors10.green("@info:"),
+        colors15.green("@info:"),
         `preparing payload for`,
-        colors10.green(TubeBody[0].title)
+        colors15.green(TubeBody[0].title)
       );
       respEngine = await Engine({
         query: `https://www.youtube.com/watch?v=${TubeBody[0].id}`,
@@ -1028,9 +1027,9 @@ async function Agent({
       throw new Error("Unable to get response!");
     else {
       console.log(
-        colors10.green("@info:"),
+        colors15.green("@info:"),
         `preparing payload for`,
-        colors10.green(TubeBody.title)
+        colors15.green(TubeBody.title)
       );
       respEngine = await Engine({
         query: `https://www.youtube.com/watch?v=${TubeBody.id}`,
@@ -1153,15 +1152,56 @@ async function extract({
     }
   };
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors10.green("yt-dlx."),
+    colors15.green("yt-dlx."),
     "Consider",
-    colors10.green("\u{1F31F}starring"),
+    colors15.green("\u{1F31F}starring"),
     "the github repo",
-    colors10.green("https://github.com/yt-dlx\n")
+    colors15.green("https://github.com/yt-dlx\n")
   );
   return payload;
+}
+async function list_formats({
+  query,
+  verbose,
+  onionTor
+}) {
+  const metaBody = await Agent({ query, verbose, onionTor });
+  if (!metaBody) {
+    throw new Error("@error: Unable to get response from YouTube.");
+  } else {
+    console.log("");
+    printTable("AudioLow", metaBody.AudioLow);
+    printTable("AudioLowDRC", metaBody.AudioLowDRC);
+    printTable("AudioHigh", metaBody.AudioHigh);
+    printTable("AudioHighDRC", metaBody.AudioHighDRC);
+    printTable("VideoLow", metaBody.VideoLow);
+    printTable("VideoLowHDR", metaBody.VideoLowHDR);
+    printTable("VideoHigh", metaBody.VideoHigh);
+    printTable("VideoHighHDR", metaBody.VideoHighHDR);
+    printManifestTable("ManifestLow", metaBody.ManifestLow);
+    printManifestTable("ManifestHigh", metaBody.ManifestHigh);
+  }
+}
+function printTable(title, data) {
+  console.log(colors15.green(title) + ":");
+  data.forEach((item) => {
+    console.log(
+      " ".repeat(4),
+      item.filesizeP.padEnd(10),
+      "|",
+      item.format_note
+    );
+  });
+  console.log("");
+}
+function printManifestTable(title, data) {
+  console.log(colors15.green(title) + ":");
+  data.forEach((item) => {
+    console.log(" ".repeat(4), item.format.padEnd(10), "|", item.tbr);
+  });
+  console.log("");
 }
 
 // node_modules/async/dist/async.mjs
@@ -1902,7 +1942,7 @@ async function extract_playlist_videos({
     const query = await YouTubeID(listLink);
     if (query === void 0) {
       console.error(
-        colors10.bold.red("@error: "),
+        colors15.bold.red("@error: "),
         "invalid youtube playlist url:",
         listLink
       );
@@ -1911,7 +1951,7 @@ async function extract_playlist_videos({
       const playlistId = await YouTubeID(query);
       if (!playlistId) {
         console.error(
-          colors10.bold.red("@error: "),
+          colors15.bold.red("@error: "),
           "incorrect playlist link.",
           query
         );
@@ -1922,16 +1962,16 @@ async function extract_playlist_videos({
       });
       if (!resp) {
         console.error(
-          colors10.bold.red("@error: "),
+          colors15.bold.red("@error: "),
           "unable to get response from youtube for",
           query
         );
         return;
       } else {
         console.log(
-          colors10.green("@info:"),
+          colors15.green("@info:"),
           "total videos in playlist",
-          colors10.green(resp.playlistTitle),
+          colors15.green(resp.playlistTitle),
           resp.playlistVideoCount
         );
         await eachSeries$1(resp.playlistVideos, async (vid) => {
@@ -1940,7 +1980,7 @@ async function extract_playlist_videos({
           });
           counter++;
           console.log(
-            colors10.green("@info:"),
+            colors15.green("@info:"),
             "added",
             counter + "/" + resp.playlistVideoCount
           );
@@ -1950,13 +1990,13 @@ async function extract_playlist_videos({
     }
   });
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors10.green("yt-dlx."),
+    colors15.green("yt-dlx."),
     "Consider",
-    colors10.green("\u{1F31F}starring"),
+    colors15.green("\u{1F31F}starring"),
     "the github repo",
-    colors10.green("https://github.com/yt-dlx\n")
+    colors15.green("https://github.com/yt-dlx\n")
   );
   return metaTubeArr;
 }
@@ -1979,7 +2019,7 @@ function calculateETA(startTime, percent) {
   return remainingTime.toFixed(2);
 }
 
-// core/pipes/audio/single/AudioLowest.ts
+// core/pipes/Audio/single/AudioLowest.ts
 var qconf = z.object({
   query: z.string().min(1),
   output: z.string().optional(),
@@ -2010,24 +2050,22 @@ async function AudioLowest(input) {
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors10.red("@error: ") + "unable to get response from YouTube."
+      colors15.red("@error: ") + "unable to get response from YouTube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path13.join(process.cwd(), output) : process.cwd();
     if (!fs2.existsSync(folder))
       fs2.mkdirSync(folder, { recursive: true });
     let filename = "yt-dlx_(AudioLowest_";
-    const numThreads = os.cpus().length * 2;
     const ff = ffmpeg();
     ff.addInput(engineData.AudioLowF.url);
     ff.addInput(engineData.metaData.thumbnail);
     ff.outputOptions(["-c", "copy"]);
     ff.withOutputFormat("avi");
-    ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     switch (filter2) {
       case "bassboost":
@@ -2100,19 +2138,19 @@ async function AudioLowest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors10.green("@comd:"), comd);
+        console.info(colors15.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors10.green;
+      let color = colors15.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors10.red;
+        color = colors15.red;
       else if (percent < 50)
-        color = colors10.yellow;
+        color = colors15.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2123,26 +2161,26 @@ async function AudioLowest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path11.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path13.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors10.red("@error: ") + error.message));
+          reject2(new Error(colors15.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors10.green("@info:"),
+      colors15.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors10.green("yt-dlx."),
+      colors15.green("yt-dlx."),
       "Consider",
-      colors10.green("\u{1F31F}starring"),
+      colors15.green("\u{1F31F}starring"),
       "the GitHub repo",
-      colors10.green("https://github.com/yt-dlx\n")
+      colors15.green("https://github.com/yt-dlx\n")
     );
   }
 }
@@ -2176,24 +2214,22 @@ async function AudioHighest(input) {
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors10.red("@error: ") + "unable to get response from YouTube."
+      colors15.red("@error: ") + "unable to get response from YouTube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path13.join(process.cwd(), output) : process.cwd();
     if (!fs2.existsSync(folder))
       fs2.mkdirSync(folder, { recursive: true });
     let filename = "yt-dlx_(AudioHighest_";
-    const numThreads = os.cpus().length * 2;
     const ff = ffmpeg();
     ff.addInput(engineData.AudioHighF.url);
     ff.addInput(engineData.metaData.thumbnail);
     ff.outputOptions(["-c", "copy"]);
     ff.withOutputFormat("avi");
-    ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     switch (filter2) {
       case "bassboost":
@@ -2266,19 +2302,19 @@ async function AudioHighest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors10.green("@comd:"), comd);
+        console.info(colors15.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors10.green;
+      let color = colors15.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors10.red;
+        color = colors15.red;
       else if (percent < 50)
-        color = colors10.yellow;
+        color = colors15.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2289,26 +2325,26 @@ async function AudioHighest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path11.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path13.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors10.red("@error: ") + error.message));
+          reject2(new Error(colors15.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors10.green("@info:"),
+      colors15.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors10.green("yt-dlx."),
+      colors15.green("yt-dlx."),
       "Consider",
-      colors10.green("\u{1F31F}starring"),
+      colors15.green("\u{1F31F}starring"),
       "the GitHub repo",
-      colors10.green("https://github.com/yt-dlx\n")
+      colors15.green("https://github.com/yt-dlx\n")
     );
   }
 }
@@ -2373,7 +2409,7 @@ async function ListAudioLowest(input) {
       });
       if (pDATA === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube for",
           pURL
         );
@@ -2382,14 +2418,14 @@ async function ListAudioLowest(input) {
       for (const video of pDATA.playlistVideos)
         vDATA.add(video);
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "total number of uncommon videos:",
-    colors10.yellow(vDATA.size.toString())
+    colors15.yellow(vDATA.size.toString())
   );
   for (const video of vDATA) {
     try {
@@ -2400,7 +2436,7 @@ async function ListAudioLowest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube for",
           video.videoLink
         );
@@ -2410,17 +2446,15 @@ async function ListAudioLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path13.join(process.cwd(), output) : process.cwd();
       if (!fs2.existsSync(folder))
         fs2.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioLowest_";
-      const numThreads = os.cpus().length * 2;
       const ff = ffmpeg();
       ff.addInput(engineData.AudioLowF.url);
       ff.addInput(engineData.metaData.thumbnail);
       ff.outputOptions(["-c", "copy"]);
       ff.withOutputFormat("avi");
-      ff.addOption("-threads", numThreads.toString());
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       switch (filter2) {
         case "bassboost":
@@ -2493,19 +2527,19 @@ async function ListAudioLowest(input) {
       ff.on("start", (comd) => {
         startTime = /* @__PURE__ */ new Date();
         if (verbose)
-          console.info(colors10.green("@comd:"), comd);
+          console.info(colors15.green("@comd:"), comd);
       });
       ff.on("end", () => process.stdout.write("\n"));
       ff.on("progress", ({ percent, timemark }) => {
-        let color = colors10.green;
+        let color = colors15.green;
         if (isNaN(percent))
           percent = 0;
         if (percent > 98)
           percent = 100;
         if (percent < 25)
-          color = colors10.red;
+          color = colors15.red;
         else if (percent < 50)
-          color = colors10.yellow;
+          color = colors15.yellow;
         const width = Math.floor(process.stdout.columns / 4);
         const scomp = Math.round(width * percent / 100);
         const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2516,26 +2550,26 @@ async function ListAudioLowest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          throw new Error(colors10.red("@error: ") + error.message);
+          throw new Error(colors15.red("@error: ") + error.message);
         });
         ff.run();
       });
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors10.green("yt-dlx."),
+    colors15.green("yt-dlx."),
     "Consider",
-    colors10.green("\u{1F31F}starring"),
+    colors15.green("\u{1F31F}starring"),
     "the github repo",
-    colors10.green("https://github.com/yt-dlx\n")
+    colors15.green("https://github.com/yt-dlx\n")
   );
 }
 var qconf4 = z.object({
@@ -2599,7 +2633,7 @@ async function ListAudioHighest(input) {
       });
       if (pDATA === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube for",
           pURL
         );
@@ -2608,14 +2642,14 @@ async function ListAudioHighest(input) {
       for (const video of pDATA.playlistVideos)
         vDATA.add(video);
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "total number of uncommon videos:",
-    colors10.yellow(vDATA.size.toString())
+    colors15.yellow(vDATA.size.toString())
   );
   for (const video of vDATA) {
     try {
@@ -2626,7 +2660,7 @@ async function ListAudioHighest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube for",
           video.videoLink
         );
@@ -2636,17 +2670,15 @@ async function ListAudioHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path13.join(process.cwd(), output) : process.cwd();
       if (!fs2.existsSync(folder))
         fs2.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(AudioHighest_";
-      const numThreads = os.cpus().length * 2;
       const ff = ffmpeg();
       ff.addInput(engineData.AudioHighF.url);
       ff.addInput(engineData.metaData.thumbnail);
       ff.outputOptions(["-c", "copy"]);
       ff.withOutputFormat("avi");
-      ff.addOption("-threads", numThreads.toString());
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       switch (filter2) {
         case "bassboost":
@@ -2719,19 +2751,19 @@ async function ListAudioHighest(input) {
       ff.on("start", (comd) => {
         startTime = /* @__PURE__ */ new Date();
         if (verbose)
-          console.info(colors10.green("@comd:"), comd);
+          console.info(colors15.green("@comd:"), comd);
       });
       ff.on("end", () => process.stdout.write("\n"));
       ff.on("progress", ({ percent, timemark }) => {
-        let color = colors10.green;
+        let color = colors15.green;
         if (isNaN(percent))
           percent = 0;
         if (percent > 98)
           percent = 100;
         if (percent < 25)
-          color = colors10.red;
+          color = colors15.red;
         else if (percent < 50)
-          color = colors10.yellow;
+          color = colors15.yellow;
         const width = Math.floor(process.stdout.columns / 4);
         const scomp = Math.round(width * percent / 100);
         const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2742,26 +2774,26 @@ async function ListAudioHighest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          throw new Error(colors10.red("@error: ") + error.message);
+          throw new Error(colors15.red("@error: ") + error.message);
         });
         ff.run();
       });
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors10.green("yt-dlx."),
+    colors15.green("yt-dlx."),
     "Consider",
-    colors10.green("\u{1F31F}starring"),
+    colors15.green("\u{1F31F}starring"),
     "the github repo",
-    colors10.green("https://github.com/yt-dlx\n")
+    colors15.green("https://github.com/yt-dlx\n")
   );
 }
 var qconf5 = z.object({
@@ -2786,22 +2818,24 @@ async function VideoLowest(input) {
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors10.red("@error: ") + "unable to get response from youtube."
+      colors15.red("@error: ") + "unable to get response from youtube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path13.join(process.cwd(), output) : process.cwd();
     if (!fs2.existsSync(folder))
       fs2.mkdirSync(folder, { recursive: true });
-    const numThreads = os.cpus().length * 2;
     const ff = ffmpeg();
-    ff.addInput(engineData.VideoLowF.url);
+    const vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0 ? engineData.ManifestLow[0]?.url : void 0;
+    if (vdata)
+      ff.addInput(vdata.toString());
+    else
+      throw new Error(colors15.red("@error: ") + "no video data found.");
     ff.outputOptions(["-c", "copy"]);
     ff.withOutputFormat("matroska");
-    ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     let filename = "yt-dlx_(VideoLowest_";
     switch (filter2) {
@@ -2843,19 +2877,19 @@ async function VideoLowest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors10.green("@comd:"), comd);
+        console.info(colors15.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors10.green;
+      let color = colors15.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors10.red;
+        color = colors15.red;
       else if (percent < 50)
-        color = colors10.yellow;
+        color = colors15.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2866,26 +2900,26 @@ async function VideoLowest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path11.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path13.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors10.red("@error: ") + error.message));
+          reject2(new Error(colors15.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors10.green("@info:"),
+      colors15.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors10.green("yt-dlx."),
+      colors15.green("yt-dlx."),
       "Consider",
-      colors10.green("\u{1F31F}starring"),
+      colors15.green("\u{1F31F}starring"),
       "the github repo",
-      colors10.green("https://github.com/yt-dlx\n")
+      colors15.green("https://github.com/yt-dlx\n")
     );
   }
 }
@@ -2911,22 +2945,24 @@ async function VideoHighest(input) {
   const engineData = await Agent({ query, verbose, onionTor });
   if (engineData === void 0) {
     throw new Error(
-      colors10.red("@error: ") + "unable to get response from youtube."
+      colors15.red("@error: ") + "unable to get response from youtube."
     );
   } else {
     const title = engineData.metaData.title.replace(
       /[^a-zA-Z0-9_]+/g,
       "_"
     );
-    const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+    const folder = output ? path13.join(process.cwd(), output) : process.cwd();
     if (!fs2.existsSync(folder))
       fs2.mkdirSync(folder, { recursive: true });
-    const numThreads = os.cpus().length * 2;
     const ff = ffmpeg();
-    ff.addInput(engineData.VideoHighF.url);
+    const vdata = Array.isArray(engineData.ManifestHigh) && engineData.ManifestHigh.length > 0 ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url : void 0;
+    if (vdata)
+      ff.addInput(vdata.toString());
+    else
+      throw new Error(colors15.red("@error: ") + "no video data found.");
     ff.outputOptions(["-c", "copy"]);
     ff.withOutputFormat("matroska");
-    ff.addOption("-threads", numThreads.toString());
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
     let filename = "yt-dlx_(VideoHighest_";
     switch (filter2) {
@@ -2968,19 +3004,19 @@ async function VideoHighest(input) {
     ff.on("start", (comd) => {
       startTime = /* @__PURE__ */ new Date();
       if (verbose)
-        console.info(colors10.green("@comd:"), comd);
+        console.info(colors15.green("@comd:"), comd);
     });
     ff.on("end", () => process.stdout.write("\n"));
     ff.on("progress", ({ percent, timemark }) => {
-      let color = colors10.green;
+      let color = colors15.green;
       if (isNaN(percent))
         percent = 0;
       if (percent > 98)
         percent = 100;
       if (percent < 25)
-        color = colors10.red;
+        color = colors15.red;
       else if (percent < 50)
-        color = colors10.yellow;
+        color = colors15.yellow;
       const width = Math.floor(process.stdout.columns / 4);
       const scomp = Math.round(width * percent / 100);
       const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -2991,26 +3027,26 @@ async function VideoHighest(input) {
     if (stream) {
       return {
         ffmpeg: ff,
-        filename: output ? path11.join(folder, filename) : filename.replace("_)_", ")_")
+        filename: output ? path13.join(folder, filename) : filename.replace("_)_", ")_")
       };
     } else {
       await new Promise((resolve, reject2) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          reject2(new Error(colors10.red("@error: ") + error.message));
+          reject2(new Error(colors15.red("@error: ") + error.message));
         });
         ff.run();
       });
     }
     console.log(
-      colors10.green("@info:"),
+      colors15.green("@info:"),
       "\u2763\uFE0F Thank you for using",
-      colors10.green("yt-dlx."),
+      colors15.green("yt-dlx."),
       "Consider",
-      colors10.green("\u{1F31F}starring"),
+      colors15.green("\u{1F31F}starring"),
       "the github repo",
-      colors10.green("https://github.com/yt-dlx\n")
+      colors15.green("https://github.com/yt-dlx\n")
     );
   }
 }
@@ -3067,7 +3103,7 @@ async function ListVideoLowest(input) {
       });
       if (pDATA === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube for",
           pURL
         );
@@ -3076,14 +3112,14 @@ async function ListVideoLowest(input) {
       for (const video of pDATA.playlistVideos)
         vDATA.add(video);
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "total number of uncommon videos:",
-    colors10.yellow(vDATA.size.toString())
+    colors15.yellow(vDATA.size.toString())
   );
   for (const video of vDATA) {
     try {
@@ -3094,7 +3130,7 @@ async function ListVideoLowest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -3103,15 +3139,17 @@ async function ListVideoLowest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path13.join(process.cwd(), output) : process.cwd();
       if (!fs2.existsSync(folder))
         fs2.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(VideoLowest_";
-      const numThreads = os.cpus().length * 2;
       const ff = ffmpeg();
-      ff.addInput(engineData.VideoLowF.url);
+      const vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0 ? engineData.ManifestLow[0]?.url : void 0;
+      if (vdata)
+        ff.addInput(vdata.toString());
+      else
+        throw new Error(colors15.red("@error: ") + "no video data found.");
       ff.outputOptions(["-c", "copy"]);
-      ff.addOption("-threads", numThreads.toString());
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       ff.withOutputFormat("matroska");
       switch (filter2) {
@@ -3155,19 +3193,19 @@ async function ListVideoLowest(input) {
       ff.on("start", (comd) => {
         startTime = /* @__PURE__ */ new Date();
         if (verbose)
-          console.info(colors10.green("@comd:"), comd);
+          console.info(colors15.green("@comd:"), comd);
       });
       ff.on("end", () => process.stdout.write("\n"));
       ff.on("progress", ({ percent, timemark }) => {
-        let color = colors10.green;
+        let color = colors15.green;
         if (isNaN(percent))
           percent = 0;
         if (percent > 98)
           percent = 100;
         if (percent < 25)
-          color = colors10.red;
+          color = colors15.red;
         else if (percent < 50)
-          color = colors10.yellow;
+          color = colors15.yellow;
         const width = Math.floor(process.stdout.columns / 4);
         const scomp = Math.round(width * percent / 100);
         const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -3178,26 +3216,26 @@ async function ListVideoLowest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          throw new Error(colors10.red("@error: ") + error.message);
+          throw new Error(colors15.red("@error: ") + error.message);
         });
         ff.run();
       });
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors10.green("yt-dlx."),
+    colors15.green("yt-dlx."),
     "Consider",
-    colors10.green("\u{1F31F}starring"),
+    colors15.green("\u{1F31F}starring"),
     "the github repo",
-    colors10.green("https://github.com/yt-dlx\n")
+    colors15.green("https://github.com/yt-dlx\n")
   );
 }
 var qconf8 = z.object({
@@ -3253,7 +3291,7 @@ async function ListVideoHighest(input) {
       });
       if (pDATA === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube for",
           pURL
         );
@@ -3262,14 +3300,14 @@ async function ListVideoHighest(input) {
       for (const video of pDATA.playlistVideos)
         vDATA.add(video);
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "total number of uncommon videos:",
-    colors10.yellow(vDATA.size.toString())
+    colors15.yellow(vDATA.size.toString())
   );
   for (const video of vDATA) {
     try {
@@ -3280,7 +3318,7 @@ async function ListVideoHighest(input) {
       });
       if (engineData === void 0) {
         console.log(
-          colors10.red("@error:"),
+          colors15.red("@error:"),
           "unable to get response from youtube."
         );
         continue;
@@ -3289,15 +3327,17 @@ async function ListVideoHighest(input) {
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path11.join(process.cwd(), output) : process.cwd();
+      const folder = output ? path13.join(process.cwd(), output) : process.cwd();
       if (!fs2.existsSync(folder))
         fs2.mkdirSync(folder, { recursive: true });
       let filename = "yt-dlx_(VideoHighest_";
-      const numThreads = os.cpus().length * 2;
       const ff = ffmpeg();
-      ff.addInput(engineData.VideoHighF.url);
+      const vdata = Array.isArray(engineData.ManifestHigh) && engineData.ManifestHigh.length > 0 ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url : void 0;
+      if (vdata)
+        ff.addInput(vdata.toString());
+      else
+        throw new Error(colors15.red("@error: ") + "no video data found.");
       ff.outputOptions(["-c", "copy"]);
-      ff.addOption("-threads", numThreads.toString());
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       ff.withOutputFormat("matroska");
       switch (filter2) {
@@ -3341,19 +3381,19 @@ async function ListVideoHighest(input) {
       ff.on("start", (comd) => {
         startTime = /* @__PURE__ */ new Date();
         if (verbose)
-          console.info(colors10.green("@comd:"), comd);
+          console.info(colors15.green("@comd:"), comd);
       });
       ff.on("end", () => process.stdout.write("\n"));
       ff.on("progress", ({ percent, timemark }) => {
-        let color = colors10.green;
+        let color = colors15.green;
         if (isNaN(percent))
           percent = 0;
         if (percent > 98)
           percent = 100;
         if (percent < 25)
-          color = colors10.red;
+          color = colors15.red;
         else if (percent < 50)
-          color = colors10.yellow;
+          color = colors15.yellow;
         const width = Math.floor(process.stdout.columns / 4);
         const scomp = Math.round(width * percent / 100);
         const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
@@ -3364,27 +3404,283 @@ async function ListVideoHighest(input) {
         );
       });
       await new Promise((resolve, _reject) => {
-        ff.output(path11.join(folder, filename.replace("_)_", ")_")));
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
         ff.on("end", () => resolve());
         ff.on("error", (error) => {
-          throw new Error(colors10.red("@error: ") + error.message);
+          throw new Error(colors15.red("@error: ") + error.message);
         });
         ff.run();
       });
     } catch (error) {
-      console.log(colors10.red("@error:"), error);
+      console.log(colors15.red("@error:"), error);
       continue;
     }
   }
   console.log(
-    colors10.green("@info:"),
+    colors15.green("@info:"),
     "\u2763\uFE0F Thank you for using",
-    colors10.green("yt-dlx."),
+    colors15.green("yt-dlx."),
     "Consider",
-    colors10.green("\u{1F31F}starring"),
+    colors15.green("\u{1F31F}starring"),
     "the github repo",
-    colors10.green("https://github.com/yt-dlx\n")
+    colors15.green("https://github.com/yt-dlx\n")
   );
+}
+var qconf9 = z.object({
+  query: z.string().min(1),
+  output: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  onionTor: z.boolean().optional(),
+  filter: z.enum([
+    "invert",
+    "rotate90",
+    "rotate270",
+    "grayscale",
+    "rotate180",
+    "flipVertical",
+    "flipHorizontal"
+  ]).optional()
+});
+async function AudioVideoHighest(input) {
+  let startTime;
+  const { query, stream, verbose, output, filter: filter2, onionTor } = await qconf9.parseAsync(input);
+  const engineData = await Agent({ query, verbose, onionTor });
+  if (engineData === void 0) {
+    throw new Error(
+      colors15.red("@error: ") + "unable to get response from youtube."
+    );
+  } else {
+    const title = engineData.metaData.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "_"
+    );
+    const folder = output ? path13.join(process.cwd(), output) : process.cwd();
+    if (!fs2.existsSync(folder))
+      fs2.mkdirSync(folder, { recursive: true });
+    const ff = ffmpeg();
+    const vdata = Array.isArray(engineData.ManifestHigh) && engineData.ManifestHigh.length > 0 ? engineData.ManifestHigh[engineData.ManifestHigh.length - 1]?.url : void 0;
+    ff.addInput(engineData.AudioHighF.url);
+    if (vdata)
+      ff.addInput(vdata.toString());
+    else
+      throw new Error(colors15.red("@error: ") + "no video data found.");
+    ff.outputOptions(["-c", "copy"]);
+    ff.withOutputFormat("matroska");
+    ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+    let filename = "yt-dlx_(AudioVideoHighest_";
+    switch (filter2) {
+      case "grayscale":
+        ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        filename += `grayscale)_${title}.mkv`;
+        break;
+      case "invert":
+        ff.withVideoFilter("negate");
+        filename += `invert)_${title}.mkv`;
+        break;
+      case "rotate90":
+        ff.withVideoFilter("rotate=PI/2");
+        filename += `rotate90)_${title}.mkv`;
+        break;
+      case "rotate180":
+        ff.withVideoFilter("rotate=PI");
+        filename += `rotate180)_${title}.mkv`;
+        break;
+      case "rotate270":
+        ff.withVideoFilter("rotate=3*PI/2");
+        filename += `rotate270)_${title}.mkv`;
+        break;
+      case "flipHorizontal":
+        ff.withVideoFilter("hflip");
+        filename += `flipHorizontal)_${title}.mkv`;
+        break;
+      case "flipVertical":
+        ff.withVideoFilter("vflip");
+        filename += `flipVertical)_${title}.mkv`;
+        break;
+      default:
+        filename += `)_${title}.mkv`;
+        break;
+    }
+    ff.on("error", (error) => {
+      throw new Error(error.message);
+    });
+    ff.on("start", (comd) => {
+      startTime = /* @__PURE__ */ new Date();
+      if (verbose)
+        console.info(colors15.green("@comd:"), comd);
+    });
+    ff.on("end", () => process.stdout.write("\n"));
+    ff.on("progress", ({ percent, timemark }) => {
+      let color = colors15.green;
+      if (isNaN(percent))
+        percent = 0;
+      if (percent > 98)
+        percent = 100;
+      if (percent < 25)
+        color = colors15.red;
+      else if (percent < 50)
+        color = colors15.yellow;
+      const width = Math.floor(process.stdout.columns / 4);
+      const scomp = Math.round(width * percent / 100);
+      const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+      process.stdout.write(
+        `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(calculateETA(startTime, percent))}`
+      );
+    });
+    if (stream) {
+      return {
+        ffmpeg: ff,
+        filename: output ? path13.join(folder, filename) : filename.replace("_)_", ")_")
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          reject2(new Error(colors15.red("@error: ") + error.message));
+        });
+        ff.run();
+      });
+    }
+    console.log(
+      colors15.green("@info:"),
+      "\u2763\uFE0F Thank you for using",
+      colors15.green("yt-dlx."),
+      "Consider",
+      colors15.green("\u{1F31F}starring"),
+      "the github repo",
+      colors15.green("https://github.com/yt-dlx\n")
+    );
+  }
+}
+var qconf10 = z.object({
+  query: z.string().min(1),
+  output: z.string().optional(),
+  stream: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  onionTor: z.boolean().optional(),
+  filter: z.enum([
+    "invert",
+    "rotate90",
+    "rotate270",
+    "grayscale",
+    "rotate180",
+    "flipVertical",
+    "flipHorizontal"
+  ]).optional()
+});
+async function AudioVideoLowest(input) {
+  let startTime;
+  const { query, stream, verbose, output, filter: filter2, onionTor } = await qconf10.parseAsync(input);
+  const engineData = await Agent({ query, verbose, onionTor });
+  if (engineData === void 0) {
+    throw new Error(
+      colors15.red("@error: ") + "unable to get response from youtube."
+    );
+  } else {
+    const title = engineData.metaData.title.replace(
+      /[^a-zA-Z0-9_]+/g,
+      "_"
+    );
+    const folder = output ? path13.join(process.cwd(), output) : process.cwd();
+    if (!fs2.existsSync(folder))
+      fs2.mkdirSync(folder, { recursive: true });
+    const ff = ffmpeg();
+    const vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0 ? engineData.ManifestLow[0]?.url : void 0;
+    ff.addInput(engineData.AudioLowF.url);
+    if (vdata)
+      ff.addInput(vdata.toString());
+    else
+      throw new Error(colors15.red("@error: ") + "no video data found.");
+    ff.outputOptions(["-c", "copy"]);
+    ff.withOutputFormat("matroska");
+    ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
+    let filename = "yt-dlx_(AudioVideoLowest_";
+    switch (filter2) {
+      case "grayscale":
+        ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
+        filename += `grayscale)_${title}.mkv`;
+        break;
+      case "invert":
+        ff.withVideoFilter("negate");
+        filename += `invert)_${title}.mkv`;
+        break;
+      case "rotate90":
+        ff.withVideoFilter("rotate=PI/2");
+        filename += `rotate90)_${title}.mkv`;
+        break;
+      case "rotate180":
+        ff.withVideoFilter("rotate=PI");
+        filename += `rotate180)_${title}.mkv`;
+        break;
+      case "rotate270":
+        ff.withVideoFilter("rotate=3*PI/2");
+        filename += `rotate270)_${title}.mkv`;
+        break;
+      case "flipHorizontal":
+        ff.withVideoFilter("hflip");
+        filename += `flipHorizontal)_${title}.mkv`;
+        break;
+      case "flipVertical":
+        ff.withVideoFilter("vflip");
+        filename += `flipVertical)_${title}.mkv`;
+        break;
+      default:
+        filename += `)_${title}.mkv`;
+        break;
+    }
+    ff.on("error", (error) => {
+      throw new Error(error.message);
+    });
+    ff.on("start", (comd) => {
+      startTime = /* @__PURE__ */ new Date();
+      if (verbose)
+        console.info(colors15.green("@comd:"), comd);
+    });
+    ff.on("end", () => process.stdout.write("\n"));
+    ff.on("progress", ({ percent, timemark }) => {
+      let color = colors15.green;
+      if (isNaN(percent))
+        percent = 0;
+      if (percent > 98)
+        percent = 100;
+      if (percent < 25)
+        color = colors15.red;
+      else if (percent < 50)
+        color = colors15.yellow;
+      const width = Math.floor(process.stdout.columns / 4);
+      const scomp = Math.round(width * percent / 100);
+      const progb = color("\u2501").repeat(scomp) + color(" ").repeat(width - scomp);
+      process.stdout.write(
+        `\r${color("@prog:")} ${progb} ${color("| @percent:")} ${percent.toFixed(2)}% ${color("| @timemark:")} ${timemark} ${color("| @eta:")} ${formatTime(calculateETA(startTime, percent))}`
+      );
+    });
+    if (stream) {
+      return {
+        ffmpeg: ff,
+        filename: output ? path13.join(folder, filename) : filename.replace("_)_", ")_")
+      };
+    } else {
+      await new Promise((resolve, reject2) => {
+        ff.output(path13.join(folder, filename.replace("_)_", ")_")));
+        ff.on("end", () => resolve());
+        ff.on("error", (error) => {
+          reject2(new Error(colors15.red("@error: ") + error.message));
+        });
+        ff.run();
+      });
+    }
+    console.log(
+      colors15.green("@info:"),
+      "\u2763\uFE0F Thank you for using",
+      colors15.green("yt-dlx."),
+      "Consider",
+      colors15.green("\u{1F31F}starring"),
+      "the github repo",
+      colors15.green("https://github.com/yt-dlx\n")
+    );
+  }
 }
 
 // core/index.ts
@@ -3406,7 +3702,7 @@ var ytdlx = {
   info: {
     help,
     extract,
-    // list_formats,
+    list_formats,
     extract_playlist_videos
   },
   AudioOnly: {
@@ -3428,6 +3724,13 @@ var ytdlx = {
       Lowest: ListVideoLowest,
       Highest: ListVideoHighest
     }
+  },
+  AudioVideo: {
+    Single: {
+      Lowest: AudioVideoLowest,
+      Highest: AudioVideoHighest
+    },
+    List: {}
   }
 };
 var core_default = ytdlx;
@@ -3451,12 +3754,12 @@ var program = async () => {
   switch (command) {
     case "install:deps":
       while (maxTries > 0) {
-        const enginePath = path11.join(currentDir, "util");
+        const enginePath = path13.join(currentDir, "util");
         if (fs2.existsSync(enginePath)) {
           uLoc = enginePath;
           break;
         } else {
-          currentDir = path11.join(currentDir, "..");
+          currentDir = path13.join(currentDir, "..");
           maxTries--;
         }
       }
@@ -3467,7 +3770,7 @@ var program = async () => {
       await Promise.all([
         new Promise((resolve, reject2) => {
           rox.stdout.on("data", (stdout) => {
-            console.log(colors10.green("@stdout:"), stdout.toString().trim());
+            console.log(colors15.green("@stdout:"), stdout.toString().trim());
           });
           rox.on("close", (code) => {
             if (code === 0)
@@ -3478,7 +3781,7 @@ var program = async () => {
         }),
         new Promise((resolve, reject2) => {
           rox.stderr.on("data", (stderr) => {
-            console.log(colors10.yellow("@stderr:"), stderr.toString().trim());
+            console.log(colors15.yellow("@stderr:"), stderr.toString().trim());
           });
           rox.on("close", (code) => {
             if (code === 0)
@@ -3491,12 +3794,12 @@ var program = async () => {
       break;
     case "install:socks5":
       while (maxTries > 0) {
-        const enginePath = path11.join(currentDir, "util");
+        const enginePath = path13.join(currentDir, "util");
         if (fs2.existsSync(enginePath)) {
           uLoc = enginePath;
           break;
         } else {
-          currentDir = path11.join(currentDir, "..");
+          currentDir = path13.join(currentDir, "..");
           maxTries--;
         }
       }
@@ -3507,7 +3810,7 @@ var program = async () => {
       await Promise.all([
         new Promise((resolve, reject2) => {
           xrox.stdout.on("data", (stdout) => {
-            console.log(colors10.green("@stdout:"), stdout.toString().trim());
+            console.log(colors15.green("@stdout:"), stdout.toString().trim());
           });
           xrox.on("close", (code) => {
             if (code === 0)
@@ -3518,7 +3821,7 @@ var program = async () => {
         }),
         new Promise((resolve, reject2) => {
           xrox.stderr.on("data", (stderr) => {
-            console.log(colors10.yellow("@stderr:"), stderr.toString().trim());
+            console.log(colors15.yellow("@stderr:"), stderr.toString().trim());
           });
           xrox.on("close", (code) => {
             if (code === 0)
@@ -3531,7 +3834,7 @@ var program = async () => {
       break;
     case "version":
     case "v":
-      console.error(colors10.green("Installed Version: yt-dlx@" + version));
+      console.error(colors15.green("Installed Version: yt-dlx@" + version));
       break;
     case "help":
     case "h":
@@ -3542,7 +3845,7 @@ var program = async () => {
     case "extract":
     case "e":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors10.red("error: no query"));
+        console.error(colors15.red("error: no query"));
       } else
         await core_default.info.extract({
           query: proTube.query
@@ -3550,14 +3853,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors10.red(error));
+          console.error(colors15.red(error));
           process.exit();
         });
       break;
     case "audio-highest":
     case "ah":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors10.red("error: no query"));
+        console.error(colors15.red("error: no query"));
       } else
         await core_default.AudioOnly.Single.Highest({
           query: proTube.query
@@ -3565,14 +3868,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors10.red(error));
+          console.error(colors15.red(error));
           process.exit();
         });
       break;
     case "audio-lowest":
     case "al":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors10.red("error: no query"));
+        console.error(colors15.red("error: no query"));
       } else
         await core_default.AudioOnly.Single.Lowest({
           query: proTube.query
@@ -3580,14 +3883,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors10.red(error));
+          console.error(colors15.red(error));
           process.exit();
         });
       break;
     case "video_highest":
     case "vh":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors10.red("error: no query"));
+        console.error(colors15.red("error: no query"));
       } else
         await core_default.VideoOnly.Single.Highest({
           query: proTube.query
@@ -3595,14 +3898,14 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors10.red(error));
+          console.error(colors15.red(error));
           process.exit();
         });
       break;
     case "video-lowest":
     case "vl":
       if (!proTube || !proTube.query || proTube.query.length === 0) {
-        console.error(colors10.red("error: no query"));
+        console.error(colors15.red("error: no query"));
       } else
         await core_default.VideoOnly.Single.Lowest({
           query: proTube.query
@@ -3610,7 +3913,7 @@ var program = async () => {
           console.log(data2);
           process.exit();
         }).catch((error) => {
-          console.error(colors10.red(error));
+          console.error(colors15.red(error));
           process.exit();
         });
       break;

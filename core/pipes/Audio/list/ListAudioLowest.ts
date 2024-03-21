@@ -1,5 +1,4 @@
 import { z } from "zod";
-import * as os from "os";
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
@@ -146,13 +145,11 @@ export default async function ListAudioLowest(input: {
       const folder = output ? path.join(process.cwd(), output) : process.cwd();
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
       let filename: string = "yt-dlx_(AudioLowest_";
-      const numThreads = os.cpus().length * 2;
       const ff: FfmpegCommand = ffmpeg();
       ff.addInput(engineData.AudioLowF.url);
       ff.addInput(engineData.metaData.thumbnail);
       ff.outputOptions(["-c", "copy"]);
       ff.withOutputFormat("avi");
-      ff.addOption("-threads", numThreads.toString());
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       switch (filter) {
         case "bassboost":
