@@ -35,8 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import ytdlx from "../main";
 import * as fs from "fs";
+import ytdlx from "../main";
 import colors from "colors";
 import * as path from "path";
 import minimist from "minimist";
@@ -68,18 +68,18 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     case "install:socks5": return [3 /*break*/, 3];
                     case "help": return [3 /*break*/, 5];
                     case "h": return [3 /*break*/, 5];
-                    case "extract": return [3 /*break*/, 7];
-                    case "e": return [3 /*break*/, 7];
-                    case "audio-highest": return [3 /*break*/, 11];
-                    case "ah": return [3 /*break*/, 11];
-                    case "audio-lowest": return [3 /*break*/, 15];
-                    case "al": return [3 /*break*/, 15];
-                    case "video_highest": return [3 /*break*/, 19];
-                    case "vh": return [3 /*break*/, 19];
-                    case "video-lowest": return [3 /*break*/, 23];
-                    case "vl": return [3 /*break*/, 23];
+                    case "extract": return [3 /*break*/, 6];
+                    case "e": return [3 /*break*/, 6];
+                    case "audio-highest": return [3 /*break*/, 10];
+                    case "ah": return [3 /*break*/, 10];
+                    case "audio-lowest": return [3 /*break*/, 14];
+                    case "al": return [3 /*break*/, 14];
+                    case "video_highest": return [3 /*break*/, 18];
+                    case "vh": return [3 /*break*/, 18];
+                    case "video-lowest": return [3 /*break*/, 22];
+                    case "vl": return [3 /*break*/, 22];
                 }
-                return [3 /*break*/, 27];
+                return [3 /*break*/, 26];
             case 1:
                 while (maxTries > 0) {
                     enginePath = path.join(currentDir, "util");
@@ -122,7 +122,7 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     ])];
             case 2:
                 _b.sent();
-                return [3 /*break*/, 28];
+                return [3 /*break*/, 27];
             case 3:
                 while (maxTries > 0) {
                     enginePath = path.join(currentDir, "util");
@@ -165,18 +165,17 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     ])];
             case 4:
                 _b.sent();
-                return [3 /*break*/, 28];
-            case 5: return [4 /*yield*/, ytdlx.info.help];
-            case 6:
-                hdata = _b.sent();
+                return [3 /*break*/, 27];
+            case 5:
+                hdata = ytdlx.info.help();
                 console.log(hdata);
                 process.exit();
-                return [3 /*break*/, 28];
-            case 7:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 8];
+                return [3 /*break*/, 27];
+            case 6:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 7];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 10];
-            case 8: return [4 /*yield*/, ytdlx.info
+                return [3 /*break*/, 9];
+            case 7: return [4 /*yield*/, ytdlx.info
                     .extract({
                     query: proTube.query,
                 })
@@ -188,15 +187,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 9:
+            case 8:
                 _b.sent();
-                _b.label = 10;
-            case 10: return [3 /*break*/, 28];
-            case 11:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 12];
+                _b.label = 9;
+            case 9: return [3 /*break*/, 27];
+            case 10:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 11];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 14];
-            case 12: return [4 /*yield*/, ytdlx.AudioOnly.Single.Highest({
+                return [3 /*break*/, 13];
+            case 11: return [4 /*yield*/, ytdlx.AudioOnly.Single.Highest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -207,15 +206,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 13:
+            case 12:
                 _b.sent();
-                _b.label = 14;
-            case 14: return [3 /*break*/, 28];
-            case 15:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 16];
+                _b.label = 13;
+            case 13: return [3 /*break*/, 27];
+            case 14:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 15];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 18];
-            case 16: return [4 /*yield*/, ytdlx.AudioOnly.Single.Lowest({
+                return [3 /*break*/, 17];
+            case 15: return [4 /*yield*/, ytdlx.AudioOnly.Single.Lowest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -226,15 +225,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 17:
+            case 16:
                 _b.sent();
-                _b.label = 18;
-            case 18: return [3 /*break*/, 28];
-            case 19:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 20];
+                _b.label = 17;
+            case 17: return [3 /*break*/, 27];
+            case 18:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 19];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 22];
-            case 20: return [4 /*yield*/, ytdlx.VideoOnly.Single.Highest({
+                return [3 /*break*/, 21];
+            case 19: return [4 /*yield*/, ytdlx.VideoOnly.Single.Highest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -245,15 +244,15 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 21:
+            case 20:
                 _b.sent();
-                _b.label = 22;
-            case 22: return [3 /*break*/, 28];
-            case 23:
-                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 24];
+                _b.label = 21;
+            case 21: return [3 /*break*/, 27];
+            case 22:
+                if (!(!proTube || !proTube.query || proTube.query.length === 0)) return [3 /*break*/, 23];
                 console.error(colors.red("error: no query"));
-                return [3 /*break*/, 26];
-            case 24: return [4 /*yield*/, ytdlx.VideoOnly.Single.Lowest({
+                return [3 /*break*/, 25];
+            case 23: return [4 /*yield*/, ytdlx.VideoOnly.Single.Lowest({
                     query: proTube.query,
                 })
                     .then(function (data) {
@@ -264,21 +263,21 @@ var program = function () { return __awaiter(void 0, void 0, void 0, function ()
                     console.error(colors.red(error));
                     process.exit();
                 })];
-            case 25:
+            case 24:
                 _b.sent();
-                _b.label = 26;
-            case 26: return [3 /*break*/, 28];
-            case 27:
-                data = ytdlx.info.help;
+                _b.label = 25;
+            case 25: return [3 /*break*/, 27];
+            case 26:
+                data = ytdlx.info.help();
                 console.log(data);
                 process.exit();
-                return [3 /*break*/, 28];
-            case 28: return [2 /*return*/];
+                return [3 /*break*/, 27];
+            case 27: return [2 /*return*/];
         }
     });
 }); };
 if (!proTube._[0]) {
-    var data = ytdlx.info.help;
+    var data = ytdlx.info.help();
     console.log(data);
     process.exit();
 }

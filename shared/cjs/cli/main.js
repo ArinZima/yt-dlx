@@ -36,8 +36,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const main_1 = __importDefault(require("../main"));
 const fs = __importStar(require("fs"));
+const main_1 = __importDefault(require("../main"));
 const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
 const minimist_1 = __importDefault(require("minimist"));
@@ -148,7 +148,7 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
         // break;
         case "help":
         case "h":
-            const hdata = yield main_1.default.info.help;
+            const hdata = main_1.default.info.help();
             console.log(hdata);
             process.exit();
             break;
@@ -262,14 +262,14 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 });
             break;
         default:
-            const data = main_1.default.info.help;
+            const data = main_1.default.info.help();
             console.log(data);
             process.exit();
             break;
     }
 });
 if (!proTube._[0]) {
-    const data = main_1.default.info.help;
+    const data = main_1.default.info.help();
     console.log(data);
     process.exit();
 }
