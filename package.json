@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "license": "Apache-2.0",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -94,7 +94,6 @@
   "files": [
     "util",
     "dist",
-    "shared",
     "LICENSE",
     "package.json"
   ],
