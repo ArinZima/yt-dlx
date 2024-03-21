@@ -83,7 +83,7 @@ function ListAudioCustom(_a) {
                 resolution,
             });
             let startTime;
-            const vDATA = new Set();
+            const unique = new Set();
             for (const pURL of query) {
                 try {
                     const playlistId = yield (0, YouTubeId_1.default)(pURL);
@@ -92,15 +92,15 @@ function ListAudioCustom(_a) {
                         continue;
                     }
                     else {
-                        const pDATA = yield web_1.default.browserLess.playlistVideos({
+                        const punique = yield web_1.default.browserLess.playlistVideos({
                             playlistId,
                         });
-                        if (pDATA === undefined) {
+                        if (punique === undefined) {
                             console.log(colors_1.default.red("@error:"), "unable to get response for", pURL);
                             continue;
                         }
-                        for (const video of pDATA.playlistVideos)
-                            vDATA.add(video);
+                        for (const video of punique.playlistVideos)
+                            unique.add(video);
                     }
                 }
                 catch (error) {
@@ -108,8 +108,8 @@ function ListAudioCustom(_a) {
                     continue;
                 }
             }
-            console.log(colors_1.default.green("@info:"), "total number of uncommon videos:", colors_1.default.yellow(vDATA.size.toString()));
-            for (const video of vDATA) {
+            console.log(colors_1.default.blue("@info:"), "total number of uncommon videos:", colors_1.default.blue(unique.size.toString()));
+            for (const video of unique) {
                 try {
                     const engineData = yield (0, Agent_1.default)({
                         query: video.videoLink,

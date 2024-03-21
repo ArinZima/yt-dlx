@@ -82,9 +82,9 @@ export default async function ListAudioLowest({
       }
     }
     console.log(
-      colors.green("@info:"),
+      colors.blue("@info:"),
       "total number of uncommon videos:",
-      colors.yellow(unique.size.toString())
+      colors.blue(unique.size.toString())
     );
     for (const video of unique) {
       try {

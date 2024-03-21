@@ -80,9 +80,9 @@ export default async function ListVideoLowest({
       }
     }
     console.log(
-      colors.green("@info:"),
+      colors.blue("@info:"),
       "total number of uncommon videos:",
-      colors.yellow(unique.size.toString())
+      colors.blue(unique.size.toString())
     );
     for (const video of unique) {
       try {
@@ -92,10 +92,7 @@ export default async function ListVideoLowest({
           verbose,
         });
         if (engineData === undefined) {
-          console.log(
-            colors.red("@error:"),
-            "unable to get response from youtube."
-          );
+          console.log(colors.red("@error:"), "unable to get response!");
           continue;
         }
         const title: string = engineData.metaData.title.replace(

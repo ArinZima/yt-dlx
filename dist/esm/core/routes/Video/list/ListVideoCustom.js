@@ -89,7 +89,7 @@ var ZodSchema = z.object({
 });
 export default function ListVideoCustom(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
-        var startTime_1, vDATA, query_1, query_1_1, pURL, playlistId, pDATA, _c, _d, video, error_1, e_1_1, _loop_1, vDATA_1, vDATA_1_1, video, e_2_1, error_2;
+        var startTime_1, unique, query_1, query_1_1, pURL, playlistId, punique, _c, _d, video, error_1, e_1_1, _loop_1, unique_1, unique_1_1, video, e_2_1, error_2;
         var e_1, _e, e_3, _f, e_2, _g;
         var query = _b.query, resolution = _b.resolution, verbose = _b.verbose, output = _b.output, filter = _b.filter, onionTor = _b.onionTor;
         return __generator(this, function (_h) {
@@ -104,7 +104,7 @@ export default function ListVideoCustom(_a) {
                         filter: filter,
                         onionTor: onionTor,
                     });
-                    vDATA = new Set();
+                    unique = new Set();
                     _h.label = 1;
                 case 1:
                     _h.trys.push([1, 11, 12, 13]);
@@ -126,15 +126,15 @@ export default function ListVideoCustom(_a) {
                         playlistId: playlistId,
                     })];
                 case 6:
-                    pDATA = _h.sent();
-                    if (pDATA === undefined) {
+                    punique = _h.sent();
+                    if (punique === undefined) {
                         console.log(colors.red("@error:"), "unable to get response for", pURL);
                         return [3 /*break*/, 9];
                     }
                     try {
-                        for (_c = (e_3 = void 0, __values(pDATA.playlistVideos)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                        for (_c = (e_3 = void 0, __values(punique.playlistVideos)), _d = _c.next(); !_d.done; _d = _c.next()) {
                             video = _d.value;
-                            vDATA.add(video);
+                            unique.add(video);
                         }
                     }
                     catch (e_3_1) { e_3 = { error: e_3_1 }; }
@@ -165,7 +165,7 @@ export default function ListVideoCustom(_a) {
                     finally { if (e_1) throw e_1.error; }
                     return [7 /*endfinally*/];
                 case 13:
-                    console.log(colors.green("@info:"), "total number of uncommon videos:", colors.yellow(vDATA.size.toString()));
+                    console.log(colors.blue("@info:"), "total number of uncommon videos:", colors.blue(unique.size.toString()));
                     _loop_1 = function (video) {
                         var engineData, title, folder_1, filename_1, ff_1, vdata, error_3;
                         return __generator(this, function (_j) {
@@ -180,7 +180,7 @@ export default function ListVideoCustom(_a) {
                                 case 1:
                                     engineData = _j.sent();
                                     if (engineData === undefined) {
-                                        console.log(colors.red("@error:"), "unable to get response from youtube.");
+                                        console.log(colors.red("@error:"), "unable to get response!");
                                         return [2 /*return*/, "continue"];
                                     }
                                     title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
@@ -284,17 +284,17 @@ export default function ListVideoCustom(_a) {
                     _h.label = 14;
                 case 14:
                     _h.trys.push([14, 19, 20, 21]);
-                    vDATA_1 = __values(vDATA), vDATA_1_1 = vDATA_1.next();
+                    unique_1 = __values(unique), unique_1_1 = unique_1.next();
                     _h.label = 15;
                 case 15:
-                    if (!!vDATA_1_1.done) return [3 /*break*/, 18];
-                    video = vDATA_1_1.value;
+                    if (!!unique_1_1.done) return [3 /*break*/, 18];
+                    video = unique_1_1.value;
                     return [5 /*yield**/, _loop_1(video)];
                 case 16:
                     _h.sent();
                     _h.label = 17;
                 case 17:
-                    vDATA_1_1 = vDATA_1.next();
+                    unique_1_1 = unique_1.next();
                     return [3 /*break*/, 15];
                 case 18: return [3 /*break*/, 21];
                 case 19:
@@ -303,7 +303,7 @@ export default function ListVideoCustom(_a) {
                     return [3 /*break*/, 21];
                 case 20:
                     try {
-                        if (vDATA_1_1 && !vDATA_1_1.done && (_g = vDATA_1.return)) _g.call(vDATA_1);
+                        if (unique_1_1 && !unique_1_1.done && (_g = unique_1.return)) _g.call(unique_1);
                     }
                     finally { if (e_2) throw e_2.error; }
                     return [7 /*endfinally*/];
