@@ -74,11 +74,11 @@ function ListVideoHighest(_a) {
             });
             let startTime;
             const unique = new Set();
-            for (const pURL of query) {
+            for (const purl of query) {
                 try {
-                    const playlistId = yield (0, YouTubeId_1.default)(pURL);
+                    const playlistId = yield (0, YouTubeId_1.default)(purl);
                     if (!playlistId) {
-                        console.log(colors_1.default.red("@error: "), "@error: invalid playlist", pURL);
+                        console.log(colors_1.default.red("@error: "), "@error: invalid playlist", purl);
                         continue;
                     }
                     else {
@@ -86,7 +86,7 @@ function ListVideoHighest(_a) {
                             playlistId,
                         });
                         if (punique === undefined) {
-                            console.log(colors_1.default.red("@error:"), "unable to get response for", pURL);
+                            console.log(colors_1.default.red("@error:"), "unable to get response for", purl);
                             continue;
                         }
                         for (const video of punique.playlistVideos)

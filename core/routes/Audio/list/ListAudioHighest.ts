@@ -56,11 +56,11 @@ export default async function ListAudioHighest({
       authorUrl: string;
       thumbnailUrls: string[];
     }>();
-    for (const pURL of query) {
+    for (const purl of query) {
       try {
-        const playlistId = await YouTubeID(pURL);
+        const playlistId = await YouTubeID(purl);
         if (!playlistId) {
-          console.log(colors.red("@error: "), "@error: invalid playlist", pURL);
+          console.log(colors.red("@error: "), "@error: invalid playlist", purl);
           continue;
         } else {
           const punique = await web.browserLess.playlistVideos({
@@ -70,7 +70,7 @@ export default async function ListAudioHighest({
             console.log(
               colors.red("@error:"),
               "unable to get response for",
-              pURL
+              purl
             );
             continue;
           }
