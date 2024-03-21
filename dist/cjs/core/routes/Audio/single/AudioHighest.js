@@ -43,13 +43,6 @@ const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const Agent_1 = __importDefault(require("../../../base/Agent"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
-/**
- * AudioHighest function is designed for fetching highest audio content from YouTube with various customization options.
- * It allows users to specify their search query, choose output format and apply audio filters like echo, flanger, nightcore, and more.
- * It also allows user to specify verbose output and adding proxies.
- * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
- * audio manipulation using FFmpeg, and error handling for a smooth user experience.
- */
 const qconf = zod_1.z.object({
     query: zod_1.z.string().min(1),
     output: zod_1.z.string().optional(),

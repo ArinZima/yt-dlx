@@ -44,6 +44,21 @@ import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
 var qconf = z.object({
     query: z.string().min(1),
+    resolution: z.enum([
+        "144p",
+        "240p",
+        "360p",
+        "480p",
+        "720p",
+        "1080p",
+        "1440p",
+        "2160p",
+        "3072p",
+        "4320p",
+        "6480p",
+        "8640p",
+        "12000p",
+    ]),
     output: z.string().optional(),
     stream: z.boolean().optional(),
     verbose: z.boolean().optional(),
@@ -60,18 +75,17 @@ var qconf = z.object({
     ])
         .optional(),
 });
-export default function VideoLowest(input) {
+export default function AudioVideoCustom(input) {
     return __awaiter(this, void 0, void 0, function () {
-        var startTime, _a, query, stream, verbose, output, filter, onionTor, engineData, title, folder_1, ff_1, vdata, filename_1;
-        var _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var startTime, _a, query, resolution, stream, verbose, output, filter, onionTor, engineData, title, folder_1, ff_1, vdata, filename_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0: return [4 /*yield*/, qconf.parseAsync(input)];
                 case 1:
-                    _a = _c.sent(), query = _a.query, stream = _a.stream, verbose = _a.verbose, output = _a.output, filter = _a.filter, onionTor = _a.onionTor;
+                    _a = _b.sent(), query = _a.query, resolution = _a.resolution, stream = _a.stream, verbose = _a.verbose, output = _a.output, filter = _a.filter, onionTor = _a.onionTor;
                     return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
                 case 2:
-                    engineData = _c.sent();
+                    engineData = _b.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 3];
                     throw new Error(colors.red("@error: ") + "Unable to get response!");
                 case 3:
@@ -80,17 +94,18 @@ export default function VideoLowest(input) {
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
                     ff_1 = ffmpeg();
-                    vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
-                        ? (_b = engineData.ManifestLow[0]) === null || _b === void 0 ? void 0 : _b.url
-                        : undefined;
+                    vdata = engineData.ManifestHigh.find(function (i) {
+                        return i.format.includes(resolution.replace("p", "").toString());
+                    });
+                    ff_1.addInput(engineData.AudioHighF.url);
                     if (vdata)
-                        ff_1.addInput(vdata.toString());
+                        ff_1.addInput(vdata.url.toString());
                     else
                         throw new Error(colors.red("@error: ") + "no video data found.");
                     ff_1.outputOptions("-c copy");
                     ff_1.withOutputFormat("matroska");
                     ff_1.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-                    filename_1 = "yt-dlx_(VideoLowest_";
+                    filename_1 = "yt-dlx_(AudioVideoCustom_".concat(resolution, "_");
                     switch (filter) {
                         case "grayscale":
                             ff_1.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -168,11 +183,11 @@ export default function VideoLowest(input) {
                         ff_1.run();
                     })];
                 case 5:
-                    _c.sent();
-                    _c.label = 6;
+                    _b.sent();
+                    _b.label = 6;
                 case 6:
                     console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
-                    _c.label = 7;
+                    _b.label = 7;
                 case 7: return [2 /*return*/];
             }
         });

@@ -8,13 +8,6 @@ import formatTime from "../../../base/formatTime";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 import calculateETA from "../../../base/calculateETA";
 
-/**
- * VideoHighest function is designed for fetching highest video content from YouTube with various customization options.
- * It allows users to specify their search query, choose output format and apply video filters like invert, rotate90, grayscale, and more.
- * It also allows user to specify verbose output and adding proxies.
- * Users can opt to stream the content or save it locally. This function seamlessly integrates YouTube downloading capabilities,
- * video manipulation using FFmpeg, and error handling for a smooth user experience.
- */
 const qconf = z.object({
   query: z.string().min(1),
   output: z.string().optional(),

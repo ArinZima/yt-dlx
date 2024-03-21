@@ -51,21 +51,28 @@ const qconf = zod_1.z.object({
     onionTor: zod_1.z.boolean().optional(),
     filter: zod_1.z
         .enum([
-        "invert",
-        "rotate90",
-        "rotate270",
-        "grayscale",
-        "rotate180",
-        "flipVertical",
-        "flipHorizontal",
+        "echo",
+        "slow",
+        "speed",
+        "phaser",
+        "flanger",
+        "panning",
+        "reverse",
+        "vibrato",
+        "subboost",
+        "surround",
+        "bassboost",
+        "nightcore",
+        "superslow",
+        "vaporwave",
+        "superspeed",
     ])
         .optional(),
 });
-function VideoHighest(input) {
+function AudioCustom(input) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
         let startTime;
-        const { query, stream, verbose, output, filter, onionTor } = yield qconf.parseAsync(input);
+        const { query, output, stream, verbose, filter, onionTor } = yield qconf.parseAsync(input);
         const engineData = yield (0, Agent_1.default)({ query, verbose, onionTor });
         if (engineData === undefined) {
             throw new Error(colors_1.default.red("@error: ") + "Unable to get response!");
@@ -75,50 +82,76 @@ function VideoHighest(input) {
             const folder = output ? path.join(process.cwd(), output) : process.cwd();
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
+            let filename = "yt-dlx_(AudioCustom_";
             const ff = (0, fluent_ffmpeg_1.default)();
-            const vdata = Array.isArray(engineData.ManifestHigh) &&
-                engineData.ManifestHigh.length > 0
-                ? (_a = engineData.ManifestHigh[engineData.ManifestHigh.length - 1]) === null || _a === void 0 ? void 0 : _a.url
-                : undefined;
-            if (vdata)
-                ff.addInput(vdata.toString());
-            else
-                throw new Error(colors_1.default.red("@error: ") + "no video data found.");
+            ff.addInput(engineData.AudioHighF.url);
+            ff.addInput(engineData.metaData.thumbnail);
             ff.outputOptions("-c copy");
-            ff.withOutputFormat("matroska");
+            ff.withOutputFormat("avi");
             ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-            let filename = "yt-dlx_(VideoHighest_";
             switch (filter) {
-                case "grayscale":
-                    ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                    filename += `grayscale)_${title}.mkv`;
+                case "bassboost":
+                    ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                    filename += `bassboost)_${title}.avi`;
                     break;
-                case "invert":
-                    ff.withVideoFilter("negate");
-                    filename += `invert)_${title}.mkv`;
+                case "echo":
+                    ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                    filename += `echo)_${title}.avi`;
                     break;
-                case "rotate90":
-                    ff.withVideoFilter("rotate=PI/2");
-                    filename += `rotate90)_${title}.mkv`;
+                case "flanger":
+                    ff.withAudioFilter(["flanger"]);
+                    filename += `flanger)_${title}.avi`;
                     break;
-                case "rotate180":
-                    ff.withVideoFilter("rotate=PI");
-                    filename += `rotate180)_${title}.mkv`;
+                case "nightcore":
+                    ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                    filename += `nightcore)_${title}.avi`;
                     break;
-                case "rotate270":
-                    ff.withVideoFilter("rotate=3*PI/2");
-                    filename += `rotate270)_${title}.mkv`;
+                case "panning":
+                    ff.withAudioFilter(["apulsator=hz=0.08"]);
+                    filename += `panning)_${title}.avi`;
                     break;
-                case "flipHorizontal":
-                    ff.withVideoFilter("hflip");
-                    filename += `flipHorizontal)_${title}.mkv`;
+                case "phaser":
+                    ff.withAudioFilter(["aphaser=in_gain=0.4"]);
+                    filename += `phaser)_${title}.avi`;
                     break;
-                case "flipVertical":
-                    ff.withVideoFilter("vflip");
-                    filename += `flipVertical)_${title}.mkv`;
+                case "reverse":
+                    ff.withAudioFilter(["areverse"]);
+                    filename += `reverse)_${title}.avi`;
+                    break;
+                case "slow":
+                    ff.withAudioFilter(["atempo=0.8"]);
+                    filename += `slow)_${title}.avi`;
+                    break;
+                case "speed":
+                    ff.withAudioFilter(["atempo=2"]);
+                    filename += `speed)_${title}.avi`;
+                    break;
+                case "subboost":
+                    ff.withAudioFilter(["asubboost"]);
+                    filename += `subboost)_${title}.avi`;
+                    break;
+                case "superslow":
+                    ff.withAudioFilter(["atempo=0.5"]);
+                    filename += `superslow)_${title}.avi`;
+                    break;
+                case "superspeed":
+                    ff.withAudioFilter(["atempo=3"]);
+                    filename += `superspeed)_${title}.avi`;
+                    break;
+                case "surround":
+                    ff.withAudioFilter(["surround"]);
+                    filename += `surround)_${title}.avi`;
+                    break;
+                case "vaporwave":
+                    ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                    filename += `vaporwave)_${title}.avi`;
+                    break;
+                case "vibrato":
+                    ff.withAudioFilter(["vibrato=f=6.5"]);
+                    filename += `vibrato)_${title}.avi`;
                     break;
                 default:
-                    filename += `)_${title}.mkv`;
+                    filename += `)_${title}.avi`;
                     break;
             }
             ff.on("error", (error) => {
@@ -166,8 +199,8 @@ function VideoHighest(input) {
                     ff.run();
                 });
             }
-            console.log(colors_1.default.green("@info:"), "❣️ Thank you for using", colors_1.default.green("yt-dlx."), "Consider", colors_1.default.green("🌟starring"), "the github repo", colors_1.default.green("https://github.com/yt-dlx\n"));
+            console.log(colors_1.default.green("@info:"), "❣️ Thank you for using", colors_1.default.green("yt-dlx."), "Consider", colors_1.default.green("🌟starring"), "the GitHub repo", colors_1.default.green("https://github.com/yt-dlx\n"));
         }
     });
 }
-exports.default = VideoHighest;
+exports.default = AudioCustom;

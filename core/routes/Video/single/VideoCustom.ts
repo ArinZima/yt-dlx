@@ -10,6 +10,21 @@ import calculateETA from "../../../base/calculateETA";
 
 const qconf = z.object({
   query: z.string().min(1),
+  resolution: z.enum([
+    "144p",
+    "240p",
+    "360p",
+    "480p",
+    "720p",
+    "1080p",
+    "1440p",
+    "2160p",
+    "3072p",
+    "4320p",
+    "6480p",
+    "8640p",
+    "12000p",
+  ]),
   output: z.string().optional(),
   stream: z.boolean().optional(),
   verbose: z.boolean().optional(),
@@ -26,12 +41,26 @@ const qconf = z.object({
     ])
     .optional(),
 });
-export default async function VideoLowest(input: {
+export default async function VideoCustom(input: {
   query: string;
   output?: string;
   stream?: boolean;
   verbose?: boolean;
   onionTor?: boolean;
+  resolution:
+    | "144p"
+    | "240p"
+    | "360p"
+    | "480p"
+    | "720p"
+    | "1080p"
+    | "1440p"
+    | "2160p"
+    | "3072p"
+    | "4320p"
+    | "6480p"
+    | "8640p"
+    | "12000p";
   filter?:
     | "invert"
     | "rotate90"
@@ -45,7 +74,7 @@ export default async function VideoLowest(input: {
   ffmpeg: FfmpegCommand;
 }> {
   let startTime: Date;
-  const { query, stream, verbose, output, filter, onionTor } =
+  const { query, resolution, stream, verbose, output, filter, onionTor } =
     await qconf.parseAsync(input);
   const engineData = await ytdlx({ query, verbose, onionTor });
   if (engineData === undefined) {
@@ -58,16 +87,16 @@ export default async function VideoLowest(input: {
     const folder = output ? path.join(process.cwd(), output) : process.cwd();
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
     const ff: FfmpegCommand = ffmpeg();
-    const vdata =
-      Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
-        ? engineData.ManifestLow[0]?.url
-        : undefined;
-    if (vdata) ff.addInput(vdata.toString());
+    const vdata = engineData.ManifestHigh.find((i) =>
+      i.format.includes(resolution.replace("p", "").toString())
+    );
+    ff.addInput(engineData.AudioHighF.url);
+    if (vdata) ff.addInput(vdata.url.toString());
     else throw new Error(colors.red("@error: ") + "no video data found.");
     ff.outputOptions("-c copy");
     ff.withOutputFormat("matroska");
     ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-    let filename: string = "yt-dlx_(VideoLowest_";
+    let filename: string = `yt-dlx_(VideoCustom_${resolution}_`;
     switch (filter) {
       case "grayscale":
         ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");

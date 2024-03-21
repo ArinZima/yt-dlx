@@ -45,6 +45,21 @@ const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
 const qconf = zod_1.z.object({
     query: zod_1.z.string().min(1),
+    resolution: zod_1.z.enum([
+        "144p",
+        "240p",
+        "360p",
+        "480p",
+        "720p",
+        "1080p",
+        "1440p",
+        "2160p",
+        "3072p",
+        "4320p",
+        "6480p",
+        "8640p",
+        "12000p",
+    ]),
     output: zod_1.z.string().optional(),
     stream: zod_1.z.boolean().optional(),
     verbose: zod_1.z.boolean().optional(),
@@ -61,11 +76,10 @@ const qconf = zod_1.z.object({
     ])
         .optional(),
 });
-function VideoHighest(input) {
+function VideoCustom(input) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
         let startTime;
-        const { query, stream, verbose, output, filter, onionTor } = yield qconf.parseAsync(input);
+        const { query, resolution, stream, verbose, output, filter, onionTor } = yield qconf.parseAsync(input);
         const engineData = yield (0, Agent_1.default)({ query, verbose, onionTor });
         if (engineData === undefined) {
             throw new Error(colors_1.default.red("@error: ") + "Unable to get response!");
@@ -76,18 +90,16 @@ function VideoHighest(input) {
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
             const ff = (0, fluent_ffmpeg_1.default)();
-            const vdata = Array.isArray(engineData.ManifestHigh) &&
-                engineData.ManifestHigh.length > 0
-                ? (_a = engineData.ManifestHigh[engineData.ManifestHigh.length - 1]) === null || _a === void 0 ? void 0 : _a.url
-                : undefined;
+            const vdata = engineData.ManifestHigh.find((i) => i.format.includes(resolution.replace("p", "").toString()));
+            ff.addInput(engineData.AudioHighF.url);
             if (vdata)
-                ff.addInput(vdata.toString());
+                ff.addInput(vdata.url.toString());
             else
                 throw new Error(colors_1.default.red("@error: ") + "no video data found.");
             ff.outputOptions("-c copy");
             ff.withOutputFormat("matroska");
             ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-            let filename = "yt-dlx_(VideoHighest_";
+            let filename = `yt-dlx_(VideoCustom_${resolution}_`;
             switch (filter) {
                 case "grayscale":
                     ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -170,4 +182,4 @@ function VideoHighest(input) {
         }
     });
 }
-exports.default = VideoHighest;
+exports.default = VideoCustom;

@@ -7,14 +7,17 @@ import playlist_data from "./routes/command/playlist_data";
 import search_playlists from "./routes/command/search_playlists";
 import AudioLowest from "./routes/Audio/single/AudioLowest";
 import AudioHighest from "./routes/Audio/single/AudioHighest";
+import AudioCustom from "./routes/Audio/single/AudioCustom";
 import ListAudioLowest from "./routes/Audio/list/ListAudioLowest";
 import ListAudioHighest from "./routes/Audio/list/ListAudioHighest";
 import VideoLowest from "./routes/Video/single/VideoLowest";
 import VideoHighest from "./routes/Video/single/VideoHighest";
+import VideoCustom from "./routes/Video/single/VideoCustom";
 import ListVideoLowest from "./routes/Video/list/ListVideoLowest";
 import ListVideoHighest from "./routes/Video/list/ListVideoHighest";
 import AudioVideoHighest from "./routes/AudioVideo/single/AudioVideoHighest";
 import AudioVideoLowest from "./routes/AudioVideo/single/AudioVideoLowest";
+import AudioVideoCustom from "./routes/AudioVideo/single/AudioVideoCustom";
 import ListAudioVideoHighest from "./routes/AudioVideo/list/ListAudioVideoHighest";
 import ListAudioVideoLowest from "./routes/AudioVideo/list/ListAudioVideoLowest";
 declare const ytdlx: {
@@ -37,6 +40,7 @@ declare const ytdlx: {
         Single: {
             Lowest: typeof AudioLowest;
             Highest: typeof AudioHighest;
+            Custom: typeof AudioCustom;
         };
         List: {
             Lowest: typeof ListAudioLowest;
@@ -47,6 +51,7 @@ declare const ytdlx: {
         Single: {
             Lowest: typeof VideoLowest;
             Highest: typeof VideoHighest;
+            Custom: typeof VideoCustom;
         };
         List: {
             Lowest: typeof ListVideoLowest;
@@ -57,6 +62,7 @@ declare const ytdlx: {
         Single: {
             Lowest: typeof AudioVideoLowest;
             Highest: typeof AudioVideoHighest;
+            Custom: typeof AudioVideoCustom;
         };
         List: {
             Lowest: typeof ListAudioVideoLowest;

@@ -50,28 +50,35 @@ var qconf = z.object({
     onionTor: z.boolean().optional(),
     filter: z
         .enum([
-        "invert",
-        "rotate90",
-        "rotate270",
-        "grayscale",
-        "rotate180",
-        "flipVertical",
-        "flipHorizontal",
+        "echo",
+        "slow",
+        "speed",
+        "phaser",
+        "flanger",
+        "panning",
+        "reverse",
+        "vibrato",
+        "subboost",
+        "surround",
+        "bassboost",
+        "nightcore",
+        "superslow",
+        "vaporwave",
+        "superspeed",
     ])
         .optional(),
 });
-export default function VideoLowest(input) {
+export default function AudioCustom(input) {
     return __awaiter(this, void 0, void 0, function () {
-        var startTime, _a, query, stream, verbose, output, filter, onionTor, engineData, title, folder_1, ff_1, vdata, filename_1;
-        var _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var startTime, _a, query, output, stream, verbose, filter, onionTor, engineData, title, folder_1, filename_1, ff_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0: return [4 /*yield*/, qconf.parseAsync(input)];
                 case 1:
-                    _a = _c.sent(), query = _a.query, stream = _a.stream, verbose = _a.verbose, output = _a.output, filter = _a.filter, onionTor = _a.onionTor;
+                    _a = _b.sent(), query = _a.query, output = _a.output, stream = _a.stream, verbose = _a.verbose, filter = _a.filter, onionTor = _a.onionTor;
                     return [4 /*yield*/, ytdlx({ query: query, verbose: verbose, onionTor: onionTor })];
                 case 2:
-                    engineData = _c.sent();
+                    engineData = _b.sent();
                     if (!(engineData === undefined)) return [3 /*break*/, 3];
                     throw new Error(colors.red("@error: ") + "Unable to get response!");
                 case 3:
@@ -79,49 +86,76 @@ export default function VideoLowest(input) {
                     folder_1 = output ? path.join(process.cwd(), output) : process.cwd();
                     if (!fs.existsSync(folder_1))
                         fs.mkdirSync(folder_1, { recursive: true });
+                    filename_1 = "yt-dlx_(AudioCustom_";
                     ff_1 = ffmpeg();
-                    vdata = Array.isArray(engineData.ManifestLow) && engineData.ManifestLow.length > 0
-                        ? (_b = engineData.ManifestLow[0]) === null || _b === void 0 ? void 0 : _b.url
-                        : undefined;
-                    if (vdata)
-                        ff_1.addInput(vdata.toString());
-                    else
-                        throw new Error(colors.red("@error: ") + "no video data found.");
+                    ff_1.addInput(engineData.AudioHighF.url);
+                    ff_1.addInput(engineData.metaData.thumbnail);
                     ff_1.outputOptions("-c copy");
-                    ff_1.withOutputFormat("matroska");
+                    ff_1.withOutputFormat("avi");
                     ff_1.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-                    filename_1 = "yt-dlx_(VideoLowest_";
                     switch (filter) {
-                        case "grayscale":
-                            ff_1.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
-                            filename_1 += "grayscale)_".concat(title, ".mkv");
+                        case "bassboost":
+                            ff_1.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
+                            filename_1 += "bassboost)_".concat(title, ".avi");
                             break;
-                        case "invert":
-                            ff_1.withVideoFilter("negate");
-                            filename_1 += "invert)_".concat(title, ".mkv");
+                        case "echo":
+                            ff_1.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
+                            filename_1 += "echo)_".concat(title, ".avi");
                             break;
-                        case "rotate90":
-                            ff_1.withVideoFilter("rotate=PI/2");
-                            filename_1 += "rotate90)_".concat(title, ".mkv");
+                        case "flanger":
+                            ff_1.withAudioFilter(["flanger"]);
+                            filename_1 += "flanger)_".concat(title, ".avi");
                             break;
-                        case "rotate180":
-                            ff_1.withVideoFilter("rotate=PI");
-                            filename_1 += "rotate180)_".concat(title, ".mkv");
+                        case "nightcore":
+                            ff_1.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
+                            filename_1 += "nightcore)_".concat(title, ".avi");
                             break;
-                        case "rotate270":
-                            ff_1.withVideoFilter("rotate=3*PI/2");
-                            filename_1 += "rotate270)_".concat(title, ".mkv");
+                        case "panning":
+                            ff_1.withAudioFilter(["apulsator=hz=0.08"]);
+                            filename_1 += "panning)_".concat(title, ".avi");
                             break;
-                        case "flipHorizontal":
-                            ff_1.withVideoFilter("hflip");
-                            filename_1 += "flipHorizontal)_".concat(title, ".mkv");
+                        case "phaser":
+                            ff_1.withAudioFilter(["aphaser=in_gain=0.4"]);
+                            filename_1 += "phaser)_".concat(title, ".avi");
                             break;
-                        case "flipVertical":
-                            ff_1.withVideoFilter("vflip");
-                            filename_1 += "flipVertical)_".concat(title, ".mkv");
+                        case "reverse":
+                            ff_1.withAudioFilter(["areverse"]);
+                            filename_1 += "reverse)_".concat(title, ".avi");
+                            break;
+                        case "slow":
+                            ff_1.withAudioFilter(["atempo=0.8"]);
+                            filename_1 += "slow)_".concat(title, ".avi");
+                            break;
+                        case "speed":
+                            ff_1.withAudioFilter(["atempo=2"]);
+                            filename_1 += "speed)_".concat(title, ".avi");
+                            break;
+                        case "subboost":
+                            ff_1.withAudioFilter(["asubboost"]);
+                            filename_1 += "subboost)_".concat(title, ".avi");
+                            break;
+                        case "superslow":
+                            ff_1.withAudioFilter(["atempo=0.5"]);
+                            filename_1 += "superslow)_".concat(title, ".avi");
+                            break;
+                        case "superspeed":
+                            ff_1.withAudioFilter(["atempo=3"]);
+                            filename_1 += "superspeed)_".concat(title, ".avi");
+                            break;
+                        case "surround":
+                            ff_1.withAudioFilter(["surround"]);
+                            filename_1 += "surround)_".concat(title, ".avi");
+                            break;
+                        case "vaporwave":
+                            ff_1.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
+                            filename_1 += "vaporwave)_".concat(title, ".avi");
+                            break;
+                        case "vibrato":
+                            ff_1.withAudioFilter(["vibrato=f=6.5"]);
+                            filename_1 += "vibrato)_".concat(title, ".avi");
                             break;
                         default:
-                            filename_1 += ")_".concat(title, ".mkv");
+                            filename_1 += ")_".concat(title, ".avi");
                             break;
                     }
                     ff_1.on("error", function (error) {
@@ -168,11 +202,11 @@ export default function VideoLowest(input) {
                         ff_1.run();
                     })];
                 case 5:
-                    _c.sent();
-                    _c.label = 6;
+                    _b.sent();
+                    _b.label = 6;
                 case 6:
-                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the github repo", colors.green("https://github.com/yt-dlx\n"));
-                    _c.label = 7;
+                    console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the GitHub repo", colors.green("https://github.com/yt-dlx\n"));
+                    _b.label = 7;
                 case 7: return [2 /*return*/];
             }
         });
