@@ -1,9 +1,9 @@
 {
   "name": "yt-dlx",
   "version": "5.21.0",
-  "types": "shared/index.d.ts",
-  "main": "shared/index.cjs.js",
-  "module": "shared/index.esm.js",
+  "main": "shared/cjs/index.js",
+  "module": "shared/esm/index.js",
+  "types": "shared/typings/index.d.ts",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "bin": {
     "yt": "shared/cli/main.js",
@@ -67,7 +67,6 @@
     "readline-sync": "^1.4.10",
     "speedometer": "^1.1.0",
     "stream": "^0.0.2",
-    "youtubei": "^1.3.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
