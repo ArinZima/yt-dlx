@@ -1,4 +1,4 @@
-import ytdlx from "../..";
+import ytdlx from "../../main";
 import colors from "colors";
 
 (async () => {

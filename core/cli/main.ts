@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import ytdlx from "..";
 import * as fs from "fs";
+import ytdlx from "../main";
 import colors from "colors";
 import * as path from "path";
 import minimist from "minimist";
@@ -102,7 +102,7 @@ const program = async () => {
     // break;
     case "help":
     case "h":
-      const hdata = await ytdlx.info.help;
+      const hdata = ytdlx.info.help();
       console.log(hdata);
       process.exit();
       break;
@@ -211,7 +211,7 @@ const program = async () => {
           });
       break;
     default:
-      const data = ytdlx.info.help;
+      const data = ytdlx.info.help();
       console.log(data);
       process.exit();
       break;
@@ -219,7 +219,7 @@ const program = async () => {
 };
 
 if (!proTube._[0]) {
-  const data = ytdlx.info.help;
+  const data = ytdlx.info.help();
   console.log(data);
   process.exit();
 } else program();

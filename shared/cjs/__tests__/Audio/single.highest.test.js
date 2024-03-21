@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const __1 = __importDefault(require("../.."));
+const main_1 = __importDefault(require("../../main"));
 const colors_1 = __importDefault(require("colors"));
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(colors_1.default.blue("@test:"), "Highest audio");
-        yield __1.default.AudioOnly.Single.Highest({
+        yield main_1.default.AudioOnly.Single.Highest({
             stream: false,
             verbose: true,
             onionTor: true,
