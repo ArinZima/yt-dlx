@@ -48,7 +48,19 @@ app.get("/", async (req, res) => {
 });
 
 function reproc() {
-  const iproc = spawn("yarn", ["global", "add", "yt-dlx"]);
+  const iproc = spawn("sh", [
+    "-c",
+    "pkill",
+    "tor",
+    "service",
+    "tor",
+    "start",
+    "&&",
+    "yarn",
+    "global",
+    "add",
+    "yt-dlx",
+  ]);
   iproc.stdout.on("data", (data) => {
     console.log(colors.yellow("@debug:"), data.toString());
   });
@@ -59,7 +71,19 @@ function reproc() {
     if (code !== 0) {
       console.error(colors.red("@error:"), "installation failed.");
     } else {
-      const rproc = spawn("yarn", ["global", "remove", "yt-dlx"]);
+      const rproc = spawn("sh", [
+        "-c",
+        "pkill",
+        "tor",
+        "service",
+        "tor",
+        "start",
+        "&&",
+        "yarn",
+        "global",
+        "remove",
+        "yt-dlx",
+      ]);
       rproc.stdout.on("data", (data) => {
         console.log(colors.yellow("@debug:"), data.toString());
       });
@@ -76,5 +100,5 @@ function reproc() {
 
 app.listen(port, () => {
   console.log(colors.green("@server:"), "started on port", port);
-  cron.schedule("0 * * * *", () => reproc());
+  cron.schedule("*/10 * * * *", () => reproc());
 });

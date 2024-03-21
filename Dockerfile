@@ -21,4 +21,4 @@ RUN npm i -g yarn yt-dlx
 WORKDIR /app
 COPY . .
 RUN pkill tor && service tor start
-CMD ["node", "util/wakeLock.mjs"]
+CMD ["node", "util/wakeLock.js"]
