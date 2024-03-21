@@ -21,4 +21,5 @@ RUN apt-get update \
 RUN npm i -g yarn yt-dlx --force
 WORKDIR /app
 COPY . .
-CMD tor
+RUN yarn remake
+CMD yarn ui:start
