@@ -29,7 +29,7 @@ const ZodSchema = z.object({
 /**
  * Downloads the highest quality version of a YouTube video with optional video filter.
  *
- * @param query - The YouTube video URL to download.
+ * @param query - The YouTube video URL or ID or name.
  * @param stream - (optional) Whether to return the FfmpegCommand instead of downloading the video.
  * @param verbose - (optional) Whether to log verbose output or not.
  * @param output - (optional) The output directory for the processed files.

@@ -29,7 +29,7 @@ const ZodSchema = z.object({
 /**
  * Downloads audio and video from a YouTube video URL with the lowest available resolution.
  *
- * @param query - The YouTube video URL to process.
+ * @param query - The YouTube video URL or ID or name.
  * @param stream - (optional) Whether to stream the output or not.
  * @param verbose - (optional) Whether to log verbose output or not.
  * @param output - (optional) The output directory for the processed file.

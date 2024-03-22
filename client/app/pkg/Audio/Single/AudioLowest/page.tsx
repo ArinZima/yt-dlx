@@ -129,7 +129,7 @@ export default function AwesomePackage() {
                 Downloads and processes the lowest quality audio from a single
                 YouTube video.
               </li>
-              <li>@param query - The YouTube video URL or ID.</li>
+              <li>@param query - The YouTube video URL or ID or name.</li>
               <li>
                 @param output - (optional) The output directory for the
                 processed file.
