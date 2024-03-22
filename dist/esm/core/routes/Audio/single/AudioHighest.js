@@ -68,6 +68,17 @@ var ZodSchema = z.object({
     ])
         .optional(),
 });
+/**
+ * Downloads and processes the highest quality audio from a single YouTube video.
+ *
+ * @param query - The YouTube video URL or ID.
+ * @param output - (optional) The output directory for the processed file.
+ * @param stream - (optional) Whether to stream the processed video or not.
+ * @param verbose - (optional) Whether to log verbose output or not.
+ * @param filter - (optional) The audio filter to apply. Available options: "echo", "slow", "speed", "phaser", "flanger", "panning", "reverse", "vibrato", "subboost", "surround", "bassboost", "nightcore", "superslow", "vaporwave", "superspeed".
+ * @param onionTor - (optional) Whether to use Tor for the download or not.
+ * @returns A Promise that resolves with either `void` (if `stream` is false) or an object containing the `ffmpeg` instance and the output filename (if `stream` is true).
+ */
 export default function AudioHighest(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var startTime_1, engineData, title, folder_1, filename_1, ff_1, error_1;

@@ -36,7 +36,7 @@
     "express": "^5.0.0-beta.2",
     "flowbite": "^2.2.1",
     "fluent-ffmpeg": "^2.1.2",
-    "framer-motion": "^11.0.18",
+    "framer-motion": "^11.0.20",
     "howler": "^2.2.4",
     "koa": "^2.15.2",
     "koa-bodyparser": "^4.4.1",

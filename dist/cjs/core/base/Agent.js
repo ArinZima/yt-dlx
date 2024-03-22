@@ -18,6 +18,15 @@ const niptor_1 = __importDefault(require("./niptor"));
 const Engine_1 = __importDefault(require("./Engine"));
 const YouTubeId_1 = __importDefault(require("../web/YouTubeId"));
 const package_json_1 = require("../../package.json");
+/**
+ * Fetches data for a YouTube video or search query using yt-dlx.
+ *
+ * @param query - The YouTube video ID, link, or search query.
+ * @param verbose - Optional flag to enable verbose mode.
+ * @param onionTor - Optional flag to use Tor network.
+ * @returns A Promise that resolves with the engine output containing video metadata.
+ * @throws An error if unable to get a response or encounter issues with Tor connection.
+ */
 function Agent(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, verbose, onionTor, }) {
         console.log(colors_1.default.green("\n@info:"), "using", colors_1.default.green("yt-dlx"), "version", colors_1.default.green(package_json_1.version));

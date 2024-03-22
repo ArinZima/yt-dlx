@@ -37,6 +37,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import colors from "colors";
 import web from "../../web";
 import YouTubeID from "../../web/YouTubeId";
+/**
+ * Searches for YouTube videos based on the query.
+ *
+ * @param query - The search query for videos.
+ * @returns A Promise that resolves with the search results for videos.
+ * @throws An error if the input is a video link (use video_data instead) or if unable to get a response.
+ */
 export default function search_videos(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var isID, metaData;

@@ -14,6 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const Agent_1 = __importDefault(require("../../base/Agent"));
+/**
+ * Extracts metadata information from a YouTube video.
+ *
+ * @param query - The YouTube video URL to extract metadata from.
+ * @param verbose - (optional) Whether to log verbose output or not.
+ * @param onionTor - (optional) Whether to use Tor for the extraction or not.
+ * @returns A Promise that resolves with an object containing metadata information about the video.
+ */
 function extract(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, verbose, onionTor, }) {
         const metaBody = yield (0, Agent_1.default)({ query, verbose, onionTor });

@@ -36,20 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import colors from "colors";
 import ytdlx from "../../base/Agent";
-function pTable(title, data) {
-    console.log(colors.green(title));
-    data.forEach(function (item) {
-        console.log(" ".repeat(4), item.filesizeP.padEnd(10), "|", item.format_note);
-    });
-    console.log("");
-}
-function pManifestTable(title, data) {
-    console.log(colors.green(title));
-    data.forEach(function (item) {
-        console.log(" ".repeat(4), item.format.padEnd(10), "|", item.tbr);
-    });
-    console.log("");
-}
+/**
+ * Lists the available formats and manifest information for a YouTube video.
+ *
+ * @param query - The YouTube video URL for which to list formats and manifest.
+ * @param verbose - (optional) Whether to log verbose output or not.
+ * @param onionTor - (optional) Whether to use Tor for the extraction or not.
+ * @returns A Promise that resolves after listing the formats and manifest information.
+ * @throws An error if unable to get a response from YouTube.
+ */
 export default function list_formats(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var metaBody;
@@ -78,4 +73,18 @@ export default function list_formats(_a) {
             }
         });
     });
+}
+function pTable(title, data) {
+    console.log(colors.green(title));
+    data.forEach(function (item) {
+        console.log(" ".repeat(4), item.filesizeP.padEnd(10), "|", item.format_note);
+    });
+    console.log("");
+}
+function pManifestTable(title, data) {
+    console.log(colors.green(title));
+    data.forEach(function (item) {
+        console.log(" ".repeat(4), item.format.padEnd(10), "|", item.tbr);
+    });
+    console.log("");
 }

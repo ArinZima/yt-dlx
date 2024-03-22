@@ -37,6 +37,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import colors from "colors";
 import YouTubeID from "../../web/YouTubeId";
 import web from "../../web";
+/**
+ * Extracts metadata for videos in a YouTube playlist.
+ *
+ * @param query - The YouTube playlist URL or ID for which to extract metadata.
+ * @returns A Promise that resolves with the metadata of videos in the playlist.
+ * @throws An error if the playlist link is incorrect or if unable to get a response.
+ */
 export default function playlist_data(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var playlistId, metaData;

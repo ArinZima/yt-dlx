@@ -14,20 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const Agent_1 = __importDefault(require("../../base/Agent"));
-function pTable(title, data) {
-    console.log(colors_1.default.green(title));
-    data.forEach((item) => {
-        console.log(" ".repeat(4), item.filesizeP.padEnd(10), "|", item.format_note);
-    });
-    console.log("");
-}
-function pManifestTable(title, data) {
-    console.log(colors_1.default.green(title));
-    data.forEach((item) => {
-        console.log(" ".repeat(4), item.format.padEnd(10), "|", item.tbr);
-    });
-    console.log("");
-}
+/**
+ * Lists the available formats and manifest information for a YouTube video.
+ *
+ * @param query - The YouTube video URL for which to list formats and manifest.
+ * @param verbose - (optional) Whether to log verbose output or not.
+ * @param onionTor - (optional) Whether to use Tor for the extraction or not.
+ * @returns A Promise that resolves after listing the formats and manifest information.
+ * @throws An error if unable to get a response from YouTube.
+ */
 function list_formats(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, verbose, onionTor, }) {
         const metaBody = yield (0, Agent_1.default)({ query, verbose, onionTor });
@@ -49,3 +44,17 @@ function list_formats(_a) {
     });
 }
 exports.default = list_formats;
+function pTable(title, data) {
+    console.log(colors_1.default.green(title));
+    data.forEach((item) => {
+        console.log(" ".repeat(4), item.filesizeP.padEnd(10), "|", item.format_note);
+    });
+    console.log("");
+}
+function pManifestTable(title, data) {
+    console.log(colors_1.default.green(title));
+    data.forEach((item) => {
+        console.log(" ".repeat(4), item.format.padEnd(10), "|", item.tbr);
+    });
+    console.log("");
+}

@@ -22,6 +22,17 @@ declare const ZodSchema: z.ZodObject<{
     onionTor?: boolean | undefined;
     filter?: "reverse" | "echo" | "slow" | "speed" | "phaser" | "flanger" | "panning" | "vibrato" | "subboost" | "surround" | "bassboost" | "nightcore" | "superslow" | "vaporwave" | "superspeed" | undefined;
 }>;
+/**
+ * Downloads and processes the lowest quality audio from a single YouTube video.
+ *
+ * @param query - The YouTube video URL or ID.
+ * @param output - (optional) The output directory for the processed file.
+ * @param stream - (optional) Whether to stream the processed video or not.
+ * @param verbose - (optional) Whether to log verbose output or not.
+ * @param filter - (optional) The audio filter to apply. Available options: "echo", "slow", "speed", "phaser", "flanger", "panning", "reverse", "vibrato", "subboost", "surround", "bassboost", "nightcore", "superslow", "vaporwave", "superspeed".
+ * @param onionTor - (optional) Whether to use Tor for the download or not.
+ * @returns A Promise that resolves with either `void` (if `stream` is false) or an object containing the `ffmpeg` instance and the output filename (if `stream` is true).
+ */
 export default function AudioLowest({ query, output, stream, verbose, filter, onionTor, }: z.infer<typeof ZodSchema>): Promise<void | {
     ffmpeg: FfmpegCommand;
     filename: string;

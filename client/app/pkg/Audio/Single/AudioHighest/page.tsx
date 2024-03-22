@@ -144,10 +144,9 @@ export default function AwesomePackage() {
               </li>
               <li>
                 @param filter - (optional) The audio filter to apply. Available
-                options: "echo", "slow", "speed", "phaser", "flanger",
-                "panning", "reverse", "vibrato", "subboost", "surround",
-                "bassboost", "nightcore", "superslow", "vaporwave",
-                "superspeed".
+                options: echo, slow, speed, phaser, flanger, panning, reverse,
+                vibrato, subboost, surround, bassboost, nightcore, superslow,
+                vaporwave, superspeed.
               </li>
               <li>
                 @param onionTor - (optional) Whether to use Tor for the download

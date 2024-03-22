@@ -37,6 +37,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import colors from "colors";
 import YouTubeID from "../../web/YouTubeId";
 import web from "../../web";
+/**
+ * Searches for YouTube playlists based on the query.
+ *
+ * @param query - The search query for playlists.
+ * @returns A Promise that resolves with the search results for playlists.
+ * @throws An error if the input is a playlist link (use playlist_data instead) or if unable to get a response.
+ */
 export default function search_playlists(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var isID, metaData;

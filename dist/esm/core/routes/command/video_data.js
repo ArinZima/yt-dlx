@@ -37,6 +37,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import colors from "colors";
 import YouTubeID from "../../web/YouTubeId";
 import web from "../../web";
+/**
+ * Fetches data for a single YouTube video based on the video ID or link.
+ *
+ * @param query - The video ID or link.
+ * @returns A Promise that resolves with the metadata for the single video.
+ * @throws An error if the input is an incorrect video link or if unable to get a response.
+ */
 export default function video_data(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var videoId, metaData;

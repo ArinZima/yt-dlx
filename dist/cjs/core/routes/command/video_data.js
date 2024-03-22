@@ -15,6 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const YouTubeId_1 = __importDefault(require("../../web/YouTubeId"));
 const web_1 = __importDefault(require("../../web"));
+/**
+ * Fetches data for a single YouTube video based on the video ID or link.
+ *
+ * @param query - The video ID or link.
+ * @returns A Promise that resolves with the metadata for the single video.
+ * @throws An error if the input is an incorrect video link or if unable to get a response.
+ */
 function video_data(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, }) {
         const videoId = yield (0, YouTubeId_1.default)(query);

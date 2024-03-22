@@ -15,6 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const YouTubeId_1 = __importDefault(require("../../web/YouTubeId"));
 const web_1 = __importDefault(require("../../web"));
+/**
+ * Searches for YouTube playlists based on the query.
+ *
+ * @param query - The search query for playlists.
+ * @returns A Promise that resolves with the search results for playlists.
+ * @throws An error if the input is a playlist link (use playlist_data instead) or if unable to get a response.
+ */
 function search_playlists(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, }) {
         const isID = yield (0, YouTubeId_1.default)(query);

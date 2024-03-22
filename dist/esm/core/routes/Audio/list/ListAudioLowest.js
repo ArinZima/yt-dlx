@@ -80,6 +80,16 @@ var ZodSchema = z.object({
     ])
         .optional(),
 });
+/**
+ * Downloads and processes the lowest quality audio from a list of YouTube playlists or video URLs.
+ *
+ * @param query - An array of YouTube playlist URLs or video URLs.
+ * @param output - (optional) The output directory for the processed files.
+ * @param verbose - (optional) Whether to log verbose output or not.
+ * @param filter - (optional) The audio filter to apply. Available options: "echo", "slow", "speed", "phaser", "flanger", "panning", "reverse", "vibrato", "subboost", "surround", "bassboost", "nightcore", "superslow", "vaporwave", "superspeed".
+ * @param onionTor - (optional) Whether to use Tor for the download or not.
+ * @returns A Promise that resolves when the audio processing is complete.
+ */
 export default function ListAudioLowest(_a) {
     return __awaiter(this, arguments, void 0, function (_b) {
         var startTime_1, unique, query_1, query_1_1, purl, playlistId, punique, _c, _d, video, error_1, e_1_1, _loop_1, unique_1, unique_1_1, video, e_2_1, error_2;

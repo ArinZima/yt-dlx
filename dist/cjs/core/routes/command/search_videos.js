@@ -15,6 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const web_1 = __importDefault(require("../../web"));
 const YouTubeId_1 = __importDefault(require("../../web/YouTubeId"));
+/**
+ * Searches for YouTube videos based on the query.
+ *
+ * @param query - The search query for videos.
+ * @returns A Promise that resolves with the search results for videos.
+ * @throws An error if the input is a video link (use video_data instead) or if unable to get a response.
+ */
 function search_videos(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, }) {
         const isID = yield (0, YouTubeId_1.default)(query);

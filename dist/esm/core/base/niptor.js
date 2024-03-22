@@ -61,6 +61,11 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 import colors from "colors";
 import { spawn } from "child_process";
+/**
+ * Checks if sudo is available.
+ *
+ * @returns A Promise that resolves with a boolean indicating whether sudo is available.
+ */
 function checkSudo() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -73,6 +78,13 @@ function checkSudo() {
         });
     });
 }
+/**
+ * Executes a command with or without sudo based on availability.
+ *
+ * @param args - The arguments to pass to the command.
+ * @returns A Promise that resolves with an object containing stdout and stderr data.
+ * @throws An error if the command execution fails.
+ */
 export default function niptor(args) {
     return __awaiter(this, void 0, void 0, function () {
         var sudoAvailable, command, prox, _a, stdoutData, stderrData;

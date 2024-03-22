@@ -86,7 +86,7 @@
         "tsc": "latest",
         "tsup": "^8.0.2",
         "typescript": "latest",
-        "vite": "latest",
+        "vite": "5.2.3",
         "vitest": "latest"
     },
     "files": [

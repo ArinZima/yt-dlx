@@ -15,6 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const YouTubeId_1 = __importDefault(require("../../web/YouTubeId"));
 const web_1 = __importDefault(require("../../web"));
+/**
+ * Extracts metadata for videos in a YouTube playlist.
+ *
+ * @param query - The YouTube playlist URL or ID for which to extract metadata.
+ * @returns A Promise that resolves with the metadata of videos in the playlist.
+ * @throws An error if the playlist link is incorrect or if unable to get a response.
+ */
 function playlist_data(_a) {
     return __awaiter(this, arguments, void 0, function* ({ query, }) {
         const playlistId = yield (0, YouTubeId_1.default)(query);
