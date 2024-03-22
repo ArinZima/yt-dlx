@@ -73,7 +73,7 @@ const ZodSchema = zod_1.z.object({
 /**
  * Downloads and processes a single YouTube video with audio customization options.
  *
- * @param query - The YouTube video URL or ID.
+ * @param query - The YouTube video URL or ID or name.
  * @param output - (optional) The output directory for the processed file.
  * @param stream - (optional) Whether to stream the processed video or not.
  * @param filter - (optional) The audio filter to apply. Available options: "echo", "slow", "speed", "phaser", "flanger", "panning", "reverse", "vibrato", "subboost", "surround", "bassboost", "nightcore", "superslow", "vaporwave", "superspeed".

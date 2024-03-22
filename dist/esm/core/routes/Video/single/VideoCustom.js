@@ -78,7 +78,7 @@ var ZodSchema = z.object({
 /**
  * Downloads a YouTube video with custom resolution and optional video filter.
  *
- * @param query - The YouTube video URL to download.
+ * @param query - The YouTube video URL or ID or name.
  * @param resolution - The desired resolution of the video. Available options: "144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p", "3072p", "4320p", "6480p", "8640p", "12000p".
  * @param stream - (optional) Whether to return the FfmpegCommand instead of downloading the video.
  * @param verbose - (optional) Whether to log verbose output or not.
