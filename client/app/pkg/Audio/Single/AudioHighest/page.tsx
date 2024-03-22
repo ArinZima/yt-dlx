@@ -6,9 +6,15 @@ import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
 import React, { useEffect, useState } from "react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export default function AwesomePackage() {
   const [npm, setnpm] = useState<any>(null);
+  const [isTS, setTS] = useState(true);
+  const [isCJS, setCJS] = useState(true);
+  const [isMJS, setMJS] = useState(true);
+
   useEffect(() => {
     fetch("/ioSocket").finally(() => {
       let ioSocket = io();
@@ -108,20 +114,194 @@ export default function AwesomePackage() {
       </section>
       <section className="flex flex-col items-center justify-center">
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl md:max-w-3xl xl:max-w-4xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
               Viewing YtDlx.Audio.Single.Highest()
             </h2>
             <p className="mt-4 text-gray-400">
               yt-dlx accommodates various node.js coding flavours!{" "}
-              <span className="text-red-600">
-                (typescript), (commonjs) and (esm)
-              </span>
-              , ensuring 100% compatibility and comprehensive type safety
-              coverage.
+              <span className="text-red-600">(typescript), (commonjs),</span>{" "}
+              and <span className="text-red-600">(esm)</span>, ensuring 100%
+              compatibility and comprehensive type safety coverage.
             </p>
+            <div className={`mt-8 ${isTS ? "hidden" : "block"}`}>
+              <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-blue-600/40">
+                <SyntaxHighlighter language="typescript" style={gruvboxDark}>
+                  {`import ytdlx from "yt-dlx";
+import * as fs from "fs";
+
+/**
+ * Downloads the highest quality audio of a single YouTube video.
+ *
+ * @param {string} query - the YouTube video link or video name or video id.
+ * @param {boolean} verbose - whether to enable verbose logging (default is false).
+ * @param {boolean} onionTor - whether to use onion Tor socks5 proxy (default is false).
+ * @param {boolean} stream - whether to stream the audio instead of downloading (default is false).
+ * @param {string} output - output folder name where the file.avi will be saved (default is empty root-dir).
+ * @param {string} filter - custom audio filter [echo, slow, speed, phaser, flanger,
+ *                         panning,  reverse, vibrato, subboost, surround, bassboost, nightcore,
+ *                         superslow, vaporwave, superspeed] (default is false).
+ *
+ * @returns {Promise<void>} - a promise that resolves when the download is complete.
+ * @returns {Promise<{ffmpeg, filename}>} - if stream is true, a promise that resolves with an instance of
+ *                                            ffmpeg and the filename.
+ */
+(async () => {
+  try {
+    console.log("@info: with stream: false");
+    await ytdlx.Audio.Single.Highest({
+      query: "video-link-or-video-name-or-video-id",
+      filter: "flanger", // optional
+      onionTor: false, // optional
+      output: "audio", // optional
+      verbose: false, // optional
+      stream: false, // optional
+    });
+
+    console.log("@info: with stream: true");
+    const result = await ytdlx.Audio.Single.Highest({
+      query: "video-link-or-video-name-or-video-id",
+      filter: "flanger", // optional
+      onionTor: false, // optional
+      output: "audio", // optional
+      verbose: false, // optional
+      stream: true, // optional
+    });
+    const { ffmpeg, filename } = result;
+    ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
+  } catch (error) {
+    console.error(error);
+  }
+})();`}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+            <div className={`mt-8 ${isMJS ? "hidden" : "block"}`}>
+              <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-lime-600/40">
+                <SyntaxHighlighter language="typescript" style={gruvboxDark}>
+                  {`import ytdlx from "yt-dlx";
+import * as fs from "fs";
+
+/**
+ * Downloads the highest quality audio of a single YouTube video.
+ *
+ * @param {string} query - the YouTube video link or video name or video id.
+ * @param {boolean} verbose - whether to enable verbose logging (default is false).
+ * @param {boolean} onionTor - whether to use onion Tor socks5 proxy (default is false).
+ * @param {boolean} stream - whether to stream the audio instead of downloading (default is false).
+ * @param {string} output - output folder name where the file.avi will be saved (default is empty root-dir).
+ * @param {string} filter - custom audio filter [echo, slow, speed, phaser, flanger,
+ *                         panning,  reverse, vibrato, subboost, surround, bassboost, nightcore,
+ *                         superslow, vaporwave, superspeed] (default is false).
+ *
+ * @returns {Promise<void>} - a promise that resolves when the download is complete.
+ * @returns {Promise<{ffmpeg, filename}>} - if stream is true, a promise that resolves with an instance of
+ *                                            ffmpeg and the filename.
+ */
+(async () => {
+  try {
+    console.log("@info: with stream: false");
+    await ytdlx.Audio.Single.Highest({
+      query: "video-link-or-video-name-or-video-id",
+      filter: "flanger", // optional
+      onionTor: false, // optional
+      output: "audio", // optional
+      verbose: false, // optional
+      stream: false, // optional
+    });
+
+    console.log("@info: with stream: true");
+    const result = await ytdlx.Audio.Single.Highest({
+      query: "video-link-or-video-name-or-video-id",
+      filter: "flanger", // optional
+      onionTor: false, // optional
+      output: "audio", // optional
+      verbose: false, // optional
+      stream: true, // optional
+    });
+    const { ffmpeg, filename } = result;
+    ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
+  } catch (error) {
+    console.error(error);
+  }
+})();`}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+            <div className={`mt-8 ${isCJS ? "hidden" : "block"}`}>
+              <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-yellow-600/40">
+                <SyntaxHighlighter language="javascript" style={gruvboxDark}>
+                  {`const ytdlx = require("yt-dlx");
+const fs = require("fs");
+
+/**
+ * Downloads the highest quality audio of a single YouTube video.
+ *
+ * @param {string} query - the YouTube video link or video name or video id.
+ * @param {boolean} verbose - whether to enable verbose logging (default is false).
+ * @param {boolean} onionTor - whether to use onion Tor socks5 proxy (default is false).
+ * @param {boolean} stream - whether to stream the audio instead of downloading (default is false).
+ * @param {string} output - output folder name where the file.avi will be saved (default is empty root-dir).
+ * @param {string} filter - custom audio filter [echo, slow, speed, phaser, flanger,
+ *                         panning,  reverse, vibrato, subboost, surround, bassboost, nightcore,
+ *                         superslow, vaporwave, superspeed] (default is false).
+ *
+ * @returns {Promise<void>} - a promise that resolves when the download is complete.
+ * @returns {Promise<{ffmpeg, filename}>} - if stream is true, a promise that resolves with an instance of
+ *                                            ffmpeg and the filename.
+ */
+(async () => {
+  try {
+    console.log("@info: with stream: false");
+    await ytdlx.Audio.Single.Highest({
+      query: "video-link-or-video-name-or-video-id",
+      filter: "flanger", // optional
+      onionTor: false, // optional
+      output: "audio", // optional
+      verbose: false, // optional
+      stream: false, // optional
+    });
+
+    console.log("@info: with stream: true");
+    const result = await ytdlx.Audio.Single.Highest({
+      query: "video-link-or-video-name-or-video-id",
+      filter: "flanger", // optional
+      onionTor: false, // optional
+      output: "audio", // optional
+      verbose: false, // optional
+      stream: true, // optional
+    });
+    const { ffmpeg, filename } = result;
+    ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
+  } catch (error) {
+    console.error(error);
+  }
+})();`}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <button
+                onClick={() => setTS(!isTS)}
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none focus:bg-blue-800"
+              >
+                {isTS ? "View TypeScript Example" : "Hide TypeScript Example"}
+              </button>
+              <button
+                onClick={() => setMJS(!isMJS)}
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-lime-800 focus:outline-none focus:bg-lime-800"
+              >
+                {isMJS ? "View ECMAScript Example" : "Hide ECMAScript Example"}
+              </button>
+              <button
+                onClick={() => setCJS(!isCJS)}
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-yellow-800 focus:outline-none focus:bg-yellow-800"
+              >
+                {isCJS ? "View Commonjs Usage" : "Hide Commonjs Example"}
+              </button>
+            </div>
+            {/*  */}
           </div>
-          <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 md:grid-cols-2 md:gap-12 lg:grid-cols-3"></div>
         </div>
       </section>
       <footer className="pt-20 pb-6 flex flex-wrap items-baseline justify-center">
