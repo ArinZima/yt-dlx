@@ -142,7 +142,7 @@ export default function AwesomePackage() {
                   of superior audio resolution and saves the file in the (avi)
                   format.
                   <Link
-                    href="/Audio/Single"
+                    href="/pkg/Audio/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -165,7 +165,7 @@ export default function AwesomePackage() {
                   available codecs and bitrate settings, it outputs the minimum
                   audio resolution and saves the file in (avi) format.
                   <Link
-                    href="/Audio/Single"
+                    href="/pkg/Audio/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -188,7 +188,7 @@ export default function AwesomePackage() {
                   and yt-dlx along with ffmpeg will manage the rest. To identify
                   the available formats, utilize the (list_formats) function.
                   <Link
-                    href="/Audio/Single"
+                    href="/pkg/Audio/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -213,7 +213,7 @@ export default function AwesomePackage() {
                   ensures the delivery of superior audio resolution and saves
                   each file in the (avi) format.
                   <Link
-                    href="/Audio/List"
+                    href="/pkg/Audio/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -237,7 +237,7 @@ export default function AwesomePackage() {
                   it outputs the minimum audio resolution and saves each file in
                   (avi) format.
                   <Link
-                    href="/Audio/List"
+                    href="/pkg/Audio/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -261,7 +261,7 @@ export default function AwesomePackage() {
                   the rest. To identify the available formats, utilize the
                   (list_formats) function.
                   <Link
-                    href="/Audio/List"
+                    href="/pkg/Audio/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -286,7 +286,7 @@ export default function AwesomePackage() {
                   of superior video resolution and saves the file in the (mkv)
                   format.
                   <Link
-                    href="/Video/Single"
+                    href="/pkg/Video/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -310,7 +310,7 @@ export default function AwesomePackage() {
                   video with the least possible resolution and saves the file in
                   the (mkv) format.
                   <Link
-                    href="/Video/Single"
+                    href="/pkg/Video/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -334,7 +334,7 @@ export default function AwesomePackage() {
                   To identify the available formats, use the (list_formats)
                   function.
                   <Link
-                    href="/Video/Single"
+                    href="/pkg/Video/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -359,7 +359,7 @@ export default function AwesomePackage() {
                   of superior video resolution and saves each file in the (mkv)
                   format.
                   <Link
-                    href="/Video/List"
+                    href="/pkg/Video/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -383,7 +383,7 @@ export default function AwesomePackage() {
                   video with the least possible resolution and saves each file
                   in the (mkv) format.
                   <Link
-                    href="/Video/List"
+                    href="/pkg/Video/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -407,7 +407,7 @@ export default function AwesomePackage() {
                   the rest. To identify the available formats, use the
                   (list_formats) function.
                   <Link
-                    href="/Video/List"
+                    href="/pkg/Video/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -436,7 +436,7 @@ export default function AwesomePackage() {
                   highest resolution audio+video output, saving the file in
                   (mkv) format.
                   <Link
-                    href="/AudioVideo/Single"
+                    href="/pkg/AudioVideo/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -464,7 +464,7 @@ export default function AwesomePackage() {
                   it outputs the lowest possible audio+video resolution and
                   saves the file in (mkv) format.
                   <Link
-                    href="/AudioVideo/Single"
+                    href="/pkg/AudioVideo/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -492,7 +492,7 @@ export default function AwesomePackage() {
                   To identify the available formats, use the (list_formats)
                   function.
                   <Link
-                    href="/AudioVideo/Single"
+                    href="/pkg/AudioVideo/Single"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -521,7 +521,7 @@ export default function AwesomePackage() {
                   highest resolution audio+video output, saving each file in
                   (mkv) format.
                   <Link
-                    href="/AudioVideo/List"
+                    href="/pkg/AudioVideo/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -549,7 +549,7 @@ export default function AwesomePackage() {
                   it outputs the lowest possible audio+video resolution and
                   saves each file in (mkv) format.
                   <Link
-                    href="/AudioVideo/List"
+                    href="/pkg/AudioVideo/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -577,7 +577,7 @@ export default function AwesomePackage() {
                   the rest. To identify the available formats, use the
                   (list_formats) function.
                   <Link
-                    href="/AudioVideo/List"
+                    href="/pkg/AudioVideo/List"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
