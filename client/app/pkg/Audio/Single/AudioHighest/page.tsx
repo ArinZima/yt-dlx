@@ -124,33 +124,33 @@ export default function AwesomePackage() {
               and <span className="text-red-600">(esm)</span>, ensuring 100%
               compatibility and comprehensive type safety coverage.
             </p>
-            <ul className="list-disc mt-8 mb-8">
+            <ul className="list-disc m-4">
               <li>
                 Downloads and processes the highest quality audio from a single
                 YouTube video.
               </li>
               <li>@param query - The YouTube video URL or ID.</li>
               <li>
-                @param output - (Optional) The output directory for the
+                @param output - (optional) The output directory for the
                 processed file.
               </li>
               <li>
-                @param stream - (Optional) Whether to stream the processed video
+                @param stream - (optional) Whether to stream the processed video
                 or not.
               </li>
               <li>
-                @param verbose - (Optional) Whether to log verbose output or
+                @param verbose - (optional) Whether to log verbose output or
                 not.
               </li>
               <li>
-                @param filter - (Optional) The audio filter to apply. Available
+                @param filter - (optional) The audio filter to apply. Available
                 options: "echo", "slow", "speed", "phaser", "flanger",
                 "panning", "reverse", "vibrato", "subboost", "surround",
                 "bassboost", "nightcore", "superslow", "vaporwave",
                 "superspeed".
               </li>
               <li>
-                @param onionTor - (Optional) Whether to use Tor for the download
+                @param onionTor - (optional) Whether to use Tor for the download
                 or not.
               </li>
               <li>
@@ -200,23 +200,7 @@ import * as fs from "fs";
                 <SyntaxHighlighter language="typescript" style={gruvboxDark}>
                   {`import ytdlx from "yt-dlx";
 import * as fs from "fs";
-
-/**
- * Downloads the highest quality audio of a single YouTube video.
- *
- * @param {string} query - the YouTube video link or video name or video id.
- * @param {boolean} verbose - whether to enable verbose logging (default is false).
- * @param {boolean} onionTor - whether to use onion Tor socks5 proxy (default is false).
- * @param {boolean} stream - whether to stream the audio instead of downloading (default is false).
- * @param {string} output - output folder name where the file.avi will be saved (default is empty root-dir).
- * @param {string} filter - custom audio filter [echo, slow, speed, phaser, flanger,
- *                         panning,  reverse, vibrato, subboost, surround, bassboost, nightcore,
- *                         superslow, vaporwave, superspeed] (default is false).
- *
- * @returns {Promise<void>} - a promise that resolves when the download is complete.
- * @returns {Promise<{ffmpeg, filename}>} - if stream is true, a promise that resolves with an instance of
- *                                            ffmpeg and the filename.
- */
+ 
 (async () => {
   try {
     console.log("@info: with stream: false");
@@ -252,23 +236,7 @@ import * as fs from "fs";
                 <SyntaxHighlighter language="javascript" style={gruvboxDark}>
                   {`const ytdlx = require("yt-dlx");
 const fs = require("fs");
-
-/**
- * Downloads the highest quality audio of a single YouTube video.
- *
- * @param {string} query - the YouTube video link or video name or video id.
- * @param {boolean} verbose - whether to enable verbose logging (default is false).
- * @param {boolean} onionTor - whether to use onion Tor socks5 proxy (default is false).
- * @param {boolean} stream - whether to stream the audio instead of downloading (default is false).
- * @param {string} output - output folder name where the file.avi will be saved (default is empty root-dir).
- * @param {string} filter - custom audio filter [echo, slow, speed, phaser, flanger,
- *                         panning,  reverse, vibrato, subboost, surround, bassboost, nightcore,
- *                         superslow, vaporwave, superspeed] (default is false).
- *
- * @returns {Promise<void>} - a promise that resolves when the download is complete.
- * @returns {Promise<{ffmpeg, filename}>} - if stream is true, a promise that resolves with an instance of
- *                                            ffmpeg and the filename.
- */
+ 
 (async () => {
   try {
     console.log("@info: with stream: false");

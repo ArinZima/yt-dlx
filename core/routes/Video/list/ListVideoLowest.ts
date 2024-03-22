@@ -31,10 +31,10 @@ const ZodSchema = z.object({
  * Downloads videos from YouTube based on a list of video URLs with the lowest available resolution.
  *
  * @param query - An array of YouTube video URLs to process.
- * @param verbose - (Optional) Whether to log verbose output or not.
- * @param output - (Optional) The output directory for the processed files.
- * @param filter - (Optional) The video filter to apply. Available options: "invert", "rotate90", "rotate270", "grayscale", "rotate180", "flipVertical", "flipHorizontal".
- * @param onionTor - (Optional) Whether to use Tor for the download or not.
+ * @param verbose - (optional) Whether to log verbose output or not.
+ * @param output - (optional) The output directory for the processed files.
+ * @param filter - (optional) The video filter to apply. Available options: "invert", "rotate90", "rotate270", "grayscale", "rotate180", "flipVertical", "flipHorizontal".
+ * @param onionTor - (optional) Whether to use Tor for the download or not.
  * @returns A Promise that resolves when all videos have been processed.
  */
 export default async function ListVideoLowest({
