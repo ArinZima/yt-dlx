@@ -108,7 +108,7 @@ export default function AwesomePackage() {
       </section>
       <section className="flex flex-col items-center justify-center">
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-          <div className="max-w-2xl">
+          <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
               Viewing YtDlx.Audio.Single.Lowest()
             </h2>

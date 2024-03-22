@@ -54,15 +54,17 @@ export default function AwesomePackage() {
               </h1>
             </div>
             <p className="text-gray-400">
-              Uncover an unparalleled solution for effortless audio and video
-              downloads powered by YT-DLX - An advanced{" "}
-              <span className="text-red-600">
-                (command-line + Node.js + Streaming)
-              </span>{" "}
-              tool meticulously designed for avid enthusiasts. YT-DLX stands out
-              as a feature-rich advanced package built upon the foundation of{" "}
-              <span className="text-red-600">(Youtube-DL & Python yt-dlx)</span>
-              , consistently evolving with state-of-the-art functionalities.
+              YT-DLX is a robust multimedia downloading tool meticulously
+              crafted to elevate your media consumption experience. With its
+              advanced capabilities, it offers an all-encompassing solution for
+              effortlessly acquiring audio and video content from diverse
+              sources. Drawing inspiration from renowned projects such as
+              python-yt-dlp and python-youtube-dl, YT-DLX combines cutting-edge
+              features with real-time data acquisition facilitated by Puppeteer
+              technologies. Whether you seek to enrich your audio library or
+              curate a collection of high-quality videos, YT-DLX stands as your
+              indispensable companion, ensuring seamless and efficient media
+              acquisition.
             </p>
           </article>
           <div>
@@ -112,7 +114,7 @@ export default function AwesomePackage() {
       </section>
       <section className="flex flex-col items-center justify-center">
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-          <div className="max-w-2xl">
+          <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
               Explore All Available Functions
             </h2>

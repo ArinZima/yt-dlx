@@ -113,8 +113,8 @@ export default function AwesomePackage() {
         </div>
       </section>
       <section className="flex flex-col items-center justify-center">
-        <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-          <div className="max-w-2xl md:max-w-3xl xl:max-w-4xl">
+        <div className="max-w-screen-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+          <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
               Viewing YtDlx.Audio.Single.Highest()
             </h2>
@@ -124,28 +124,47 @@ export default function AwesomePackage() {
               and <span className="text-red-600">(esm)</span>, ensuring 100%
               compatibility and comprehensive type safety coverage.
             </p>
+            <ul className="list-disc mt-8 mb-8">
+              <li>
+                Downloads and processes the highest quality audio from a single
+                YouTube video.
+              </li>
+              <li>@param query - The YouTube video URL or ID.</li>
+              <li>
+                @param output - (Optional) The output directory for the
+                processed file.
+              </li>
+              <li>
+                @param stream - (Optional) Whether to stream the processed video
+                or not.
+              </li>
+              <li>
+                @param verbose - (Optional) Whether to log verbose output or
+                not.
+              </li>
+              <li>
+                @param filter - (Optional) The audio filter to apply. Available
+                options: "echo", "slow", "speed", "phaser", "flanger",
+                "panning", "reverse", "vibrato", "subboost", "surround",
+                "bassboost", "nightcore", "superslow", "vaporwave",
+                "superspeed".
+              </li>
+              <li>
+                @param onionTor - (Optional) Whether to use Tor for the download
+                or not.
+              </li>
+              <li>
+                @returns A Promise that resolves with either `void` (if `stream`
+                is false) or an object containing the `ffmpeg` instance and the
+                output filename (if `stream` is true).
+              </li>
+            </ul>
             <div className={`mt-8 ${isTS ? "hidden" : "block"}`}>
               <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-blue-600/40">
                 <SyntaxHighlighter language="typescript" style={gruvboxDark}>
                   {`import ytdlx from "yt-dlx";
 import * as fs from "fs";
 
-/**
- * Downloads the highest quality audio of a single YouTube video.
- *
- * @param {string} query - the YouTube video link or video name or video id.
- * @param {boolean} verbose - whether to enable verbose logging (default is false).
- * @param {boolean} onionTor - whether to use onion Tor socks5 proxy (default is false).
- * @param {boolean} stream - whether to stream the audio instead of downloading (default is false).
- * @param {string} output - output folder name where the file.avi will be saved (default is empty root-dir).
- * @param {string} filter - custom audio filter [echo, slow, speed, phaser, flanger,
- *                         panning,  reverse, vibrato, subboost, surround, bassboost, nightcore,
- *                         superslow, vaporwave, superspeed] (default is false).
- *
- * @returns {Promise<void>} - a promise that resolves when the download is complete.
- * @returns {Promise<{ffmpeg, filename}>} - if stream is true, a promise that resolves with an instance of
- *                                            ffmpeg and the filename.
- */
 (async () => {
   try {
     console.log("@info: with stream: false");
