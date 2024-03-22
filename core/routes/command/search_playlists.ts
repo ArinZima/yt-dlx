@@ -2,12 +2,18 @@ import colors from "colors";
 import YouTubeID from "../../web/YouTubeId";
 import web, { searchPlaylistsType } from "../../web";
 
-interface ipop {
-  query: string;
-}
+/**
+ * Searches for YouTube playlists based on the query.
+ *
+ * @param query - The search query for playlists.
+ * @returns A Promise that resolves with the search results for playlists.
+ * @throws An error if the input is a playlist link (use playlist_data instead) or if unable to get a response.
+ */
 export default async function search_playlists({
   query,
-}: ipop): Promise<searchPlaylistsType> {
+}: {
+  query: string;
+}): Promise<searchPlaylistsType> {
   const isID = await YouTubeID(query);
   if (isID) {
     throw new Error(

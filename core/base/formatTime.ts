@@ -1,4 +1,10 @@
-export default function formatTime(seconds: any) {
+/**
+ * Formats the given time in seconds into a human-readable format (HH:MM:SS).
+ *
+ * @param seconds - The time duration in seconds.
+ * @returns A string representing the formatted time (HHh MMm SSs).
+ */
+export default function formatTime(seconds: number): string {
   if (!isFinite(seconds) || isNaN(seconds)) return "00h 00m 00s";
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);

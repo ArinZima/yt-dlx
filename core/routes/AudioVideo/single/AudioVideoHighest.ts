@@ -26,7 +26,17 @@ const ZodSchema = z.object({
     ])
     .optional(),
 });
-
+/**
+ * Downloads audio and video from a YouTube video URL with the highest available resolution.
+ *
+ * @param query - The YouTube video URL to process.
+ * @param stream - (Optional) Whether to stream the output or not.
+ * @param verbose - (Optional) Whether to log verbose output or not.
+ * @param output - (Optional) The output directory for the processed file.
+ * @param filter - (Optional) The video filter to apply. Available options: "invert", "rotate90", "rotate270", "grayscale", "rotate180", "flipVertical", "flipHorizontal".
+ * @param onionTor - (Optional) Whether to use Tor for the download or not.
+ * @returns A Promise that resolves when the audio and video processing is complete. If `stream` is true, it returns an object with the `ffmpeg` command and the `filename`.
+ */
 export default async function AudioVideoHighest({
   query,
   stream,

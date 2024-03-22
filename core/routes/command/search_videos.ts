@@ -2,12 +2,18 @@ import colors from "colors";
 import web, { searchVideosType } from "../../web";
 import YouTubeID from "../../web/YouTubeId";
 
-interface ipop {
-  query: string;
-}
+/**
+ * Searches for YouTube videos based on the query.
+ *
+ * @param query - The search query for videos.
+ * @returns A Promise that resolves with the search results for videos.
+ * @throws An error if the input is a video link (use video_data instead) or if unable to get a response.
+ */
 export default async function search_videos({
   query,
-}: ipop): Promise<searchVideosType> {
+}: {
+  query: string;
+}): Promise<searchVideosType> {
   const isID = await YouTubeID(query);
   if (isID) {
     throw new Error(
