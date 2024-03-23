@@ -1,37 +1,53 @@
 import * as fs from "fs";
 import ytdlx from "../..";
 import colors from "colors";
+import * as async from "async";
 
-(async () => {
-  try {
-    const resolutions = ["high", "medium", "low", "ultralow"] as const;
-    for (const resolution of resolutions) {
-      console.log(colors.blue("@test:"), "Download Custom audio");
-      await ytdlx.AudioOnly.Single.Custom({
-        resolution,
-        stream: false,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-      });
-
-      console.log(colors.blue("@test:"), "(stream) Download Custom audio");
-      const result = await ytdlx.AudioOnly.Single.Custom({
-        resolution,
-        stream: true,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
-      });
-      if (result && result.filename && result.ffmpeg) {
-        result.ffmpeg.pipe(fs.createWriteStream(result.filename));
-      } else {
-        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+async.series([
+  async () => {
+    try {
+      const resolutions = ["high", "medium", "low", "ultralow"] as const;
+      for (const resolution of resolutions) {
+        console.log(colors.blue("@test:"), "Download Custom AudioOnly");
+        await ytdlx.AudioOnly.Single.Custom({
+          resolution, // required
+          stream: false, // optional
+          verbose: true, // optional
+          onionTor: true, // optional
+          filter: "bassboost", // optional
+          output: "public/AudioOnly", // optional
+          query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ", // required
+        });
       }
+    } catch (error: any) {
+      console.error(colors.red(error.message));
     }
-  } catch (error: any) {
-    console.error(colors.red(error.message));
-  }
-})();
+  },
+  async () => {
+    try {
+      const resolutions = ["high", "medium", "low", "ultralow"] as const;
+      for (const resolution of resolutions) {
+        console.log(
+          colors.blue("@test:"),
+          "(stream) Download Custom AudioOnly"
+        );
+        const result = await ytdlx.AudioOnly.Single.Custom({
+          resolution, // required
+          stream: true, // optional
+          verbose: true, // optional
+          onionTor: true, // optional
+          filter: "bassboost", // optional
+          output: "public/AudioOnly", // optional
+          query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ", // required
+        });
+        if (result && result.filename && result.ffmpeg) {
+          result.ffmpeg.pipe(fs.createWriteStream(result.filename));
+        } else {
+          console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+        }
+      }
+    } catch (error: any) {
+      console.error(colors.red(error.message));
+    }
+  },
+]);
