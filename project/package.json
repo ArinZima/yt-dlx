@@ -1,4 +1,5 @@
 {
+  "license": "Apache-2.0",
   "scripts": {
     "test:cjs": "node index.cjs",
     "test:mjs": "node index.mjs",
