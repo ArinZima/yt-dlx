@@ -2390,9 +2390,9 @@ yn@3.1.1:
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
 yt-dlx@latest:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-7.5.0.tgz#37b2b981bba791256bc80c6d484a14fc9c393e97"
-  integrity sha512-bPsuZECw9nkXC3nnj7Hc+JD+ch/M95yiEfGb65jjB+eireRzU/iIfjC2/wUxdKOcQNfOx0Nt31fREuJ3dUpzvg==
+  version "7.6.0"
+  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-7.6.0.tgz#f501b9aef8ac464adfeb3728ba6876af9ef6f17f"
+  integrity sha512-CF6M3Y9RikTFpNyo18OQgnYbI/7baGqoFgJXLl+jShmIodb/4NhI7hk/2V+dA0167DomPFR3tz0QziVtvLtEFA==
   dependencies:
     async-retry "^1.3.3"
     axios "^1.6.8"
