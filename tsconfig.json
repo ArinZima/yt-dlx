@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "target": "ES2015"
-  },
-  "include": ["core/**/*.ts"],
-  "extends": "./config/base.json"
-}
