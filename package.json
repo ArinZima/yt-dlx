@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "7.6.0",
+  "version": "8.0.0-stable",
   "license": "Apache-2.0",
   "main": "dist/cjs/core/index.js",
   "types": "dist/types/index.d.ts",
