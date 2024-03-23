@@ -2,9 +2,9 @@
   "name": "yt-dlx",
   "version": "7.4.0",
   "license": "Apache-2.0",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "bin": {
     "yt": "./dist/esm/cli/main.js",

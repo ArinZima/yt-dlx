@@ -1,7 +1,7 @@
 {
   "extends": "./base.json",
   "compilerOptions": {
-    "module": "es2015",
+    "module": "esnext",
     "target": "esnext",
     "declaration": true,
     "removeComments": false,

@@ -1,8 +1,8 @@
 {
   "extends": "./base.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "es2015",
+    "target": "esnext",
+    "module": "esnext",
     "outDir": "../dist/esm"
   }
 }
