@@ -3,6 +3,10 @@
     "test:cjs": "node index.cjs",
     "test:mjs": "node index.mjs",
     "test:ts": "ts-node index.ts",
+    "postinstall": "yarn upgrade --latest --verbose",
     "test": "yarn test:cjs && yarn test:mjs && yarn test:ts"
+  },
+  "dependencies": {
+    "yt-dlx": "^7.5.0"
   }
 }
