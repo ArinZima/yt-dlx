@@ -1,11 +1,11 @@
 {
   "name": "yt-dlx",
   "type": "module",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "license": "Apache-2.0",
-  "main": ".dist/cjs/index.js",
-  "module": ".dist/esm/index.js",
-  "types": ".dist/types/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     "import": "./dist/esm/index.js",
     "require": "./dist/cjs/index.js"
