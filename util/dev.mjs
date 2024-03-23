@@ -1,7 +1,7 @@
 console.clear();
-const os = require("os");
-const readline = require("readline");
-const { spawn } = require("child_process");
+import { type, arch, totalmem, homedir, hostname, release } from "os";
+import { createInterface } from "readline";
+import { spawn } from "child_process";
 
 const colors = {
   reset: "\x1b[0m",
@@ -14,7 +14,7 @@ const core = {
   postinstall: "run-s download-files setup-permissions install-chrome",
   prepublishOnly: "yarn clean:deps",
   "setup-permissions": "chmod -R +x util/*",
-  "download-files": "node util/engine.js",
+  "download-files": "node util/engine.mjs",
   "install-chrome": "npx puppeteer browsers install chrome",
   "ui:dev": "cd client && yarn dev",
   "ui:build": "cd client && yarn build",
@@ -64,37 +64,37 @@ function runScript() {
     `${colors.green}@system:${colors.reset} welcome to the ${colors.red}yt-dlp${colors.reset} dev-test-kit`
   );
   console.log(
-    `${colors.green}@system:${colors.reset} os type: ${colors.red}${os.type()}${
+    `${colors.green}@system:${colors.reset} os type: ${colors.red}${type()}${
       colors.reset
     }`
   );
   console.log(
     `${colors.green}@system:${colors.reset} cpu architecture: ${
       colors.red
-    }${os.arch()}${colors.reset}`
+    }${arch()}${colors.reset}`
   );
   console.log(
     `${colors.green}@system:${colors.reset} total memory: ${
       colors.red
-    }${formatBytes(os.totalmem())}${colors.reset}`
+    }${formatBytes(totalmem())}${colors.reset}`
   );
   console.log(
     `${colors.green}@system:${colors.reset} home directory: ${
       colors.red
-    }${os.homedir()}${colors.reset}`
+    }${homedir()}${colors.reset}`
   );
   console.log(
     `${colors.green}@system:${colors.reset} hostname: ${
       colors.red
-    }${os.hostname()}${colors.reset}`
+    }${hostname()}${colors.reset}`
   );
   console.log(
-    `${colors.green}@system:${colors.reset} release: ${
-      colors.red
-    }${os.release()}${colors.reset}`
+    `${colors.green}@system:${colors.reset} release: ${colors.red}${release()}${
+      colors.reset
+    }`
   );
   console.log(`${colors.red}=================================${colors.reset}`);
-  const rl = readline.createInterface({
+  const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
   });

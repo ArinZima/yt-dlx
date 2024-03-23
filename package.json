@@ -1,5 +1,6 @@
 {
   "name": "yt-dlx",
+  "type": "module",
   "version": "6.9.0",
   "license": "Apache-2.0",
   "main": "./dist/cjs/index.js",
@@ -16,12 +17,12 @@
     "yt-dlx": "dist/esm/cli/main.js"
   },
   "scripts": {
-    "start": "node util/dev.js",
+    "start": "node util/dev.mjs",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
     "postinstall": "run-s download-files setup-permissions install-chrome",
     "prepublishOnly": "yarn clean:deps",
     "setup-permissions": "chmod -R +x util/*",
-    "download-files": "node util/engine.js",
+    "download-files": "node util/engine.mjs",
     "install-chrome": "npx puppeteer browsers install chrome",
     "ui:dev": "cd client && yarn dev",
     "ui:build": "cd client && yarn build",

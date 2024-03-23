@@ -1,5 +1,5 @@
-const { dirname, join } = require("path");
-const { createWriteStream, existsSync } = require("fs");
+import { dirname, join } from "path";
+import { createWriteStream, existsSync } from "fs";
 
 (async () => {
   try {

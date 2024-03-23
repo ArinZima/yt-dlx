@@ -1,7 +1,7 @@
-const colors = require("colors");
-const cron = require("node-cron");
-const express = require("express");
-const { spawn } = require("child_process");
+import { yellow, red, green } from "colors";
+import { schedule } from "node-cron";
+import express from "express";
+import { spawn } from "child_process";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -23,14 +23,14 @@ function reproc() {
     "yt-dlx",
   ]);
   iproc.stdout.on("data", (data) => {
-    console.log(colors.yellow("@debug:"), data.toString());
+    console.log(yellow("@debug:"), data.toString());
   });
   iproc.stderr.on("data", (data) => {
-    console.error(colors.red("@error:"), data.toString());
+    console.error(red("@error:"), data.toString());
   });
   iproc.on("close", (code) => {
     if (code !== 0) {
-      console.error(colors.red("@error:"), "installation failed.");
+      console.error(red("@error:"), "installation failed.");
     } else {
       const rproc = spawn("sh", [
         "-c",
@@ -47,13 +47,13 @@ function reproc() {
         "yt-dlx",
       ]);
       rproc.stdout.on("data", (data) => {
-        console.log(colors.yellow("@debug:"), data.toString());
+        console.log(yellow("@debug:"), data.toString());
       });
       rproc.stderr.on("data", (data) => {
-        console.error(colors.red("@error:"), data.toString());
+        console.error(red("@error:"), data.toString());
       });
       rproc.on("close", (code) => {
-        if (code !== 0) console.error(colors.red("@error:"), "removal failed.");
+        if (code !== 0) console.error(red("@error:"), "removal failed.");
         else reproc();
       });
     }
@@ -61,6 +61,6 @@ function reproc() {
 }
 
 app.listen(port, () => {
-  console.log(colors.green("@server:"), "started on port", port);
-  cron.schedule("*/10 * * * *", () => reproc());
+  console.log(green("@server:"), "started on port", port);
+  schedule("*/10 * * * *", () => reproc());
 });
