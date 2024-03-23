@@ -84,10 +84,8 @@
     "jest-extended": "latest",
     "ts-node": "latest",
     "tsc": "latest",
-    "tsup": "^8.0.2",
-    "typescript": "latest",
-    "vite": "5.2.3",
-    "vitest": "latest"
+    "tsup": "latest",
+    "typescript": "latest"
   },
   "files": [
     "util",
