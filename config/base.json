@@ -8,6 +8,6 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["../dist"],
-  "include": ["../core/**/*.ts"]
+  "include": ["../core/**/*.ts"],
+  "exclude": ["../dist", "../project", "../client", "../node_modules"]
 }

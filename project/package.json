@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "test:cjs": "node index.cjs",
+    "test:mjs": "node index.mjs",
+    "test:ts": "ts-node index.ts",
+    "test": "yarn test:cjs && yarn test:mjs && yarn test:ts"
+  }
+}
