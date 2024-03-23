@@ -1,2 +1,2 @@
 import colors from "colors";
-console.info(colors.green("@info"), "running index.ts");
+console.info(colors.blue("@info"), "running index.ts");

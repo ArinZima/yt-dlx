@@ -7,6 +7,10 @@
     "test": "yarn test:cjs && yarn test:mjs && yarn test:ts"
   },
   "dependencies": {
+    "@types/node": "^20.11.30",
+    "colors": "^1.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.3",
     "yt-dlx": "^7.5.0"
   }
 }
