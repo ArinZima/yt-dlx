@@ -3,7 +3,7 @@ import { createWriteStream, existsSync } from "fs";
 
 (async () => {
   try {
-    const filepath = join(dirname(process.cwd()), "engine");
+    const filepath = join(dirname(new URL(import.meta.url).pathname), "engine");
     switch (true) {
       case existsSync(filepath):
         break;
