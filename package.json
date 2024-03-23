@@ -39,7 +39,7 @@
     "build:client": "cd client && rm -rf .next temp && yarn build",
     "build:base": "rm -rf dist temp && yarn tsc:cjs && yarn tsc:esm && yarn tsc:types",
     "spec": "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
-    "test": "rm -rf temp && test:pkg && yarn test:scrape && yarn test:mix && yarn test:video && yarn test:audio && yarn test:command && yarn test:cli",
+    "test": "rm -rf temp && yarn test:pkg && yarn test:scrape && yarn test:mix && yarn test:video && yarn test:audio && yarn test:command && yarn test:cli",
     "test:pkg": "cd pkg && yarn test",
     "test:mix": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/mix.js",
     "test:video": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/video.js",
