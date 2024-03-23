@@ -36,8 +36,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const __1 = __importDefault(require(".."));
 const fs = __importStar(require("fs"));
+const __1 = require("..");
 const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
 const minimist_1 = __importDefault(require("minimist"));
@@ -143,7 +143,7 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
             break;
         case "help":
         case "h":
-            const hdata = __1.default.info.help();
+            const hdata = __1.ytdlx.info.help();
             console.log(hdata);
             process.exit();
             break;
@@ -153,7 +153,7 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 console.error(colors_1.default.red("error: no query"));
             }
             else
-                yield __1.default.info
+                yield __1.ytdlx.info
                     .extract({
                     query: proTube.query,
                 })
@@ -190,7 +190,7 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 console.error(colors_1.default.red("error: no query"));
             }
             else
-                yield __1.default.AudioOnly.Single.Highest({
+                yield __1.ytdlx.AudioOnly.Single.Highest({
                     query: proTube.query,
                 })
                     .then((data) => {
@@ -208,7 +208,7 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 console.error(colors_1.default.red("error: no query"));
             }
             else
-                yield __1.default.AudioOnly.Single.Lowest({
+                yield __1.ytdlx.AudioOnly.Single.Lowest({
                     query: proTube.query,
                 })
                     .then((data) => {
@@ -226,7 +226,7 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 console.error(colors_1.default.red("error: no query"));
             }
             else
-                yield __1.default.VideoOnly.Single.Highest({
+                yield __1.ytdlx.VideoOnly.Single.Highest({
                     query: proTube.query,
                 })
                     .then((data) => {
@@ -244,7 +244,7 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 console.error(colors_1.default.red("error: no query"));
             }
             else
-                yield __1.default.VideoOnly.Single.Lowest({
+                yield __1.ytdlx.VideoOnly.Single.Lowest({
                     query: proTube.query,
                 })
                     .then((data) => {
@@ -257,14 +257,14 @@ const program = () => __awaiter(void 0, void 0, void 0, function* () {
                 });
             break;
         default:
-            const data = __1.default.info.help();
+            const data = __1.ytdlx.info.help();
             console.log(data);
             process.exit();
             break;
     }
 });
 if (!proTube._[0]) {
-    const data = __1.default.info.help();
+    const data = __1.ytdlx.info.help();
     console.log(data);
     process.exit();
 }

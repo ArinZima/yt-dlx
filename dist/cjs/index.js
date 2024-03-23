@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ytdlx = void 0;
 // ============================[ GENERAL ]============================
 const help_1 = __importDefault(require("./routes/command/help"));
 const extract_1 = __importDefault(require("./routes/command/extract"));
@@ -38,7 +39,7 @@ const ListAudioVideoHighest_1 = __importDefault(require("./routes/AudioVideo/lis
 const ListAudioVideoLowest_1 = __importDefault(require("./routes/AudioVideo/list/ListAudioVideoLowest"));
 const ListAudioVideoCustom_1 = __importDefault(require("./routes/AudioVideo/list/ListAudioVideoCustom"));
 //
-const ytdlx = {
+exports.ytdlx = {
     ytSearch: {
         video: {
             single: video_data_1.default,
@@ -91,4 +92,3 @@ const ytdlx = {
         },
     },
 };
-exports.default = ytdlx;

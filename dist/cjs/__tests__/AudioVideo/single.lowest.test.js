@@ -36,12 +36,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const __1 = __importDefault(require("../.."));
 const colors_1 = __importDefault(require("colors"));
+const __1 = require("../..");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(colors_1.default.blue("@test:"), "Download Lowest audio");
-        yield __1.default.AudioVideo.Single.Lowest({
+        yield __1.ytdlx.AudioVideo.Single.Lowest({
             stream: false,
             verbose: true,
             onionTor: false,
@@ -49,7 +49,7 @@ const colors_1 = __importDefault(require("colors"));
             query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
         });
         console.log(colors_1.default.blue("@test:"), "(stream) Download Lowest audio");
-        const result = yield __1.default.AudioVideo.Single.Lowest({
+        const result = yield __1.ytdlx.AudioVideo.Single.Lowest({
             stream: true,
             verbose: true,
             onionTor: false,

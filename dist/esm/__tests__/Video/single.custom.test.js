@@ -46,8 +46,8 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 import * as fs from "fs";
-import ytdlx from "../..";
 import colors from "colors";
+import { ytdlx } from "../..";
 (function () { return __awaiter(void 0, void 0, void 0, function () {
     var resolutions, resolutions_1, resolutions_1_1, resolution, result, e_1_1, error_1;
     var e_1, _a;

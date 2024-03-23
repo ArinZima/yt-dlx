@@ -35,8 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import * as fs from "fs";
-import ytdlx from "../..";
 import colors from "colors";
+import { ytdlx } from "../..";
 (function () { return __awaiter(void 0, void 0, void 0, function () {
     var result, error_1;
     return __generator(this, function (_a) {

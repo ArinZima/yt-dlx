@@ -36,14 +36,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const __1 = __importDefault(require("../.."));
 const colors_1 = __importDefault(require("colors"));
+const __1 = require("../..");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const resolutions = ["high", "medium", "low", "ultralow"];
         for (const resolution of resolutions) {
             console.log(colors_1.default.blue("@test:"), "Download Custom audio");
-            yield __1.default.AudioOnly.Single.Custom({
+            yield __1.ytdlx.AudioOnly.Single.Custom({
                 resolution,
                 stream: false,
                 verbose: true,
@@ -52,7 +52,7 @@ const colors_1 = __importDefault(require("colors"));
                 query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
             });
             console.log(colors_1.default.blue("@test:"), "(stream) Download Custom audio");
-            const result = yield __1.default.AudioOnly.Single.Custom({
+            const result = yield __1.ytdlx.AudioOnly.Single.Custom({
                 resolution,
                 stream: true,
                 verbose: true,

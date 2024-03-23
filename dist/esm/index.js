@@ -33,7 +33,7 @@ import ListAudioVideoHighest from "./routes/AudioVideo/list/ListAudioVideoHighes
 import ListAudioVideoLowest from "./routes/AudioVideo/list/ListAudioVideoLowest";
 import ListAudioVideoCustom from "./routes/AudioVideo/list/ListAudioVideoCustom";
 //
-var ytdlx = {
+export var ytdlx = {
     ytSearch: {
         video: {
             single: video_data,
@@ -86,4 +86,3 @@ var ytdlx = {
         },
     },
 };
-export default ytdlx;
