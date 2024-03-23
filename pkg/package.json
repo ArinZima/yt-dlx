@@ -6,7 +6,6 @@
     "test:cjs": "node ytdlx.cjs",
     "test:mjs": "node ytdlx.mjs",
     "test:ts": "ts-node ytdlx.ts",
-    "postinstall": "yarn upgrade --latest --verbose",
     "test": "yarn test:cjs && yarn test:mjs && yarn test:ts"
   },
   "dependencies": {

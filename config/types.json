@@ -4,6 +4,7 @@
     "module": "esnext",
     "target": "esnext",
     "declaration": true,
+    "declarationMap": true,
     "removeComments": false,
     "emitDeclarationOnly": true,
     "declarationDir": "../dist/types"
