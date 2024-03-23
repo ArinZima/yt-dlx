@@ -2,14 +2,17 @@
   "name": "yt-dlx",
   "version": "6.8.0",
   "license": "Apache-2.0",
-  "main": "dist/cjs/core/index.js",
-  "types": "dist/types/index.d.ts",
-  "module": "dist/esm/core/index.js",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js"
+  },
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "bin": {
-    "yt": "dist/esm/core/cli/main.js",
-    "ytdlx": "dist/esm/core/cli/main.js",
-    "yt-dlx": "dist/esm/core/cli/main.js"
+    "yt": "dist/esm/cli/main.js",
+    "ytdlx": "dist/esm/cli/main.js",
+    "yt-dlx": "dist/esm/cli/main.js"
   },
   "scripts": {
     "start": "node util/dev.js",
@@ -45,7 +48,7 @@
     "test:audio": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/audio.js",
     "test:command": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/command.js",
     "test:scrape": "rm -rf temp && tsup core/__tests__/other/scrape.spec.ts --outDir temp && node temp/scrape.spec.js",
-    "test:cli": "yarn link && yt version && yt-dlx audio-lowest --query PERSONAL BY PLAZA && yt-dlx al --query SuaeRys5tTc && yarn unlink"
+    "test:cli": "yarn link && yt-dlx audio-lowest --query PERSONAL BY PLAZA && yt-dlx al --query SuaeRys5tTc && yarn unlink"
   },
   "dependencies": {
     "async-retry": "^1.3.3",

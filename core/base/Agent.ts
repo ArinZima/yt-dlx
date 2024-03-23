@@ -4,7 +4,6 @@ import niptor from "./niptor";
 import Engine from "./Engine";
 import YouTubeID from "../web/YouTubeId";
 import type { EngineOutput } from "./Engine";
-import { version } from "../../package.json";
 
 /**
  * Fetches data for a YouTube video or search query using yt-dlx.
@@ -24,14 +23,6 @@ export default async function Agent({
   verbose?: boolean;
   onionTor?: boolean;
 }): Promise<EngineOutput> {
-  console.log(
-    colors.green("\n@info:"),
-    "using",
-    colors.green("yt-dlx"),
-    "version",
-    colors.green(version)
-  );
-  verbose;
   let nipTor;
   let ipAddress: string | undefined = undefined;
   nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
