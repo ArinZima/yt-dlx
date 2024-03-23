@@ -6,7 +6,7 @@ import * as async from "async";
 async.series([
   async () => {
     try {
-      console.log(colors.blue("@test:"), "Download Highest VideoOnly");
+      console.log(colors.blue("@test:"), "Download Single Highest VideoOnly");
       await ytdlx.VideoOnly.Single.Highest({
         stream: false, // optional
         verbose: true, // optional
@@ -21,7 +21,10 @@ async.series([
   },
   async () => {
     try {
-      console.log(colors.blue("@test:"), "(stream) Download Highest VideoOnly");
+      console.log(
+        colors.blue("@test:"),
+        "(stream) Download Single Highest VideoOnly"
+      );
       const result = await ytdlx.VideoOnly.Single.Highest({
         stream: true, // optional
         verbose: true, // optional

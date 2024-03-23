@@ -6,7 +6,7 @@ import * as async from "async";
 async.series([
   async () => {
     try {
-      console.log(colors.blue("@test:"), "Download Lowest AudioVideo");
+      console.log(colors.blue("@test:"), "Download Single Lowest AudioVideo");
       await ytdlx.AudioVideo.Single.Lowest({
         stream: false, // optional
         verbose: true, // optional
@@ -21,7 +21,10 @@ async.series([
   },
   async () => {
     try {
-      console.log(colors.blue("@test:"), "(stream) Download Lowest AudioVideo");
+      console.log(
+        colors.blue("@test:"),
+        "(stream) Download Single Lowest AudioVideo"
+      );
       const result = await ytdlx.AudioVideo.Single.Lowest({
         stream: true, // optional
         verbose: true, // optional

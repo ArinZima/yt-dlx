@@ -8,7 +8,7 @@ async.series([
     try {
       const resolutions = ["high", "medium", "low", "ultralow"] as const;
       for (const resolution of resolutions) {
-        console.log(colors.blue("@test:"), "Download Custom AudioOnly");
+        console.log(colors.blue("@test:"), "Download Single Custom AudioOnly");
         await ytdlx.AudioOnly.Single.Custom({
           resolution, // required
           stream: false, // optional
@@ -20,7 +20,7 @@ async.series([
         });
       }
     } catch (error: any) {
-      console.error(colors.red(error.message));
+      console.error(error.message);
     }
   },
   async () => {
@@ -29,7 +29,7 @@ async.series([
       for (const resolution of resolutions) {
         console.log(
           colors.blue("@test:"),
-          "(stream) Download Custom AudioOnly"
+          "(stream) Download Single Custom AudioOnly"
         );
         const result = await ytdlx.AudioOnly.Single.Custom({
           resolution, // required
@@ -47,7 +47,7 @@ async.series([
         }
       }
     } catch (error: any) {
-      console.error(colors.red(error.message));
+      console.error(error.message);
     }
   },
 ]);

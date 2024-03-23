@@ -22,7 +22,7 @@ async.series([
         "12000p",
       ] as const;
       for (const resolution of resolutions) {
-        console.log(colors.blue("@test:"), "Download Custom VideoOnly");
+        console.log(colors.blue("@test:"), "Download Single Custom VideoOnly");
         await ytdlx.VideoOnly.Single.Custom({
           resolution, // required
           stream: false, // optional
@@ -57,7 +57,7 @@ async.series([
       for (const resolution of resolutions) {
         console.log(
           colors.blue("@test:"),
-          "(stream) Download Custom VideoOnly"
+          "(stream) Download Single Custom VideoOnly"
         );
         const result = await ytdlx.VideoOnly.Single.Custom({
           resolution, // required

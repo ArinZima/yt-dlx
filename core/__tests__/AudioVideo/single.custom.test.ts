@@ -22,7 +22,7 @@ async.series([
         "12000p",
       ] as const;
       for (const resolution of resolutions) {
-        console.log(colors.blue("@test:"), "Download Custom AudioVideo");
+        console.log(colors.blue("@test:"), "Download Single Custom AudioVideo");
         await ytdlx.AudioVideo.Single.Custom({
           resolution, // required
           stream: false, // optional
@@ -34,7 +34,7 @@ async.series([
         });
       }
     } catch (error: any) {
-      console.error(colors.red(error.message));
+      console.error(error.message);
     }
   },
   async () => {
@@ -57,7 +57,7 @@ async.series([
       for (const resolution of resolutions) {
         console.log(
           colors.blue("@test:"),
-          "(stream) Download Custom AudioVideo"
+          "(stream) Download Single Custom AudioVideo"
         );
         const result = await ytdlx.AudioVideo.Single.Custom({
           resolution, // required
@@ -75,7 +75,7 @@ async.series([
         }
       }
     } catch (error: any) {
-      console.error(colors.red(error.message));
+      console.error(error.message);
     }
   },
 ]);

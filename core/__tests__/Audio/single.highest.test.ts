@@ -6,7 +6,7 @@ import * as async from "async";
 async.series([
   async () => {
     try {
-      console.log(colors.blue("@test:"), "Download Highest AudioOnly");
+      console.log(colors.blue("@test:"), "Download Single Highest AudioOnly");
       await ytdlx.AudioOnly.Single.Highest({
         stream: false, // optional
         verbose: true, // optional
@@ -16,12 +16,15 @@ async.series([
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ", // required
       });
     } catch (error: any) {
-      console.error(colors.red(error.message));
+      console.error(error.message);
     }
   },
   async () => {
     try {
-      console.log(colors.blue("@test:"), "(stream) Download Highest AudioOnly");
+      console.log(
+        colors.blue("@test:"),
+        "(stream) Download Single Highest AudioOnly"
+      );
       const result = await ytdlx.AudioOnly.Single.Highest({
         stream: true, // optional
         verbose: true, // optional
@@ -36,7 +39,7 @@ async.series([
         console.error(colors.red("@error:"), "ffmpeg or filename not found!");
       }
     } catch (error: any) {
-      console.error(colors.red(error.message));
+      console.error(error.message);
     }
   },
 ]);
