@@ -126,36 +126,34 @@ export default function AwesomePackage() {
             </p>
             <ul className="list-disc m-4 bg-neutral-800/40 shadow-black shadow-2xl p-8 rounded-3xl border border-dashed border-red-600">
               <li>
-                Downloads and processes the lowest quality audio from a single
-                YouTube video.
+                Downloads audio and video from a YouTube video URL with the
+                lowest available resolution.
               </li>
-              <li>@param query - The YouTube video URL or ID or name.</li>
+              <li> @param query - The YouTube video URL or ID or name.</li>
               <li>
-                @param output - (optional) The output directory for the
-                processed file.
-              </li>
-              <li>
-                @param stream - (optional) Whether to stream the processed video
-                or not.
+                @param stream - (optional) Whether to stream the output or not.
               </li>
               <li>
                 @param verbose - (optional) Whether to log verbose output or
                 not.
               </li>
               <li>
-                @param filter - (optional) The audio filter to apply. Available
-                options: echo, slow, speed, phaser, flanger, panning, reverse,
-                vibrato, subboost, surround, bassboost, nightcore, superslow,
-                vaporwave, superspeed.
+                @param output - (optional) The output directory for the
+                processed file.
+              </li>
+              <li>
+                @param filter - (optional) The video filter to apply. Available
+                options: "invert", "rotate90", "rotate270", "grayscale",
+                "rotate180", "flipVertical", "flipHorizontal".
               </li>
               <li>
                 @param onionTor - (optional) Whether to use Tor for the download
                 or not.
               </li>
               <li>
-                @returns A Promise that resolves with either `void` (if `stream`
-                is false) or an object containing the `ffmpeg` instance and the
-                output filename (if `stream` is true).
+                @returns A Promise that resolves when the audio and video
+                processing is complete. If `stream` is true, it returns an
+                object with the `ffmpeg` command and the `filename`.
               </li>
             </ul>
             <div className={`mt-8 ${isTS ? "hidden" : "block"}`}>
@@ -166,29 +164,30 @@ import * as fs from "fs";
 
 (async () => {
   try {
-    console.log("@info: with stream: false");
+    console.log(colors.blue("@test:"), "Download Lowest audio");
     await ytdlx.AudioVideo.Single.Lowest({
-      query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      stream: false,
+      verbose: true,
+      onionTor: false,
+      output: "public/audio",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
 
-    console.log("@info: with stream: true");
+    console.log(colors.blue("@test:"), "(stream) Download Lowest audio");
     const result = await ytdlx.AudioVideo.Single.Lowest({
-      query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      stream: true,
+      verbose: true,
+      onionTor: false,
+      output: "public/audio",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
-    const { ffmpeg, filename } = result;
-    ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
-  } catch (error) {
-    console.error(error);
+    if (result && result.filename && result.ffmpeg) {
+      result.ffmpeg.pipe(fs.createWriteStream(result.filename));
+    } else {
+      console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+    }
+  } catch (error: any) {
+    console.error(colors.red(error.message));
   }
 })();`}
                 </SyntaxHighlighter>
@@ -202,29 +201,30 @@ import * as fs from "fs";
  
 (async () => {
   try {
-    console.log("@info: with stream: false");
+    console.log(colors.blue("@test:"), "Download Lowest audio");
     await ytdlx.default.AudioVideo.Single.Lowest({
-      query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      stream: false,
+      verbose: true,
+      onionTor: false,
+      output: "public/audio",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
 
-    console.log("@info: with stream: true");
+    console.log(colors.blue("@test:"), "(stream) Download Lowest audio");
     const result = await ytdlx.default.AudioVideo.Single.Lowest({
-      query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      stream: true,
+      verbose: true,
+      onionTor: false,
+      output: "public/audio",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
-    const { ffmpeg, filename } = result;
-    ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
-  } catch (error) {
-    console.error(error);
+    if (result && result.filename && result.ffmpeg) {
+      result.ffmpeg.pipe(fs.createWriteStream(result.filename));
+    } else {
+      console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+    }
+  } catch (error: any) {
+    console.error(colors.red(error.message));
   }
 })();`}
                 </SyntaxHighlighter>
@@ -238,29 +238,30 @@ const fs = require("fs");
  
 (async () => {
   try {
-    console.log("@info: with stream: false");
-    await ytdlx.AudioVideo.default.Single.Lowest({
-      query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+    console.log(colors.blue("@test:"), "Download Lowest audio");
+    await ytdlx.default.AudioVideo.Single.Lowest({
+      stream: false,
+      verbose: true,
+      onionTor: false,
+      output: "public/audio",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
 
-    console.log("@info: with stream: true");
+    console.log(colors.blue("@test:"), "(stream) Download Lowest audio");
     const result = await ytdlx.default.AudioVideo.Single.Lowest({
-      query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      stream: true,
+      verbose: true,
+      onionTor: false,
+      output: "public/audio",
+      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
-    const { ffmpeg, filename } = result;
-    ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
-  } catch (error) {
-    console.error(error);
+    if (result && result.filename && result.ffmpeg) {
+      result.ffmpeg.pipe(fs.createWriteStream(result.filename));
+    } else {
+      console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+    }
+  } catch (error: any) {
+    console.error(colors.red(error.message));
   }
 })();`}
                 </SyntaxHighlighter>

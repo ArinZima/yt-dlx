@@ -126,41 +126,40 @@ export default function AwesomePackage() {
             </p>
             <ul className="list-disc m-4 bg-neutral-800/40 shadow-black shadow-2xl p-8 rounded-3xl border border-dashed border-red-600">
               <li>
-                Downloads and processes a single YouTube video with audio
-                customization options.
+                Downloads audio and video from a YouTube video URL with
+                customizable options such as resolution and filters.
               </li>
               <li>@param query - The YouTube video URL or ID or name.</li>
               <li>
-                @param output - (optional) The output directory for the
-                processed file.
+                @param resolution - The desired resolution for the video.
+                Available options: "144p", "240p", "360p", "480p", "720p",
+                "1080p", "1440p", "2160p", "3072p", "4320p", "6480p", "8640p",
+                "12000p".
               </li>
               <li>
-                @param stream - (optional) Whether to stream the processed video
-                or not.
-              </li>
-              <li>
-                @param filter - (optional) The audio filter to apply. Available
-                options: "echo", "slow", "speed", "phaser", "flanger",
-                "panning", "reverse", "vibrato", "subboost", "surround",
-                "bassboost", "nightcore", "superslow", "vaporwave",
-                "superspeed".
+                @param stream - (optional) Whether to stream the output or not.
               </li>
               <li>
                 @param verbose - (optional) Whether to log verbose output or
                 not.
               </li>
               <li>
+                @param output - (optional) The output directory for the
+                processed file.
+              </li>
+              <li>
+                param filter - (optional) The video filter to apply. Available
+                options: "invert", "rotate90", "rotate270", "grayscale",
+                "rotate180", "flipVertical", "flipHorizontal".
+              </li>
+              <li>
                 @param onionTor - (optional) Whether to use Tor for the download
                 or not.
               </li>
               <li>
-                @param resolution - The desired audio resolution. Available
-                options: "high", "medium", "low", "ultralow".
-              </li>
-              <li>
-                @returns A Promise that resolves with either `void` (if `stream`
-                is false) or an object containing the `ffmpeg` instance and the
-                output filename (if `stream` is true).
+                @returns A Promise that resolves when the audio and video
+                processing is complete. If `stream` is true, it returns an
+                object with the `ffmpeg` command and the `filename`.
               </li>
             </ul>
             <div className={`mt-8 ${isTS ? "hidden" : "block"}`}>
@@ -172,7 +171,21 @@ import colors from "colors";
 
 (async () => {
   try {
-    const resolutions = ["high", "medium", "low", "ultralow"] as const;
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ] as const;
     for (const resolution of resolutions) {
       console.log(colors.blue("@test:"), "Download Custom audio");
       await ytdlx.AudioVideo.Single.Custom({
@@ -215,7 +228,21 @@ import colors from "colors";
 
 (async () => {
   try {
-    const resolutions = ["high", "medium", "low", "ultralow"] as const;
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ] as const;
     for (const resolution of resolutions) {
       console.log(colors.blue("@test:"), "Download Custom audio");
       await ytdlx.default.AudioVideo.Single.Custom({
@@ -258,7 +285,21 @@ const colors = require("colors");
 
 (async () => {
   try {
-    const resolutions = ["high", "medium", "low", "ultralow"] as const;
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ] as const;
     for (const resolution of resolutions) {
       console.log(colors.blue("@test:"), "Download Custom audio");
       await ytdlx.default.AudioVideo.Single.Custom({
