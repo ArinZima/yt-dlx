@@ -6,9 +6,15 @@ import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
 import React, { useEffect, useState } from "react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export default function AwesomePackage() {
   const [npm, setnpm] = useState<any>(null);
+  const [isTS, setTS] = useState(true);
+  const [isCJS, setCJS] = useState(true);
+  const [isMJS, setMJS] = useState(true);
+
   useEffect(() => {
     fetch("/ioSocket").finally(() => {
       let ioSocket = io();
@@ -107,21 +113,207 @@ export default function AwesomePackage() {
         </div>
       </section>
       <section className="flex flex-col items-center justify-center">
-        <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+        <div className="max-w-screen-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
-              Viewing YtDlx.Audio.Single.Custom()
+              Viewing YtDlx.AudioOnly.Single.Custom()
             </h2>
             <p className="mt-4 text-gray-400">
               yt-dlx accommodates various node.js coding flavours!{" "}
-              <span className="text-red-600">
-                (typescript), (commonjs) and (esm)
-              </span>
-              , ensuring 100% compatibility and comprehensive type safety
-              coverage.
+              <span className="text-red-600">(typescript), (commonjs),</span>{" "}
+              and <span className="text-red-600">(esm)</span>, ensuring 100%
+              compatibility and comprehensive type safety coverage.
             </p>
+            <ul className="list-disc m-4 bg-neutral-800/40 shadow-black shadow-2xl p-8 rounded-3xl border border-dashed border-red-600">
+              <li>
+                Downloads and processes a single YouTube video with audio
+                customization options.
+              </li>
+              <li>@param query - The YouTube video URL or ID or name.</li>
+              <li>
+                @param output - (optional) The output directory for the
+                processed file.
+              </li>
+              <li>
+                @param stream - (optional) Whether to stream the processed video
+                or not.
+              </li>
+              <li>
+                @param filter - (optional) The audio filter to apply. Available
+                options: "echo", "slow", "speed", "phaser", "flanger",
+                "panning", "reverse", "vibrato", "subboost", "surround",
+                "bassboost", "nightcore", "superslow", "vaporwave",
+                "superspeed".
+              </li>
+              <li>
+                @param verbose - (optional) Whether to log verbose output or
+                not.
+              </li>
+              <li>
+                @param onionTor - (optional) Whether to use Tor for the download
+                or not.
+              </li>
+              <li>
+                @param resolution - The desired audio resolution. Available
+                options: "high", "medium", "low", "ultralow".
+              </li>
+              <li>
+                @returns A Promise that resolves with either `void` (if `stream`
+                is false) or an object containing the `ffmpeg` instance and the
+                output filename (if `stream` is true).
+              </li>
+            </ul>
+            <div className={`mt-8 ${isTS ? "hidden" : "block"}`}>
+              <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-blue-600/40">
+                <SyntaxHighlighter language="typescript" style={gruvboxDark}>
+                  {`import * as fs from "fs";
+import ytdlx from "yt-dlx";
+import colors from "colors";
+
+(async () => {
+  try {
+    const resolutions = ["high", "medium", "low", "ultralow"] as const;
+    for (const resolution of resolutions) {
+      console.log(colors.blue("@test:"), "Download Custom audio");
+      await ytdlx.AudioOnly.Single.Custom({
+        resolution,
+        stream: false,
+        verbose: true,
+        onionTor: false,
+        output: "public/audio",
+        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      });
+
+      console.log(colors.blue("@test:"), "(stream) Download Custom audio");
+      const result = await ytdlx.AudioOnly.Single.Custom({
+        resolution,
+        stream: true,
+        verbose: true,
+        onionTor: false,
+        output: "public/audio",
+        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      });
+      if (result && result.filename && result.ffmpeg) {
+        result.ffmpeg.pipe(fs.createWriteStream(result.filename));
+      } else {
+        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      }
+    }
+  } catch (error: any) {
+    console.error(colors.red(error.message));
+  }
+})();`}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+            <div className={`mt-8 ${isMJS ? "hidden" : "block"}`}>
+              <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-lime-600/40">
+                <SyntaxHighlighter language="javascript" style={gruvboxDark}>
+                  {`import * as fs from "fs";
+import ytdlx from "yt-dlx";
+import colors from "colors";
+
+(async () => {
+  try {
+    const resolutions = ["high", "medium", "low", "ultralow"] as const;
+    for (const resolution of resolutions) {
+      console.log(colors.blue("@test:"), "Download Custom audio");
+      await ytdlx.default.AudioOnly.Single.Custom({
+        resolution,
+        stream: false,
+        verbose: true,
+        onionTor: false,
+        output: "public/audio",
+        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      });
+
+      console.log(colors.blue("@test:"), "(stream) Download Custom audio");
+      const result = await ytdlx.default.AudioOnly.Single.Custom({
+        resolution,
+        stream: true,
+        verbose: true,
+        onionTor: false,
+        output: "public/audio",
+        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      });
+      if (result && result.filename && result.ffmpeg) {
+        result.ffmpeg.pipe(fs.createWriteStream(result.filename));
+      } else {
+        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      }
+    }
+  } catch (error: any) {
+    console.error(colors.red(error.message));
+  }
+})();`}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+            <div className={`mt-8 ${isCJS ? "hidden" : "block"}`}>
+              <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-yellow-600/40">
+                <SyntaxHighlighter language="javascript" style={gruvboxDark}>
+                  {`const ytdlx = require("yt-dlx");
+const fs = require("fs");
+const colors = require("colors");
+
+(async () => {
+  try {
+    const resolutions = ["high", "medium", "low", "ultralow"] as const;
+    for (const resolution of resolutions) {
+      console.log(colors.blue("@test:"), "Download Custom audio");
+      await ytdlx.default.AudioOnly.Single.Custom({
+        resolution,
+        stream: false,
+        verbose: true,
+        onionTor: false,
+        output: "public/audio",
+        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      });
+
+      console.log(colors.blue("@test:"), "(stream) Download Custom audio");
+      const result = await ytdlx.default.AudioOnly.Single.Custom({
+        resolution,
+        stream: true,
+        verbose: true,
+        onionTor: false,
+        output: "public/audio",
+        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      });
+      if (result && result.filename && result.ffmpeg) {
+        result.ffmpeg.pipe(fs.createWriteStream(result.filename));
+      } else {
+        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      }
+    }
+  } catch (error: any) {
+    console.error(colors.red(error.message));
+  }
+})();`}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <button
+                onClick={() => setTS(!isTS)}
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none focus:bg-blue-800"
+              >
+                {isTS ? "View TypeScript Example" : "Hide TypeScript Example"}
+              </button>
+              <button
+                onClick={() => setMJS(!isMJS)}
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-lime-800 focus:outline-none focus:bg-lime-800"
+              >
+                {isMJS ? "View ECMAScript Example" : "Hide ECMAScript Example"}
+              </button>
+              <button
+                onClick={() => setCJS(!isCJS)}
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-yellow-800 focus:outline-none focus:bg-yellow-800"
+              >
+                {isCJS ? "View Commonjs Usage" : "Hide Commonjs Example"}
+              </button>
+            </div>
+            {/*  */}
           </div>
-          <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 md:grid-cols-2 md:gap-12 lg:grid-cols-3"></div>
         </div>
       </section>
       <footer className="pt-20 pb-6 flex flex-wrap items-baseline justify-center">

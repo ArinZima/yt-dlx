@@ -110,7 +110,7 @@ export default function AwesomePackage() {
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
-              Viewing YtDlx.Audio.List.Highest()
+              Viewing YtDlx.AudioOnly.List.Highest()
             </h2>
             <p className="mt-4 text-gray-400">
               yt-dlx accommodates various node.js coding flavours!{" "}

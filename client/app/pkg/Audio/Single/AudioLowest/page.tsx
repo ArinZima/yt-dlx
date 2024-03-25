@@ -116,7 +116,7 @@ export default function AwesomePackage() {
         <div className="max-w-screen-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
-              Viewing YtDlx.Audio.Single.Lowest()
+              Viewing YtDlx.AudioOnly.Single.Lowest()
             </h2>
             <p className="mt-4 text-gray-400">
               yt-dlx accommodates various node.js coding flavours!{" "}
@@ -124,7 +124,7 @@ export default function AwesomePackage() {
               and <span className="text-red-600">(esm)</span>, ensuring 100%
               compatibility and comprehensive type safety coverage.
             </p>
-            <ul className="list-disc m-4">
+            <ul className="list-disc m-4 bg-neutral-800/40 shadow-black shadow-2xl p-8 rounded-3xl border border-dashed border-red-600">
               <li>
                 Downloads and processes the lowest quality audio from a single
                 YouTube video.
@@ -167,7 +167,7 @@ import * as fs from "fs";
 (async () => {
   try {
     console.log("@info: with stream: false");
-    await ytdlx.Audio.Single.Lowest({
+    await ytdlx.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
       filter: "flanger", // optional
       onionTor: false, // optional
@@ -177,7 +177,7 @@ import * as fs from "fs";
     });
 
     console.log("@info: with stream: true");
-    const result = await ytdlx.Audio.Single.Lowest({
+    const result = await ytdlx.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
       filter: "flanger", // optional
       onionTor: false, // optional
@@ -196,14 +196,14 @@ import * as fs from "fs";
             </div>
             <div className={`mt-8 ${isMJS ? "hidden" : "block"}`}>
               <div className="text-gray-400 bg-black/40 shadow-2xl shadow-black/60 p-4 rounded-xl border border-lime-600/40">
-                <SyntaxHighlighter language="typescript" style={gruvboxDark}>
+                <SyntaxHighlighter language="javascript" style={gruvboxDark}>
                   {`import ytdlx from "yt-dlx";
 import * as fs from "fs";
  
 (async () => {
   try {
     console.log("@info: with stream: false");
-    await ytdlx.Audio.Single.Lowest({
+    await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
       filter: "flanger", // optional
       onionTor: false, // optional
@@ -213,7 +213,7 @@ import * as fs from "fs";
     });
 
     console.log("@info: with stream: true");
-    const result = await ytdlx.Audio.Single.Lowest({
+    const result = await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
       filter: "flanger", // optional
       onionTor: false, // optional
@@ -239,7 +239,7 @@ const fs = require("fs");
 (async () => {
   try {
     console.log("@info: with stream: false");
-    await ytdlx.Audio.Single.Lowest({
+    await ytdlx.AudioOnly.default.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
       filter: "flanger", // optional
       onionTor: false, // optional
@@ -249,7 +249,7 @@ const fs = require("fs");
     });
 
     console.log("@info: with stream: true");
-    const result = await ytdlx.Audio.Single.Lowest({
+    const result = await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
       filter: "flanger", // optional
       onionTor: false, // optional
