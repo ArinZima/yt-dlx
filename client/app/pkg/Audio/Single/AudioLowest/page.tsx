@@ -169,21 +169,21 @@ import * as fs from "fs";
     console.log("@info: with stream: false");
     await ytdlx.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      filter: "flanger",
+      onionTor: false,
+      output: "audio",
+      verbose: false,
+      stream: false,
     });
 
     console.log("@info: with stream: true");
     const result = await ytdlx.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      filter: "flanger",
+      onionTor: false,
+      output: "audio",
+      verbose: false,
+      stream: true,
     });
     const { ffmpeg, filename } = result;
     ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
@@ -205,21 +205,21 @@ import * as fs from "fs";
     console.log("@info: with stream: false");
     await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      filter: "flanger",
+      onionTor: false,
+      output: "audio",
+      verbose: false,
+      stream: false,
     });
 
     console.log("@info: with stream: true");
     const result = await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      filter: "flanger",
+      onionTor: false,
+      output: "audio",
+      verbose: false,
+      stream: true,
     });
     const { ffmpeg, filename } = result;
     ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
@@ -241,21 +241,21 @@ const fs = require("fs");
     console.log("@info: with stream: false");
     await ytdlx.AudioOnly.default.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      filter: "flanger",
+      onionTor: false,
+      output: "audio",
+      verbose: false,
+      stream: false,
     });
 
     console.log("@info: with stream: true");
     const result = await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      filter: "flanger",
+      onionTor: false,
+      output: "audio",
+      verbose: false,
+      stream: true,
     });
     const { ffmpeg, filename } = result;
     ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.

@@ -180,6 +180,7 @@ import colors from "colors";
         stream: false,
         verbose: true,
         onionTor: false,
+        filter: "flanger",
         output: "public/audio",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
@@ -187,9 +188,10 @@ import colors from "colors";
       console.log(colors.blue("@test:"), "(stream) Download Custom audio");
       const result = await ytdlx.AudioOnly.Single.Custom({
         resolution,
-        stream: true,
+        stream: false,
         verbose: true,
         onionTor: false,
+        filter: "flanger",
         output: "public/audio",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
@@ -223,6 +225,7 @@ import colors from "colors";
         stream: false,
         verbose: true,
         onionTor: false,
+        filter: "flanger",
         output: "public/audio",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
@@ -230,9 +233,10 @@ import colors from "colors";
       console.log(colors.blue("@test:"), "(stream) Download Custom audio");
       const result = await ytdlx.default.AudioOnly.Single.Custom({
         resolution,
-        stream: true,
+        stream: false,
         verbose: true,
         onionTor: false,
+        filter: "flanger",
         output: "public/audio",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
@@ -266,6 +270,7 @@ const colors = require("colors");
         stream: false,
         verbose: true,
         onionTor: false,
+        filter: "flanger",
         output: "public/audio",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
@@ -273,9 +278,10 @@ const colors = require("colors");
       console.log(colors.blue("@test:"), "(stream) Download Custom audio");
       const result = await ytdlx.default.AudioOnly.Single.Custom({
         resolution,
-        stream: true,
+        stream: false,
         verbose: true,
         onionTor: false,
+        filter: "flanger",
         output: "public/audio",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
