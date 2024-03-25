@@ -13,7 +13,7 @@
     "colors": "latest",
     "ts-node": "latest",
     "typescript": "latest",
-    "yt-dlx": "latest"
+    "yt-dlx": "8.0.0-stable"
   },
   "author": {
     "name": "yt-dlx"
