@@ -178,20 +178,20 @@ import colors from "colors";
       console.log(colors.blue("@test:"), "Download Custom audio");
       await ytdlx.VideoOnly.Single.Custom({
         resolution,
-        stream: false,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
+        stream: false, // optional
+        verbose: true, // optional
+        onionTor: false, // optional
+        output: "public/audio", // optional
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
 
       console.log(colors.blue("@test:"), "(stream) Download Custom audio");
       const result = await ytdlx.VideoOnly.Single.Custom({
         resolution,
-        stream: true,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
+        stream: true, // optional
+        verbose: true, // optional
+        onionTor: false, // optional
+        output: "public/audio", // optional
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
       if (result && result.filename && result.ffmpeg) {
@@ -221,20 +221,20 @@ import colors from "colors";
       console.log(colors.blue("@test:"), "Download Custom audio");
       await ytdlx.default.VideoOnly.Single.Custom({
         resolution,
-        stream: false,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
+        stream: false, // optional
+        verbose: true, // optional
+        onionTor: false, // optional
+        output: "public/audio", // optional
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
 
       console.log(colors.blue("@test:"), "(stream) Download Custom audio");
       const result = await ytdlx.default.VideoOnly.Single.Custom({
         resolution,
-        stream: true,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
+        stream: true, // optional
+        verbose: true, // optional
+        onionTor: false, // optional
+        output: "public/audio", // optional
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
       if (result && result.filename && result.ffmpeg) {
@@ -264,20 +264,20 @@ const colors = require("colors");
       console.log(colors.blue("@test:"), "Download Custom audio");
       await ytdlx.default.VideoOnly.Single.Custom({
         resolution,
-        stream: false,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
+        stream: false, // optional
+        verbose: true, // optional
+        onionTor: false, // optional
+        output: "public/audio", // optional
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
 
       console.log(colors.blue("@test:"), "(stream) Download Custom audio");
       const result = await ytdlx.default.VideoOnly.Single.Custom({
         resolution,
-        stream: true,
-        verbose: true,
-        onionTor: false,
-        output: "public/audio",
+        stream: true, // optional
+        verbose: true, // optional
+        onionTor: false, // optional
+        output: "public/audio", // optional
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
       if (result && result.filename && result.ffmpeg) {
