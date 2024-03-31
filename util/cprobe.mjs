@@ -3,7 +3,7 @@ import { createWriteStream, existsSync } from "fs";
 
 (async () => {
   try {
-    const filepath = join(dirname(new URL(import.meta.url).pathname), "engine");
+    const filepath = join(dirname(new URL(import.meta.url).pathname), "cprobe");
     switch (true) {
       case existsSync(filepath):
         break;
@@ -19,7 +19,7 @@ import { createWriteStream, existsSync } from "fs";
         response.body.on("data", (chunk) => {
           dSize += chunk.length;
           const progress = Math.round((dSize / tSize) * 100);
-          process.stdout.write(`@download engine progress: ${progress}%\r`);
+          process.stdout.write(`@download cprobe progress: ${progress}%\r`);
         });
         await new Promise((resolve, reject) => {
           response.body.pipe(writer);

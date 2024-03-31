@@ -141,9 +141,9 @@ export default async function Engine({
   let pLoc = "";
   let maxT = 8;
   while (maxT > 0) {
-    const enginePath = path.join(dirC, "util", "engine");
-    if (fs.existsSync(enginePath)) {
-      pLoc = enginePath;
+    const cprobePath = path.join(dirC, "util", "cprobe");
+    if (fs.existsSync(cprobePath)) {
+      pLoc = cprobePath;
       break;
     } else {
       dirC = path.join(dirC, "..");
@@ -153,7 +153,7 @@ export default async function Engine({
   if (pLoc === "") {
     throw new Error(
       colors.red("@error: ") +
-        "Could not find engine file. maybe re-install yt-dlx?"
+        "Could not find cprobe file. maybe re-install yt-dlx?"
     );
   }
   const config = {
