@@ -9,11 +9,11 @@
     "test": "yarn test:cjs && yarn test:mjs && yarn test:ts"
   },
   "dependencies": {
-    "@types/node": "latest",
+    "@types/node": "20.12.2",
     "colors": "latest",
     "ts-node": "latest",
     "typescript": "latest",
-    "yt-dlx": "8.0.0-stable"
+    "yt-dlx": "8.0.1"
   },
   "author": {
     "name": "yt-dlx"
