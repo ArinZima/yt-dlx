@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import io from "socket.io-client";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
@@ -8,24 +7,9 @@ import { TbBrandNpm } from "react-icons/tb";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa6";
 import { TiCodeOutline } from "react-icons/ti";
-import React, { useEffect, useState } from "react";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 
 export default function AwesomePackage() {
-  const [npm, setnpm] = useState<any>(null);
-  useEffect(() => {
-    fetch("/ioSocket").finally(() => {
-      let ioSocket = io();
-      ioSocket.emit("npm[meta(req)]");
-      const handleNpm = (data: any) => setnpm(data);
-      ioSocket.on("npm[meta(resp)]", handleNpm);
-      return () => {
-        ioSocket.off("npm[meta(resp)]", handleNpm);
-        ioSocket.disconnect();
-      };
-    });
-  }, []);
-
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1a1919] scrollbar-track-[#1a1919] scrollbar-thumb-red-600">
       <nav className="navbar bg-red-500/10 text-gray-400 backdrop-blur-md fixed z-50 top-0">
@@ -50,7 +34,7 @@ export default function AwesomePackage() {
           <article className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLX@{npm?.LatestVersion}
+                YT-DLX@8.0.3
               </h1>
             </div>
             <p className="text-gray-400">

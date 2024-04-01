@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import io from "socket.io-client";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
@@ -10,23 +9,9 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export default function AwesomePackage() {
-  const [npm, setnpm] = useState<any>(null);
   const [isTS, setTS] = useState(true);
   const [isCJS, setCJS] = useState(true);
   const [isMJS, setMJS] = useState(true);
-
-  useEffect(() => {
-    fetch("/ioSocket").finally(() => {
-      let ioSocket = io();
-      ioSocket.emit("npm[meta(req)]");
-      const handleNpm = (data: any) => setnpm(data);
-      ioSocket.on("npm[meta(resp)]", handleNpm);
-      return () => {
-        ioSocket.off("npm[meta(resp)]", handleNpm);
-        ioSocket.disconnect();
-      };
-    });
-  }, []);
 
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1a1919] scrollbar-track-[#1a1919] scrollbar-thumb-red-600">
@@ -52,7 +37,7 @@ export default function AwesomePackage() {
           <article className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLX@{npm?.LatestVersion}
+                YT-DLX@8.0.3
               </h1>
             </div>
             <p className="text-gray-400">
