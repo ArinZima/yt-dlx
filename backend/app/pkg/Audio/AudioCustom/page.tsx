@@ -28,7 +28,7 @@ import colors from "colors";
         verbose: true,
         onionTor: false,
         output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-id/name/url",
       });
     }
   } catch (error: any) {
@@ -49,7 +49,7 @@ import * as fs from "fs";
         verbose: true,
         onionTor: false,
         output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-id/name/url",
       });
       if (result && result.filename && result.ffmpeg) {
         result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
@@ -118,13 +118,13 @@ import colors from "colors";
   try {
     const resolutions = ["high", "medium", "low", "ultralow"];
     for (const resolution of resolutions) {
-      await ytdlx.AudioOnly.Single.Custom({
+      await ytdlx.default.AudioOnly.Single.Custom({
         resolution,
         stream: false,
         verbose: true,
         onionTor: false,
         output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-id/name/url",
       });
     }
   } catch (error) {
@@ -139,13 +139,13 @@ import * as fs from "fs";
   try {
     const resolutions = ["high", "medium", "low", "ultralow"];
     for (const resolution of resolutions) {
-      const result = await ytdlx.AudioOnly.Single.Custom({
+      const result = await ytdlx.default.AudioOnly.Single.Custom({
         resolution,
         stream: true,
         verbose: true,
         onionTor: false,
         output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-id/name/url",
       });
       if (result && result.filename && result.ffmpeg) {
         result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
@@ -175,7 +175,7 @@ import express from "express";
           res.status(404).send("Invalid resolution parameter");
           return;
         }
-        const result = await ytdlx.AudioOnly.Single.Custom({
+        const result = await ytdlx.default.AudioOnly.Single.Custom({
           stream: true,
           verbose: true,
           onionTor: false,
@@ -208,19 +208,19 @@ import express from "express";
       <SyntaxHighlighter language="javascript" style={gruvboxDark}>
         {`// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
 //
-import ytdlx from "yt-dlx";
-import colors from "colors";
+const ytdlx = require("yt-dlx");
+const colors = require("colors");
 (async () => {
   try {
     const resolutions = ["high", "medium", "low", "ultralow"];
     for (const resolution of resolutions) {
-      await ytdlx.AudioOnly.Single.Custom({
+      await ytdlx.default.AudioOnly.Single.Custom({
         resolution,
         stream: false,
         verbose: true,
         onionTor: false,
         output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-id/name/url",
       });
     }
   } catch (error) {
@@ -230,18 +230,18 @@ import colors from "colors";
 //
 // =============================[ USING STREAMING TO SAVE THE FILE ]=============================
 //
-import * as fs from "fs";
+const fs = require("fs");
 (async () => {
   try {
     const resolutions = ["high", "medium", "low", "ultralow"];
     for (const resolution of resolutions) {
-      const result = await ytdlx.AudioOnly.Single.Custom({
+      const result = await ytdlx.default.AudioOnly.Single.Custom({
         resolution,
         stream: true,
         verbose: true,
         onionTor: false,
         output: "public/audio",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-id/name/url",
       });
       if (result && result.filename && result.ffmpeg) {
         result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
@@ -258,7 +258,7 @@ import * as fs from "fs";
 //
 // =============================[ USING STREAMING TO PIPE THE FILE ]=============================
 //
-import express from "express";
+const express = require("express");
 (async () => {
   try {
     const server = express();
@@ -271,7 +271,7 @@ import express from "express";
           res.status(404).send("Invalid resolution parameter");
           return;
         }
-        const result = await ytdlx.AudioOnly.Single.Custom({
+        const result = await ytdlx.default.AudioOnly.Single.Custom({
           stream: true,
           verbose: true,
           onionTor: false,
@@ -330,7 +330,7 @@ export default function AwesomePackage() {
           <article className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLX@8.0.3
+                YT-DLX@8.0.4
               </h1>
             </div>
             <p className="text-gray-400">

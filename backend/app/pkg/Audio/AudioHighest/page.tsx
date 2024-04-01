@@ -25,7 +25,7 @@ import colors from "colors";
       verbose: true,
       onionTor: false,
       output: "public/audio",
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-id/name/url",
     });
   } catch (error: any) {
     console.error(colors.red(error.message));
@@ -42,7 +42,7 @@ import * as fs from "fs";
       verbose: true,
       onionTor: false,
       output: "public/audio",
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-id/name/url",
     });
     if (result && result.filename && result.ffmpeg) {
       result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
@@ -101,12 +101,12 @@ import ytdlx from "yt-dlx";
 import colors from "colors";
 (async () => {
   try {
-    await ytdlx.AudioOnly.Single.Highest({
+    await ytdlx.default.AudioOnly.Single.Highest({
       stream: false,
       verbose: true,
       onionTor: false,
       output: "public/audio",
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-id/name/url",
     });
   } catch (error) {
     console.error(colors.red(error.message));
@@ -118,12 +118,12 @@ import colors from "colors";
 import * as fs from "fs";
 (async () => {
   try {
-    const result = await ytdlx.AudioOnly.Single.Highest({
+    const result = await ytdlx.default.AudioOnly.Single.Highest({
       stream: true,
       verbose: true,
       onionTor: false,
       output: "public/audio",
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-id/name/url",
     });
     if (result && result.filename && result.ffmpeg) {
       result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
@@ -146,7 +146,7 @@ import express from "express";
     server.get("/audio/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.AudioOnly.Single.Highest({
+        const result = await ytdlx.default.AudioOnly.Single.Highest({
           stream: true,
           verbose: true,
           onionTor: false,
@@ -178,16 +178,16 @@ import express from "express";
       <SyntaxHighlighter language="javascript" style={gruvboxDark}>
         {`// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
 //
-import ytdlx from "yt-dlx";
-import colors from "colors";
+const ytdlx = require("yt-dlx");
+const colors = require("colors");
 (async () => {
   try {
-    await ytdlx.AudioOnly.Single.Highest({
+    await ytdlx.default.AudioOnly.Single.Highest({
       stream: false,
       verbose: true,
       onionTor: false,
       output: "public/audio",
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-id/name/url",
     });
   } catch (error) {
     console.error(colors.red(error.message));
@@ -196,15 +196,15 @@ import colors from "colors";
 //
 // =============================[ USING STREAMING TO SAVE THE FILE ]=============================
 //
-import * as fs from "fs";
+const fs = require("fs");
 (async () => {
   try {
-    const result = await ytdlx.AudioOnly.Single.Highest({
+    const result = await ytdlx.default.AudioOnly.Single.Highest({
       stream: true,
       verbose: true,
       onionTor: false,
       output: "public/audio",
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-id/name/url",
     });
     if (result && result.filename && result.ffmpeg) {
       result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
@@ -220,14 +220,14 @@ import * as fs from "fs";
 //
 // =============================[ USING STREAMING TO PIPE THE FILE ]=============================
 //
-import express from "express";
+const express = require("express");
 (async () => {
   try {
     const server = express();
     server.get("/audio/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.AudioOnly.Single.Highest({
+        const result = await ytdlx.default.AudioOnly.Single.Highest({
           stream: true,
           verbose: true,
           onionTor: false,
@@ -285,7 +285,7 @@ export default function AwesomePackage() {
           <article className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLX@8.0.3
+                YT-DLX@8.0.4
               </h1>
             </div>
             <p className="text-gray-400">
