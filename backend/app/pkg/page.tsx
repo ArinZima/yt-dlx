@@ -113,7 +113,7 @@ export default function AwesomePackage() {
           </div>
           <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
             {/* ========================[ AUDIO ONLY ]======================== */}
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <MdAudioFile size={30} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Audio Only:</span>
@@ -137,7 +137,7 @@ export default function AwesomePackage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <MdAudioFile size={30} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Audio Only:</span>
@@ -160,7 +160,7 @@ export default function AwesomePackage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <MdAudioFile size={30} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Audio Only:</span>
@@ -184,7 +184,7 @@ export default function AwesomePackage() {
               </div>
             </div>
             {/* ========================[ VIDEO ONLY ]======================== */}
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <FaFileVideo size={25} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Video Only:</span>
@@ -208,7 +208,7 @@ export default function AwesomePackage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <FaFileVideo size={25} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Video Only:</span>
@@ -232,7 +232,7 @@ export default function AwesomePackage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <FaFileVideo size={25} className="text-red-600 animate-pulse" />
                 <span className="text-red-600 text-sm">Video Only:</span>
@@ -257,7 +257,7 @@ export default function AwesomePackage() {
               </div>
             </div>
             {/* ========================[ AUDIO VIDEO ]======================== */}
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <AiFillCodeSandboxCircle
                   size={35}
@@ -285,7 +285,7 @@ export default function AwesomePackage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <AiFillCodeSandboxCircle
                   size={35}
@@ -313,7 +313,7 @@ export default function AwesomePackage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
+            <div className="flex items-start gap-4 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
               <div>
                 <AiFillCodeSandboxCircle
                   size={35}
