@@ -1,6 +1,7 @@
 import chalk from "chalk";
-import ytSearch from "yt-search";
+import ytdlx from "yt-dlx";
 import type { NextApiRequest, NextApiResponse } from "next";
+import type { searchVideosType } from "yt-dlx/dist/types/web";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,9 +15,10 @@ export default async function handler(
     }
     const Query = await req.body.Query;
     console.log(chalk.greenBright.bold("❓ Query:"), chalk.italic(Query));
-    const TubeBody = await ytSearch(Query);
-    const TubeVideos = TubeBody.videos.slice(0, 40);
-    return res.status(200).json(TubeVideos);
+    const TubeBody: searchVideosType = await ytdlx.ytSearch.video.multiple({
+      query: Query,
+    });
+    return res.status(200).json(TubeBody);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Error processing the stream.");
