@@ -1,4 +1,6 @@
 import colors from "colors";
+import { Client } from "youtubei";
+
 export interface relatedVideosType {
   id: string;
   title: string;
@@ -9,13 +11,18 @@ export interface relatedVideosType {
 }
 export default async function relatedVideos({ videoId }: { videoId: string }) {
   try {
-    const response = await fetch(
-      `https://yt-dlx-scrape.vercel.app/api/relatedVideos?videoId=${videoId}`,
-      {
-        method: "POST",
-      }
+    const youtube = new Client();
+    const relatedVideos: any = await youtube.getVideo(videoId);
+    const result: relatedVideosType[] = relatedVideos.related.items.map(
+      (item: any) => ({
+        id: item.id,
+        title: item.title,
+        isLive: item.isLive,
+        duration: item.duration,
+        uploadDate: item.uploadDate,
+        thumbnails: item.thumbnails,
+      })
     );
-    const { result } = await response.json();
     return result;
   } catch (error: any) {
     throw new Error(colors.red("@error: ") + error.message);

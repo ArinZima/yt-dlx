@@ -1,4 +1,6 @@
 import colors from "colors";
+import { Client } from "youtubei";
+
 export interface playlistVideosType {
   id: string;
   title: string;
@@ -11,14 +13,21 @@ export default async function playlistVideos({
   playlistId: string;
 }) {
   try {
-    const response = await fetch(
-      `https://yt-dlx-scrape.vercel.app/api/playlistVideos?playlistId=${playlistId}`,
-      {
-        method: "POST",
-      }
-    );
-    const { result } = await response.json();
-    return result;
+    const youtube = new Client();
+    const playlistVideos: any = await youtube.getPlaylist(playlistId);
+    const result = playlistVideos.videos.items.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      isLive: item.isLive,
+      duration: item.duration,
+      thumbnails: item.thumbnails,
+    }));
+    return {
+      id: playlistVideos.id,
+      title: playlistVideos.title,
+      videoCount: playlistVideos.videoCount,
+      result,
+    };
   } catch (error: any) {
     throw new Error(colors.red("@error: ") + error.message);
   }

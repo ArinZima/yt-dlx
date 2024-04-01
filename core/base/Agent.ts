@@ -25,6 +25,7 @@ export default async function Agent({
   let nipTor;
   let ipAddress: string | undefined = undefined;
   nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
+  console.log(colors.green("@info:"), "verbose", colors.green(`${verbose}`));
   console.log(
     colors.green("@info:"),
     "system",
@@ -46,40 +47,36 @@ export default async function Agent({
       ipAddress = nipTor.stdout.trim();
     } else throw new Error("Unable to connect to Tor.");
   }
-  let TubeBody;
+  let TubeBody: any;
   let respEngine: EngineOutput | undefined = undefined;
   let videoId: string | undefined = await YouTubeID(query);
   if (!videoId) {
     TubeBody = await web.browserLess.searchVideos({ query });
     if (!TubeBody[0]) throw new Error("Unable to get response!");
-    else {
-      console.log(
-        colors.green("@info:"),
-        `preparing payload for`,
-        colors.green(TubeBody[0].title as string)
-      );
-      respEngine = await Engine({
-        query: `https://www.youtube.com/watch?v=${TubeBody[0].id}`,
-        onionTor,
-        ipAddress,
-      });
-      return respEngine;
-    }
+    console.log(
+      colors.green("@info:"),
+      `preparing payload for`,
+      colors.green(TubeBody[0].title)
+    );
+    respEngine = await Engine({
+      onionTor,
+      ipAddress,
+      query: `https://www.youtube.com/watch?v=${TubeBody[0].id}`,
+    });
+    return respEngine;
   } else {
     TubeBody = await web.browserLess.singleVideo({ videoId });
     if (!TubeBody) throw new Error("Unable to get response!");
-    else {
-      console.log(
-        colors.green("@info:"),
-        `preparing payload for`,
-        colors.green(TubeBody.title)
-      );
-      respEngine = await Engine({
-        query: `https://www.youtube.com/watch?v=${TubeBody.id}`,
-        onionTor,
-        ipAddress,
-      });
-      return respEngine;
-    }
+    console.log(
+      colors.green("@info:"),
+      `preparing payload for`,
+      colors.green(TubeBody.title)
+    );
+    respEngine = await Engine({
+      onionTor,
+      ipAddress,
+      query: `https://www.youtube.com/watch?v=${TubeBody.id}`,
+    });
+    return respEngine;
   }
 }

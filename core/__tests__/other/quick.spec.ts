@@ -39,24 +39,16 @@
 // })();
 // ===================================================================
 console.clear();
-import AudioCustom from "../../routes/Audio/single/AudioCustom";
+import Agent from "../../base/Agent";
 
 (async () => {
   try {
-    const resolutions = ["high", "medium", "low", "ultralow"] as const;
-    for (const resolution of resolutions) {
-      try {
-        await AudioCustom({
-          resolution,
-          stream: false,
-          verbose: true,
-          onionTor: false,
-          query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-        });
-      } catch (error: any) {
-        console.error(error.message);
-      }
-    }
+    const body = await Agent({
+      verbose: true,
+      onionTor: false,
+      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+    });
+    console.log(body);
   } catch (error: any) {
     console.error(error.message);
   }
