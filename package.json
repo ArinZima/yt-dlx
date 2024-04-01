@@ -68,7 +68,8 @@
     "puppeteer": "latest",
     "readline-sync": "latest",
     "speedometer": "latest",
-    "stream": "latest"
+    "stream": "latest",
+    "youtubei.js": "^9.2.0"
   },
   "devDependencies": {
     "@types/async": "latest",
