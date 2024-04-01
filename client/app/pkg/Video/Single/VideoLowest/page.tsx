@@ -144,8 +144,8 @@ export default function AwesomePackage() {
               </li>
               <li>
                 @param filter - (optional) The video filter to apply. Available
-                options: "invert", "rotate90", "rotate270", "grayscale",
-                "rotate180", "flipVertical", "flipHorizontal".
+                options: invert, rotate90, rotate270, grayscale, rotate180,
+                flipVertical, flipHorizontal.
               </li>
               <li>
                 @param onionTor - (optional) Whether to use Tor for the download

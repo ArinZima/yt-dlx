@@ -140,10 +140,9 @@ export default function AwesomePackage() {
               </li>
               <li>
                 @param filter - (optional) The audio filter to apply. Available
-                options: "echo", "slow", "speed", "phaser", "flanger",
-                "panning", "reverse", "vibrato", "subboost", "surround",
-                "bassboost", "nightcore", "superslow", "vaporwave",
-                "superspeed".
+                options: echo, slow, speed, phaser, flanger, panning, reverse,
+                vibrato, subboost, surround, bassboost, nightcore, superslow,
+                vaporwave, superspeed.
               </li>
               <li>
                 @param verbose - (optional) Whether to log verbose output or
@@ -155,7 +154,7 @@ export default function AwesomePackage() {
               </li>
               <li>
                 @param resolution - The desired audio resolution. Available
-                options: "high", "medium", "low", "ultralow".
+                options: high, medium, low, ultralow.
               </li>
               <li>
                 @returns A Promise that resolves with either `void` (if `stream`

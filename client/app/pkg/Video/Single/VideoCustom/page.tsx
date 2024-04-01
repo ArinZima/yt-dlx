@@ -132,9 +132,8 @@ export default function AwesomePackage() {
               <li>@param query - The YouTube video URL or ID or name.</li>
               <li>
                 @param resolution - The desired resolution of the video.
-                Available options: "144p", "240p", "360p", "480p", "720p",
-                "1080p", "1440p", "2160p", "3072p", "4320p", "6480p", "8640p",
-                "12000p".
+                options: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p, 2160p,
+                3072p, 4320p, 6480p, 8640p, 12000p.
               </li>
               <li>
                 @param stream - (optional) Whether to return the FfmpegCommand
@@ -150,8 +149,8 @@ export default function AwesomePackage() {
               </li>
               <li>
                 @param filter - (optional) The video filter to apply. Available
-                options: "invert", "rotate90", "rotate270", "grayscale",
-                "rotate180", "flipVertical", "flipHorizontal".
+                options: invert, rotate90, rotate270, grayscale, rotate180,
+                flipVertical, flipHorizontal.
               </li>
               <li>
                 @param onionTor - (optional) Whether to use Tor for the download
