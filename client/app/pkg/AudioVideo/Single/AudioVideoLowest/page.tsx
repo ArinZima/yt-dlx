@@ -166,19 +166,19 @@ import * as fs from "fs";
   try {
     console.log(colors.blue("@test:"), "Download Lowest audio");
     await ytdlx.AudioVideo.Single.Lowest({
-      stream: false, // optional
-      verbose: true, // optional
-      onionTor: false, // optional
-      output: "public/audio", // optional
+      stream: false, 
+      verbose: true, 
+      onionTor: false, 
+      output: "public/audio", 
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
 
     console.log(colors.blue("@test:"), "(stream) Download Lowest audio");
     const result = await ytdlx.AudioVideo.Single.Lowest({
-      stream: true, // optional
-      verbose: true, // optional
-      onionTor: false, // optional
-      output: "public/audio", // optional
+      stream: true, 
+      verbose: true, 
+      onionTor: false, 
+      output: "public/audio", 
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
     if (result && result.filename && result.ffmpeg) {
@@ -203,19 +203,19 @@ import * as fs from "fs";
   try {
     console.log(colors.blue("@test:"), "Download Lowest audio");
     await ytdlx.default.AudioVideo.Single.Lowest({
-      stream: false, // optional
-      verbose: true, // optional
-      onionTor: false, // optional
-      output: "public/audio", // optional
+      stream: false, 
+      verbose: true, 
+      onionTor: false, 
+      output: "public/audio", 
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
 
     console.log(colors.blue("@test:"), "(stream) Download Lowest audio");
     const result = await ytdlx.default.AudioVideo.Single.Lowest({
-      stream: true, // optional
-      verbose: true, // optional
-      onionTor: false, // optional
-      output: "public/audio", // optional
+      stream: true, 
+      verbose: true, 
+      onionTor: false, 
+      output: "public/audio", 
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
     if (result && result.filename && result.ffmpeg) {
@@ -240,19 +240,19 @@ const fs = require("fs");
   try {
     console.log(colors.blue("@test:"), "Download Lowest audio");
     await ytdlx.default.AudioVideo.Single.Lowest({
-      stream: false, // optional
-      verbose: true, // optional
-      onionTor: false, // optional
-      output: "public/audio", // optional
+      stream: false, 
+      verbose: true, 
+      onionTor: false, 
+      output: "public/audio", 
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
 
     console.log(colors.blue("@test:"), "(stream) Download Lowest audio");
     const result = await ytdlx.default.AudioVideo.Single.Lowest({
-      stream: true, // optional
-      verbose: true, // optional
-      onionTor: false, // optional
-      output: "public/audio", // optional
+      stream: true, 
+      verbose: true, 
+      onionTor: false, 
+      output: "public/audio", 
       query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
     });
     if (result && result.filename && result.ffmpeg) {
@@ -270,19 +270,19 @@ const fs = require("fs");
             <div className="flex flex-wrap gap-2 justify-center">
               <button
                 onClick={() => setTS(!isTS)}
-                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-3xl hover:bg-blue-800 focus:outline-none focus:bg-blue-800"
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-xl hover:bg-blue-800 focus:outline-none focus:bg-blue-800"
               >
                 {isTS ? "View TypeScript Example" : "Hide TypeScript Example"}
               </button>
               <button
                 onClick={() => setMJS(!isMJS)}
-                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-3xl hover:bg-lime-800 focus:outline-none focus:bg-lime-800"
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-xl hover:bg-lime-800 focus:outline-none focus:bg-lime-800"
               >
                 {isMJS ? "View ECMAScript Example" : "Hide ECMAScript Example"}
               </button>
               <button
                 onClick={() => setCJS(!isCJS)}
-                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-3xl hover:bg-yellow-800 focus:outline-none focus:bg-yellow-800"
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-xl hover:bg-yellow-800 focus:outline-none focus:bg-yellow-800"
               >
                 {isCJS ? "View Commonjs Usage" : "Hide Commonjs Example"}
               </button>

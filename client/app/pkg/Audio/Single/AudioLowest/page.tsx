@@ -169,21 +169,21 @@ import * as fs from "fs";
     console.log("@info: with stream: false");
     await ytdlx.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      filter: "flanger", 
+      onionTor: false, 
+      output: "audio", 
+      verbose: false, 
+      stream: false, 
     });
 
     console.log("@info: with stream: true");
     const result = await ytdlx.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      filter: "flanger", 
+      onionTor: false, 
+      output: "audio", 
+      verbose: false, 
+      stream: true, 
     });
     const { ffmpeg, filename } = result;
     ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
@@ -205,21 +205,21 @@ import * as fs from "fs";
     console.log("@info: with stream: false");
     await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      filter: "flanger", 
+      onionTor: false, 
+      output: "audio", 
+      verbose: false, 
+      stream: false, 
     });
 
     console.log("@info: with stream: true");
     const result = await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      filter: "flanger", 
+      onionTor: false, 
+      output: "audio", 
+      verbose: false, 
+      stream: true, 
     });
     const { ffmpeg, filename } = result;
     ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
@@ -241,21 +241,21 @@ const fs = require("fs");
     console.log("@info: with stream: false");
     await ytdlx.AudioOnly.default.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: false, // optional
+      filter: "flanger", 
+      onionTor: false, 
+      output: "audio", 
+      verbose: false, 
+      stream: false, 
     });
 
     console.log("@info: with stream: true");
     const result = await ytdlx.default.AudioOnly.Single.Lowest({
       query: "video-link-or-video-name-or-video-id",
-      filter: "flanger", // optional
-      onionTor: false, // optional
-      output: "audio", // optional
-      verbose: false, // optional
-      stream: true, // optional
+      filter: "flanger", 
+      onionTor: false, 
+      output: "audio", 
+      verbose: false, 
+      stream: true, 
     });
     const { ffmpeg, filename } = result;
     ffmpeg.pipe(fs.createWriteStream(filename)); // use any fluent-ffmpeg based commands like pipe.
@@ -269,19 +269,19 @@ const fs = require("fs");
             <div className="flex flex-wrap gap-2 justify-center">
               <button
                 onClick={() => setTS(!isTS)}
-                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-3xl hover:bg-blue-800 focus:outline-none focus:bg-blue-800"
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-xl hover:bg-blue-800 focus:outline-none focus:bg-blue-800"
               >
                 {isTS ? "View TypeScript Example" : "Hide TypeScript Example"}
               </button>
               <button
                 onClick={() => setMJS(!isMJS)}
-                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-3xl hover:bg-lime-800 focus:outline-none focus:bg-lime-800"
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-xl hover:bg-lime-800 focus:outline-none focus:bg-lime-800"
               >
                 {isMJS ? "View ECMAScript Example" : "Hide ECMAScript Example"}
               </button>
               <button
                 onClick={() => setCJS(!isCJS)}
-                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-3xl hover:bg-yellow-800 focus:outline-none focus:bg-yellow-800"
+                className="mt-2 bg-neutral-800 text-white px-4 py-2 rounded-xl hover:bg-yellow-800 focus:outline-none focus:bg-yellow-800"
               >
                 {isCJS ? "View Commonjs Usage" : "Hide Commonjs Example"}
               </button>
