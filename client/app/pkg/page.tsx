@@ -144,7 +144,7 @@ export default function AwesomePackage() {
                   of superior audio resolution and saves the file in the (avi)
                   format.
                   <Link
-                    href="/pkg/Audio/Single/AudioHighest"
+                    href="/pkg/Audio/AudioHighest"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -167,7 +167,7 @@ export default function AwesomePackage() {
                   available codecs and bitrate settings, it outputs the minimum
                   audio resolution and saves the file in (avi) format.
                   <Link
-                    href="/pkg/Audio/Single/AudioLowest"
+                    href="/pkg/Audio/AudioLowest"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -190,80 +190,7 @@ export default function AwesomePackage() {
                   and yt-dlx along with ffmpeg will manage the rest. To identify
                   the available formats, utilize the (list_formats) function.
                   <Link
-                    href="/pkg/Audio/Single/AudioCustom"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            {/* ========================[ LIST AUDIO ONLY ]======================== */}
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <MdAudioFile size={30} className="text-red-600 animate-pulse" />
-                <span className="text-red-600 text-sm">Audio Only:</span>
-                <h2 className="text-lg font-bold">
-                  Audio<span className="text-red-600">.List.</span>Highest()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function automatically utilizes yt-dlx&apos;s search
-                  algorithm to identify the optimal audio resolution for each
-                  video in a a given YouTube Playlist link. Employing ffmpeg
-                  alongside the best available codecs and bitrate settings, it
-                  ensures the delivery of superior audio resolution and saves
-                  each file in the (avi) format.
-                  <Link
-                    href="/pkg/Audio/List/AudioHighest"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <MdAudioFile size={30} className="text-red-600 animate-pulse" />
-                <span className="text-red-600 text-sm">Audio Only:</span>
-                <h2 className="text-lg font-bold">
-                  Audio<span className="text-red-600">.List.</span>Lowest()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function is automated and employs yt-dlx&apos;s search
-                  algorithm to identify the lowest possible audio resolution for
-                  each video in a a given YouTube Playlist link.. Utilizing
-                  ffmpeg with the lowest available codecs and bitrate settings,
-                  it outputs the minimum audio resolution and saves each file in
-                  (avi) format.
-                  <Link
-                    href="/pkg/Audio/List/AudioLowest"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <MdAudioFile size={30} className="text-red-600 animate-pulse" />
-                <span className="text-red-600 text-sm">Audio Only:</span>
-                <h2 className="text-lg font-bold">
-                  Audio<span className="text-red-600">.List.</span>Custom()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  Should you desire to download a specific audio resolution for
-                  each video in a a given YouTube Playlist link, this function
-                  has you covered. Simply provide the available format for the
-                  custom resolution, and yt-dlx along with ffmpeg will manage
-                  the rest. To identify the available formats, utilize the
-                  (list_formats) function.
-                  <Link
-                    href="/pkg/Audio/List/AudioCustom"
+                    href="/pkg/Audio/AudioCustom"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -288,7 +215,7 @@ export default function AwesomePackage() {
                   of superior video resolution and saves the file in the (mkv)
                   format.
                   <Link
-                    href="/pkg/Video/Single/VideoHighest"
+                    href="/pkg/Video/VideoHighest"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -312,7 +239,7 @@ export default function AwesomePackage() {
                   video with the least possible resolution and saves the file in
                   the (mkv) format.
                   <Link
-                    href="/pkg/Video/Single/VideoLowest"
+                    href="/pkg/Video/VideoLowest"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -336,80 +263,7 @@ export default function AwesomePackage() {
                   To identify the available formats, use the (list_formats)
                   function.
                   <Link
-                    href="/pkg/Video/Single/VideoCustom"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            {/* ========================[ LIST VIDEO ONLY ]======================== */}
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <FaFileVideo size={25} className="text-red-600 animate-pulse" />
-                <span className="text-red-600 text-sm">Video Only:</span>
-                <h2 className="text-lg font-bold">
-                  Video<span className="text-red-600">.List.</span>Highest()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlx&apos;s search
-                  algorithm to identify the optimal video resolution for a given
-                  YouTube Playlist link. Utilizing ffmpeg, along with the best
-                  available codecs and bitrate settings, it ensures the delivery
-                  of superior video resolution and saves each file in the (mkv)
-                  format.
-                  <Link
-                    href="/pkg/Video/List/VideoHighest"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <FaFileVideo size={25} className="text-red-600 animate-pulse" />
-                <span className="text-red-600 text-sm">Video Only:</span>
-                <h2 className="text-lg font-bold">
-                  Video<span className="text-red-600">.List.</span>Lowest()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlx&apos;s search
-                  algorithm to identify the minimum achievable video resolution
-                  for a given YouTube Playlist link. Utilizing ffmpeg with the
-                  lowest available codecs and bitrate settings, it produces the
-                  video with the least possible resolution and saves each file
-                  in the (mkv) format.
-                  <Link
-                    href="/pkg/Video/List/VideoLowest"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <FaFileVideo size={25} className="text-red-600 animate-pulse" />
-                <span className="text-red-600 text-sm">Video Only:</span>
-                <h2 className="text-lg font-bold">
-                  Video<span className="text-red-600">.List.</span>Custom()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function caters to your specific needs when it comes to
-                  downloading a desired video resolution for a given YouTube
-                  Playlist link. Simply provide the available format for the
-                  custom resolution, and yt-dlx along with ffmpeg will handle
-                  the rest. To identify the available formats, use the
-                  (list_formats) function.
-                  <Link
-                    href="/pkg/Video/List/VideoCustom"
+                    href="/pkg/Video/VideoCustom"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -438,7 +292,7 @@ export default function AwesomePackage() {
                   highest resolution audio+video output, saving the file in
                   (mkv) format.
                   <Link
-                    href="/pkg/AudioVideo/Single/AudioVideoHighest"
+                    href="/pkg/AudioVideo/AudioVideoHighest"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -466,7 +320,7 @@ export default function AwesomePackage() {
                   it outputs the lowest possible audio+video resolution and
                   saves the file in (mkv) format.
                   <Link
-                    href="/pkg/AudioVideo/Single/AudioVideoLowest"
+                    href="/pkg/AudioVideo/AudioVideoLowest"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
@@ -494,92 +348,7 @@ export default function AwesomePackage() {
                   To identify the available formats, use the (list_formats)
                   function.
                   <Link
-                    href="/pkg/AudioVideo/Single/AudioVideoCustom"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            {/* ========================[ LIST AUDIO VIDEO ]======================== */}
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <AiFillCodeSandboxCircle
-                  size={35}
-                  className="text-red-600 animate-pulse"
-                />
-                <span className="text-red-600 text-sm">Audio Video:</span>
-                <h2 className="text-lg font-bold">
-                  AudioVideo<span className="text-red-600">.List.</span>
-                  Highest()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function automatically utilizes yt-dlx&apos;s search
-                  algorithm to identify the optimal audio+video resolution for
-                  any given YouTube Playlist link. It employs ffmpeg, leveraging
-                  the best available codecs and bitrate settings to produce the
-                  highest resolution audio+video output, saving each file in
-                  (mkv) format.
-                  <Link
-                    href="/pkg/AudioVideo/List/AudioVideoHighest"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <AiFillCodeSandboxCircle
-                  size={35}
-                  className="text-red-600 animate-pulse"
-                />
-                <span className="text-red-600 text-sm">Audio Video:</span>
-                <h2 className="text-lg font-bold">
-                  AudioVideo<span className="text-red-600">.List.</span>
-                  Lowest()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function automatically employs yt-dlx&apos;s search
-                  algorithm to identify the lowest possible audio+video
-                  resolution for a given YouTube Playlist link. Utilizing ffmpeg
-                  with the least resource-intensive codecs and bitrate settings,
-                  it outputs the lowest possible audio+video resolution and
-                  saves each file in (mkv) format.
-                  <Link
-                    href="/pkg/AudioVideo/List/AudioVideoLowest"
-                    className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-                  >
-                    <TiCodeOutline className="text-red-600 -mt-2" size={30} />
-                    Go To Usage Examples
-                  </Link>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-2 rounded-2xl bg-black/20 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-              <div>
-                <AiFillCodeSandboxCircle
-                  size={35}
-                  className="text-red-600 animate-pulse"
-                />
-                <span className="text-red-600 text-sm">Audio Video:</span>
-                <h2 className="text-lg font-bold">
-                  AudioVideo<span className="text-red-600">.List.</span>
-                  Custom()
-                </h2>
-                <p className="text-sm text-gray-400">
-                  This function caters to your specific needs when it comes to
-                  downloading a desired video resolution for a given YouTube
-                  Playlist link. Simply provide the available format for the
-                  custom resolution, and yt-dlx along with ffmpeg will handle
-                  the rest. To identify the available formats, use the
-                  (list_formats) function.
-                  <Link
-                    href="/pkg/AudioVideo/List/AudioVideoCustom"
+                    href="/pkg/AudioVideo/AudioVideoCustom"
                     className="flex items-center animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
                   >
                     <TiCodeOutline className="text-red-600 -mt-2" size={30} />
