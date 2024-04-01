@@ -13,6 +13,7 @@ import { MdFamilyRestroom } from "react-icons/md";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaAngleDoubleDown } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
+import { searchVideosType } from "yt-dlx/dist/types/web";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
@@ -20,8 +21,8 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 export default function Component() {
   const QueryClient = useQueryClient();
   const [Query, setQuery] = useState<string>("");
-  const [Tube, setTube] = useState<object | any>(null);
-  const [TubeSearch, setTubeSearch] = useState<object | any>(null);
+  const [Tube, setTube] = useState<searchVideosType | any>(null);
+  const [TubeSearch, setTubeSearch] = useState<searchVideosType | any>(null);
   const [GeneralError, setGeneralError] = useState<string | any>(null);
 
   const ApiSearch = useMutation({
@@ -141,8 +142,8 @@ export default function Component() {
                   required
                   type="text"
                   value={Query}
-                  disabled={ApiSearch.isPending}
                   placeholder="video name"
+                  disabled={ApiSearch.isPending}
                   onChange={(e) => setQuery(e.target.value)}
                   className="input max-w-6xl rounded-xl border hover:border-pink-600 border-neutral-600 bg-[#101318]"
                 />
@@ -210,7 +211,8 @@ export default function Component() {
               <div
                 key={index}
                 className={`p-0.5 rounded-xl border ${
-                  Tube && Tube.TubeUrl === item.url
+                  Tube &&
+                  Tube.TubeUrl === `https://www.youtube.com/watch?v=${item.id}`
                     ? "border-pink-600 shadow-pink-600"
                     : "border-pink-600/30 hover:shadow-pink-600"
                 }  shadow-2xl shadow-black hover:border-pink-600`}
@@ -219,7 +221,7 @@ export default function Component() {
                   width={400}
                   height={400}
                   alt="500x500"
-                  src={item.thumbnail}
+                  src={item.thumbnails[0].url}
                   className="object-cover objecjt-center w-full lg:h-48 md:h-36 rounded-t-xl"
                 />
                 {getTube.isPending ? (
@@ -232,7 +234,9 @@ export default function Component() {
                   </div>
                 ) : (
                   <>
-                    {Tube && Tube.TubeUrl === item.url ? (
+                    {Tube &&
+                    Tube.TubeUrl ===
+                      `https://www.youtube.com/watch?v=${item.id}` ? (
                       <div className="flex flex-col">
                         <Link
                           href="/pkg"
@@ -240,17 +244,16 @@ export default function Component() {
                         >
                           powered by <TbDiamondFilled size={20} /> yt-dlx{" "}
                         </Link>
-                        {/* <audio
-controls
-autoPlay
-autoFocus
-id="AudioStreamer"
-src={
-"/api/saudio?url=" +
-encodeURIComponent(Tube.TubeUrl)
-}
-className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
-/> */}
+                        <audio
+                          controls
+                          autoPlay
+                          autoFocus
+                          id="AudioStreamer"
+                          src={`/api/saudio?url=${encodeURIComponent(
+                            Tube.EnResp
+                          )}`}
+                          className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
+                        />
                       </div>
                     ) : (
                       <div className="flex flex-col">
@@ -258,7 +261,9 @@ className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
                           onClick={(event) => {
                             event.preventDefault();
                             setTube(null);
-                            getTube.mutate(item.url);
+                            getTube.mutate(
+                              `https://www.youtube.com/watch?v=${item.id}` as any
+                            );
                           }}
                           className="p-0.5 mt-1 w-full text-sm flex text-white/90 items-center gap-2 justify-center bg-pink-600/40 hover:bg-pink-700/60 hover:animate-pulse"
                         >
@@ -269,83 +274,6 @@ className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
                     )}
                   </>
                 )}
-                {Tube && Tube.TubeUrl === item.url && (
-                  <div className="p-1 text-white/90">
-                    <details className="collapse rounded cursor-pointer scale-100 bg-pink-600/10 text-pink-600">
-                      <summary className="collapse m-1">
-                        <span className="flex items-center text-sm justify-center hover:text-white/90">
-                          AUDIO <MdAudiotrack size={25} className="ml-2" /> only
-                          download
-                        </span>
-                      </summary>
-                      <div className="collapse-content">
-                        <ul className="list-decimal pl-2">
-                          {Tube.EnBody.AudioFormatsData.map(
-                            (format: any, index: number) => (
-                              <li
-                                key={index}
-                                onClick={() => {
-                                  window.location.href =
-                                    "/api/audio?url=" +
-                                    encodeURIComponent(Tube.TubeUrl) +
-                                    "&format=" +
-                                    encodeURIComponent(format[0]);
-                                }}
-                                className="mb-2 space-x-2 text-xs hover:bg-pink-600/10 text-white/80 p-2 rounded-lg cursor-pointer"
-                              >
-                                <span className="text-pink-600 mr-1">
-                                  Format:
-                                </span>
-                                {format[0]}
-                                <span className="text-pink-600 mr-1">
-                                  Size:
-                                </span>{" "}
-                                {format[2]}
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    </details>
-                    <details className="collapse rounded cursor-pointer scale-100 bg-pink-600/10 text-pink-600 mt-1">
-                      <summary className="collapse m-2">
-                        <span className="flex items-center text-sm justify-center hover:text-white/90">
-                          VIDEO
-                          <IoVideocam size={20} className="ml-2 mr-2" /> only
-                          download
-                        </span>
-                      </summary>
-                      <div className="collapse-content">
-                        <ul className="list-decimal pl-2">
-                          {Tube.EnBody.VideoFormatsData.map(
-                            (format: any, index: number) => (
-                              <li
-                                key={index}
-                                onClick={() => {
-                                  window.location.href =
-                                    "/api/video?url=" +
-                                    encodeURIComponent(Tube.TubeUrl) +
-                                    "&format=" +
-                                    encodeURIComponent(format[0]);
-                                }}
-                                className="mb-2 space-x-2 text-xs hover:bg-pink-600/10 text-white/80 p-2 rounded-lg cursor-pointer"
-                              >
-                                <span className="text-pink-600 mr-1">
-                                  Format:
-                                </span>
-                                {format[0]}
-                                <span className="text-pink-600 mr-1">
-                                  Size:
-                                </span>{" "}
-                                {format[2]}
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    </details>
-                  </div>
-                )}
                 <ul className="ml-2 list-disc p-4 text-sm rounded-xl text-pink-500 overflow-hidden whitespace-break-spaces">
                   <li>
                     Title:
@@ -353,22 +281,48 @@ className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
                       {item.title}
                     </span>
                   </li>
+
+                  <li>
+                    Url:
+                    <span className="ml-1 text-xs text-white/90">
+                      <span className="text-sm">www.youtube.com/watch?v=</span>
+                      {item.id}
+                    </span>
+                  </li>
+                  <li>
+                    id:
+                    <span className="ml-1 text-xs text-white/90">
+                      {item.id}
+                    </span>
+                  </li>
                   <li>
                     Duration:
                     <span className="ml-1 text-xs text-white/90">
-                      {item.timestamp} mins
+                      {item.duration} seconds
                     </span>
                   </li>
                   <li>
-                    Posted On:
+                    uploadDate:
                     <span className="ml-1 text-xs text-white/90">
-                      {item.ago}
+                      {item.uploadDate}
                     </span>
                   </li>
                   <li>
-                    Owner:
+                    channelid:
                     <span className="ml-1 text-xs text-white/90">
-                      {item.author.name}
+                      {item.channelid}
+                    </span>
+                  </li>
+                  <li>
+                    channelname:
+                    <span className="ml-1 text-xs text-white/90">
+                      {item.channelname}
+                    </span>
+                  </li>
+                  <li>
+                    description:
+                    <span className="ml-1 text-xs text-white/90">
+                      {item.description}
                     </span>
                   </li>
                 </ul>
@@ -389,3 +343,67 @@ className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
     </main>
   );
 }
+
+// {
+// Tube && Tube.TubeUrl === item.url && (
+// <div className="p-1 text-white/90">
+// <details className="collapse rounded cursor-pointer scale-100 bg-pink-600/10 text-pink-600">
+// <summary className="collapse m-1">
+// <span className="flex items-center text-sm justify-center hover:text-white/90">
+// AUDIO <MdAudiotrack size={25} className="ml-2" /> only download
+// </span>
+// </summary>
+// <div className="collapse-content">
+// <ul className="list-decimal pl-2">
+// {Tube.EnBody.AudioFormatsData.map((format: any, index: number) => (
+// <li
+// key={index}
+// onClick={() => {
+// window.location.href =
+// "/api/audio?url=" +
+// encodeURIComponent(Tube.TubeUrl) +
+// "&format=" +
+// encodeURIComponent(format[0]);
+// }}
+// className="mb-2 space-x-2 text-xs hover:bg-pink-600/10 text-white/80 p-2 rounded-lg cursor-pointer"
+// >
+// <span className="text-pink-600 mr-1">Format:</span>
+// {format[0]}
+// <span className="text-pink-600 mr-1">Size:</span> {format[2]}
+// </li>
+// ))}
+// </ul>
+// </div>
+// </details>
+// <details className="collapse rounded cursor-pointer scale-100 bg-pink-600/10 text-pink-600 mt-1">
+// <summary className="collapse m-2">
+// <span className="flex items-center text-sm justify-center hover:text-white/90">
+// VIDEO
+// <IoVideocam size={20} className="ml-2 mr-2" /> only download
+// </span>
+// </summary>
+// <div className="collapse-content">
+// <ul className="list-decimal pl-2">
+// {Tube.EnBody.VideoFormatsData.map((format: any, index: number) => (
+// <li
+// key={index}
+// onClick={() => {
+// window.location.href =
+// "/api/video?url=" +
+// encodeURIComponent(Tube.TubeUrl) +
+// "&format=" +
+// encodeURIComponent(format[0]);
+// }}
+// className="mb-2 space-x-2 text-xs hover:bg-pink-600/10 text-white/80 p-2 rounded-lg cursor-pointer"
+// >
+// <span className="text-pink-600 mr-1">Format:</span>
+// {format[0]}
+// <span className="text-pink-600 mr-1">Size:</span> {format[2]}
+// </li>
+// ))}
+// </ul>
+// </div>
+// </details>
+// </div>
+// );
+// }
