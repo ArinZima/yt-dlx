@@ -1,13 +1,18 @@
 {
+  "name": "yt-dlx",
   "version": "1.0.0",
   "author": "yt-dlx",
   "main": "pkg/main.mjs",
-  "name": "yt-dlx-electron-nextjs",
-  "description": "yt-dlx Electron + NextJS App",
+  "repository": {
+    "type": "git",
+    "url": "https://mixly-yt-dlx.koyeb.app/"
+  },
+  "homepage": "https://mixly-yt-dlx.koyeb.app/",
+  "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "scripts": {
-    "e:dev": "concurrently -n \"NEXT,ELEC\" -c \"green,blue\" --kill-others \"next dev\" \"electron . --no-sandbox\"",
-    "e:build": "yarn clean && next build && electron-builder",
-    "clean": "rimraf dist out .next .cache .temp",
+    "electron:dev": "concurrently -n \"NEXT,ELEC\" -c \"green,blue\" --kill-others \"next dev\" \"electron . --no-sandbox\"",
+    "electron:build": "yarn clean && next build && electron-builder",
+    "clean": "rm -rf dist out .next .cache .temp",
     "build": "yarn clean && next build",
     "start": "next start",
     "lint": "next lint",
@@ -26,7 +31,6 @@
     "react-dom": "^18",
     "react-icons": "^5.0.1",
     "react-syntax-highlighter": "^15.5.0",
-    "rimraf": "^5.0.5",
     "tailwind-scrollbar": "^3.0.5",
     "tailwind-scrollbar-hide": "^1.1.7"
   },

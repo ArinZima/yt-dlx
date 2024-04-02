@@ -6,6 +6,12 @@
   "types": "dist/types/index.d.ts",
   "module": "dist/esm/core/index.js",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
+  "author": "yt-dlx",
+  "repository": {
+    "type": "git",
+    "url": "https://mixly-yt-dlx.koyeb.app/"
+  },
+  "homepage": "https://mixly-yt-dlx.koyeb.app/",
   "bin": {
     "yt": "dist/esm/core/cli/main.js",
     "ytdlx": "dist/esm/core/cli/main.js",
@@ -19,9 +25,11 @@
     "setup-permissions": "chmod -R +x util/*",
     "download-files": "node util/cprobe.mjs",
     "install-chrome": "npx puppeteer browsers install chrome",
-    "ui:dev": "cd backend && yarn dev",
-    "ui:build": "cd backend && yarn build",
-    "ui:start": "cd backend && yarn start",
+    "web:dev": "cd backend && yarn dev",
+    "web:build": "cd backend && yarn build",
+    "web:start": "cd backend && yarn start",
+    "web:electron:dev": "cd backend && yarn electron:dev",
+    "web:electron:build": "cd backend && yarn electron:build",
     "clean": "yarn clean:base && yarn clean:pkg && yarn clean:backend && yarn clean:deps",
     "clean:pkg": "cd pkg && rm -rf node_modules",
     "clean:base": "rm -rf node_modules temp dist others",
@@ -57,14 +65,6 @@
     "LICENSE",
     "package.json"
   ],
-  "author": {
-    "name": "yt-dlx"
-  },
-  "homepage": "https://rebrand.ly/mixly",
-  "repository": {
-    "type": "git",
-    "url": "https://mixly-yt-dlx.koyeb.app/pkg"
-  },
   "dependencies": {
     "async-retry": "^1.3.3",
     "axios": "^1.6.8",
