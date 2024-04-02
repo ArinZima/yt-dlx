@@ -4,7 +4,6 @@ import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
-import NavPackage from "@/pages/components/nav";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -21,13 +20,31 @@ import ytdlx from "yt-dlx";
 import colors from "colors";
 (async () => {
   try {
-    await ytdlx.VideoOnly.Single.Lowest({
-      stream: false,
-      verbose: true,
-      onionTor: false,
-      output: "public/video",
-      query: "video-id/name/url",
-    });
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ] as const;
+    for (const resolution of resolutions) {
+      await ytdlx.VideoOnly.Single.Custom({
+        resolution,
+        stream: false,
+        verbose: true,
+        onionTor: false,
+        output: "public/video",
+        query: "video-id/name/url",
+      });
+    }
   } catch (error: any) {
     console.error(colors.red(error.message));
   }
@@ -38,19 +55,37 @@ import colors from "colors";
 import * as fs from "fs";
 (async () => {
   try {
-    const result = await ytdlx.VideoOnly.Single.Lowest({
-      stream: true,
-      verbose: true,
-      onionTor: false,
-      output: "public/video",
-      query: "video-id/name/url",
-    });
-    if (result && result.filename && result.ffmpeg) {
-      result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
-        end: true,
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ] as const;
+    for (const resolution of resolutions) {
+      const result = await ytdlx.VideoOnly.Single.Custom({
+        resolution,
+        stream: true,
+        verbose: true,
+        onionTor: false,
+        output: "public/video",
+        query: "video-id/name/url",
       });
-    } else {
-      console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      if (result && result.filename && result.ffmpeg) {
+        result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
+          end: true,
+        });
+      } else {
+        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      }
     }
   } catch (error: any) {
     console.error(colors.red(error.message));
@@ -63,14 +98,35 @@ import express from "express";
 (async () => {
   try {
     const server = express();
-    server.get("/video/:query", async (req, res) => {
+    server.get("/video/:resolution/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.VideoOnly.Single.Lowest({
+        const resparam = req.params.resolution;
+        const resolutions = [
+            "144p",
+            "240p",
+            "360p",
+            "480p",
+            "720p",
+            "1080p",
+            "1440p",
+            "2160p",
+            "3072p",
+            "4320p",
+            "6480p",
+            "8640p",
+            "12000p",
+        ];
+        if (!resolutions.includes(resparam)) {
+          res.status(404).send("Invalid resolution parameter");
+          return;
+        }
+        const result = await ytdlx.VideoOnly.Single.Custom({
           stream: true,
           verbose: true,
           onionTor: false,
           query: queryParam,
+          resolution: resparam as any,
         });
         if (result && result.filename && result.ffmpeg) {
           result.ffmpeg.pipe(res, { end: true });
@@ -102,13 +158,31 @@ import ytdlx from "yt-dlx";
 import colors from "colors";
 (async () => {
   try {
-    await ytdlx.default.VideoOnly.Single.Lowest({
-      stream: false,
-      verbose: true,
-      onionTor: false,
-      output: "public/video",
-      query: "video-id/name/url",
-    });
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ];
+    for (const resolution of resolutions) {
+      await ytdlx.default.VideoOnly.Single.Custom({
+        resolution,
+        stream: false,
+        verbose: true,
+        onionTor: false,
+        output: "public/video",
+        query: "video-id/name/url",
+      });
+    }
   } catch (error) {
     console.error(colors.red(error.message));
   }
@@ -119,19 +193,37 @@ import colors from "colors";
 import * as fs from "fs";
 (async () => {
   try {
-    const result = await ytdlx.default.VideoOnly.Single.Lowest({
-      stream: true,
-      verbose: true,
-      onionTor: false,
-      output: "public/video",
-      query: "video-id/name/url",
-    });
-    if (result && result.filename && result.ffmpeg) {
-      result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
-        end: true,
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ];
+    for (const resolution of resolutions) {
+      const result = await ytdlx.default.VideoOnly.Single.Custom({
+        resolution,
+        stream: true,
+        verbose: true,
+        onionTor: false,
+        output: "public/video",
+        query: "video-id/name/url",
       });
-    } else {
-      console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      if (result && result.filename && result.ffmpeg) {
+        result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
+          end: true,
+        });
+      } else {
+        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      }
     }
   } catch (error) {
     console.error(colors.red(error.message));
@@ -144,14 +236,35 @@ import express from "express";
 (async () => {
   try {
     const server = express();
-    server.get("/video/:query", async (req, res) => {
+    server.get("/video/:resolution/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.default.VideoOnly.Single.Lowest({
+        const resparam = req.params.resolution;
+        const resolutions = [
+            "144p",
+            "240p",
+            "360p",
+            "480p",
+            "720p",
+            "1080p",
+            "1440p",
+            "2160p",
+            "3072p",
+            "4320p",
+            "6480p",
+            "8640p",
+            "12000p",
+        ];
+        if (!resolutions.includes(resparam)) {
+          res.status(404).send("Invalid resolution parameter");
+          return;
+        }
+        const result = await ytdlx.default.VideoOnly.Single.Custom({
           stream: true,
           verbose: true,
           onionTor: false,
           query: queryParam,
+          resolution: resparam,
         });
         if (result && result.filename && result.ffmpeg) {
           result.ffmpeg.pipe(res, { end: true });
@@ -183,13 +296,31 @@ const ytdlx = require("yt-dlx");
 const colors = require("colors");
 (async () => {
   try {
-    await ytdlx.default.VideoOnly.Single.Lowest({
-      stream: false,
-      verbose: true,
-      onionTor: false,
-      output: "public/video",
-      query: "video-id/name/url",
-    });
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ];
+    for (const resolution of resolutions) {
+      await ytdlx.default.VideoOnly.Single.Custom({
+        resolution,
+        stream: false,
+        verbose: true,
+        onionTor: false,
+        output: "public/video",
+        query: "video-id/name/url",
+      });
+    }
   } catch (error) {
     console.error(colors.red(error.message));
   }
@@ -200,19 +331,37 @@ const colors = require("colors");
 const fs = require("fs");
 (async () => {
   try {
-    const result = await ytdlx.default.VideoOnly.Single.Lowest({
-      stream: true,
-      verbose: true,
-      onionTor: false,
-      output: "public/video",
-      query: "video-id/name/url",
-    });
-    if (result && result.filename && result.ffmpeg) {
-      result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
-        end: true,
+    const resolutions = [
+      "144p",
+      "240p",
+      "360p",
+      "480p",
+      "720p",
+      "1080p",
+      "1440p",
+      "2160p",
+      "3072p",
+      "4320p",
+      "6480p",
+      "8640p",
+      "12000p",
+    ];
+    for (const resolution of resolutions) {
+      const result = await ytdlx.default.VideoOnly.Single.Custom({
+        resolution,
+        stream: true,
+        verbose: true,
+        onionTor: false,
+        output: "public/video",
+        query: "video-id/name/url",
       });
-    } else {
-      console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      if (result && result.filename && result.ffmpeg) {
+        result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
+          end: true,
+        });
+      } else {
+        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
+      }
     }
   } catch (error) {
     console.error(colors.red(error.message));
@@ -225,14 +374,35 @@ const express = require("express");
 (async () => {
   try {
     const server = express();
-    server.get("/video/:query", async (req, res) => {
+    server.get("/video/:resolution/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.default.VideoOnly.Single.Lowest({
+        const resparam = req.params.resolution;
+        const resolutions = [
+            "144p",
+            "240p",
+            "360p",
+            "480p",
+            "720p",
+            "1080p",
+            "1440p",
+            "2160p",
+            "3072p",
+            "4320p",
+            "6480p",
+            "8640p",
+            "12000p",
+        ];
+        if (!resolutions.includes(resparam)) {
+          res.status(404).send("Invalid resolution parameter");
+          return;
+        }
+        const result = await ytdlx.default.VideoOnly.Single.Custom({
           stream: true,
           verbose: true,
           onionTor: false,
           query: queryParam,
+          resolution: resparam,
         });
         if (result && result.filename && result.ffmpeg) {
           result.ffmpeg.pipe(res, { end: true });
@@ -263,8 +433,24 @@ export default function AwesomePackage() {
   };
 
   return (
-    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
-      <NavPackage />
+    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1a1919] scrollbar-track-[#1a1919] scrollbar-thumb-red-600">
+      <nav className="navbar bg-red-500/10 text-gray-400 backdrop-blur-md fixed z-50 top-0">
+        <div className="flex flex-wrap items-baseline justify-center">
+          <Link
+            href="/"
+            className="text-[#e73d75] cursor-pointer text-3xl mr-2"
+          >
+            mixly
+          </Link>
+          <span className="animate-pulse mr-2">with</span>
+          <Link
+            href="/pkg"
+            className="text-red-600 cursor-pointer text-3xl mr-2"
+          >
+            yt-dlx
+          </Link>
+        </div>
+      </nav>
       <section className="flex flex-col items-center justify-center mt-20">
         <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">
           <article className="space-y-8">
@@ -334,7 +520,7 @@ export default function AwesomePackage() {
         <div className="max-w-screen-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
-              Viewing YtDlx.VideoOnly.Single.Lowest()
+              Viewing YtDlx.VideoOnly.Single.Custom()
             </h2>
             <p className="mt-4 text-gray-400">
               yt-dlx accommodates various node.js coding flavours!{" "}
@@ -344,10 +530,15 @@ export default function AwesomePackage() {
             </p>
             <ul className="list-disc m-4 bg-neutral-800/40 shadow-black shadow-2xl p-8 rounded-3xl border border-dashed border-red-600">
               <li>
-                Downloads the lowest quality version of a YouTube video with
-                optional video filter.
+                Downloads a YouTube video with custom resolution and optional
+                video filter.
               </li>
               <li>@param query - The YouTube video URL or ID or name.</li>
+              <li>
+                @param resolution - The desired resolution of the video.
+                options: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p, 2160p,
+                3072p, 4320p, 6480p, 8640p, 12000p.
+              </li>
               <li>
                 @param stream - (optional) Whether to return the FfmpegCommand
                 instead of downloading the video.
@@ -384,9 +575,9 @@ export default function AwesomePackage() {
                   exit={{ opacity: 0, height: 0 }}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className={`text-sm font-mono shadow-black shadow-2xl hover:shadow-red-600/20 collapse ${
-                    set === index ? "bg-[#272727]" : "bg-neutral-800/40"
-                  } border border-red-600/10 rounded-3x mb-0.5 hover:border-red-600 hover:border-dashed`}
+                  className={`text-sm font-bold shadow-black shadow-2xl hover:shadow-red-600/20 collapse ${
+                    set === index ? "bg-[#272727]" : "bg-neutral-800/60"
+                  } border border-red-600/20 rounded-3xl mb-2 hover:border-red-600 hover:border-dashed`}
                 >
                   <input
                     type="radio"
@@ -404,7 +595,7 @@ export default function AwesomePackage() {
                       set === index ? "open" : "hidden"
                     }`}
                   >
-                    <div className="font-bold text-xs">{item.content}</div>
+                    <div>{item.content}</div>
                   </div>
                 </motion.div>
               ))}

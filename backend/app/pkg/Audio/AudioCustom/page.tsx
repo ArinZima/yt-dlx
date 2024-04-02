@@ -1,9 +1,9 @@
 "use client";
-import Link from "next/link";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
+import NavPackage from "@/pages/components/nav";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -307,24 +307,8 @@ export default function AwesomePackage() {
   };
 
   return (
-    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1a1919] scrollbar-track-[#1a1919] scrollbar-thumb-red-600">
-      <nav className="navbar bg-red-500/10 text-gray-400 backdrop-blur-md fixed z-50 top-0">
-        <div className="flex flex-wrap items-baseline justify-center">
-          <Link
-            href="/"
-            className="text-[#e73d75] cursor-pointer text-3xl mr-2"
-          >
-            mixly
-          </Link>
-          <span className="animate-pulse mr-2">with</span>
-          <Link
-            href="/pkg"
-            className="text-red-600 cursor-pointer text-3xl mr-2"
-          >
-            yt-dlx
-          </Link>
-        </div>
-      </nav>
+    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
+      <NavPackage />
       <section className="flex flex-col items-center justify-center mt-20">
         <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">
           <article className="space-y-8">
@@ -449,9 +433,9 @@ export default function AwesomePackage() {
                   exit={{ opacity: 0, height: 0 }}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className={`text-sm font-bold shadow-black shadow-2xl hover:shadow-red-600/20 collapse ${
-                    set === index ? "bg-[#272727]" : "bg-neutral-800/60"
-                  } border border-red-600/20 rounded-3xl mb-2 hover:border-red-600 hover:border-dashed`}
+                  className={`text-sm font-mono shadow-black shadow-2xl hover:shadow-red-600/20 collapse ${
+                    set === index ? "bg-[#272727]" : "bg-neutral-800/40"
+                  } border border-red-600/10 rounded-3x mb-0.5 hover:border-red-600 hover:border-dashed`}
                 >
                   <input
                     type="radio"
@@ -469,7 +453,7 @@ export default function AwesomePackage() {
                       set === index ? "open" : "hidden"
                     }`}
                   >
-                    <div>{item.content}</div>
+                    <div className="font-bold text-xs">{item.content}</div>
                   </div>
                 </motion.div>
               ))}

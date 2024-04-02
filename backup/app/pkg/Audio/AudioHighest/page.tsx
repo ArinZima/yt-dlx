@@ -4,7 +4,6 @@ import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
-import NavPackage from "@/pages/components/nav";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -21,11 +20,11 @@ import ytdlx from "yt-dlx";
 import colors from "colors";
 (async () => {
   try {
-    await ytdlx.VideoOnly.Single.Lowest({
+    await ytdlx.AudioOnly.Single.Highest({
       stream: false,
       verbose: true,
       onionTor: false,
-      output: "public/video",
+      output: "public/audio",
       query: "video-id/name/url",
     });
   } catch (error: any) {
@@ -38,11 +37,11 @@ import colors from "colors";
 import * as fs from "fs";
 (async () => {
   try {
-    const result = await ytdlx.VideoOnly.Single.Lowest({
+    const result = await ytdlx.AudioOnly.Single.Highest({
       stream: true,
       verbose: true,
       onionTor: false,
-      output: "public/video",
+      output: "public/audio",
       query: "video-id/name/url",
     });
     if (result && result.filename && result.ffmpeg) {
@@ -63,10 +62,10 @@ import express from "express";
 (async () => {
   try {
     const server = express();
-    server.get("/video/:query", async (req, res) => {
+    server.get("/audio/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.VideoOnly.Single.Lowest({
+        const result = await ytdlx.AudioOnly.Single.Highest({
           stream: true,
           verbose: true,
           onionTor: false,
@@ -102,11 +101,11 @@ import ytdlx from "yt-dlx";
 import colors from "colors";
 (async () => {
   try {
-    await ytdlx.default.VideoOnly.Single.Lowest({
+    await ytdlx.default.AudioOnly.Single.Highest({
       stream: false,
       verbose: true,
       onionTor: false,
-      output: "public/video",
+      output: "public/audio",
       query: "video-id/name/url",
     });
   } catch (error) {
@@ -119,11 +118,11 @@ import colors from "colors";
 import * as fs from "fs";
 (async () => {
   try {
-    const result = await ytdlx.default.VideoOnly.Single.Lowest({
+    const result = await ytdlx.default.AudioOnly.Single.Highest({
       stream: true,
       verbose: true,
       onionTor: false,
-      output: "public/video",
+      output: "public/audio",
       query: "video-id/name/url",
     });
     if (result && result.filename && result.ffmpeg) {
@@ -144,10 +143,10 @@ import express from "express";
 (async () => {
   try {
     const server = express();
-    server.get("/video/:query", async (req, res) => {
+    server.get("/audio/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.default.VideoOnly.Single.Lowest({
+        const result = await ytdlx.default.AudioOnly.Single.Highest({
           stream: true,
           verbose: true,
           onionTor: false,
@@ -183,11 +182,11 @@ const ytdlx = require("yt-dlx");
 const colors = require("colors");
 (async () => {
   try {
-    await ytdlx.default.VideoOnly.Single.Lowest({
+    await ytdlx.default.AudioOnly.Single.Highest({
       stream: false,
       verbose: true,
       onionTor: false,
-      output: "public/video",
+      output: "public/audio",
       query: "video-id/name/url",
     });
   } catch (error) {
@@ -200,11 +199,11 @@ const colors = require("colors");
 const fs = require("fs");
 (async () => {
   try {
-    const result = await ytdlx.default.VideoOnly.Single.Lowest({
+    const result = await ytdlx.default.AudioOnly.Single.Highest({
       stream: true,
       verbose: true,
       onionTor: false,
-      output: "public/video",
+      output: "public/audio",
       query: "video-id/name/url",
     });
     if (result && result.filename && result.ffmpeg) {
@@ -225,10 +224,10 @@ const express = require("express");
 (async () => {
   try {
     const server = express();
-    server.get("/video/:query", async (req, res) => {
+    server.get("/audio/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.default.VideoOnly.Single.Lowest({
+        const result = await ytdlx.default.AudioOnly.Single.Highest({
           stream: true,
           verbose: true,
           onionTor: false,
@@ -263,8 +262,24 @@ export default function AwesomePackage() {
   };
 
   return (
-    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
-      <NavPackage />
+    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1a1919] scrollbar-track-[#1a1919] scrollbar-thumb-red-600">
+      <nav className="navbar bg-red-500/10 text-gray-400 backdrop-blur-md fixed z-50 top-0">
+        <div className="flex flex-wrap items-baseline justify-center">
+          <Link
+            href="/"
+            className="text-[#e73d75] cursor-pointer text-3xl mr-2"
+          >
+            mixly
+          </Link>
+          <span className="animate-pulse mr-2">with</span>
+          <Link
+            href="/pkg"
+            className="text-red-600 cursor-pointer text-3xl mr-2"
+          >
+            yt-dlx
+          </Link>
+        </div>
+      </nav>
       <section className="flex flex-col items-center justify-center mt-20">
         <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">
           <article className="space-y-8">
@@ -334,7 +349,7 @@ export default function AwesomePackage() {
         <div className="max-w-screen-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
-              Viewing YtDlx.VideoOnly.Single.Lowest()
+              Viewing YtDlx.AudioOnly.Single.Highest()
             </h2>
             <p className="mt-4 text-gray-400">
               yt-dlx accommodates various node.js coding flavours!{" "}
@@ -344,36 +359,36 @@ export default function AwesomePackage() {
             </p>
             <ul className="list-disc m-4 bg-neutral-800/40 shadow-black shadow-2xl p-8 rounded-3xl border border-dashed border-red-600">
               <li>
-                Downloads the lowest quality version of a YouTube video with
-                optional video filter.
+                Downloads and processes the highest quality audio from a single
+                YouTube video.
               </li>
               <li>@param query - The YouTube video URL or ID or name.</li>
               <li>
-                @param stream - (optional) Whether to return the FfmpegCommand
-                instead of downloading the video.
+                @param output - (optional) The output directory for the
+                processed file.
+              </li>
+              <li>
+                @param stream - (optional) Whether to stream the processed video
+                or not.
               </li>
               <li>
                 @param verbose - (optional) Whether to log verbose output or
                 not.
               </li>
               <li>
-                @param output - (optional) The output directory for the
-                processed files.
-              </li>
-              <li>
-                @param filter - (optional) The video filter to apply. Available
-                options: invert, rotate90, rotate270, grayscale, rotate180,
-                flipVertical, flipHorizontal.
+                @param filter - (optional) The audio filter to apply. Available
+                options: echo, slow, speed, phaser, flanger, panning, reverse,
+                vibrato, subboost, surround, bassboost, nightcore, superslow,
+                vaporwave, superspeed.
               </li>
               <li>
                 @param onionTor - (optional) Whether to use Tor for the download
                 or not.
               </li>
               <li>
-                @returns A Promise that resolves when the video has been
-                processed, unless `stream` is `true`, in which case it resolves
-                with an object containing the `ffmpeg` command and the
-                `filename`.
+                @returns A Promise that resolves with either `void` (if `stream`
+                is false) or an object containing the `ffmpeg` instance and the
+                output filename (if `stream` is true).
               </li>
             </ul>
             <AnimatePresence>
@@ -384,9 +399,9 @@ export default function AwesomePackage() {
                   exit={{ opacity: 0, height: 0 }}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className={`text-sm font-mono shadow-black shadow-2xl hover:shadow-red-600/20 collapse ${
-                    set === index ? "bg-[#272727]" : "bg-neutral-800/40"
-                  } border border-red-600/10 rounded-3x mb-0.5 hover:border-red-600 hover:border-dashed`}
+                  className={`text-sm font-bold shadow-black shadow-2xl hover:shadow-red-600/20 collapse ${
+                    set === index ? "bg-[#272727]" : "bg-neutral-800/60"
+                  } border border-red-600/20 rounded-3xl mb-2 hover:border-red-600 hover:border-dashed`}
                 >
                   <input
                     type="radio"
@@ -404,7 +419,7 @@ export default function AwesomePackage() {
                       set === index ? "open" : "hidden"
                     }`}
                   >
-                    <div className="font-bold text-xs">{item.content}</div>
+                    <div>{item.content}</div>
                   </div>
                 </motion.div>
               ))}
