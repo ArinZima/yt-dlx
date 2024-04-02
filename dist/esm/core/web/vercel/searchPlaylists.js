@@ -1,5 +1,5 @@
 import colors from "colors";
-import { Client } from "youtubei";
+import { Client } from "../../../resources/TubeI";
 export default async function searchPlaylists({ query }) {
     try {
         const youtube = new Client();

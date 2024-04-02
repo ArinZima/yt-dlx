@@ -1,5 +1,5 @@
 import colors from "colors";
-import { Client } from "youtubei";
+import { Client } from "../../../pkg/TubeI/dist/typings";
 
 export interface singleVideoType {
   id: string;
