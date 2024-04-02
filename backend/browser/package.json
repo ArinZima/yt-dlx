@@ -1,8 +1,7 @@
 {
   "name": "yt-dlx",
-  "version": "1.0.0",
   "author": "yt-dlx",
-  "main": "pkg/main.mjs",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "https://yt-dlx-shovit.koyeb.app/"
@@ -10,13 +9,11 @@
   "homepage": "https://yt-dlx-shovit.koyeb.app/",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "scripts": {
-    "electron:dev": "concurrently -n \"NEXT,ELEC\" -c \"green,blue\" --kill-others \"next dev\" \"electron . --no-sandbox\"",
-    "electron:build": "yarn clean && next build && electron-builder",
-    "clean": "rm -rf dist out .next .cache .temp",
-    "build": "yarn clean && next build",
-    "start": "next start",
-    "lint": "next lint",
-    "dev": "next dev"
+    "browser:clean": "rm -rf dist out .next .cache .temp",
+    "browser:build": "yarn clean && next build",
+    "browser:start": "next start",
+    "browser:lint": "next lint",
+    "browser:dev": "next dev"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
@@ -42,9 +39,6 @@
     "@types/react-syntax-highlighter": "^15.5.11",
     "autoprefixer": "^10.0.1",
     "concurrently": "^8.2.2",
-    "electron": "^29.1.6",
-    "electron-builder": "^24.13.3",
-    "electron-is-dev": "^3.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",
     "postcss": "^8",

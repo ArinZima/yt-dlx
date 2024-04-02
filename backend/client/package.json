@@ -1,7 +1,7 @@
 {
   "name": "yt-dlx",
-  "version": "1.0.0",
   "author": "yt-dlx",
+  "version": "0.0.0",
   "main": "pkg/main.mjs",
   "repository": {
     "type": "git",
@@ -12,11 +12,8 @@
   "scripts": {
     "electron:dev": "concurrently -n \"NEXT,ELEC\" -c \"green,blue\" --kill-others \"next dev\" \"electron . --no-sandbox\"",
     "electron:build": "yarn clean && next build && electron-builder",
-    "clean": "rm -rf dist out .next .cache .temp",
-    "build": "yarn clean && next build",
-    "start": "next start",
-    "lint": "next lint",
-    "dev": "next dev"
+    "electron:clean": "rm -rf dist out .next .cache .temp",
+    "electron:lint": "next lint"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",

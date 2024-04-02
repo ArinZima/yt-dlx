@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -10,5 +8,38 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/ytdlp",
+        destination: "/api/utils/",
+      },
+      {
+        source: "/meta[Search]",
+        destination: "/api/utils/metaSearch",
+      },
+      {
+        source: "/ioSocket",
+        destination: "/api/web/io",
+      },
+      {
+        source: "/audio[Auto]",
+        destination: "/api/audio/metaAuto",
+      },
+      {
+        source: "/audio[Custom]",
+        destination: "/api/audio/metaCustom",
+      },
+      {
+        source: "/video[Auto]",
+        destination: "/api/video/metaAuto",
+      },
+      {
+        source: "/video[Custom]",
+        destination: "/api/video/metaCustom",
+      },
+    ];
+  },
 };
-export default nextConfig;
+
+module.exports = nextConfig;
