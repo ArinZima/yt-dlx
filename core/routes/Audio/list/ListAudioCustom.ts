@@ -93,7 +93,7 @@ export default async function ListAudioCustom({
             );
             continue;
           }
-          for (const video of punique.playlistVideos) unique.add(video);
+          for (const video of punique.result) unique.add(video);
         }
       } catch (error: any) {
         console.log(colors.red("@error:"), error.message);

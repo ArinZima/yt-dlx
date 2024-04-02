@@ -89,7 +89,7 @@ async function ListVideoLowest({ query, verbose, output, filter, onionTor, }) {
                         console.log(colors_1.default.red("@error:"), "unable to get response for", purl);
                         continue;
                     }
-                    for (const video of punique.playlistVideos)
+                    for (const video of punique.result)
                         unique.add(video);
                 }
             }

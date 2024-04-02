@@ -91,7 +91,7 @@ async function ListAudioHighest({ query, output, verbose, filter, onionTor, }) {
                         console.log(colors_1.default.red("@error:"), "unable to get response for", purl);
                         continue;
                     }
-                    for (const video of punique.playlistVideos)
+                    for (const video of punique.result)
                         unique.add(video);
                 }
             }

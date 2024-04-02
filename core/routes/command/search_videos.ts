@@ -13,7 +13,7 @@ export default async function search_videos({
   query,
 }: {
   query: string;
-}): Promise<searchVideosType> {
+}): Promise<searchVideosType[]> {
   const isID = await YouTubeID(query);
   if (isID) {
     throw new Error(

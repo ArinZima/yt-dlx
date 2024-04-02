@@ -83,7 +83,7 @@ export default async function ListAudioLowest({
             );
             continue;
           }
-          for (const video of punique.playlistVideos) unique.add(video);
+          for (const video of punique.result) unique.add(video);
         }
       } catch (error: any) {
         console.log(colors.red("@error:"), error.message);

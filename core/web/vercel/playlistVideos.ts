@@ -5,7 +5,13 @@ export interface playlistVideosType {
   id: string;
   title: string;
   videoCount: number;
-  thumbnails: string[];
+  result: {
+    id: string;
+    title: string;
+    isLive: boolean;
+    duration: number;
+    thumbnails: string[];
+  };
 }
 export default async function playlistVideos({
   playlistId,
