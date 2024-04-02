@@ -1,13 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Agent_1 = __importDefault(require("../../base/Agent"));
 // console.clear();
 // import AudioLowest from "../../routes/Audio/single/AudioLowest";
 // import AudioHighest from "../../routes/Audio/single/AudioHighest";
 // import VideoLowest from "../../routes/Video/single/VideoLowest";
 // import VideoHighest from "../../routes/Video/single/VideoHighest";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 // (async () => {
 // try {
 // await AudioLowest({
@@ -40,7 +41,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // })();
 // ===================================================================
 console.clear();
-const Agent_1 = __importDefault(require("../../base/Agent"));
 (async () => {
     try {
         const body = await (0, Agent_1.default)({

@@ -1,11 +1,11 @@
-import * as fs from "fs";
 import colors from "colors";
+import ffmpeg from "fluent-ffmpeg";
+import * as fs from "fs";
 import * as path from "path";
 import { z, ZodError } from "zod";
-import ffmpeg from "fluent-ffmpeg";
 import ytdlx from "../../../base/Agent";
-import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
+import formatTime from "../../../base/formatTime";
 const ZodSchema = z.object({
     query: z.string().min(2),
     output: z.string().optional(),
@@ -173,9 +173,7 @@ export default async function AudioCustom({ query, output, stream, filter, verbo
             if (stream) {
                 return {
                     ffmpeg: ff,
-                    filename: output
-                        ? path.join(folder, filename)
-                        : filename.replace("_)_", ")_"),
+                    filename: output ? path.join(folder, filename) : filename.replace("_)_", ")_"),
                 };
             }
             else {

@@ -3,12 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const web_1 = __importDefault(require("../web"));
 const colors_1 = __importDefault(require("colors"));
-const niptor_1 = __importDefault(require("./niptor"));
-const Engine_1 = __importDefault(require("./Engine"));
-const YouTubeId_1 = __importDefault(require("../web/YouTubeId"));
 const package_json_1 = require("../../package.json");
+const web_1 = __importDefault(require("../web"));
+const YouTubeId_1 = __importDefault(require("../web/YouTubeId"));
+const Engine_1 = __importDefault(require("./Engine"));
+const niptor_1 = __importDefault(require("./niptor"));
 async function Agent({ query, verbose, onionTor, }) {
     console.log(colors_1.default.green("@info:"), "using", colors_1.default.green("yt-dlx"), "version", colors_1.default.green(package_json_1.version));
     let nipTor;

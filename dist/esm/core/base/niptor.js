@@ -1,5 +1,5 @@
-import colors from "colors";
 import { spawn } from "child_process";
+import colors from "colors";
 /**
  * Checks if sudo is available.
  *

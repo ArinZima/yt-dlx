@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const VideoInfo_1 = __importDefault(require("./browser/VideoInfo"));
-const SearchVideos_1 = __importDefault(require("./browser/SearchVideos"));
 const PlaylistInfo_1 = __importDefault(require("./browser/PlaylistInfo"));
+const SearchVideos_1 = __importDefault(require("./browser/SearchVideos"));
+const VideoInfo_1 = __importDefault(require("./browser/VideoInfo"));
 const playlistVideos_1 = __importDefault(require("./vercel/playlistVideos"));
 const relatedVideos_1 = __importDefault(require("./vercel/relatedVideos"));
 const searchPlaylists_1 = __importDefault(require("./vercel/searchPlaylists"));

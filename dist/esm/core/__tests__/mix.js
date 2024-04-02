@@ -1,8 +1,8 @@
-console.clear();
-import colors from "colors";
-import { resolve, join } from "path";
 import { spawnSync } from "child_process";
+import colors from "colors";
 import { readdirSync, lstatSync } from "fs";
+import { resolve, join } from "path";
+console.clear();
 function runTestFiles(folderPath) {
     const files = readdirSync(folderPath);
     files.forEach((file) => {

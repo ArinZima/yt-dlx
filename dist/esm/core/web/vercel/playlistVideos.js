@@ -1,6 +1,6 @@
 import colors from "colors";
 import { Client } from "../../../pkg/TubeI/dist/typings";
-export default async function playlistVideos({ playlistId, }) {
+export default async function playlistVideos({ playlistId }) {
     try {
         const youtube = new Client();
         const playlistVideos = await youtube.getPlaylist(playlistId);

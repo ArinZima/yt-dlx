@@ -26,11 +26,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zod_1 = require("zod");
-const colors_1 = __importDefault(require("colors"));
 const cheerio_1 = require("cheerio");
-const closers_1 = __importDefault(require("../closers"));
+const colors_1 = __importDefault(require("colors"));
+const zod_1 = require("zod");
 const YouTubeId_1 = __importDefault(require("../YouTubeId"));
+const closers_1 = __importDefault(require("../closers"));
 const crawler_1 = __importStar(require("../crawler"));
 async function VideoInfo(input) {
     let query = "";
@@ -71,18 +71,20 @@ async function VideoInfo(input) {
         console.log(colors_1.default.yellow("@scrape:"), "took snapshot...");
     }
     const videoId = (await (0, YouTubeId_1.default)(query));
-    await crawler_1.page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-metadata", { timeout: 10000 });
-    await crawler_1.page.waitForSelector("a.yt-simple-endpoint.style-scope.yt-formatted-string", { timeout: 10000 });
-    await crawler_1.page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-info-text", { timeout: 10000 });
+    await crawler_1.page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-metadata", {
+        timeout: 10000,
+    });
+    await crawler_1.page.waitForSelector("a.yt-simple-endpoint.style-scope.yt-formatted-string", {
+        timeout: 10000,
+    });
+    await crawler_1.page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-info-text", {
+        timeout: 10000,
+    });
     setTimeout(() => { }, 1000);
     const htmlContent = await crawler_1.page.content();
     const $ = (0, cheerio_1.load)(htmlContent);
-    const title = $("yt-formatted-string.style-scope.ytd-watch-metadata")
-        .text()
-        .trim();
-    const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string")
-        .text()
-        .trim();
+    const title = $("yt-formatted-string.style-scope.ytd-watch-metadata").text().trim();
+    const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string").text().trim();
     const viewsElement = $("yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('views')").first();
     const views = viewsElement.text().trim().replace(" views", "");
     const uploadOnElement = $("yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('ago')").first();

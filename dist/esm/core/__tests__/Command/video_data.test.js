@@ -1,5 +1,5 @@
-import ytdlx from "../..";
 import colors from "colors";
+import ytdlx from "../..";
 (async () => {
     try {
         console.log(colors.blue("@test:"), "ytSearch video single");

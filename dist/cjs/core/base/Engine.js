@@ -27,12 +27,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sizeFormat = void 0;
-const fs = __importStar(require("fs"));
-const colors_1 = __importDefault(require("colors"));
-const path = __importStar(require("path"));
 const async_retry_1 = __importDefault(require("async-retry"));
-const util_1 = require("util");
 const child_process_1 = require("child_process");
+const colors_1 = __importDefault(require("colors"));
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const util_1 = require("util");
 const sizeFormat = (filesize) => {
     if (isNaN(filesize) || filesize < 0)
         return filesize;
@@ -82,8 +82,7 @@ async function Engine({ query, ipAddress, onionTor, }) {
         }
     }
     if (pLoc === "") {
-        throw new Error(colors_1.default.red("@error: ") +
-            "Could not find cprobe file. maybe re-install yt-dlx?");
+        throw new Error(colors_1.default.red("@error: ") + "Could not find cprobe file. maybe re-install yt-dlx?");
     }
     const config = {
         factor: 2,
@@ -102,14 +101,10 @@ async function Engine({ query, ipAddress, onionTor, }) {
     const i = JSON.parse(metaCore.stdout.toString());
     i.formats.forEach((tube) => {
         const rm = new Set(["storyboard", "Default"]);
-        if (!rm.has(tube.format_note) &&
-            tube.protocol === "m3u8_native" &&
-            tube.vbr) {
-            if (!ManifestLow[tube.resolution] ||
-                tube.vbr < ManifestLow[tube.resolution].vbr)
+        if (!rm.has(tube.format_note) && tube.protocol === "m3u8_native" && tube.vbr) {
+            if (!ManifestLow[tube.resolution] || tube.vbr < ManifestLow[tube.resolution].vbr)
                 ManifestLow[tube.resolution] = tube;
-            if (!ManifestHigh[tube.resolution] ||
-                tube.vbr > ManifestHigh[tube.resolution].vbr)
+            if (!ManifestHigh[tube.resolution] || tube.vbr > ManifestHigh[tube.resolution].vbr)
                 ManifestHigh[tube.resolution] = tube;
         }
         if (rm.has(tube.format_note) || tube.filesize === undefined || null)

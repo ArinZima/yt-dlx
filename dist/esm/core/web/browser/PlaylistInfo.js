@@ -1,8 +1,8 @@
-import { z } from "zod";
-import colors from "colors";
 import { load } from "cheerio";
-import closers from "../closers";
+import colors from "colors";
+import { z } from "zod";
 import YouTubeId from "../YouTubeId";
+import closers from "../closers";
 import crawler, { browser, page } from "../crawler";
 export default async function PlaylistInfo(input) {
     let query = "";

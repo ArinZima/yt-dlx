@@ -1,5 +1,5 @@
-import { z } from "zod";
 import type { FfmpegCommand } from "fluent-ffmpeg";
+import { z } from "zod";
 declare const ZodSchema: z.ZodObject<{
     query: z.ZodString;
     output: z.ZodOptional<z.ZodString>;

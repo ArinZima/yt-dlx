@@ -1,3 +1,5 @@
+import Agent from "../../base/Agent";
+
 // console.clear();
 // import AudioLowest from "../../routes/Audio/single/AudioLowest";
 // import AudioHighest from "../../routes/Audio/single/AudioHighest";
@@ -39,17 +41,16 @@
 // })();
 // ===================================================================
 console.clear();
-import Agent from "../../base/Agent";
 
 (async () => {
-  try {
-    const body = await Agent({
-      verbose: true,
-      onionTor: false,
-      query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
-    });
-    console.log(body);
-  } catch (error: any) {
-    console.error(error.message);
-  }
+	try {
+		const body = await Agent({
+			verbose: true,
+			onionTor: false,
+			query: "https://youtu.be/pRLOXUlIUG0?si=dRXm_fVwubFrd4eI",
+		});
+		console.log(body);
+	} catch (error: any) {
+		console.error(error.message);
+	}
 })();

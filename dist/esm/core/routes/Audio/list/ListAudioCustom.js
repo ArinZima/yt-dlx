@@ -1,13 +1,13 @@
-import * as fs from "fs";
 import colors from "colors";
-import * as path from "path";
-import web from "../../../web";
-import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
+import * as fs from "fs";
+import * as path from "path";
+import { z, ZodError } from "zod";
 import ytdlx from "../../../base/Agent";
-import YouTubeID from "../../../web/YouTubeId";
-import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
+import formatTime from "../../../base/formatTime";
+import web from "../../../web";
+import YouTubeID from "../../../web/YouTubeId";
 const ZodSchema = z.object({
     output: z.string().optional(),
     verbose: z.boolean().optional(),
@@ -103,8 +103,7 @@ export default async function ListAudioCustom({ query, output, filter, verbose, 
                 if (adata)
                     ff.addInput(adata.url.toString());
                 else {
-                    throw new Error(colors.red("@error: ") +
-                        "no audio data found. use list_formats() maybe?");
+                    throw new Error(colors.red("@error: ") + "no audio data found. use list_formats() maybe?");
                 }
                 ff.addInput(engineData.metaData.thumbnail);
                 ff.outputOptions("-c copy");

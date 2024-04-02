@@ -1,8 +1,8 @@
-import { z } from "zod";
-import colors from "colors";
 import { load } from "cheerio";
-import closers from "../closers";
+import colors from "colors";
+import { z } from "zod";
 import YouTubeId from "../YouTubeId";
+import closers from "../closers";
 import crawler, { browser, page } from "../crawler";
 export default async function SearchVideos(input) {
     const QuerySchema = z.object({
@@ -64,8 +64,7 @@ export default async function SearchVideos(input) {
                     uploadOn: uploadedOnElement.length >= 2
                         ? $(uploadedOnElement[1]).text().trim()
                         : undefined,
-                    authorUrl: "https://www.youtube.com" + authorContainer.attr("href") ||
-                        undefined,
+                    authorUrl: "https://www.youtube.com" + authorContainer.attr("href") || undefined,
                     videoLink: "https://www.youtube.com/watch?v=" + videoId,
                     thumbnailUrls: [
                         `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,

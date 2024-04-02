@@ -10,7 +10,7 @@ export interface playlistVideosType {
         thumbnails: string[];
     };
 }
-export default function playlistVideos({ playlistId, }: {
+export default function playlistVideos({ playlistId }: {
     playlistId: string;
 }): Promise<{
     id: any;

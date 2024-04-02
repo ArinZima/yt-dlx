@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import ytdlx from "..";
-import * as fs from "fs";
-import colors from "colors";
-import * as path from "path";
-import minimist from "minimist";
 import { spawn } from "child_process";
+import colors from "colors";
+import * as fs from "fs";
+import minimist from "minimist";
+import * as path from "path";
+import ytdlx from "..";
 import { version } from "../../package.json";
 const proTube = minimist(process.argv.slice(2), {
     string: ["query", "format"],
@@ -36,10 +36,7 @@ const program = async () => {
                     maxTries--;
                 }
             }
-            const rox = spawn("sh", [
-                "-c",
-                `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh`,
-            ]);
+            const rox = spawn("sh", ["-c", `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh`]);
             await Promise.all([
                 new Promise((resolve, reject) => {
                     rox.stdout.on("data", (stdout) => {
@@ -77,10 +74,7 @@ const program = async () => {
                     maxTries--;
                 }
             }
-            const xrox = spawn("sh", [
-                "-c",
-                `chmod +x ${uLoc}/socks5.sh && ${uLoc}/socks5.sh`,
-            ]);
+            const xrox = spawn("sh", ["-c", `chmod +x ${uLoc}/socks5.sh && ${uLoc}/socks5.sh`]);
             await Promise.all([
                 new Promise((resolve, reject) => {
                     xrox.stdout.on("data", (stdout) => {

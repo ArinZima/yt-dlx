@@ -26,11 +26,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zod_1 = require("zod");
-const colors_1 = __importDefault(require("colors"));
 const cheerio_1 = require("cheerio");
-const closers_1 = __importDefault(require("../closers"));
+const colors_1 = __importDefault(require("colors"));
+const zod_1 = require("zod");
 const YouTubeId_1 = __importDefault(require("../YouTubeId"));
+const closers_1 = __importDefault(require("../closers"));
 const crawler_1 = __importStar(require("../crawler"));
 async function PlaylistInfo(input) {
     let query = "";

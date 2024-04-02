@@ -1,9 +1,9 @@
-import * as fs from "fs";
-import colors from "colors";
-import * as path from "path";
 import retry from "async-retry";
-import { promisify } from "util";
 import { exec } from "child_process";
+import colors from "colors";
+import * as fs from "fs";
+import * as path from "path";
+import { promisify } from "util";
 export const sizeFormat = (filesize) => {
     if (isNaN(filesize) || filesize < 0)
         return filesize;
@@ -52,8 +52,7 @@ export default async function Engine({ query, ipAddress, onionTor, }) {
         }
     }
     if (pLoc === "") {
-        throw new Error(colors.red("@error: ") +
-            "Could not find cprobe file. maybe re-install yt-dlx?");
+        throw new Error(colors.red("@error: ") + "Could not find cprobe file. maybe re-install yt-dlx?");
     }
     const config = {
         factor: 2,
@@ -72,14 +71,10 @@ export default async function Engine({ query, ipAddress, onionTor, }) {
     const i = JSON.parse(metaCore.stdout.toString());
     i.formats.forEach((tube) => {
         const rm = new Set(["storyboard", "Default"]);
-        if (!rm.has(tube.format_note) &&
-            tube.protocol === "m3u8_native" &&
-            tube.vbr) {
-            if (!ManifestLow[tube.resolution] ||
-                tube.vbr < ManifestLow[tube.resolution].vbr)
+        if (!rm.has(tube.format_note) && tube.protocol === "m3u8_native" && tube.vbr) {
+            if (!ManifestLow[tube.resolution] || tube.vbr < ManifestLow[tube.resolution].vbr)
                 ManifestLow[tube.resolution] = tube;
-            if (!ManifestHigh[tube.resolution] ||
-                tube.vbr > ManifestHigh[tube.resolution].vbr)
+            if (!ManifestHigh[tube.resolution] || tube.vbr > ManifestHigh[tube.resolution].vbr)
                 ManifestHigh[tube.resolution] = tube;
         }
         if (rm.has(tube.format_note) || tube.filesize === undefined || null)

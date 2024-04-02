@@ -26,16 +26,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __importStar(require("fs"));
 const colors_1 = __importDefault(require("colors"));
-const path = __importStar(require("path"));
-const web_1 = __importDefault(require("../../../web"));
-const zod_1 = require("zod");
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const zod_1 = require("zod");
 const Agent_1 = __importDefault(require("../../../base/Agent"));
-const YouTubeId_1 = __importDefault(require("../../../web/YouTubeId"));
-const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
+const formatTime_1 = __importDefault(require("../../../base/formatTime"));
+const web_1 = __importDefault(require("../../../web"));
+const YouTubeId_1 = __importDefault(require("../../../web/YouTubeId"));
 const ZodSchema = zod_1.z.object({
     output: zod_1.z.string().optional(),
     verbose: zod_1.z.boolean().optional(),
@@ -138,8 +138,7 @@ async function ListVideoCustom({ query, resolution, verbose, output, filter, oni
                 if (vdata)
                     ff.addInput(vdata.url.toString());
                 else
-                    throw new Error(colors_1.default.red("@error: ") +
-                        "no video data found. use list_formats() maybe?");
+                    throw new Error(colors_1.default.red("@error: ") + "no video data found. use list_formats() maybe?");
                 ff.outputOptions("-c copy");
                 ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
                 ff.withOutputFormat("matroska");

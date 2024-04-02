@@ -1,8 +1,8 @@
-import { z } from "zod";
-import colors from "colors";
 import { load } from "cheerio";
-import closers from "../closers";
+import colors from "colors";
+import { z } from "zod";
 import YouTubeId from "../YouTubeId";
+import closers from "../closers";
 import crawler, { browser, page } from "../crawler";
 export default async function VideoInfo(input) {
     let query = "";
@@ -43,18 +43,20 @@ export default async function VideoInfo(input) {
         console.log(colors.yellow("@scrape:"), "took snapshot...");
     }
     const videoId = (await YouTubeId(query));
-    await page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-metadata", { timeout: 10000 });
-    await page.waitForSelector("a.yt-simple-endpoint.style-scope.yt-formatted-string", { timeout: 10000 });
-    await page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-info-text", { timeout: 10000 });
+    await page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-metadata", {
+        timeout: 10000,
+    });
+    await page.waitForSelector("a.yt-simple-endpoint.style-scope.yt-formatted-string", {
+        timeout: 10000,
+    });
+    await page.waitForSelector("yt-formatted-string.style-scope.ytd-watch-info-text", {
+        timeout: 10000,
+    });
     setTimeout(() => { }, 1000);
     const htmlContent = await page.content();
     const $ = load(htmlContent);
-    const title = $("yt-formatted-string.style-scope.ytd-watch-metadata")
-        .text()
-        .trim();
-    const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string")
-        .text()
-        .trim();
+    const title = $("yt-formatted-string.style-scope.ytd-watch-metadata").text().trim();
+    const author = $("a.yt-simple-endpoint.style-scope.yt-formatted-string").text().trim();
     const viewsElement = $("yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('views')").first();
     const views = viewsElement.text().trim().replace(" views", "");
     const uploadOnElement = $("yt-formatted-string.style-scope.ytd-watch-info-text span.bold.style-scope.yt-formatted-string:contains('ago')").first();
