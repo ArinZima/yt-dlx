@@ -29,12 +29,13 @@ import * as fs from "fs";
     for (const resolution of resolutions) {
       const result = await ytdlx.AudioOnly.Single.Custom({
         resolution,
-        stream: true,
+        stream: false,
         verbose: true,
         onionTor: false,
         output: "public/audio",
         query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
       });
+
       if (result && result.filename && result.ffmpeg) {
         result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
           end: true,
