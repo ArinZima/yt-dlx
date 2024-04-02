@@ -5,9 +5,9 @@
   "main": "pkg/main.mjs",
   "repository": {
     "type": "git",
-    "url": "https://mixly-yt-dlx.koyeb.app/"
+    "url": "https://yt-dlx-shovit.koyeb.app/"
   },
-  "homepage": "https://mixly-yt-dlx.koyeb.app/",
+  "homepage": "https://yt-dlx-shovit.koyeb.app/",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "scripts": {
     "electron:dev": "concurrently -n \"NEXT,ELEC\" -c \"green,blue\" --kill-others \"next dev\" \"electron . --no-sandbox\"",
