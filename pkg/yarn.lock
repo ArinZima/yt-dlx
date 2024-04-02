@@ -1804,7 +1804,7 @@ puppeteer-core@22.6.2:
     devtools-protocol "0.0.1262051"
     ws "8.16.0"
 
-puppeteer@^22.6.1:
+puppeteer@^22.6.2:
   version "22.6.2"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-22.6.2.tgz#ef2ebeb963c2a25f8c52c40672a0b6c25dcd6086"
   integrity sha512-3GMAJ9adPUSdIHGuYV1b1RqRB6D2UScjnq779uZsvpAP6HOWw2+9ezZiUZaAXVST+Ku7KWsxOjkctEvRasJClA==
@@ -2440,10 +2440,10 @@ yn@3.1.1:
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
-yt-dlx@8.0.6:
-  version "8.0.6"
-  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-8.0.6.tgz#091d0b4baea24ad6d44d5cd945b755be266a945f"
-  integrity sha512-WX0ZQxuj+XngrSdq16anwYvCxKPg3FfPsP+QlHN0ovdhK1RV/S6zx4tzIrm5TmspD7WvrCGhDGmcYFQsXqqHEw==
+yt-dlx@8.0.7:
+  version "8.0.7"
+  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-8.0.7.tgz#2d0653a06b614f80f084aa8f0159d708a934dea2"
+  integrity sha512-vgAxuDrTz1Ce2+gYjljK1/ZLSHyxXXMKCPBc302sK+U/yXJcDBOcaNszq7B+RXIkNVBol1hIb9NK4SthVaBdTg==
   dependencies:
     async-retry "^1.3.3"
     axios "^1.6.8"
@@ -2459,7 +2459,7 @@ yt-dlx@8.0.6:
     node-fetch "^3.3.2"
     npm-run-all "^4.1.5"
     protobufjs "^7.2.6"
-    puppeteer "^22.6.1"
+    puppeteer "^22.6.2"
     readline-sync "^1.4.10"
     speedometer "^1.1.0"
     stream "^0.0.2"
