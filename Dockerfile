@@ -22,4 +22,4 @@ RUN npm i -g yarn yt-dlx --force
 WORKDIR /app
 COPY . .
 RUN yarn remake
-CMD yarn ui:start
+CMD yarn backend:start
