@@ -10,10 +10,10 @@
   "homepage": "https://yt-dlx-shovit.koyeb.app/",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "scripts": {
-    "client:dev": "concurrently -n \"NEXT,ELEC\" -c \"green,blue\" --kill-others \"next dev\" \"electron . --no-sandbox\"",
-    "client:build": "yarn clean && next build && electron-builder",
-    "client:clean": "rm -rf dist out .next .cache .temp",
-    "client:lint": "next lint"
+    "dev": "concurrently -n \"NEXT,ELEC\" -c \"green,blue\" --kill-others \"next dev\" \"electron . --no-sandbox\"",
+    "build": "yarn clean && next build && electron-builder",
+    "clean": "rm -rf dist out .next .cache .temp",
+    "lint": "next lint"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",

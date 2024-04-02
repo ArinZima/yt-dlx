@@ -9,13 +9,13 @@
   "homepage": "https://yt-dlx-shovit.koyeb.app/",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "scripts": {
-    "browser:setup": "dos2unix $(pwd)/setup.sh && chmod +x $(pwd)/setup.sh && $(pwd)/setup.sh",
-    "browser:quit": "concurrently \"pm2 delete all\" \"nginx -s quit\"",
-    "browser:clean": "rm -rf dist out .next .cache .temp",
-    "browser:build": "yarn clean && next build",
-    "browser:start": "next start",
-    "browser:lint": "next lint",
-    "browser:dev": "next dev"
+    "setup": "dos2unix $(pwd)/setup.sh && chmod +x $(pwd)/setup.sh && $(pwd)/setup.sh",
+    "quit": "concurrently \"pm2 delete all\" \"nginx -s quit\"",
+    "clean": "rm -rf dist out .next .cache .temp",
+    "build": "yarn clean && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "dev": "next dev"
   },
   "dependencies": {
     "@ngrok/ngrok": "^1.0.0",
