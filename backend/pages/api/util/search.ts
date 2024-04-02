@@ -15,7 +15,7 @@ export default async function handler(
     }
     const Query = await req.body.Query;
     console.log(chalk.greenBright.bold("❓ Query:"), chalk.italic(Query));
-    const TubeBody: searchVideosType = await ytdlx.ytSearch.video.multiple({
+    const TubeBody: searchVideosType[] = await ytdlx.ytSearch.video.multiple({
       query: Query,
     });
     return res.status(200).json(TubeBody);
