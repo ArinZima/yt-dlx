@@ -1,5 +1,5 @@
 import colors from "colors";
-import { Client } from "../../../resources/TubeI";
+import { Client } from "../../../pkg/TubeI/dist/typings";
 export default async function playlistVideos({ playlistId, }) {
     try {
         const youtube = new Client();
