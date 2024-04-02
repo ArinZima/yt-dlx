@@ -5,134 +5,151 @@ import { createInterface } from "readline";
 console.clear();
 
 const colors = {
-	reset: "\x1b[0m",
-	red: "\x1b[1;31m",
-	green: "\x1b[1;32m",
+  reset: "\x1b[0m",
+  red: "\x1b[1;31m",
+  green: "\x1b[1;32m",
 };
 
 const core = {
-	remake: "yarn clean && yarn make && yarn update && yarn build",
-	postinstall: "run-s download-files setup-permissions install-chrome",
-	prepublishOnly: "yarn clean:deps",
-	"setup-permissions": "chmod -R +x util/*",
-	"download-files": "node util/cprobe.mjs",
-	"install-chrome": "npx puppeteer browsers install chrome",
-	"ui:dev": "cd backend && yarn dev",
-	"ui:build": "cd backend && yarn build",
-	"ui:start": "cd backend && yarn start",
-	clean: "yarn clean:base && yarn clean:pkg && yarn clean:backend && yarn clean:deps",
-	"clean:pkg": "cd pkg && rm -rf node_modules",
-	"clean:base": "rm -rf node_modules temp dist others",
-	"clean:backend": "cd backend && rm -rf node_modules .next",
-	"clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/cprobe",
-	make: "yarn make:base && yarn make:pkg && yarn make:backend",
-	"make:base": "yarn install --verbose",
-	"make:pkg": "cd pkg && yarn install --verbose",
-	"make:backend": "cd backend && yarn install --verbose",
-	update: "yarn update:base && yarn update:pkg && yarn update:backend",
-	"update:base": "yarn install --verbose && yarn upgrade --latest",
-	"update:pkg": "cd pkg && yarn install --verbose && yarn upgrade --latest",
-	"update:backend": "cd backend && yarn install --verbose && yarn upgrade --latest",
-	"tsc:cjs": "tsc -p ./config/cjs.json",
-	"tsc:esm": "tsc -p ./config/esm.json",
-	"tsc:types": "tsc -p ./config/types.json",
-	build: "yarn build:base && yarn build:backend",
-	"build:backend": "cd backend && rm -rf .next temp && yarn build",
-	"build:base": "rm -rf dist temp && yarn tsc:cjs && yarn tsc:esm && yarn tsc:types",
-	spec: "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
-	test: "rm -rf temp && yarn test:pkg && yarn test:scrape && yarn test:mix && yarn test:video && yarn test:audio && yarn test:command && yarn test:cli",
-	"test:pkg": "cd pkg && yarn test",
-	"test:mix": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/mix.js",
-	"test:video": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/video.js",
-	"test:audio": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/audio.js",
-	"test:command": "rm -rf temp && tsup core --outDir temp && node temp/__tests__/command.js",
-	"test:scrape":
-		"rm -rf temp && tsup core/__tests__/other/scrape.spec.ts --outDir temp && node temp/scrape.spec.js",
-	"test:cli":
-		"yarn link && yt-dlx audio-lowest --query PERSONAL BY PLAZA && yt-dlx al --query SuaeRys5tTc && yarn unlink",
+  remake: "yarn clean && yarn make && yarn update && yarn build",
+  postinstall: "run-s download-files setup-permissions install-chrome",
+  prepublishOnly: "yarn clean:deps",
+  "setup-permissions": "chmod -R +x util/*",
+  "download-files": "node util/cprobe.mjs",
+  "install-chrome": "npx puppeteer browsers install chrome",
+  "backend:dev": "cd backend && yarn dev",
+  "backend:lint": "cd backend && yarn lint",
+  "backend:build": "cd backend && yarn build",
+  "backend:start": "cd backend && yarn start",
+  "backend:electron:dev": "cd backend && yarn electron:dev",
+  "backend:electron:build": "cd backend && yarn clean && yarn electron:build",
+  clean:
+    "yarn clean:base && yarn clean:pkg && yarn clean:backend && yarn clean:deps",
+  "clean:backend": "cd backend && yarn clean",
+  "clean:pkg": "cd pkg && rm -rf node_modules",
+  "clean:base": "rm -rf node_modules temp dist others",
+  "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/cprobe",
+  make: "yarn make:base && yarn make:pkg && yarn make:backend",
+  "make:base": "yarn install --verbose",
+  "make:pkg": "cd pkg && yarn install --verbose",
+  "make:backend": "cd backend && yarn install --verbose",
+  update: "yarn update:base && yarn update:pkg && yarn update:backend",
+  "update:base": "yarn install --verbose && yarn upgrade --latest",
+  "update:pkg": "cd pkg && yarn install --verbose && yarn upgrade --latest",
+  "update:backend":
+    "cd backend && yarn install --verbose && yarn upgrade --latest",
+  build: "yarn build:base && yarn build:backend:electron:build",
+  "build:base:cjs": "tsc -p ./config/cjs.json",
+  "build:base:esm": "tsc -p ./config/esm.json",
+  "build:base:types": "tsc -p ./config/types.json",
+  "build:backend": "cd backend && rm -rf .next temp && yarn build",
+  "build:backend:electron:build":
+    "cd backend && yarn clean && yarn electron:build",
+  "build:base":
+    "rm -rf dist temp && yarn build:base:cjs && yarn build:base:esm && yarn build:base:types",
+  spec: "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
+  test: "rm -rf temp && yarn test:pkg && yarn test:scrape && yarn test:mix && yarn test:video && yarn test:audio && yarn test:command && yarn test:cli",
+  "test:pkg": "cd pkg && yarn test",
+  "test:mix":
+    "rm -rf temp && tsup core --outDir temp && node temp/__tests__/mix.js",
+  "test:video":
+    "rm -rf temp && tsup core --outDir temp && node temp/__tests__/video.js",
+  "test:audio":
+    "rm -rf temp && tsup core --outDir temp && node temp/__tests__/audio.js",
+  "test:command":
+    "rm -rf temp && tsup core --outDir temp && node temp/__tests__/command.js",
+  "test:scrape":
+    "rm -rf temp && tsup core/__tests__/other/scrape.spec.ts --outDir temp && node temp/scrape.spec.js",
+  "test:cli":
+    "yarn link && yt-dlx audio-lowest --query PERSONAL BY PLAZA && yt-dlx al --query SuaeRys5tTc && yarn unlink",
 };
 function formatBytes(bytes) {
-	const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-	if (bytes === 0) return "0 Byte";
-	const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-	return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 Byte";
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+  return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
 }
 function runScript() {
-	console.log(`${colors.red}=================================${colors.reset}`);
-	console.log(
-		`${colors.green}@system:${colors.reset} welcome to the ${colors.red}yt-dlp${colors.reset} dev-test-kit`,
-	);
-	console.log(
-		`${colors.green}@system:${colors.reset} os type: ${colors.red}${type()}${colors.reset}`,
-	);
-	console.log(
-		`${colors.green}@system:${colors.reset} cpu architecture: ${
-			colors.red
-		}${arch()}${colors.reset}`,
-	);
-	console.log(
-		`${colors.green}@system:${colors.reset} total memory: ${
-			colors.red
-		}${formatBytes(totalmem())}${colors.reset}`,
-	);
-	console.log(
-		`${colors.green}@system:${colors.reset} home directory: ${
-			colors.red
-		}${homedir()}${colors.reset}`,
-	);
-	console.log(
-		`${colors.green}@system:${colors.reset} hostname: ${
-			colors.red
-		}${hostname()}${colors.reset}`,
-	);
-	console.log(
-		`${colors.green}@system:${colors.reset} release: ${colors.red}${release()}${colors.reset}`,
-	);
-	console.log(`${colors.red}=================================${colors.reset}`);
-	const rl = createInterface({
-		input: process.stdin,
-		output: process.stdout,
-	});
-	Object.keys(core).forEach((script, index) => {
-		console.log(
-			`${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${colors.reset}: ` +
-				script,
-		);
-	});
-	console.log(`${colors.red}=================================${colors.reset}`);
-	rl.question(
-		`${colors.green}@info:${colors.reset} enter the ${colors.red}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
-		(answer) => {
-			console.log(colors.reset);
-			const scriptIndex = parseInt(answer) - 1;
-			const scriptKeys = Object.keys(core);
-			if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
-				const scriptName = scriptKeys[scriptIndex];
-				const command = core[scriptName];
-				console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
-				const childProcess = spawn(command, {
-					shell: true,
-					stdio: "inherit",
-				});
-				childProcess.on("error", (error) => {
-					console.error(`${colors.red}@error:${colors.reset}`, error);
-				});
-				childProcess.on("exit", (code) => {
-					if (code !== 0) {
-						console.error(
-							`${colors.red}@error:${colors.reset}`,
-							`Exited with code ${code}`,
-						);
-					}
-					runScript();
-				});
-			} else {
-				console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
-				runScript();
-			}
-			rl.close();
-		},
-	);
+  console.log(`${colors.red}=================================${colors.reset}`);
+  console.log(
+    `${colors.green}@system:${colors.reset} welcome to the ${colors.red}yt-dlp${colors.reset} dev-test-kit`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} os type: ${colors.red}${type()}${
+      colors.reset
+    }`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} cpu architecture: ${
+      colors.red
+    }${arch()}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} total memory: ${
+      colors.red
+    }${formatBytes(totalmem())}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} home directory: ${
+      colors.red
+    }${homedir()}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} hostname: ${
+      colors.red
+    }${hostname()}${colors.reset}`
+  );
+  console.log(
+    `${colors.green}@system:${colors.reset} release: ${colors.red}${release()}${
+      colors.reset
+    }`
+  );
+  console.log(`${colors.red}=================================${colors.reset}`);
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  Object.keys(core).forEach((script, index) => {
+    console.log(
+      `${colors.green}@script:${colors.reset} ${colors.red}${index + 1}${
+        colors.reset
+      }: ` + script
+    );
+  });
+  console.log(`${colors.red}=================================${colors.reset}`);
+  rl.question(
+    `${colors.green}@info:${colors.reset} enter the ${colors.red}number${colors.reset} of the ${colors.green}script${colors.reset} you want to run: ${colors.red}`,
+    (answer) => {
+      console.log(colors.reset);
+      const scriptIndex = parseInt(answer) - 1;
+      const scriptKeys = Object.keys(core);
+      if (scriptIndex >= 0 && scriptIndex < scriptKeys.length) {
+        const scriptName = scriptKeys[scriptIndex];
+        const command = core[scriptName];
+        console.log(`${colors.green}@choice:${colors.reset}`, scriptName);
+        const childProcess = spawn(command, {
+          shell: true,
+          stdio: "inherit",
+        });
+        childProcess.on("error", (error) => {
+          console.error(`${colors.red}@error:${colors.reset}`, error);
+        });
+        childProcess.on("exit", (code) => {
+          if (code !== 0) {
+            console.error(
+              `${colors.red}@error:${colors.reset}`,
+              `Exited with code ${code}`
+            );
+          }
+          runScript();
+        });
+      } else {
+        console.log(`${colors.red}@error:${colors.reset}`, "invalid choice.");
+        runScript();
+      }
+      rl.close();
+    }
+  );
 }
 
 runScript();
