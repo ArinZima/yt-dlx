@@ -1,0 +1,26 @@
+{
+	"name": "yt-dlx",
+	"license": "Apache-2.0",
+	"description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
+	"scripts": {
+		"test:cjs": "node ytdlx.cjs",
+		"test:mjs": "node ytdlx.mjs",
+		"test:ts": "ts-node ytdlx.ts",
+		"test": "yarn test:cjs && yarn test:mjs && yarn test:ts"
+	},
+	"dependencies": {
+		"@types/node": "20.12.2",
+		"colors": "latest",
+		"ts-node": "latest",
+		"typescript": "latest",
+		"yt-dlx": "8.0.5"
+	},
+	"author": {
+		"name": "yt-dlx"
+	},
+	"homepage": "https://rebrand.ly/mixly",
+	"repository": {
+		"type": "git",
+		"url": "https://mixly-yt-dlx.koyeb.app/pkg"
+	}
+}
