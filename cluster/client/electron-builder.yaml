@@ -1,6 +1,6 @@
+productName: "yt-dlx(GUI)"
 appId: "io.github.yt-dlx.electron-next"
-productName: "Electron Next.JS"
-copyright: "Copyright (c) 2023 yt-dlx"
+copyright: "copyright (c) 2024 yt-dlx"
 directories:
   output: "dist" 
 win:
