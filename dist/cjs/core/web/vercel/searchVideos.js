@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
-const typings_1 = require("../../../pkg/TubeI/dist/typings");
+const youtubei_1 = require("youtubei");
 async function searchVideos({ query }) {
     try {
-        const youtube = new typings_1.Client();
+        const youtube = new youtubei_1.Client();
         const searchVideos = await youtube.search(query, { type: "video" });
         const result = searchVideos.items.map((item) => ({
             id: item.id,
