@@ -1,23 +1,23 @@
 import { app, BrowserWindow } from "electron";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 import serve from "electron-serve";
-import { join } from "path";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const appServe = app.isPackaged
   ? serve({
-      directory: join(process.cwd(), "../out"),
+      directory: join(__dirname, "../out"),
     })
   : null;
-
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     fullscreen: false,
     webPreferences: {
-      preload: join(process.cwd(), "preload.mjs"),
+      preload: join(__dirname, "preload.mjs"),
     },
   });
-
   if (app.isPackaged) {
     appServe(win).then(() => {
       win.loadURL("app://-");
@@ -30,13 +30,7 @@ const createWindow = () => {
     });
   }
 };
-
-app.on("ready", () => {
-  createWindow();
-});
-
+app.on("ready", () => createWindow());
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  if (process.platform !== "darwin") app.quit();
 });

@@ -522,10 +522,17 @@
     "@types/node" "*"
     form-data "^4.0.0"
 
-"@types/node@*", "@types/node@>=13.7.0", "@types/node@^20.12.2":
+"@types/node@*", "@types/node@>=13.7.0":
   version "20.12.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.12.2.tgz#9facdd11102f38b21b4ebedd9d7999663343d72e"
   integrity sha512-zQ0NYO87hyN6Xrclcqp7f8ZbXNbRfoGWNcMvHTPQp9UUrwI0mI7XBz+cu7/W6/VClYo2g63B0cjull/srU7LgQ==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@^20.12.4":
+  version "20.12.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.12.4.tgz#af5921bd75ccdf3a3d8b3fa75bf3d3359268cd11"
+  integrity sha512-E+Fa9z3wSQpzgYQdYmme5X3OTuejnnTx88A6p6vkkJosR3KBz+HpE3kqNm98VE6cfLFcISx7zW7MsJkH6KwbTw==
   dependencies:
     undici-types "~5.26.4"
 
@@ -3632,6 +3639,31 @@ youtubei@^1.3.7:
   dependencies:
     node-fetch "2.6.7"
     protobufjs "7.2.4"
+
+yt-dlx@^8.0.9:
+  version "8.0.9"
+  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-8.0.9.tgz#394585ad6f1a361ab3ac3d1cc5b2d5d3b3102642"
+  integrity sha512-1p9VF2YUS9YqpapKCIgBxZqY4D1mZNbsVrXYp+kQHaxmR11eDHUrr3IpkgHdkU6kb6XBp4gxibFS5g7FpS0nkg==
+  dependencies:
+    async-retry "^1.3.3"
+    axios "^1.6.8"
+    bytes "^3.1.2"
+    chai "^5.1.0"
+    cheerio "^1.0.0-rc.12"
+    colors "^1.4.0"
+    crypto "^1.0.1"
+    express "^4.19.2"
+    fluent-ffmpeg "^2.1.2"
+    minimist "^1.2.8"
+    node-cron "^3.0.3"
+    node-fetch "^3.3.2"
+    npm-run-all "^4.1.5"
+    protobufjs "^7.2.6"
+    puppeteer "^22.6.2"
+    readline-sync "^1.4.10"
+    speedometer "^1.1.0"
+    stream "^0.0.2"
+    youtubei "^1.3.7"
 
 zod@3.22.4:
   version "3.22.4"
