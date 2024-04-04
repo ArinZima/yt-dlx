@@ -1,0 +1,16 @@
+productName: "yt-dlx(GUI)"
+appId: "io.github.yt-dlx.electron-next"
+copyright: "copyright (c) 2024 yt-dlx"
+directories:
+  output: "dist" 
+win:
+  target: ["nsis"]
+  icon: "public/yt-dlx.ico"
+linux:
+  target: ["appimage"]
+  icon: "public/yt-dlx.png"
+  asarUnpack:
+    - "node_modules/@tanstack/react-query-devtools" 
+mac:
+  target: ["dmg"]
+  icon: "public/yt-dlx.icns"
