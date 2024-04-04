@@ -1,11 +1,10 @@
 "use client";
-import Link from "next/link";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
+import React, { useState } from "react";
 import { TbBrandNpm } from "react-icons/tb";
 import NavPackage from "@/pages/components/nav";
-import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -256,7 +255,7 @@ const express = require("express");
   },
 ];
 
-export default function AwesomePackage() {
+export default function AwesomePackage({ param }: any) {
   const [set, isSet] = useState<number | null>(null);
   const handleSet = (index: number) => {
     isSet((prev) => (prev === index ? null : index));
