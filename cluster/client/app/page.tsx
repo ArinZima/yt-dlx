@@ -11,26 +11,26 @@ import NavPackage from "@/pages/components/nav";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 
 export default function AwesomePackage() {
-  const [FormData, setFormData] = useState({
-    videoId: "",
+  const [fd, setfd] = useState({
     audioVideo: false,
-    audioOnly: false,
     videoOnly: false,
+    audioOnly: false,
     highest: false,
     lowest: false,
+    videoId: "",
   });
   const handleChange = (event: any) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    setFormData((prevFormData) => ({
+    setfd((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
   };
   const handleForm = (event: any) => {
     event.preventDefault();
-    console.log(FormData);
+    console.log(fd);
   };
 
   return (
@@ -133,8 +133,8 @@ export default function AwesomePackage() {
                       type="text"
                       id="videoId"
                       name="videoId"
+                      value={fd.videoId}
                       onChange={handleChange}
-                      value={FormData.videoId}
                       className="block w-full px-5 py-3 text-base text-red-600 placeholder-neutral-500 transition duration-600 ease-in-out transform border border-transparent rounded-lg bg-neutral-800 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-red-800 focus:ring-offset-2 focus:ring-offset-red-600"
                       placeholder="YouTube Video-Id/Link/Name"
                     />
@@ -142,9 +142,7 @@ export default function AwesomePackage() {
                   <div className="flex space-x-2 items-center mt-2">
                     <input
                       type="checkbox"
-                      onChange={() =>
-                        (FormData.audioOnly = !FormData.audioOnly)
-                      }
+                      onChange={() => (fd.audioOnly = !fd.audioOnly)}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -155,9 +153,7 @@ export default function AwesomePackage() {
                     </label>
                     <input
                       type="checkbox"
-                      onChange={() =>
-                        (FormData.videoOnly = !FormData.videoOnly)
-                      }
+                      onChange={() => (fd.videoOnly = !fd.videoOnly)}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -168,9 +164,7 @@ export default function AwesomePackage() {
                     </label>
                     <input
                       type="checkbox"
-                      onChange={() =>
-                        (FormData.audioVideo = !FormData.audioVideo)
-                      }
+                      onChange={() => (fd.audioVideo = !fd.audioVideo)}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -183,7 +177,7 @@ export default function AwesomePackage() {
                   <div className="flex space-x-2 items-center">
                     <input
                       type="checkbox"
-                      onChange={() => (FormData.highest = !FormData.highest)}
+                      onChange={() => (fd.highest = !fd.highest)}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -194,7 +188,7 @@ export default function AwesomePackage() {
                     </label>
                     <input
                       type="checkbox"
-                      onChange={() => (FormData.lowest = !FormData.lowest)}
+                      onChange={() => (fd.lowest = !fd.lowest)}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label

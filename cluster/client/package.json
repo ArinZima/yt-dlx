@@ -2,7 +2,7 @@
   "name": "yt-dlx",
   "author": "yt-dlx",
   "version": "0.0.0",
-  "main": "public/pkg/main.mjs",
+  "main": "public/pkg/main.js",
   "repository": {
     "type": "git",
     "url": "https://yt-dlx-shovit.koyeb.app/"
