@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import React, { useState } from "react";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
@@ -10,6 +11,28 @@ import NavPackage from "@/pages/components/nav";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 
 export default function AwesomePackage() {
+  const [FormData, setFormData] = useState({
+    videoId: "",
+    audioVideo: false,
+    audioOnly: false,
+    videoOnly: false,
+    highest: false,
+    lowest: false,
+  });
+  const handleChange = (event: any) => {
+    const target = event.target;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+  const handleForm = (event: any) => {
+    event.preventDefault();
+    console.log(FormData);
+  };
+
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
       <NavPackage />
@@ -23,17 +46,17 @@ export default function AwesomePackage() {
               </h1>
             </div>
             <p className="text-red-200/80">
-              YT-DLX is a robust multimedia downloading tool meticulously
-              crafted to elevate your media consumption experience. With its
-              advanced capabilities, it offers an all-encompassing solution for
-              effortlessly acquiring audio and video content from diverse
-              sources. Drawing inspiration from renowned projects such as
-              python-yt-dlp and python-youtube-dl, YT-DLX combines cutting-edge
-              features with real-time data acquisition facilitated by Puppeteer
-              technologies. Whether you seek to enrich your audio library or
-              curate a collection of high-quality videos, YT-DLX stands as your
-              indispensable companion, ensuring seamless and efficient media
-              acquisition.
+              Yt-Dlx Is A Robust Multimedia Downloading Tool Meticulously
+              Crafted To Elevate Your Media Consumption Experience. With Its
+              Advanced Capabilities, It Offers An All-Encompassing Solution For
+              Effortlessly Acquiring Audio And Video Content From Diverse
+              Sources. Drawing Inspiration From Renowned Projects Such As
+              Python-Yt-Dlp And Python-Youtube-Dl, Yt-Dlx Combines Cutting-Edge
+              Features With Real-Time Data Acquisition Facilitated By Puppeteer
+              Technologies. Whether You Seek To Enrich Your Audio Library Or
+              Curate A Collection Of High-Quality Videos, Yt-Dlx Stands As Your
+              Indispensable Companion, Ensuring Seamless And Efficient Media
+              Acquisition.
             </p>
           </article>
           <div>
@@ -49,7 +72,7 @@ export default function AwesomePackage() {
             </div>
             <div className="space-y-2 pt-8">
               <p className="text-2xl font-semibold text-red-600">
-                Install now using any package manager of your choice!
+                Install Now Using Any Package Manager Of Your Choice!
               </p>
               <ul className="ml-4 space-y-1 list-disc text-red-200/80">
                 <li>
@@ -100,15 +123,18 @@ export default function AwesomePackage() {
                 </div>
               </div>
               <div className="mt-6 space-y-2">
-                <form>
+                <form onSubmit={(event) => handleForm(event)}>
                   <div>
                     <label htmlFor="videoId" className="sr-only">
                       YouTube Video-Id/Link/Name
                     </label>
                     <input
-                      id="videoId"
+                      required
                       type="text"
+                      id="videoId"
                       name="videoId"
+                      onChange={handleChange}
+                      value={FormData.videoId}
                       className="block w-full px-5 py-3 text-base text-red-600 placeholder-neutral-500 transition duration-600 ease-in-out transform border border-transparent rounded-lg bg-neutral-800 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-red-800 focus:ring-offset-2 focus:ring-offset-red-600"
                       placeholder="YouTube Video-Id/Link/Name"
                     />
@@ -116,7 +142,9 @@ export default function AwesomePackage() {
                   <div className="flex space-x-2 items-center mt-2">
                     <input
                       type="checkbox"
-                      defaultChecked
+                      onChange={() =>
+                        (FormData.audioOnly = !FormData.audioOnly)
+                      }
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -125,9 +153,11 @@ export default function AwesomePackage() {
                     >
                       Audio Only
                     </label>
-                    {/* {" "} */}
                     <input
                       type="checkbox"
+                      onChange={() =>
+                        (FormData.videoOnly = !FormData.videoOnly)
+                      }
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -136,9 +166,11 @@ export default function AwesomePackage() {
                     >
                       Video Only
                     </label>
-                    {/* {" "} */}
                     <input
                       type="checkbox"
+                      onChange={() =>
+                        (FormData.audioVideo = !FormData.audioVideo)
+                      }
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -151,7 +183,7 @@ export default function AwesomePackage() {
                   <div className="flex space-x-2 items-center">
                     <input
                       type="checkbox"
-                      defaultChecked
+                      onChange={() => (FormData.highest = !FormData.highest)}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -160,9 +192,9 @@ export default function AwesomePackage() {
                     >
                       Highest
                     </label>
-                    {/* {" "} */}
                     <input
                       type="checkbox"
+                      onChange={() => (FormData.lowest = !FormData.lowest)}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
@@ -226,12 +258,12 @@ export default function AwesomePackage() {
                     Custom()
                   </h2>
                   <p className="text-sm text-red-200/80">
-                    Should you desire to download a specific audio resolution
-                    for a given YouTube video link, this function has you
-                    covered. Simply provide the available format for the custom
-                    resolution, and yt-dlx along with ffmpeg will manage the
-                    rest. To identify the available formats, utilize the
-                    (list_formats) function.
+                    Should You Desire To Download A Specific Audio Resolution
+                    For A Given Youtube Video Link, This Function Has You
+                    Covered. Simply Provide The Available Format For The Custom
+                    Resolution, And Yt-Dlx Along With Ffmpeg Will Manage The
+                    Rest. To Identify The Available Formats, Utilize The
+                    (list_formats) Function.
                   </p>
                 </div>
               </div>

@@ -11,9 +11,9 @@ const appServe = app.isPackaged
   : null;
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    fullscreen: false,
+    // width: 800,
+    // height: 600,
+    fullscreen: true,
     webPreferences: {
       preload: join(__dirname, "preload.mjs"),
     },
