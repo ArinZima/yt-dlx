@@ -13,6 +13,7 @@ export default function AwesomePackage() {
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
       <NavPackage />
+      {/* ======================================================[ Introduction ]======================================================= */}
       <section className="flex flex-col items-center justify-center mt-20">
         <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">
           <article className="space-y-8">
@@ -21,7 +22,7 @@ export default function AwesomePackage() {
                 YT-DLX@8.1.0
               </h1>
             </div>
-            <p className="text-red-400">
+            <p className="text-red-200/80">
               YT-DLX is a robust multimedia downloading tool meticulously
               crafted to elevate your media consumption experience. With its
               advanced capabilities, it offers an all-encompassing solution for
@@ -37,7 +38,7 @@ export default function AwesomePackage() {
           </article>
           <div>
             <div className="flex flex-wrap py-2 gap-2 border-b border-red-600 border-dashed">
-              <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center text-red-400">
+              <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center text-red-200/80">
                 <div className="flex items-center gap-2 md:space-x-2">
                   <TbBrandNpm className="text-red-600" size={50} />
                   <FaYarn className="text-red-600" size={30} />
@@ -50,7 +51,7 @@ export default function AwesomePackage() {
               <p className="text-2xl font-semibold text-red-600">
                 Install now using any package manager of your choice!
               </p>
-              <ul className="ml-4 space-y-1 list-disc text-red-400">
+              <ul className="ml-4 space-y-1 list-disc text-red-200/80">
                 <li>
                   <a rel="noopener noreferrer" className="cursor-pointer">
                     <span className="text-red-600">yarn</span> add yt-dlx |{" "}
@@ -80,8 +81,9 @@ export default function AwesomePackage() {
           </div>
         </div>
       </section>
+      {/* ======================================================[ PlayGround ]======================================================= */}
       <section className="flex items-center justify-center">
-        <div className="justify-center mx-auto text-left align-bottom transition-all transform bg-neutral-900 rounded-3xl max-w-screen-xl max-screen-w-4xl border border-red-600 shadow-red-600/40 shadow-2xl hover:shadow-red-600 duration-300">
+        <div className="justify-center mx-auto text-left align-bottom transition-all transform bg-neutral-900 rounded-3xl max-w-screen-xl max-screen-w-4xl border-8 border-double border-red-600 shadow-red-600/60 shadow-2xl hover:shadow-red-600 duration-300">
           <div className="grid flex-wrap items-center justify-center grid-cols-1 mx-auto shadow-xl lg:grid-cols-2 rounded-3xl">
             <div className="w-full px-6 py-3">
               <div className="mt-3 text-left sm:mt-5">
@@ -98,82 +100,86 @@ export default function AwesomePackage() {
                 </div>
               </div>
               <div className="mt-6 space-y-2">
-                <div>
-                  <label htmlFor="videoId" className="sr-only">
-                    YouTube Video-Id/Link/Name
-                  </label>
-                  <input
-                    id="videoId"
-                    type="text"
-                    name="videoId"
-                    className="block w-full px-5 py-3 text-base text-red-600 placeholder-neutral-500 transition duration-600 ease-in-out transform border border-transparent rounded-lg bg-neutral-800 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-red-800 focus:ring-offset-2 focus:ring-offset-red-600"
-                    placeholder="YouTube Video-Id/Link/Name"
-                  />
-                </div>
-                <div className="flex space-x-4 items-center">
-                  <input
-                    type="radio"
-                    id="audioOnly"
-                    name="videoType"
-                    value="audio"
-                    className="text-red-600 rounded focus:outline-none"
-                  />
-                  <label htmlFor="audioOnly" className="text-red-600">
-                    Audio Only
-                  </label>
-                  <input
-                    type="radio"
-                    id="videoOnly"
-                    name="videoType"
-                    value="video"
-                    className="text-red-600 rounded focus:outline-none"
-                  />
-                  <label htmlFor="videoOnly" className="text-red-600">
-                    Video Only
-                  </label>
-                  <input
-                    type="radio"
-                    id="audioVideo"
-                    name="videoType"
-                    value="audioVideo"
-                    className="text-red-600 rounded focus:outline-none"
-                  />
-                  <label htmlFor="audioVideo" className="text-red-600">
-                    Audio & Video
-                  </label>
-                </div>
-                <div className="mt-4 flex space-x-4 items-center">
-                  <input
-                    type="radio"
-                    id="highest"
-                    name="priority"
-                    value="highest"
-                    className="text-red-600 rounded focus:outline-none"
-                  />
-                  <label htmlFor="highest" className="text-red-600">
-                    Highest
-                  </label>
-                  <input
-                    type="radio"
-                    id="lowest"
-                    name="priority"
-                    value="lowest"
-                    className="text-red-600 rounded focus:outline-none"
-                  />
-                  <label htmlFor="lowest" className="text-red-600">
-                    Lowest
-                  </label>
-                  <input
-                    type="radio"
-                    id="custom"
-                    name="priority"
-                    value="custom"
-                    className="text-red-600 rounded focus:outline-none"
-                  />
-                  <label htmlFor="custom" className="text-red-600">
-                    Custom
-                  </label>
-                </div>
+                <form>
+                  <div>
+                    <label htmlFor="videoId" className="sr-only">
+                      YouTube Video-Id/Link/Name
+                    </label>
+                    <input
+                      id="videoId"
+                      type="text"
+                      name="videoId"
+                      className="block w-full px-5 py-3 text-base text-red-600 placeholder-neutral-500 transition duration-600 ease-in-out transform border border-transparent rounded-lg bg-neutral-800 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-red-800 focus:ring-offset-2 focus:ring-offset-red-600"
+                      placeholder="YouTube Video-Id/Link/Name"
+                    />
+                  </div>
+                  <div className="flex space-x-2 items-center mt-2">
+                    <input
+                      type="checkbox"
+                      defaultChecked
+                      className="checkbox checkbox-xs checkbox-error"
+                    />
+                    <label
+                      htmlFor="audioOnly"
+                      className="text-red-600 font-bold text-sm lowercase"
+                    >
+                      Audio Only
+                    </label>
+                    {/* {" "} */}
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-xs checkbox-error"
+                    />
+                    <label
+                      htmlFor="videoOnly"
+                      className="text-red-600 font-bold text-sm lowercase"
+                    >
+                      Video Only
+                    </label>
+                    {/* {" "} */}
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-xs checkbox-error"
+                    />
+                    <label
+                      htmlFor="audioVideo"
+                      className="text-red-600 font-bold text-sm lowercase"
+                    >
+                      Audio & Video
+                    </label>
+                  </div>
+                  <div className="flex space-x-2 items-center">
+                    <input
+                      type="checkbox"
+                      defaultChecked
+                      className="checkbox checkbox-xs checkbox-error"
+                    />
+                    <label
+                      htmlFor="highest"
+                      className="text-red-600 font-bold text-sm lowercase"
+                    >
+                      Highest
+                    </label>
+                    {/* {" "} */}
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-xs checkbox-error"
+                    />
+                    <label
+                      htmlFor="lowest"
+                      className="text-red-600 font-bold text-sm lowercase"
+                    >
+                      Lowest
+                    </label>
+                  </div>
+                  <div className="mt-4">
+                    <input
+                      type="submit"
+                      value="Submit"
+                      className="py-2 px-6 bg-red-800 text-white rounded-md text-lg font-semibold hover:bg-red-600 shadow-red-600/20 shadow-2xl transition duration-300"
+                    />
+                  </div>
+                </form>
               </div>
             </div>
             <div className="order-first hidden w-full lg:block">
@@ -186,14 +192,15 @@ export default function AwesomePackage() {
           </div>
         </div>
       </section>
+      {/* ======================================================[ Documentation ]======================================================= */}
       <section className="flex flex-col items-center justify-center">
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
               Explore All Available Functions
             </h2>
-            <p className="mt-4 text-red-400">
-              yt-dlx accommodates various node.js coding flavours!{" "}
+            <p className="mt-4 text-red-200/80">
+              YT-DLX accommodates various node.js coding flavours!{" "}
               <span className="text-red-600">
                 (typescript), (commonjs) and (esm)
               </span>
@@ -218,7 +225,7 @@ export default function AwesomePackage() {
                     Audio<span className="text-red-600">.Single.</span>
                     Custom()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     Should you desire to download a specific audio resolution
                     for a given YouTube video link, this function has you
                     covered. Simply provide the available format for the custom
@@ -244,7 +251,7 @@ export default function AwesomePackage() {
                     Audio<span className="text-red-600">.Single.</span>
                     Highest()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function automatically utilizes yt-dlx&apos;s search
                     algorithm to identify the optimal audio resolution for a
                     given YouTube video link. Employing ffmpeg alongside the
@@ -270,7 +277,7 @@ export default function AwesomePackage() {
                     Audio<span className="text-red-600">.Single.</span>
                     Lowest()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function is automated and employs yt-dlx&apos;s search
                     algorithm to identify the lowest possible audio resolution
                     for a given YouTube video link. Utilizing ffmpeg with the
@@ -296,7 +303,7 @@ export default function AwesomePackage() {
                     Video<span className="text-red-600">.Single.</span>
                     Custom()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function caters to your specific needs when it comes to
                     downloading a desired video resolution for a given YouTube
                     video link. Simply provide the available format for the
@@ -322,7 +329,7 @@ export default function AwesomePackage() {
                     Video<span className="text-red-600">.Single.</span>
                     Highest()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function automatically employs yt-dlx&apos;s search
                     algorithm to identify the optimal video resolution for a
                     given YouTube video link. Utilizing ffmpeg, along with the
@@ -348,7 +355,7 @@ export default function AwesomePackage() {
                     Video<span className="text-red-600">.Single.</span>
                     Lowest()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function automatically employs yt-dlx&apos;s search
                     algorithm to identify the minimum achievable video
                     resolution for a given YouTube video link. Utilizing ffmpeg
@@ -375,7 +382,7 @@ export default function AwesomePackage() {
                     AudioVideo<span className="text-red-600">.Single.</span>
                     Custom()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function caters to your specific needs when it comes to
                     downloading a desired video resolution for a given YouTube
                     video link. Simply provide the available format for the
@@ -401,7 +408,7 @@ export default function AwesomePackage() {
                     AudioVideo<span className="text-red-600">.Single.</span>
                     Highest()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function automatically utilizes yt-dlx&apos;s search
                     algorithm to identify the optimal audio+video resolution for
                     any given YouTube video link. It employs ffmpeg, leveraging
@@ -427,7 +434,7 @@ export default function AwesomePackage() {
                     AudioVideo<span className="text-red-600">.Single.</span>
                     Lowest()
                   </h2>
-                  <p className="text-sm text-red-400">
+                  <p className="text-sm text-red-200/80">
                     This function automatically employs yt-dlx&apos;s search
                     algorithm to identify the lowest possible audio+video
                     resolution for a given YouTube video link. Utilizing ffmpeg
@@ -442,6 +449,7 @@ export default function AwesomePackage() {
           </div>
         </div>
       </section>
+      {/* ======================================================[ Footer ]======================================================= */}
       <footer className="pt-20 pb-6 flex flex-wrap items-baseline justify-center">
         <span className="text-[#e73d75] text-3xl mr-2">
           Mixly <span className="text-[#C4C4C4] text-lg">&</span>{" "}
