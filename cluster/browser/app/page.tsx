@@ -519,7 +519,6 @@ export default function AwesomePackage() {
             {/* ========================[ TABLE VIEW ]======================== */}
             <div className="overflow-x-auto">
               <table className="table">
-                {/* head */}
                 <thead>
                   <tr>
                     <th>category</th>
