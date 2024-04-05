@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
@@ -11,27 +10,47 @@ import NavPackage from "@/pages/components/nav";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 
 export default function AwesomePackage() {
-  const [fd, setfd] = useState({
-    audioVideo: false,
-    videoOnly: false,
-    audioOnly: false,
-    highest: false,
-    lowest: false,
-    videoId: "",
-  });
-  const handleChange = (event: any) => {
-    const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    const name = target.name;
-    setfd((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
-  const handleForm = (event: any) => {
-    event.preventDefault();
-    console.log(fd);
-  };
+  // import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+  // const queryClient = useQueryClient();
+  // const [fd, setfd] = useState({
+  // AudioVideo: false,
+  // VideoOnly: false,
+  // AudioOnly: false,
+  // Highest: false,
+  // Lowest: false,
+  // TubeQuery: "",
+  // });
+  // const { isPending, error, data } = useQuery({
+  // queryKey: ["AudioOnly"],
+  // queryFn: async () => {
+  // const queryString = new URLSearchParams({
+  // AudioVideo: fd.AudioVideo.toString(),
+  // TubeQuery: fd.TubeQuery,
+  // VideoOnly: fd.VideoOnly.toString(),
+  // AudioOnly: fd.AudioOnly.toString(),
+  // Highest: fd.Highest.toString(),
+  // Lowest: fd.Lowest.toString(),
+  // }).toString();
+  // const response = await fetch(
+  // `/api/audio/single/highest?formdata=${queryString}`,
+  // {
+  // method: "GET",
+  // }
+  // );
+  // if (response.status === 200) return Object.keys(await response.json());
+  // },
+  // });
+  // const handleChange = (event: { target: any }) => {
+  // const target = event.target;
+  // const value = target.type === "checkbox" ? target.checked : target.value;
+  // setfd((prevFormData) => ({
+  // ...prevFormData,
+  // [target.name]: value,
+  // }));
+  // };
+  // const handleForm = (event: React.FormEvent<HTMLFormElement>) => {
+  // event.preventDefault();
+  // };
 
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
@@ -105,7 +124,7 @@ export default function AwesomePackage() {
         </div>
       </section>
       {/* ======================================================[ PlayGround ]======================================================= */}
-      <section className="flex items-center justify-center">
+      {/* <section className="flex items-center justify-center">
         <div className="justify-center mx-auto text-left align-bottom transition-all transform bg-neutral-900 rounded-3xl max-w-screen-xl max-screen-w-4xl border-8 border-double border-red-600 shadow-red-600/60 shadow-2xl hover:shadow-red-600 duration-300">
           <div className="grid flex-wrap items-center justify-center grid-cols-1 mx-auto shadow-xl lg:grid-cols-2 rounded-3xl">
             <div className="w-full px-6 py-3">
@@ -125,15 +144,15 @@ export default function AwesomePackage() {
               <div className="mt-6 space-y-2">
                 <form onSubmit={(event) => handleForm(event)}>
                   <div>
-                    <label htmlFor="videoId" className="sr-only">
+                    <label htmlFor="TubeQuery" className="sr-only">
                       YouTube Video-Id/Link/Name
                     </label>
                     <input
                       required
                       type="text"
-                      id="videoId"
-                      name="videoId"
-                      value={fd.videoId}
+                      id="TubeQuery"
+                      name="TubeQuery"
+                      value={fd.TubeQuery}
                       onChange={handleChange}
                       className="block w-full px-5 py-3 text-base text-red-600 placeholder-neutral-500 transition duration-600 ease-in-out transform border border-transparent rounded-lg bg-neutral-800 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-red-800 focus:ring-offset-2 focus:ring-offset-red-600"
                       placeholder="YouTube Video-Id/Link/Name"
@@ -142,33 +161,36 @@ export default function AwesomePackage() {
                   <div className="flex space-x-2 items-center mt-2">
                     <input
                       type="checkbox"
-                      onChange={() => (fd.audioOnly = !fd.audioOnly)}
+                      name="AudioOnly"
+                      onChange={handleChange}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
-                      htmlFor="audioOnly"
+                      htmlFor="AudioOnly"
                       className="text-red-600 font-bold text-sm lowercase"
                     >
                       Audio Only
                     </label>
                     <input
                       type="checkbox"
-                      onChange={() => (fd.videoOnly = !fd.videoOnly)}
+                      name="VideoOnly"
+                      onChange={handleChange}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
-                      htmlFor="videoOnly"
+                      htmlFor="VideoOnly"
                       className="text-red-600 font-bold text-sm lowercase"
                     >
                       Video Only
                     </label>
                     <input
                       type="checkbox"
-                      onChange={() => (fd.audioVideo = !fd.audioVideo)}
+                      name="AudioVideo"
+                      onChange={handleChange}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
-                      htmlFor="audioVideo"
+                      htmlFor="AudioVideo"
                       className="text-red-600 font-bold text-sm lowercase"
                     >
                       Audio & Video
@@ -177,22 +199,24 @@ export default function AwesomePackage() {
                   <div className="flex space-x-2 items-center">
                     <input
                       type="checkbox"
-                      onChange={() => (fd.highest = !fd.highest)}
+                      name="Highest"
+                      onChange={handleChange}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
-                      htmlFor="highest"
+                      htmlFor="Highest"
                       className="text-red-600 font-bold text-sm lowercase"
                     >
                       Highest
                     </label>
                     <input
                       type="checkbox"
-                      onChange={() => (fd.lowest = !fd.lowest)}
+                      name="Lowest"
+                      onChange={handleChange}
                       className="checkbox checkbox-xs checkbox-error"
                     />
                     <label
-                      htmlFor="lowest"
+                      htmlFor="Lowest"
                       className="text-red-600 font-bold text-sm lowercase"
                     >
                       Lowest
@@ -217,7 +241,7 @@ export default function AwesomePackage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       {/* ======================================================[ Documentation ]======================================================= */}
       <section className="flex flex-col items-center justify-center">
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
@@ -305,9 +329,9 @@ export default function AwesomePackage() {
                   </h2>
                   <p className="text-sm text-red-200/80">
                     This function is automated and employs yt-dlx&apos;s search
-                    algorithm to identify the lowest possible audio resolution
+                    algorithm to identify the Lowest possible audio resolution
                     for a given YouTube video link. Utilizing ffmpeg with the
-                    lowest available codecs and bitrate settings, it outputs the
+                    Lowest available codecs and bitrate settings, it outputs the
                     minimum audio resolution and saves the file in (avi) format.
                   </p>
                 </div>
@@ -385,7 +409,7 @@ export default function AwesomePackage() {
                     This function automatically employs yt-dlx&apos;s search
                     algorithm to identify the minimum achievable video
                     resolution for a given YouTube video link. Utilizing ffmpeg
-                    with the lowest available codecs and bitrate settings, it
+                    with the Lowest available codecs and bitrate settings, it
                     produces the video with the least possible resolution and
                     saves the file in the (mkv) format.
                   </p>
@@ -439,7 +463,7 @@ export default function AwesomePackage() {
                     algorithm to identify the optimal audio+video resolution for
                     any given YouTube video link. It employs ffmpeg, leveraging
                     the best available codecs and bitrate settings to produce
-                    the highest resolution audio+video output, saving the file
+                    the Highest resolution audio+video output, saving the file
                     in (mkv) format.
                   </p>
                 </div>
@@ -462,10 +486,10 @@ export default function AwesomePackage() {
                   </h2>
                   <p className="text-sm text-red-200/80">
                     This function automatically employs yt-dlx&apos;s search
-                    algorithm to identify the lowest possible audio+video
+                    algorithm to identify the Lowest possible audio+video
                     resolution for a given YouTube video link. Utilizing ffmpeg
                     with the least resource-intensive codecs and bitrate
-                    settings, it outputs the lowest possible audio+video
+                    settings, it outputs the Lowest possible audio+video
                     resolution and saves the file in (mkv) format.
                   </p>
                 </div>
