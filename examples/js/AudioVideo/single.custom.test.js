@@ -26,7 +26,7 @@ const colors = require("colors");
         verbose: true,
         onionTor: false,
         output: "public/mix",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-NAME/ID/URL",
       });
     }
   } catch (error) {
@@ -61,7 +61,7 @@ const fs = require("fs");
         verbose: true,
         onionTor: false,
         output: "public/mix",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-NAME/ID/URL",
       });
       if (result && result.filename && result.ffmpeg) {
         result.ffmpeg.pipe(fs.createWriteStream(result.filename), {

@@ -26,7 +26,7 @@ import YouTube from "yt-dlx";
         verbose: true,
         onionTor: false,
         output: "public/video",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-NAME/ID/URL",
       });
     }
   } catch (error: any) {
@@ -61,7 +61,7 @@ import * as fs from "fs";
         verbose: true,
         onionTor: false,
         output: "public/video",
-        query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+        query: "video-NAME/ID/URL",
       });
       if (result && result.filename && result.ffmpeg) {
         result.ffmpeg.pipe(fs.createWriteStream(result.filename), {

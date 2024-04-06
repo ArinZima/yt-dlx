@@ -5,7 +5,7 @@ const colors = require("colors");
   try {
     console.log(colors.blue("@test:"), "ytSearch video single");
     const result = await YouTube.default.ytSearch.Video.Single({
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-NAME/ID/URL",
     });
     console.log(result);
   } catch (error) {

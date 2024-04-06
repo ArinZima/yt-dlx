@@ -7,7 +7,7 @@ import colors from "colors";
     await YouTube.default.info.list_formats({
       verbose: true,
       onionTor: true,
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-NAME/ID/URL",
     });
   } catch (error) {
     console.error(colors.red(error.message));

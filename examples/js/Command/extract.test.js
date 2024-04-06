@@ -7,7 +7,7 @@ const colors = require("colors");
     await YouTube.default.info.extract({
       verbose: true,
       onionTor: true,
-      query: "https://www.youtube.com/watch?v=AbFnsaDQMYQ",
+      query: "video-NAME/ID/URL",
     });
   } catch (error) {
     console.error(colors.red(error.message));
