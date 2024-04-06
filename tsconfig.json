@@ -4,5 +4,5 @@
 },
 "include": ["core/**/*.ts"],
 "extends": "./config/base.json",
-"exclude": ["dist", "project", "client", "node_modules"]
+"exclude": ["project", "project", "client", "node_modules"]
 }

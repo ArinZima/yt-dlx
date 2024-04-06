@@ -23,7 +23,7 @@ const core = {
   "frontend:start": "cd frontend && yarn start",
   "frontend:clean": "cd frontend && yarn clean",
   clean: "yarn clean:base && yarn clean:frontend && yarn clean:deps",
-  "clean:base": "rm -rf node_modules temp dist others",
+  "clean:base": "rm -rf node_modules temp project others",
   "clean:frontend": "cd frontend && yarn clean",
   "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/cprobe",
   make: "yarn make:base && yarn make:frontend",
@@ -35,7 +35,7 @@ const core = {
   build: "yarn build:base && yarn build:frontend",
   "build:frontend": "cd frontend && yarn clean && yarn build",
   "build:base":
-    "rm -rf dist temp && tsc -p ./config/cjs.json && tsc -p ./config/esm.json && tsc -p ./config/types.json",
+    "rm -rf project temp && tsc -p ./config/cjs.json && tsc -p ./config/esm.json && tsc -p ./config/types.json",
   spec: "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
   test: "rm -rf temp && yarn test:scrape && yarn test:mix && yarn test:video && yarn test:audio && yarn test:command && yarn test:cli",
   "test:mix":
