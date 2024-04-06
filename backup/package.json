@@ -9,6 +9,8 @@
   "homepage": "https://yt-dlx-shovit.koyeb.app/",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "scripts": {
+    "setup": "dos2unix $(pwd)/setup.sh && chmod +x $(pwd)/setup.sh && $(pwd)/setup.sh",
+    "quit": "concurrently \"pm2 delete all\" \"nginx -s quit\"",
     "clean": "rm -rf dist out .next .cache .temp",
     "build": "yarn clean && next build",
     "start": "next start",
@@ -16,6 +18,7 @@
     "dev": "next dev"
   },
   "dependencies": {
+    "@ngrok/ngrok": "^1.0.0",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query": "^5.29.0",
