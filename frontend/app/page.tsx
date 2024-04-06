@@ -286,7 +286,12 @@ export default function AwesomePackage() {
                       single YouTube video.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/Audio/AudioHighest"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -303,7 +308,12 @@ export default function AwesomePackage() {
                       single YouTube video.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/Audio/AudioLowest"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -320,7 +330,12 @@ export default function AwesomePackage() {
                       customization options.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/Audio/AudioCustom"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   {/* ========================[ VIDEO ONLY ]======================== */}
@@ -335,10 +350,15 @@ export default function AwesomePackage() {
                     <td>Video.Single.Highest</td>
                     <td>
                       Downloads the highest quality version of a YouTube video
-                      with optional video filter.
+                      with customization options.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/Video/VideoHighest"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -352,10 +372,15 @@ export default function AwesomePackage() {
                     <td>Video.Single.Lowest</td>
                     <td>
                       Downloads the lowest quality version of a YouTube video
-                      with optional video filter.
+                      with customization options.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/Video/VideoLowest"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -368,11 +393,15 @@ export default function AwesomePackage() {
                     </td>
                     <td>Video.Single.Custom</td>
                     <td>
-                      Downloads a YouTube video with custom resolution and
-                      optional video filter.
+                      Downloads a YouTube video with customization options.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/Video/VideoCustom"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   {/* ========================[ AUDIO VIDEO ]======================== */}
@@ -390,7 +419,12 @@ export default function AwesomePackage() {
                       the highest available resolution.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/AudioVideo/AudioVideoHighest"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -407,7 +441,12 @@ export default function AwesomePackage() {
                       the lowest available resolution.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/AudioVideo/AudioVideoLowest"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -421,10 +460,15 @@ export default function AwesomePackage() {
                     <td>AudioVideo.Single.Custom</td>
                     <td>
                       Downloads audio and video from a YouTube video URL with
-                      customizable options such as resolution and filters.
+                      customizable options.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link
+                        href="/docs/AudioVideo/AudioVideoCustom"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
                     </td>
                   </tr>
                   {/* ========================[ YTSEARCH ]======================== */}
@@ -442,7 +486,9 @@ export default function AwesomePackage() {
                       ID or link.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link href="/docs/" className="font-bold">
+                        docs coming soon!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -456,7 +502,9 @@ export default function AwesomePackage() {
                     <td>Video.Multiple</td>
                     <td>Searches for YouTube videos based on the query.</td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link href="/docs/" className="font-bold">
+                        docs coming soon!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -470,7 +518,9 @@ export default function AwesomePackage() {
                     <td>Playlist.Single</td>
                     <td>Extracts metadata for videos in a YouTube playlist.</td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link href="/docs/" className="font-bold">
+                        docs coming soon!
+                      </Link>
                     </td>
                   </tr>
                   <tr className="hover:bg-red-600/20">
@@ -484,7 +534,9 @@ export default function AwesomePackage() {
                     <td>Playlist.Multiple</td>
                     <td>Searches for YouTube playlists based on the query.</td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      press me!
+                      <Link href="/docs/" className="font-bold">
+                        docs coming soon!
+                      </Link>
                     </td>
                   </tr>
                 </tbody>
