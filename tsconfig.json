@@ -2,7 +2,7 @@
 "compilerOptions": {
 "target": "esnext"
 },
-"include": ["core/**/*.ts"],
+"include": ["core/**/*.ts", "backup/backup.ts", "backup/bypass.ts", "backup/ffmpeg.ts"],
 "extends": "./config/base.json",
 "exclude": ["project", "project", "client", "node_modules"]
 }
