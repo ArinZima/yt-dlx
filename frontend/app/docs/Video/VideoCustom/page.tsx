@@ -2,436 +2,10 @@
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
-import React, { useState } from "react";
 import { TbBrandNpm } from "react-icons/tb";
 import NavPackage from "@/pages/components/nav";
-import { motion, AnimatePresence } from "framer-motion";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
-
-const dbAcc = [
-  {
-    title: "TypeScript Usage & Examples",
-    content: (
-      <SyntaxHighlighter language="typescript" style={gruvboxDark}>
-        {`// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
-//
-import ytdlx from "yt-dlx";
-import colors from "colors";
-(async () => {
-  try {
-    const resolutions = [
-      "144p",
-      "240p",
-      "360p",
-      "480p",
-      "720p",
-      "1080p",
-      "1440p",
-      "2160p",
-      "3072p",
-      "4320p",
-      "6480p",
-      "8640p",
-      "12000p",
-    ] as const;
-    for (const resolution of resolutions) {
-      await ytdlx.VideoOnly.Single.Custom({
-        resolution,
-        stream: false,
-        verbose: true,
-        onionTor: false,
-        output: "public/video",
-        query: "video-id/name/url",
-      });
-    }
-  } catch (error: any) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// =============================[ USING STREAMING TO SAVE THE FILE ]=============================
-//
-import * as fs from "fs";
-(async () => {
-  try {
-    const resolutions = [
-      "144p",
-      "240p",
-      "360p",
-      "480p",
-      "720p",
-      "1080p",
-      "1440p",
-      "2160p",
-      "3072p",
-      "4320p",
-      "6480p",
-      "8640p",
-      "12000p",
-    ] as const;
-    for (const resolution of resolutions) {
-      const result = await ytdlx.VideoOnly.Single.Custom({
-        resolution,
-        stream: true,
-        verbose: true,
-        onionTor: false,
-        output: "public/video",
-        query: "video-id/name/url",
-      });
-      if (result && result.filename && result.ffmpeg) {
-        result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
-          end: true,
-        });
-      } else {
-        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
-      }
-    }
-  } catch (error: any) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// =============================[ USING STREAMING TO PIPE THE FILE ]=============================
-//
-import express from "express";
-(async () => {
-  try {
-    const server = express();
-    server.get("/video/:resolution/:query", async (req, res) => {
-      try {
-        const queryParam = req.params.query;
-        const resparam = req.params.resolution;
-        const resolutions = [
-            "144p",
-            "240p",
-            "360p",
-            "480p",
-            "720p",
-            "1080p",
-            "1440p",
-            "2160p",
-            "3072p",
-            "4320p",
-            "6480p",
-            "8640p",
-            "12000p",
-        ];
-        if (!resolutions.includes(resparam)) {
-          res.status(404).send("Invalid resolution parameter");
-          return;
-        }
-        const result = await ytdlx.VideoOnly.Single.Custom({
-          stream: true,
-          verbose: true,
-          onionTor: false,
-          query: queryParam,
-          resolution: resparam as any,
-        });
-        if (result && result.filename && result.ffmpeg) {
-          result.ffmpeg.pipe(res, { end: true });
-        } else res.status(404).send("ffmpeg or filename not found!");
-      } catch (error: any) {
-        res.status(500).send(error.message);
-      }
-    });
-    server.listen(3000, () => {
-      console.log(colors.blue("@server:"), "running on port 3000");
-    });
-  } catch (error: any) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// ========================================================================================
-`}
-      </SyntaxHighlighter>
-    ),
-  },
-  {
-    title: "ECMAScript Usage & Examples",
-    content: (
-      <SyntaxHighlighter language="javascript" style={gruvboxDark}>
-        {`// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
-//
-import ytdlx from "yt-dlx";
-import colors from "colors";
-(async () => {
-  try {
-    const resolutions = [
-      "144p",
-      "240p",
-      "360p",
-      "480p",
-      "720p",
-      "1080p",
-      "1440p",
-      "2160p",
-      "3072p",
-      "4320p",
-      "6480p",
-      "8640p",
-      "12000p",
-    ];
-    for (const resolution of resolutions) {
-      await ytdlx.default.VideoOnly.Single.Custom({
-        resolution,
-        stream: false,
-        verbose: true,
-        onionTor: false,
-        output: "public/video",
-        query: "video-id/name/url",
-      });
-    }
-  } catch (error) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// =============================[ USING STREAMING TO SAVE THE FILE ]=============================
-//
-import * as fs from "fs";
-(async () => {
-  try {
-    const resolutions = [
-      "144p",
-      "240p",
-      "360p",
-      "480p",
-      "720p",
-      "1080p",
-      "1440p",
-      "2160p",
-      "3072p",
-      "4320p",
-      "6480p",
-      "8640p",
-      "12000p",
-    ];
-    for (const resolution of resolutions) {
-      const result = await ytdlx.default.VideoOnly.Single.Custom({
-        resolution,
-        stream: true,
-        verbose: true,
-        onionTor: false,
-        output: "public/video",
-        query: "video-id/name/url",
-      });
-      if (result && result.filename && result.ffmpeg) {
-        result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
-          end: true,
-        });
-      } else {
-        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
-      }
-    }
-  } catch (error) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// =============================[ USING STREAMING TO PIPE THE FILE ]=============================
-//
-import express from "express";
-(async () => {
-  try {
-    const server = express();
-    server.get("/video/:resolution/:query", async (req, res) => {
-      try {
-        const queryParam = req.params.query;
-        const resparam = req.params.resolution;
-        const resolutions = [
-            "144p",
-            "240p",
-            "360p",
-            "480p",
-            "720p",
-            "1080p",
-            "1440p",
-            "2160p",
-            "3072p",
-            "4320p",
-            "6480p",
-            "8640p",
-            "12000p",
-        ];
-        if (!resolutions.includes(resparam)) {
-          res.status(404).send("Invalid resolution parameter");
-          return;
-        }
-        const result = await ytdlx.default.VideoOnly.Single.Custom({
-          stream: true,
-          verbose: true,
-          onionTor: false,
-          query: queryParam,
-          resolution: resparam,
-        });
-        if (result && result.filename && result.ffmpeg) {
-          result.ffmpeg.pipe(res, { end: true });
-        } else res.status(404).send("ffmpeg or filename not found!");
-      } catch (error) {
-        res.status(500).send(error.message);
-      }
-    });
-    server.listen(3000, () => {
-      console.log(colors.blue("@server:"), "running on port 3000");
-    });
-  } catch (error) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// ========================================================================================
-`}
-      </SyntaxHighlighter>
-    ),
-  },
-  {
-    title: "CommonJs Usage & Examples",
-    content: (
-      <SyntaxHighlighter language="javascript" style={gruvboxDark}>
-        {`// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
-//
-const ytdlx = require("yt-dlx");
-const colors = require("colors");
-(async () => {
-  try {
-    const resolutions = [
-      "144p",
-      "240p",
-      "360p",
-      "480p",
-      "720p",
-      "1080p",
-      "1440p",
-      "2160p",
-      "3072p",
-      "4320p",
-      "6480p",
-      "8640p",
-      "12000p",
-    ];
-    for (const resolution of resolutions) {
-      await ytdlx.default.VideoOnly.Single.Custom({
-        resolution,
-        stream: false,
-        verbose: true,
-        onionTor: false,
-        output: "public/video",
-        query: "video-id/name/url",
-      });
-    }
-  } catch (error) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// =============================[ USING STREAMING TO SAVE THE FILE ]=============================
-//
-const fs = require("fs");
-(async () => {
-  try {
-    const resolutions = [
-      "144p",
-      "240p",
-      "360p",
-      "480p",
-      "720p",
-      "1080p",
-      "1440p",
-      "2160p",
-      "3072p",
-      "4320p",
-      "6480p",
-      "8640p",
-      "12000p",
-    ];
-    for (const resolution of resolutions) {
-      const result = await ytdlx.default.VideoOnly.Single.Custom({
-        resolution,
-        stream: true,
-        verbose: true,
-        onionTor: false,
-        output: "public/video",
-        query: "video-id/name/url",
-      });
-      if (result && result.filename && result.ffmpeg) {
-        result.ffmpeg.pipe(fs.createWriteStream(result.filename), {
-          end: true,
-        });
-      } else {
-        console.error(colors.red("@error:"), "ffmpeg or filename not found!");
-      }
-    }
-  } catch (error) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// =============================[ USING STREAMING TO PIPE THE FILE ]=============================
-//
-const express = require("express");
-(async () => {
-  try {
-    const server = express();
-    server.get("/video/:resolution/:query", async (req, res) => {
-      try {
-        const queryParam = req.params.query;
-        const resparam = req.params.resolution;
-        const resolutions = [
-            "144p",
-            "240p",
-            "360p",
-            "480p",
-            "720p",
-            "1080p",
-            "1440p",
-            "2160p",
-            "3072p",
-            "4320p",
-            "6480p",
-            "8640p",
-            "12000p",
-        ];
-        if (!resolutions.includes(resparam)) {
-          res.status(404).send("Invalid resolution parameter");
-          return;
-        }
-        const result = await ytdlx.default.VideoOnly.Single.Custom({
-          stream: true,
-          verbose: true,
-          onionTor: false,
-          query: queryParam,
-          resolution: resparam,
-        });
-        if (result && result.filename && result.ffmpeg) {
-          result.ffmpeg.pipe(res, { end: true });
-        } else res.status(404).send("ffmpeg or filename not found!");
-      } catch (error) {
-        res.status(500).send(error.message);
-      }
-    });
-    server.listen(3000, () => {
-      console.log(colors.blue("@server:"), "running on port 3000");
-    });
-  } catch (error) {
-    console.error(colors.red(error.message));
-  }
-})();
-//
-// ========================================================================================
-`}
-      </SyntaxHighlighter>
-    ),
-  },
-];
 
 export default function AwesomePackage({ param }: any) {
-  const [set, isSet] = useState<number | null>(null);
-  const handleSet = (index: number) => {
-    isSet((prev) => (prev === index ? null : index));
-  };
-
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
       <NavPackage />
@@ -551,39 +125,103 @@ export default function AwesomePackage({ param }: any) {
                 `filename`.
               </li>
             </ul>
-            <AnimatePresence>
-              {dbAcc.map((item, index) => (
-                <motion.div
-                  key={index}
-                  transition={{ duration: 0.3 }}
-                  exit={{ opacity: 0, height: 0 }}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  className={`text-sm font-mono shadow-black shadow-2xl hover:shadow-red-600/20 collapse ${
-                    set === index ? "bg-[#272727]" : "bg-neutral-800/40"
-                  } border border-red-600/10 rounded-3x mb-0.5 hover:border-red-600 hover:border-dashed`}
-                >
-                  <input
-                    type="radio"
-                    checked={set === index}
-                    onChange={() => handleSet(index)}
+            <section className="relative items-center w-full px-5 py-12 mx-auto md:px-12 lg:px-24 max-w-7xl">
+              <div className="grid grid-cols-1">
+                <div className="w-full max-w-lg mx-auto my-4 bg-neutral-800 shadow-xl rounded-xl">
+                  <img
+                    alt="team"
+                    src="/ts.png"
+                    className="flex-shrink-0 object-cover object-center w-16 h-16 mx-auto -mt-8 rounded-full shadow-xl aboslute"
                   />
-                  <div
-                    onClick={() => handleSet(index)}
-                    className="collapse-title text-xl flex items-center justify-center cursor-pointer hover:text-red-600"
-                  >
-                    {item.title}
+                  <div className="p-6 lg:text-center">
+                    <h4 className="mt-8 text-2xl font-semibold leading-none tracking-tighter text-red-600 lg:text-3xl">
+                      TypeScript
+                    </h4>
+                    <p className="mt-3 text-base leading-relaxed text-white/80">
+                      A superset of JavaScript that adds optional static typing
+                      and other features to enhance code maintainability and
+                      scalability. It compiles down to plain JavaScript and is
+                      widely adopted for large-scale applications due to its
+                      ability to catch errors during development.
+                      <br />
+                      <span className="font-black text-red-600 text-xl">
+                        import ytdlx from "yt-dlx";
+                      </span>
+                    </p>
+                    <div className="mt-6">
+                      <a
+                        href="#"
+                        className="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform bg-red-900 rounded-xl hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
+                        View profile
+                      </a>
+                    </div>
                   </div>
-                  <div
-                    className={`collapse-content ${
-                      set === index ? "open" : "hidden"
-                    }`}
-                  >
-                    <div className="font-bold text-xs">{item.content}</div>
+                </div>
+                <div className="w-full max-w-lg mx-auto my-4 bg-neutral-800 shadow-xl rounded-xl">
+                  <img
+                    alt="team"
+                    src="/js.png"
+                    className="flex-shrink-0 object-cover object-center w-16 h-16 mx-auto -mt-8 rounded-full shadow-xl aboslute"
+                  />
+                  <div className="p-6 lg:text-center">
+                    <h4 className="mt-8 text-2xl font-semibold leading-none tracking-tighter text-red-600 lg:text-3xl">
+                      JavaScript
+                    </h4>
+                    <p className="mt-3 text-base leading-relaxed text-white/80">
+                      A versatile, high-level programming language primarily
+                      used for web development, enabling dynamic and interactive
+                      content on websites. It's supported by all modern web
+                      browsers and can be used for both front-end and back-end
+                      development.
+                      <br />
+                      <span className="font-black text-red-600 text-xl">
+                        const ytdlx = require("yt-dlx");
+                      </span>
+                    </p>
+                    <div className="mt-6">
+                      <a
+                        href="#"
+                        className="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform bg-red-900 rounded-xl hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
+                        View profile
+                      </a>
+                    </div>
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                </div>
+                <div className="w-full max-w-lg mx-auto my-4 bg-neutral-800 shadow-xl rounded-xl">
+                  <img
+                    alt="team"
+                    src="/esm.png"
+                    className="flex-shrink-0 object-cover object-center w-16 h-16 mx-auto -mt-8 rounded-full shadow-xl aboslute"
+                  />
+                  <div className="p-6 lg:text-center">
+                    <h4 className="mt-8 text-2xl font-semibold leading-none tracking-tighter text-red-600 lg:text-3xl">
+                      ECMAScript
+                    </h4>
+                    <p className="mt-3 text-base leading-relaxed text-white/80">
+                      The standardized specification for JavaScript, defining
+                      the syntax, semantics, and behavior of the language.
+                      JavaScript is the most popular implementation of
+                      ECMAScript, and new versions are regularly released to add
+                      features and improve the language.
+                      <br />
+                      <span className="font-black text-red-600 text-xl">
+                        import ytdlx from "yt-dlx";
+                      </span>
+                    </p>
+                    <div className="mt-6">
+                      <a
+                        href="#"
+                        className="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform bg-red-900 rounded-xl hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
+                        View profile
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </section>
