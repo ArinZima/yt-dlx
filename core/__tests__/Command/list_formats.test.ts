@@ -7,7 +7,7 @@ import colors from "colors";
     await YouTube.info.list_formats({
       verbose: true,
       onionTor: true,
-      query: "video-NAME/ID/URL",
+      query: "21 savage - redrum",
     });
   } catch (error: any) {
     console.error(colors.red(error.message));

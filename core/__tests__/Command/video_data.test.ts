@@ -5,7 +5,7 @@ import colors from "colors";
   try {
     console.log(colors.blue("@test:"), "ytSearch video single");
     const result = await YouTube.ytSearch.Video.Single({
-      query: "video-NAME/ID/URL",
+      query: "21 savage - redrum",
     });
     console.log(result);
   } catch (error: any) {
