@@ -7,11 +7,12 @@ import { TbBrandNpm } from "react-icons/tb";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
+import { SiFirefoxbrowser } from "react-icons/si";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 
 export default function AwesomePackage() {
   // import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-  // const queryClient = useQueryClient();
+  // const queryClient = useQueryClient;
   // const [fd, setfd] = useState({
   // AudioVideo: false,
   // VideoOnly: false,
@@ -22,22 +23,22 @@ export default function AwesomePackage() {
   // });
   // const { isPending, error, data } = useQuery({
   // queryKey: ["AudioOnly"],
-  // queryFn: async () => {
+  // queryFn: async  => {
   // const queryString = new URLSearchParams({
-  // AudioVideo: fd.AudioVideo.toString(),
+  // AudioVideo: fd.AudioVideo.toString,
   // TubeQuery: fd.TubeQuery,
-  // VideoOnly: fd.VideoOnly.toString(),
-  // AudioOnly: fd.AudioOnly.toString(),
-  // Highest: fd.Highest.toString(),
-  // Lowest: fd.Lowest.toString(),
-  // }).toString();
+  // VideoOnly: fd.VideoOnly.toString,
+  // AudioOnly: fd.AudioOnly.toString,
+  // Highest: fd.Highest.toString,
+  // Lowest: fd.Lowest.toString,
+  // }).toString;
   // const response = await fetch(
   // `/api/audio/single/highest?formdata=${queryString}`,
   // {
   // method: "GET",
   // }
   // );
-  // if (response.status === 200) return Object.keys(await response.json());
+  // if (response.status === 200) return Object.keys(await response.json);
   // },
   // });
   // const handleChange = (event: { target: any }) => {
@@ -49,7 +50,7 @@ export default function AwesomePackage() {
   // }));
   // };
   // const handleForm = (event: React.FormEvent<HTMLFormElement>) => {
-  // event.preventDefault();
+  // event.preventDefault;
   // };
 
   return (
@@ -64,7 +65,7 @@ export default function AwesomePackage() {
                 YT-DLX@8.1.0
               </h1>
             </div>
-            <p className="text-red-200/80">
+            <p className="text-white/80">
               Yt-Dlx Is A Robust Multimedia Downloading Tool Meticulously
               Crafted To Elevate Your Media Consumption Experience. With Its
               Advanced Capabilities, It Offers An All-Encompassing Solution For
@@ -80,7 +81,7 @@ export default function AwesomePackage() {
           </article>
           <div>
             <div className="flex flex-wrap py-2 gap-2 border-b border-red-600 border-dashed">
-              <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center text-red-200/80">
+              <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center text-white/80">
                 <div className="flex items-center gap-2 md:space-x-2">
                   <TbBrandNpm className="text-red-600" size={50} />
                   <FaYarn className="text-red-600" size={30} />
@@ -93,7 +94,7 @@ export default function AwesomePackage() {
               <p className="text-2xl font-semibold text-red-600">
                 Install Now Using Any Package Manager Of Your Choice!
               </p>
-              <ul className="ml-4 space-y-1 list-disc text-red-200/80">
+              <ul className="ml-4 space-y-1 list-disc text-white/80">
                 <li>
                   <a rel="noopener noreferrer" className="cursor-pointer">
                     <span className="text-red-600">yarn</span> add yt-dlx |{" "}
@@ -249,7 +250,7 @@ export default function AwesomePackage() {
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
               Explore All Available Functions
             </h2>
-            <p className="mt-4 text-red-200/80">
+            <p className="mt-4 text-white/80">
               YT-DLX accommodates various node.js coding flavours!{" "}
               <span className="text-red-600">
                 (typescript), (commonjs) and (esm)
@@ -258,244 +259,237 @@ export default function AwesomePackage() {
               coverage.
             </p>
           </div>
-          <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
-            {/* ========================[ AUDIO ONLY ]======================== */}
-            <Link
-              href="/docs/Audio/AudioCustom"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <MdAudioFile
-                    size={30}
-                    className="text-red-600 animate-pulse"
-                  />
-                  <span className="text-red-600 text-sm">Audio Only:</span>
-                  <h2 className="text-lg font-bold">
-                    Audio<span className="text-red-600">.Single.</span>
-                    Custom()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    Should You Desire To Download A Specific Audio Resolution
-                    For A Given Youtube Video Link, This Function Has You
-                    Covered. Simply Provide The Available Format For The Custom
-                    Resolution, And Yt-Dlx Along With Ffmpeg Will Manage The
-                    Rest. To Identify The Available Formats, Utilize The
-                    (list_formats) Function.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/docs/Audio/AudioHighest"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <MdAudioFile
-                    size={30}
-                    className="text-red-600 animate-pulse"
-                  />
-                  <span className="text-red-600 text-sm">Audio Only:</span>
-                  <h2 className="text-lg font-bold">
-                    Audio<span className="text-red-600">.Single.</span>
-                    Highest()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function automatically utilizes yt-dlx&apos;s search
-                    algorithm to identify the optimal audio resolution for a
-                    given YouTube video link. Employing ffmpeg alongside the
-                    best available codecs and bitrate settings, it ensures the
-                    delivery of superior audio resolution and saves the file in
-                    the (avi) format.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/docs/Audio/AudioLowest"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <MdAudioFile
-                    size={30}
-                    className="text-red-600 animate-pulse"
-                  />
-                  <span className="text-red-600 text-sm">Audio Only:</span>
-                  <h2 className="text-lg font-bold">
-                    Audio<span className="text-red-600">.Single.</span>
-                    Lowest()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function is automated and employs yt-dlx&apos;s search
-                    algorithm to identify the Lowest possible audio resolution
-                    for a given YouTube video link. Utilizing ffmpeg with the
-                    Lowest available codecs and bitrate settings, it outputs the
-                    minimum audio resolution and saves the file in (avi) format.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            {/* ========================[ VIDEO ONLY ]======================== */}
-            <Link
-              href="/docs/Video/VideoCustom"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <FaFileVideo
-                    size={25}
-                    className="text-red-600 animate-pulse"
-                  />
-                  <span className="text-red-600 text-sm">Video Only:</span>
-                  <h2 className="text-lg font-bold">
-                    Video<span className="text-red-600">.Single.</span>
-                    Custom()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function caters to your specific needs when it comes to
-                    downloading a desired video resolution for a given YouTube
-                    video link. Simply provide the available format for the
-                    custom resolution, and yt-dlx along with ffmpeg will handle
-                    the rest. To identify the available formats, use the
-                    (list_formats) function.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/docs/Video/VideoHighest"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <FaFileVideo
-                    size={25}
-                    className="text-red-600 animate-pulse"
-                  />
-                  <span className="text-red-600 text-sm">Video Only:</span>
-                  <h2 className="text-lg font-bold">
-                    Video<span className="text-red-600">.Single.</span>
-                    Highest()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function automatically employs yt-dlx&apos;s search
-                    algorithm to identify the optimal video resolution for a
-                    given YouTube video link. Utilizing ffmpeg, along with the
-                    best available codecs and bitrate settings, it ensures the
-                    delivery of superior video resolution and saves the file in
-                    the (mkv) format.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/docs/Video/VideoLowest"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <FaFileVideo
-                    size={25}
-                    className="text-red-600 animate-pulse"
-                  />
-                  <span className="text-red-600 text-sm">Video Only:</span>
-                  <h2 className="text-lg font-bold">
-                    Video<span className="text-red-600">.Single.</span>
-                    Lowest()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function automatically employs yt-dlx&apos;s search
-                    algorithm to identify the minimum achievable video
-                    resolution for a given YouTube video link. Utilizing ffmpeg
-                    with the Lowest available codecs and bitrate settings, it
-                    produces the video with the least possible resolution and
-                    saves the file in the (mkv) format.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            {/* ========================[ AUDIO VIDEO ]======================== */}
-            <Link
-              href="/docs/AudioVideo/AudioVideoCustom"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <AiFillCodeSandboxCircle
-                    size={35}
-                    className="text-red-600 animate-spin"
-                  />
-                  <span className="text-red-600 text-sm">Audio Video:</span>
-                  <h2 className="text-lg font-bold">
-                    AudioVideo<span className="text-red-600">.Single.</span>
-                    Custom()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function caters to your specific needs when it comes to
-                    downloading a desired video resolution for a given YouTube
-                    video link. Simply provide the available format for the
-                    custom resolution, and yt-dlx along with ffmpeg will handle
-                    the rest. To identify the available formats, use the
-                    (list_formats) function.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/docs/AudioVideo/AudioVideoHighest"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <AiFillCodeSandboxCircle
-                    size={35}
-                    className="text-red-600 animate-spin"
-                  />
-                  <span className="text-red-600 text-sm">Audio Video:</span>
-                  <h2 className="text-lg font-bold">
-                    AudioVideo<span className="text-red-600">.Single.</span>
-                    Highest()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function automatically utilizes yt-dlx&apos;s search
-                    algorithm to identify the optimal audio+video resolution for
-                    any given YouTube video link. It employs ffmpeg, leveraging
-                    the best available codecs and bitrate settings to produce
-                    the Highest resolution audio+video output, saving the file
-                    in (mkv) format.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/docs/AudioVideo/AudioVideoLowest"
-              className="flex items-center hover:animate-pulse cursor-pointer text-red-600 font-extrabold gap-1 mt-2"
-            >
-              <div className="flex items-start gap-1 p-2 rounded-2xl bg-red-950/10 hover:bg-black/80 hover:scale-105 cursor-pointer shadow-2xl shadow-black/60 hover:shadow-red-800/20 duration-300 border border-red-800/20 hover:border-red-800">
-                <div>
-                  <AiFillCodeSandboxCircle
-                    size={35}
-                    className="text-red-600 animate-spin"
-                  />
-                  <span className="text-red-600 text-sm">Audio Video:</span>
-                  <h2 className="text-lg font-bold">
-                    AudioVideo<span className="text-red-600">.Single.</span>
-                    Lowest()
-                  </h2>
-                  <p className="text-sm text-red-200/80">
-                    This function automatically employs yt-dlx&apos;s search
-                    algorithm to identify the Lowest possible audio+video
-                    resolution for a given YouTube video link. Utilizing ffmpeg
-                    with the least resource-intensive codecs and bitrate
-                    settings, it outputs the Lowest possible audio+video
-                    resolution and saves the file in (mkv) format.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            {/* ========================[ GENERAL ]======================== */}
+          {/* ========================[ AUDIO ONLY ]======================== */}
+          <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 hover:bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
+            <div className="overflow-x-auto">
+              <table className="table text-white/80">
+                <thead>
+                  <tr>
+                    <th className="text-red-600 text-lg">Function Category</th>
+                    <th className="text-red-600 text-lg">Function Name</th>
+                    <th className="text-red-600 text-lg">Brief Description</th>
+                    <th className="text-red-600 text-lg">Usage & Examples</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <MdAudioFile
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Audio Only
+                    </td>
+                    <td>AudioHighest</td>
+                    <td>
+                      Downloads and processes the highest quality audio from a
+                      single YouTube video.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <MdAudioFile
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Audio Only
+                    </td>
+                    <td>AudioLowest</td>
+                    <td>
+                      Downloads and processes the lowest quality audio from a
+                      single YouTube video.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <MdAudioFile
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Audio Only
+                    </td>
+                    <td>AudioCustom</td>
+                    <td>
+                      Downloads and processes a single YouTube video with audio
+                      customization options.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  {/* ========================[ VIDEO ONLY ]======================== */}
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <FaFileVideo
+                        size={18}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Video Only
+                    </td>
+                    <td>VideoHighest</td>
+                    <td>
+                      Downloads the highest quality version of a YouTube video
+                      with optional video filter.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <FaFileVideo
+                        size={18}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Video Only
+                    </td>
+                    <td>VideoLowest</td>
+                    <td>
+                      Downloads the lowest quality version of a YouTube video
+                      with optional video filter.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <FaFileVideo
+                        size={18}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Video Only
+                    </td>
+                    <td>VideoCustom</td>
+                    <td>
+                      Downloads a YouTube video with custom resolution and
+                      optional video filter.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  {/* ========================[ AUDIO VIDEO ]======================== */}
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <AiFillCodeSandboxCircle
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Audio Video
+                    </td>
+                    <td>AudioVideoHighest</td>
+                    <td>
+                      Downloads audio and video from a YouTube video URL with
+                      the highest available resolution.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <AiFillCodeSandboxCircle
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Audio Video
+                    </td>
+                    <td>AudioVideoLowest</td>
+                    <td>
+                      Downloads audio and video from a YouTube video URL with
+                      the lowest available resolution.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <AiFillCodeSandboxCircle
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Audio Video
+                    </td>
+                    <td>AudioVideoCustom</td>
+                    <td>
+                      Downloads audio and video from a YouTube video URL with
+                      customizable options such as resolution and filters.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  {/* ========================[ YTSEARCH ]======================== */}
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <SiFirefoxbrowser
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      YouTube Search
+                    </td>
+                    <td>Video.Single</td>
+                    <td>
+                      Fetches data for a single YouTube video based on the video
+                      ID or link.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <SiFirefoxbrowser
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      YouTube Search
+                    </td>
+                    <td>Video.Multiple</td>
+                    <td>Searches for YouTube videos based on the query.</td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <SiFirefoxbrowser
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      YouTube Search
+                    </td>
+                    <td>Playlist.Single</td>
+                    <td>Extracts metadata for videos in a YouTube playlist.</td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <SiFirefoxbrowser
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      YouTube Search
+                    </td>
+                    <td>Playlist.Multiple</td>
+                    <td>Searches for YouTube playlists based on the query.</td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      press me!
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>

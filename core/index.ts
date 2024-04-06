@@ -35,13 +35,13 @@ import ListAudioVideoCustom from "./routes/AudioVideo/list/ListAudioVideoCustom"
 //
 const ytdlx = {
   ytSearch: {
-    video: {
-      single: video_data,
-      multiple: search_videos,
+    Video: {
+      Single: video_data,
+      Multiple: search_videos,
     },
-    playlist: {
-      single: playlist_data,
-      multiple: search_playlists,
+    Playlist: {
+      Single: playlist_data,
+      Multiple: search_playlists,
     },
   },
   info: {
