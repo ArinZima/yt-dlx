@@ -11,33 +11,35 @@ const colors = {
 };
 
 const core = {
-  remake: "yarn clean && yarn make && yarn update && yarn build",
+  remake:
+    "pnpm run clean && pnpm run make && pnpm run update && pnpm run build",
   postinstall: "run-s download-files setup-permissions install-chrome",
-  prepublishOnly: "yarn clean:deps",
+  prepublishOnly: "pnpm run clean:deps",
   "setup-permissions": "chmod -R +x util/*",
   "download-files": "node util/cprobe.mjs",
   "install-chrome": "npx puppeteer browsers install chrome",
-  "frontend:dev": "cd frontend && yarn dev",
-  "frontend:lint": "cd frontend && yarn lint",
-  "frontend:build": "cd frontend && yarn build",
-  "frontend:start": "cd frontend && yarn start",
-  "frontend:clean": "cd frontend && yarn clean",
-  clean: "yarn clean:base && yarn clean:frontend && yarn clean:deps",
+  "frontend:dev": "cd frontend && pnpm run dev",
+  "frontend:lint": "cd frontend && pnpm run lint",
+  "frontend:build": "cd frontend && pnpm run build",
+  "frontend:start": "cd frontend && pnpm run start",
+  "frontend:clean": "cd frontend && pnpm run clean",
+  clean:
+    "pnpm run clean:base && pnpm run clean:frontend && pnpm run clean:deps",
   "clean:base": "rm -rf node_modules temp project others",
-  "clean:frontend": "cd frontend && yarn clean",
+  "clean:frontend": "cd frontend && pnpm run clean",
   "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/cprobe",
-  make: "yarn make:base && yarn make:frontend",
-  "make:base": "yarn install",
-  "make:frontend": "cd frontend && yarn install",
-  update: "yarn update:base && yarn update:frontend",
-  "update:base": "yarn upgrade --latest",
-  "update:frontend": "cd frontend && yarn upgrade --latest",
-  build: "yarn build:base && yarn build:frontend",
-  "build:frontend": "cd frontend && yarn clean && yarn build",
+  make: "pnpm run make:base && pnpm run make:frontend",
+  "make:base": "pnpm install",
+  "make:frontend": "cd frontend && pnpm install",
+  update: "pnpm run update:base && pnpm run update:frontend",
+  "update:base": "pnpm up --latest",
+  "update:frontend": "cd frontend && pnpm up --latest",
+  build: "pnpm run build:base && pnpm run build:frontend",
+  "build:frontend": "cd frontend && pnpm run clean && pnpm run build",
   "build:base":
     "rm -rf project temp && tsc -p ./config/cjs.json && tsc -p ./config/esm.json && tsc -p ./config/types.json",
   spec: "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
-  test: "rm -rf temp && yarn test:scrape && yarn test:mix && yarn test:video && yarn test:audio && yarn test:command && yarn test:cli",
+  test: "rm -rf temp && pnpm run test:scrape && pnpm run test:mix && pnpm run test:video && pnpm run test:audio && pnpm run test:command && pnpm run test:cli",
   "test:mix":
     "rm -rf temp && tsup core --outDir temp && node temp/__tests__/mix.js",
   "test:video":
@@ -49,7 +51,7 @@ const core = {
   "test:scrape":
     "rm -rf temp && tsup core/__tests__/other/scrape.spec.ts --outDir temp && node temp/scrape.spec.js",
   "test:cli":
-    "yarn link && yt-dlx audio-lowest --query PERSONAL BY PLAZA && yt-dlx al --query SuaeRys5tTc && yarn unlink",
+    "pnpm run link && yt-dlx audio-lowest --query PERSONAL BY PLAZA && yt-dlx al --query SuaeRys5tTc && pnpm run unlink",
 };
 function formatBytes(bytes) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
