@@ -27,12 +27,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const child_process_1 = require("child_process");
-const colors_1 = __importDefault(require("colors"));
-const fs = __importStar(require("fs"));
-const minimist_1 = __importDefault(require("minimist"));
-const path = __importStar(require("path"));
 const __1 = __importDefault(require(".."));
+const fs = __importStar(require("fs"));
+const colors_1 = __importDefault(require("colors"));
+const path = __importStar(require("path"));
+const minimist_1 = __importDefault(require("minimist"));
+const child_process_1 = require("child_process");
 const package_json_1 = require("../../package.json");
 const proTube = (0, minimist_1.default)(process.argv.slice(2), {
     string: ["query", "format"],
@@ -64,7 +64,10 @@ const program = async () => {
                     maxTries--;
                 }
             }
-            const rox = (0, child_process_1.spawn)("sh", ["-c", `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh`]);
+            const rox = (0, child_process_1.spawn)("sh", [
+                "-c",
+                `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh`,
+            ]);
             await Promise.all([
                 new Promise((resolve, reject) => {
                     rox.stdout.on("data", (stdout) => {
@@ -102,7 +105,10 @@ const program = async () => {
                     maxTries--;
                 }
             }
-            const xrox = (0, child_process_1.spawn)("sh", ["-c", `chmod +x ${uLoc}/socks5.sh && ${uLoc}/socks5.sh`]);
+            const xrox = (0, child_process_1.spawn)("sh", [
+                "-c",
+                `chmod +x ${uLoc}/socks5.sh && ${uLoc}/socks5.sh`,
+            ]);
             await Promise.all([
                 new Promise((resolve, reject) => {
                     xrox.stdout.on("data", (stdout) => {

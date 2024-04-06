@@ -26,14 +26,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const colors_1 = __importDefault(require("colors"));
-const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const fs = __importStar(require("fs"));
+const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
 const zod_1 = require("zod");
+const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const Agent_1 = __importDefault(require("../../../base/Agent"));
-const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
+const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
 const ZodSchema = zod_1.z.object({
     query: zod_1.z.string().min(2),
     output: zod_1.z.string().optional(),
@@ -154,7 +154,9 @@ async function AudioVideoLowest({ query, stream, verbose, output, filter, onionT
             if (stream) {
                 return {
                     ffmpeg: ff,
-                    filename: output ? path.join(folder, filename) : filename.replace("_)_", ")_"),
+                    filename: output
+                        ? path.join(folder, filename)
+                        : filename.replace("_)_", ")_"),
                 };
             }
             else {

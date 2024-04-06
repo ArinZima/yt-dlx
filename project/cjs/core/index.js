@@ -40,13 +40,13 @@ const ListAudioVideoCustom_1 = __importDefault(require("./routes/AudioVideo/list
 //
 const ytdlx = {
     ytSearch: {
-        video: {
-            single: video_data_1.default,
-            multiple: search_videos_1.default,
+        Video: {
+            Single: video_data_1.default,
+            Multiple: search_videos_1.default,
         },
-        playlist: {
-            single: playlist_data_1.default,
-            multiple: search_playlists_1.default,
+        Playlist: {
+            Single: playlist_data_1.default,
+            Multiple: search_playlists_1.default,
         },
     },
     info: {

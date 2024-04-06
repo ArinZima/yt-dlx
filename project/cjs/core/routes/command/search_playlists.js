@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
-const web_1 = __importDefault(require("../../web"));
 const YouTubeId_1 = __importDefault(require("../../web/YouTubeId"));
+const web_1 = __importDefault(require("../../web"));
 /**
  * Searches for YouTube playlists based on the query.
  *

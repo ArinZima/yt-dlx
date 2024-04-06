@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const youtubei_1 = require("youtubei");
-async function playlistVideos({ playlistId }) {
+async function playlistVideos({ playlistId, }) {
     try {
         const youtube = new youtubei_1.Client();
         const playlistVideos = await youtube.getPlaylist(playlistId);
