@@ -1,4 +1,4 @@
-// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
+// =============================[ CORE TESTER ]=============================
 //
 import colors from "colors";
 import YouTube from "../../";
