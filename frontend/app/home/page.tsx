@@ -79,7 +79,7 @@ export default function Component() {
           </Link>
           <span className="animate-pulse mr-2">with</span>
           <Link
-            href="/pkg"
+            href="/docs"
             className="text-red-600 cursor-pointer text-3xl mr-2"
           >
             yt-dlx
@@ -95,7 +95,7 @@ export default function Component() {
         <div className="relative items-center w-full px-5 pb-12 mx-auto">
           <div className="relative h-full flex flex-col items-center justify-center text-center text-[#C4C4C4]">
             <Link
-              href="/pkg"
+              href="/docs"
               className="flex items-center justify-center px-4 -mb-14 text-sm gap-2 p-1 italic text-pink-600 bg-red-900/20 rounded-xl"
             >
               powered by
@@ -239,7 +239,7 @@ export default function Component() {
                       `https://www.youtube.com/watch?v=${item.id}` ? (
                       <div className="flex flex-col">
                         <Link
-                          href="/pkg"
+                          href="/docs"
                           className="flex items-center justify-center p-2 bg-pink-700/50 hover:bg-pink-700/60 text-white/90 mt-0.5 w-full text-sm gap-1 rounded"
                         >
                           powered by <TbDiamondFilled size={20} /> yt-dlx{" "}
