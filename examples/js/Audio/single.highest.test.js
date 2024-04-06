@@ -1,10 +1,10 @@
 // =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
 //
-const ytdlx = require("yt-dlx");
+const YouTube = require("yt-dlx");
 const colors = require("colors");
 (async () => {
   try {
-    await ytdlx.AudioOnly.Single.Highest({
+    await YouTube.AudioOnly.Single.Highest({
       stream: false,
       verbose: true,
       onionTor: false,
@@ -21,7 +21,7 @@ const colors = require("colors");
 const fs = require("fs");
 (async () => {
   try {
-    const result = await ytdlx.AudioOnly.Single.Highest({
+    const result = await YouTube.AudioOnly.Single.Highest({
       stream: true,
       verbose: true,
       onionTor: false,
@@ -49,7 +49,7 @@ const express = require("express");
     server.get("/audio/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.AudioOnly.Single.Highest({
+        const result = await YouTube.AudioOnly.Single.Highest({
           stream: true,
           verbose: true,
           onionTor: false,

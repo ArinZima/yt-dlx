@@ -1,12 +1,12 @@
 // =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
 //
 import colors from "colors";
-import ytdlx from "yt-dlx";
+import YouTube from "yt-dlx";
 (async () => {
   try {
     const resolutions = ["high", "medium", "low", "ultralow"] as const;
     for (const resolution of resolutions) {
-      await ytdlx.AudioOnly.Single.Custom({
+      await YouTube.AudioOnly.Single.Custom({
         resolution,
         stream: false,
         verbose: true,
@@ -27,7 +27,7 @@ import * as fs from "fs";
   try {
     const resolutions = ["high", "medium", "low", "ultralow"] as const;
     for (const resolution of resolutions) {
-      const result = await ytdlx.AudioOnly.Single.Custom({
+      const result = await YouTube.AudioOnly.Single.Custom({
         resolution,
         stream: false,
         verbose: true,
@@ -64,7 +64,7 @@ import express from "express";
           res.status(404).send("Invalid resolution parameter");
           return;
         }
-        const result = await ytdlx.AudioOnly.Single.Custom({
+        const result = await YouTube.AudioOnly.Single.Custom({
           stream: true,
           verbose: true,
           onionTor: false,

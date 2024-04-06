@@ -1,0 +1,11 @@
+const YouTube = require("yt-dlx");
+const colors = require("colors");
+
+(async () => {
+  try {
+    console.log(colors.blue("@test:"), "help");
+    await YouTube.info.help();
+  } catch (error) {
+    console.error(colors.red(error.message));
+  }
+})();
