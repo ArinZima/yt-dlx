@@ -1,0 +1,11 @@
+import YouTube from "yt-dlx";
+import colors from "colors";
+
+(async () => {
+  try {
+    console.log(colors.blue("@test:"), "help");
+    await YouTube.default.info.help();
+  } catch (error) {
+    console.error(colors.red(error.message));
+  }
+})();
