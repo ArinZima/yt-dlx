@@ -103,9 +103,7 @@ const program = async () => {
       break;
     case "help":
     case "h":
-      const hdata = ytdlx.info.help();
-      console.log(hdata);
-      process.exit();
+      console.log("@help: visit https://yt-dlx-shovit.koyeb.app/");
       break;
     case "extract":
     case "e":
@@ -212,15 +210,13 @@ const program = async () => {
           });
       break;
     default:
-      const data = ytdlx.info.help();
-      console.log(data);
+      console.log("@help: visit https://yt-dlx-shovit.koyeb.app/");
       process.exit();
       break;
   }
 };
 
 if (!proTube._[0]) {
-  const data = ytdlx.info.help();
-  console.log(data);
+  console.log("@help: visit https://yt-dlx-shovit.koyeb.app/");
   process.exit();
 } else program();
