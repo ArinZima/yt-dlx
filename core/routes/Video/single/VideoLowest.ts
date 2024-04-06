@@ -159,11 +159,9 @@ export default async function VideoLowest({
   } catch (error: any) {
     switch (true) {
       case error instanceof ZodError:
-        console.error(colors.red("@zod-error:"), error.errors);
-        break;
+        throw new Error(colors.red("@zod-error:") + error.errors);
       default:
-        console.error(colors.red("@error:"), error.message);
-        break;
+        throw new Error(colors.red("@error:") + error.message);
     }
   } finally {
     console.log(
