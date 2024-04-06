@@ -2069,11 +2069,6 @@ electron-to-chromium@^1.4.668:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.729.tgz#8477d21e2a50993781950885b2731d92ad532c00"
   integrity sha512-bx7+5Saea/qu14kmPTDHQxkp2UnziG3iajUQu3BxFvCOnpAJdDbMV4rSl+EqFDkkpNNVUFlR1kDfpL59xfy1HA==
 
-emitter-component@^1.1.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/emitter-component/-/emitter-component-1.1.2.tgz#d65af5833dc7c682fd0ade35f902d16bc4bad772"
-  integrity sha512-QdXO3nXOzZB4pAjM0n6ZE+R9/+kPpECA/XSELIcc54NeYVnBqIk+4DFiBgK+8QbV3mdvTG6nedl7dTYgO+5wDw==
-
 emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
@@ -4650,7 +4645,7 @@ puppeteer-core@22.6.3:
     devtools-protocol "0.0.1262051"
     ws "8.16.0"
 
-puppeteer@^22.6.2:
+puppeteer@^22.6.3:
   version "22.6.3"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-22.6.3.tgz#c55b2680877e9535384b4e0e253fa9a9a0b3247e"
   integrity sha512-KZOnthMbvr4+7cPKFeeOCJPe8DzOKGC0GbMXmZKOP/YusXQ6sqxA0vt6frstZq3rUJ277qXHlZNFf01VVwdHKw==
@@ -5355,13 +5350,6 @@ statuses@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-2.0.1.tgz#55cb000ccf1d48728bd23c685a063998cf1a1b63"
   integrity sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==
-
-stream@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/stream/-/stream-0.0.2.tgz#7f5363f057f6592c5595f00bc80a27f5cec1f0ef"
-  integrity sha512-gCq3NDI2P35B2n6t76YJuOp7d6cN/C7Rt0577l91wllh0sY9ZBuw9KaSGqH/b0hzn3CWWJbpbW0W0WvQ1H/Q7g==
-  dependencies:
-    emitter-component "^1.1.1"
 
 streamsearch@^1.1.0:
   version "1.1.0"
@@ -6196,10 +6184,10 @@ youtubei@^1.3.7:
     node-fetch "2.6.7"
     protobufjs "7.2.4"
 
-yt-dlx@^8.0.9:
-  version "8.0.9"
-  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-8.0.9.tgz#394585ad6f1a361ab3ac3d1cc5b2d5d3b3102642"
-  integrity sha512-1p9VF2YUS9YqpapKCIgBxZqY4D1mZNbsVrXYp+kQHaxmR11eDHUrr3IpkgHdkU6kb6XBp4gxibFS5g7FpS0nkg==
+yt-dlx@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/yt-dlx/-/yt-dlx-8.1.0.tgz#eb32cc3cb5e9a2f7273f1105b506fb9ea9b3b2fa"
+  integrity sha512-58hv5BS4bIF5liY3SBg8SD+0yFZujZkWysXLvSOTaahFYKw+6JJb0/eb66CrJoJcSY+Z5TA3sDxoMD77pl4WuA==
   dependencies:
     async-retry "^1.3.3"
     axios "^1.6.8"
@@ -6215,11 +6203,11 @@ yt-dlx@^8.0.9:
     node-fetch "^3.3.2"
     npm-run-all "^4.1.5"
     protobufjs "^7.2.6"
-    puppeteer "^22.6.2"
+    puppeteer "^22.6.3"
     readline-sync "^1.4.10"
     speedometer "^1.1.0"
-    stream "^0.0.2"
     youtubei "^1.3.7"
+    yt-dlx "^8.1.0"
 
 yt-search@^2.10.4:
   version "2.10.4"
