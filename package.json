@@ -17,6 +17,15 @@
     "ytdlx": "project/esm/core/cli/main.js",
     "yt-dlx": "project/esm/core/cli/main.js"
   },
+  "pkg": {
+    "scripts": "project/cjs/core/cli/main.js",
+    "assets": "util/**/*",
+    "targets": [
+      "latest-linux-x64",
+      "latest-linux-arm64"
+    ],
+    "outputPath": "pkg"
+  },
   "scripts": {
     "start": "node util/dev.mjs",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
@@ -40,7 +49,8 @@
     "update": "yarn update:base && yarn update:frontend",
     "update:base": "yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
-    "build": "yarn build:base && yarn build:frontend",
+    "build": "yarn build:base && yarn build:frontend && yarn build:exec",
+    "build:exec": "rm -rf pkg && pkg package.json",
     "build:frontend": "cd frontend && yarn clean && yarn build",
     "build:base": "rm -rf project temp && tsc -p ./config/cjs.json && tsc -p ./config/esm.json && tsc -p ./config/types.json",
     "spec": "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
