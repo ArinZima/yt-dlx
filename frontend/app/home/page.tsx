@@ -3,8 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { TiPlus } from "react-icons/ti";
 import { FaLink } from "react-icons/fa6";
-import { IoVideocam } from "react-icons/io5";
-import { MdAudiotrack } from "react-icons/md";
+import { useState, useEffect } from "react";
 import { LuSearchCode } from "react-icons/lu";
 import { FaAddressCard } from "react-icons/fa6";
 import { MdPermIdentity } from "react-icons/md";
@@ -12,17 +11,15 @@ import { TbDiamondFilled } from "react-icons/tb";
 import { MdFamilyRestroom } from "react-icons/md";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaAngleDoubleDown } from "react-icons/fa";
-import { useState, useEffect, useRef } from "react";
-import { searchVideosType } from "yt-dlx/dist/types/web";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 export default function Component() {
   const QueryClient = useQueryClient();
+  const [Tube, setTube] = useState<any>(null);
   const [Query, setQuery] = useState<string>("");
-  const [Tube, setTube] = useState<searchVideosType | any>(null);
-  const [TubeSearch, setTubeSearch] = useState<searchVideosType | any>(null);
+  const [TubeSearch, setTubeSearch] = useState<any>(null);
   const [GeneralError, setGeneralError] = useState<string | any>(null);
 
   const ApiSearch = useMutation({
