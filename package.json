@@ -40,7 +40,7 @@
     "update": "yarn update:base && yarn update:frontend",
     "update:base": "yarn upgrade --latest",
     "update:frontend": "cd frontend && yarn upgrade --latest",
-    "build": "yarn build:base && yarn build:frontend && yarn build:exec",
+    "build": "yarn build:base && yarn build:frontend",
     "build:frontend": "cd frontend && yarn clean && yarn build",
     "build:base": "rm -rf project temp && tsc -p ./config/cjs.json && tsc -p ./config/esm.json && tsc -p ./config/types.json",
     "spec": "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
