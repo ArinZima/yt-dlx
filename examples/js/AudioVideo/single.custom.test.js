@@ -20,7 +20,7 @@ const colors = require("colors");
       "12000p",
     ];
     for (const resolution of resolutions) {
-      await YouTube.AudioVideo.Single.Custom({
+      await YouTube.default.AudioVideo.Single.Custom({
         resolution,
         stream: false,
         verbose: true,
@@ -55,7 +55,7 @@ const fs = require("fs");
       "12000p",
     ];
     for (const resolution of resolutions) {
-      const result = await YouTube.AudioVideo.Single.Custom({
+      const result = await YouTube.default.AudioVideo.Single.Custom({
         resolution,
         stream: true,
         verbose: true,
@@ -91,7 +91,7 @@ const express = require("express");
           res.status(404).send("Invalid resolution parameter");
           return;
         }
-        const result = await YouTube.AudioVideo.Single.Custom({
+        const result = await YouTube.default.AudioVideo.Single.Custom({
           stream: true,
           verbose: true,
           onionTor: false,

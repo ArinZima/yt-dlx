@@ -1,10 +1,10 @@
 // =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
 //
-import ytdlx from "../..";
 import colors from "colors";
+import YouTube from "yt-dlx";
 (async () => {
   try {
-    await ytdlx.AudioOnly.Single.Highest({
+    await YouTube.default.AudioOnly.Single.Highest({
       stream: false,
       verbose: true,
       onionTor: false,
@@ -21,7 +21,7 @@ import colors from "colors";
 import * as fs from "fs";
 (async () => {
   try {
-    const result = await ytdlx.AudioOnly.Single.Highest({
+    const result = await YouTube.default.AudioOnly.Single.Highest({
       stream: true,
       verbose: true,
       onionTor: false,
@@ -49,7 +49,7 @@ import express from "express";
     server.get("/audio/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await ytdlx.AudioOnly.Single.Highest({
+        const result = await YouTube.default.AudioOnly.Single.Highest({
           stream: true,
           verbose: true,
           onionTor: false,

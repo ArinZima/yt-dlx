@@ -4,7 +4,7 @@ const YouTube = require("yt-dlx");
 const colors = require("colors");
 (async () => {
   try {
-    await YouTube.AudioVideo.Single.Lowest({
+    await YouTube.default.AudioVideo.Single.Lowest({
       stream: false,
       verbose: true,
       onionTor: false,
@@ -21,7 +21,7 @@ const colors = require("colors");
 const fs = require("fs");
 (async () => {
   try {
-    const result = await YouTube.AudioVideo.Single.Lowest({
+    const result = await YouTube.default.AudioVideo.Single.Lowest({
       stream: true,
       verbose: true,
       onionTor: false,
@@ -49,7 +49,7 @@ const express = require("express");
     server.get("/mix/:query", async (req, res) => {
       try {
         const queryParam = req.params.query;
-        const result = await YouTube.AudioVideo.Single.Lowest({
+        const result = await YouTube.default.AudioVideo.Single.Lowest({
           stream: true,
           verbose: true,
           onionTor: false,
