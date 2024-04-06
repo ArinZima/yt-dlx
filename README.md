@@ -14,6 +14,15 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/yt-dlx/yt-dlx)
 ![GitHub last commit](https://img.shields.io/github/last-commit/yt-dlx/yt-dlx)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yt-dlx/yt-dlx)
+![GitHub license](https://img.shields.io/github/license/yt-dlx/yt-dlx)
+![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/yt-dlx/yt-dlx)
+![GitHub pull requests closed](https://img.shields.io/github/issues-pr-closed-raw/yt-dlx/yt-dlx)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/yt-dlx/yt-dlx)
+![GitHub repo size](https://img.shields.io/github/repo-size/yt-dlx/yt-dlx)
+![GitHub issues by-label](https://img.shields.io/github/issues/yt-dlx/yt-dlx/bug)
+![GitHub pull requests by-label](https://img.shields.io/github/issues-pr/yt-dlx/yt-dlx/feature)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/yt-dlx/yt-dlx)
+![GitHub All Releases](https://img.shields.io/github/downloads/yt-dlx/yt-dlx/total)
 
 ## Overview 🌟
 
