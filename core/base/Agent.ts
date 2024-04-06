@@ -1,11 +1,10 @@
-import colors from "colors";
-
-import { version } from "../../package.json";
 import web from "../web";
-import YouTubeID from "../web/YouTubeId";
+import colors from "colors";
 import Engine from "./Engine";
-import type { EngineOutput } from "./Engine";
 import niptor from "./niptor";
+import YouTubeID from "../web/YouTubeId";
+import type { EngineOutput } from "./Engine";
+import { version } from "../../package.json";
 
 export default async function Agent({
   query,

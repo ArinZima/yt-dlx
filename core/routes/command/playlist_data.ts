@@ -1,7 +1,6 @@
 import colors from "colors";
-
-import web, { playlistVideosType } from "../../web";
 import YouTubeID from "../../web/YouTubeId";
+import web, { playlistVideosType } from "../../web";
 
 /**
  * Extracts metadata for videos in a YouTube playlist.
@@ -11,17 +10,17 @@ import YouTubeID from "../../web/YouTubeId";
  * @throws An error if the playlist link is incorrect or if unable to get a response.
  */
 export default async function playlist_data({
-	query,
+  query,
 }: {
-	query: string;
+  query: string;
 }): Promise<playlistVideosType> {
-	const playlistId = await YouTubeID(query);
-	if (!playlistId) {
-		throw new Error(colors.red("@error: ") + "incorrect playlist link");
-	} else {
-		const metaData = await web.browserLess.playlistVideos({ playlistId });
-		if (!metaData) {
-			throw new Error(colors.red("@error: ") + "Unable to get response!");
-		} else return metaData;
-	}
+  const playlistId = await YouTubeID(query);
+  if (!playlistId) {
+    throw new Error(colors.red("@error: ") + "incorrect playlist link");
+  } else {
+    const metaData = await web.browserLess.playlistVideos({ playlistId });
+    if (!metaData) {
+      throw new Error(colors.red("@error: ") + "Unable to get response!");
+    } else return metaData;
+  }
 }

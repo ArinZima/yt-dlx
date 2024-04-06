@@ -1,17 +1,17 @@
 import colors from "colors";
 
 export default function help(): Promise<string> {
-	console.log(
-		colors.green("@info:"),
-		"❣️ Thank you for using",
-		colors.green("yt-dlx."),
-		"Consider",
-		colors.green("🌟starring"),
-		"the github repo",
-		colors.green("https://github.com/yt-dlx\n"),
-	);
-	return Promise.resolve(
-		colors.bold.white(`
+  console.log(
+    colors.green("@info:"),
+    "❣️ Thank you for using",
+    colors.green("yt-dlx."),
+    "Consider",
+    colors.green("🌟starring"),
+    "the github repo",
+    colors.green("https://github.com/yt-dlx\n")
+  );
+  return Promise.resolve(
+    colors.bold.white(`
 ✕─────────────────────────────────────────────────────────────────────────────────────────────────────────────✕
 ┃                                     YOUTUBE DOWNLOADER DLX <( YT-DLX /)>                                   ┃
 ┃                                            (License: MIT)                                                    ┃
@@ -136,6 +136,6 @@ export default function help(): Promise<string> {
 ┃                                                                                                              ┃
 ┃                               Supports both async/await and promise.then()                                   ┃
 ┃                   Full support for CommonJS (CJS), ECMAScript (ESM), and TypeScript (TS)                     ┃
-✕─────────────────────────────────────────────────────────────────────────────────────────────────────────────✕`),
-	);
+✕─────────────────────────────────────────────────────────────────────────────────────────────────────────────✕`)
+  );
 }

@@ -266,7 +266,7 @@ export default function AwesomePackage() {
                 <thead>
                   <tr>
                     <th className="text-red-600 text-lg">Function Category</th>
-                    <th className="text-red-600 text-lg">Function Name</th>
+                    <th className="text-red-600 text-lg">Function Call</th>
                     <th className="text-red-600 text-lg">Brief Description</th>
                     <th className="text-red-600 text-lg">Usage & Examples</th>
                   </tr>
@@ -280,7 +280,7 @@ export default function AwesomePackage() {
                       />
                       Audio Only
                     </td>
-                    <td>AudioHighest</td>
+                    <td>Audio.Single.Highest</td>
                     <td>
                       Downloads and processes the highest quality audio from a
                       single YouTube video.
@@ -297,7 +297,7 @@ export default function AwesomePackage() {
                       />
                       Audio Only
                     </td>
-                    <td>AudioLowest</td>
+                    <td>Audio.Single.Lowest</td>
                     <td>
                       Downloads and processes the lowest quality audio from a
                       single YouTube video.
@@ -314,7 +314,7 @@ export default function AwesomePackage() {
                       />
                       Audio Only
                     </td>
-                    <td>AudioCustom</td>
+                    <td>Audio.Single.Custom</td>
                     <td>
                       Downloads and processes a single YouTube video with audio
                       customization options.
@@ -332,7 +332,7 @@ export default function AwesomePackage() {
                       />
                       Video Only
                     </td>
-                    <td>VideoHighest</td>
+                    <td>Video.Single.Highest</td>
                     <td>
                       Downloads the highest quality version of a YouTube video
                       with optional video filter.
@@ -349,7 +349,7 @@ export default function AwesomePackage() {
                       />
                       Video Only
                     </td>
-                    <td>VideoLowest</td>
+                    <td>Video.Single.Lowest</td>
                     <td>
                       Downloads the lowest quality version of a YouTube video
                       with optional video filter.
@@ -366,7 +366,7 @@ export default function AwesomePackage() {
                       />
                       Video Only
                     </td>
-                    <td>VideoCustom</td>
+                    <td>Video.Single.Custom</td>
                     <td>
                       Downloads a YouTube video with custom resolution and
                       optional video filter.
@@ -384,7 +384,7 @@ export default function AwesomePackage() {
                       />
                       Audio Video
                     </td>
-                    <td>AudioVideoHighest</td>
+                    <td>AudioVideo.Single.Highest</td>
                     <td>
                       Downloads audio and video from a YouTube video URL with
                       the highest available resolution.
@@ -401,7 +401,7 @@ export default function AwesomePackage() {
                       />
                       Audio Video
                     </td>
-                    <td>AudioVideoLowest</td>
+                    <td>AudioVideo.Single.Lowest</td>
                     <td>
                       Downloads audio and video from a YouTube video URL with
                       the lowest available resolution.
@@ -418,7 +418,7 @@ export default function AwesomePackage() {
                       />
                       Audio Video
                     </td>
-                    <td>AudioVideoCustom</td>
+                    <td>AudioVideo.Single.Custom</td>
                     <td>
                       Downloads audio and video from a YouTube video URL with
                       customizable options such as resolution and filters.
