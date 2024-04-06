@@ -101,7 +101,7 @@ export default async function VideoCustom({
           )} no audio data found. use list_formats() maybe?`
         );
       }
-      ff.outputOptions("-c copy");
+      ff.videoCodec("copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       switch (filter) {

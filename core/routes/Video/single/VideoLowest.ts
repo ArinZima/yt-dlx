@@ -72,7 +72,7 @@ export default async function VideoLowest({
       const ff: FfmpegCommand = ffmpeg();
       const vdata = engineData.ManifestLow[0].url;
       ff.addInput(vdata.toString());
-      ff.outputOptions("-c copy");
+      ff.videoCodec("copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       let filename: string = "yt-dlx_(VideoLowest_";

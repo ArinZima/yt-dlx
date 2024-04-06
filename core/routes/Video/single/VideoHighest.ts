@@ -73,7 +73,7 @@ export default async function VideoHighest({
       const vdata =
         engineData.ManifestHigh[engineData.ManifestHigh.length - 1].url;
       ff.addInput(vdata.toString());
-      ff.outputOptions("-c copy");
+      ff.videoCodec("copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       let filename: string = "yt-dlx_(VideoHighest_";

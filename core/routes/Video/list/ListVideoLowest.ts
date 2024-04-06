@@ -115,7 +115,7 @@ export default async function ListVideoLowest({
         const ff: FfmpegCommand = ffmpeg();
         const vdata = engineData.ManifestLow[0].url;
         ff.addInput(vdata.toString());
-        ff.outputOptions("-c copy");
+        ff.videoCodec("copy");
         ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
         ff.withOutputFormat("matroska");
         switch (filter) {

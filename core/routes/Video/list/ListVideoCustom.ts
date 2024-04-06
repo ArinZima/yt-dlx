@@ -141,7 +141,7 @@ export default async function ListVideoCustom({
             colors.red("@error: ") +
               "no video data found. use list_formats() maybe?"
           );
-        ff.outputOptions("-c copy");
+        ff.videoCodec("copy");
         ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
         ff.withOutputFormat("matroska");
         switch (filter) {

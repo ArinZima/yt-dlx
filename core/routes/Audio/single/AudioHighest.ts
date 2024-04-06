@@ -75,7 +75,6 @@ export default async function AudioHighest({
       const ff: FfmpegCommand = ffmpeg();
       ff.addInput(engineData.AudioHighF.url);
       ff.addInput(engineData.metaData.thumbnail);
-      ff.outputOptions("-c copy");
       ff.withOutputFormat("avi");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       switch (filter) {

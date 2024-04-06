@@ -96,7 +96,6 @@ export default async function AudioCustom({
         );
       }
       ff.addInput(engineData.metaData.thumbnail);
-      ff.outputOptions("-c copy");
       ff.withOutputFormat("avi");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
       switch (filter) {
