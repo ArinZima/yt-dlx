@@ -18,8 +18,8 @@ RUN apt-get update \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm i -g yarn yt-dlx --force
+RUN npm i -g pnpm yt-dlx --force
 WORKDIR /app
 COPY . .
-RUN yarn remake
-CMD yarn frontend:start
+RUN pnpm remake
+CMD pnpm frontend:start
