@@ -21,7 +21,9 @@
     "scripts": "dist/cjs/**/*.js",
     "assets": "util/**/*",
     "targets": [
-      "node18-linux-arm64"
+      "latest-linux-arm64",
+      "latest-macos-x64",
+      "latest-win-x64"
     ],
     "outputPath": "out"
   },
@@ -29,7 +31,6 @@
     "start": "node util/dev.mjs",
     "remake": "yarn clean && yarn make && yarn update && yarn build",
     "postinstall": "run-s download-files setup-permissions install-chrome",
-    "pkg": "pkg --target node18-linux-x64,node18-macos-x64,node18-win-x64 dist/cjs/core/index.js",
     "prepublishOnly": "yarn clean:deps",
     "setup-permissions": "chmod -R +x util/*",
     "download-files": "node util/cprobe.mjs",
