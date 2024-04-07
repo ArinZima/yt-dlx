@@ -9,6 +9,7 @@ import { MdAudioFile } from "react-icons/md";
 import { FaLightbulb } from "react-icons/fa";
 import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
+import FootPackage from "@/pages/components/foot";
 import { SiFirefoxbrowser } from "react-icons/si";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -35,12 +36,13 @@ export default function AwesomePackage() {
     onError: (error) => setGeneralError(error.message),
     onMutate: () => console.log("ApiSearch started!"),
   });
-
-  return (
-    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
-      <NavPackage />
-      {/* ======================================================[ Introduction ]======================================================= */}
-      <section className="flex flex-col items-center justify-center mt-20">
+  // ======================================================[ XOX ]=======================================================
+  const Introduction = () => {
+    return (
+      <section
+        id="Introduction"
+        className="flex flex-col items-center justify-center mt-20"
+      >
         <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">
           <article className="space-y-8">
             <div className="space-y-6">
@@ -107,8 +109,14 @@ export default function AwesomePackage() {
           </div>
         </div>
       </section>
-      {/* ======================================================[ PLAYGROUND ]======================================================= */}
-      <section className="flex flex-col items-center justify-center">
+    );
+  };
+  const Playground = () => {
+    return (
+      <section
+        id="Playground"
+        className="flex flex-col items-center justify-center"
+      >
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
@@ -271,8 +279,14 @@ export default function AwesomePackage() {
           </section>
         </div>
       </section>
-      {/* ======================================================[ Documentation ]======================================================= */}
-      <section className="flex flex-col items-center justify-center">
+    );
+  };
+  const Documentation = () => {
+    return (
+      <section
+        id="Documentation"
+        className="flex flex-col items-center justify-center"
+      >
         <div className="max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-screen-2xl">
             <h2 className="text-3xl font-bold sm:text-4xl text-red-600">
@@ -624,16 +638,16 @@ export default function AwesomePackage() {
           </div>
         </div>
       </section>
-      {/* ======================================================[ Footer ]======================================================= */}
-      <footer className="pt-20 pb-6 flex flex-wrap items-baseline justify-center">
-        <span className="text-[#e73d75] text-3xl mr-2">
-          Mixly <span className="text-[#C4C4C4] text-lg">&</span>{" "}
-          <span className="text-red-600">Yt-Dlx</span>
-        </span>
-        <span className="mt-2 text-sm font-light text-[#C4C4C4]">
-          Copyright © 2024
-        </span>
-      </footer>
+    );
+  };
+  // ======================================================[ XOX ]=======================================================
+  return (
+    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
+      <NavPackage />
+      <Introduction />
+      <Playground />
+      <Documentation />
+      <FootPackage />
     </main>
   );
 }
