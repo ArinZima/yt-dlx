@@ -1,10 +1,10 @@
-// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
+// =============================[ EXAMPLE CODE ]=============================
+//
 const YouTube = require("yt-dlx");
 const colors = require("colors");
 
 (async () => {
   try {
-    console.log(colors.blue("@test:"), "List Formats");
     await YouTube.default.info.list_formats({
       verbose: true,
       onionTor: true,

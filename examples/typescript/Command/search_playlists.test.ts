@@ -1,10 +1,10 @@
-// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
+// =============================[ EXAMPLE CODE ]=============================
+//
 import YouTube from "yt-dlx";
 import colors from "colors";
 
 (async () => {
   try {
-    console.log(colors.blue("@test:"), "ytSearch playlist multiple");
     const result = await YouTube.ytSearch.Playlist.Multiple({
       query: "8k dolby nature",
     });
@@ -13,3 +13,5 @@ import colors from "colors";
     console.error(colors.red(error.message));
   }
 })();
+//
+// =============================[ EXAMPLE CODE ]=============================

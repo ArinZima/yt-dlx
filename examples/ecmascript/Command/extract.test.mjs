@@ -1,9 +1,10 @@
+// =============================[ EXAMPLE CODE ]=============================
+//
 import YouTube from "yt-dlx";
 import colors from "colors";
 
 (async () => {
   try {
-    console.log(colors.blue("@test:"), "Extract");
     await YouTube.default.info.extract({
       verbose: true,
       onionTor: true,
@@ -13,3 +14,5 @@ import colors from "colors";
     console.error(colors.red(error.message));
   }
 })();
+//
+// =============================[ EXAMPLE CODE ]=============================

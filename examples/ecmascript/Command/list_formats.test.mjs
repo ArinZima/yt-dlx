@@ -1,9 +1,10 @@
+// =============================[ EXAMPLE CODE ]=============================
+//
 import YouTube from "yt-dlx";
 import colors from "colors";
 
 (async () => {
   try {
-    console.log(colors.blue("@test:"), "List Formats");
     await YouTube.default.info.list_formats({
       verbose: true,
       onionTor: true,
@@ -13,3 +14,5 @@ import colors from "colors";
     console.error(colors.red(error.message));
   }
 })();
+//
+// =============================[ EXAMPLE CODE ]=============================

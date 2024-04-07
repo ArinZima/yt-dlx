@@ -1,16 +1,17 @@
-// =============================[ USING YT-DLX'S DOWNLOAD MACHANISM ]=============================
+// =============================[ EXAMPLE CODE ]=============================
+//
 import YouTube from "yt-dlx";
 import colors from "colors";
 
 (async () => {
   try {
-    console.log(colors.blue("@test:"), "ytSearch playlist single");
     const result = await YouTube.ytSearch.Playlist.Single({
-      query:
-        "https://youtube.com/playlist?list=PL06diOotXAJLAAHBY7kIUm5GQwm2ZinOz&si=raalOwdBLBtmJ9s5",
+      query: "playlist-LINK/ID",
     });
     console.log(result);
   } catch (error: any) {
     console.error(colors.red(error.message));
   }
 })();
+//
+// =============================[ EXAMPLE CODE ]=============================
