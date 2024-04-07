@@ -123,7 +123,7 @@ export default function Component() {
             >
               <label className="form-control w-full max-w-4xl">
                 <div className="label gap-12">
-                  <span className="label-text text-[#C4C4C4] flex items-center gap-2">
+                  <span className="label-text text-[#020101] flex items-center gap-2">
                     <MdDriveFileRenameOutline
                       className="text-pink-600"
                       size={20}
