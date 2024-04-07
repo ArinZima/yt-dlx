@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import { RiHome5Fill } from "react-icons/ri";
 

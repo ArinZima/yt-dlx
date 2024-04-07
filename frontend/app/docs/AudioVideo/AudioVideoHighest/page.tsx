@@ -1,4 +1,3 @@
-"use client";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";

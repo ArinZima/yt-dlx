@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
