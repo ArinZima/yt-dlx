@@ -78,7 +78,7 @@
     "readline-sync": "^1.4.10",
     "speedometer": "^1.1.0",
     "youtubei": "^1.4.0",
-    "yt-dlx": "^8.1.0"
+    "yt-dlx": "^8.1.1"
   },
   "devDependencies": {
     "@types/async": "^3.2.24",
