@@ -5,6 +5,7 @@ import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
 import { MdAudioFile } from "react-icons/md";
+import { FaLightbulb } from "react-icons/fa";
 import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
 import { SiFirefoxbrowser } from "react-icons/si";
@@ -384,6 +385,45 @@ export default function AwesomePackage() {
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
                       <Link
                         href="/docs/Command/search_playlist"
+                        className="font-bold"
+                      >
+                        click here!
+                      </Link>
+                    </td>
+                  </tr>
+                  {/* ========================[ INFO GATHERER ]======================== */}
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <FaLightbulb
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Info Gatherer
+                    </td>
+                    <td>info.extract</td>
+                    <td>Extracts metadata information from a YouTube video.</td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      <Link href="/docs/Command/extract" className="font-bold">
+                        click here!
+                      </Link>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-red-600/20">
+                    <td className="flex items-center justify-center gap-2">
+                      <FaLightbulb
+                        size={20}
+                        className="text-red-600 animate-pulse"
+                      />
+                      Info Gatherer
+                    </td>
+                    <td>info.list_formats</td>
+                    <td>
+                      Lists the available formats and manifest information for a
+                      YouTube video.
+                    </td>
+                    <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
+                      <Link
+                        href="/docs/Command/list_formats"
                         className="font-bold"
                       >
                         click here!
