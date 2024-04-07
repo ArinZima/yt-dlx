@@ -25,8 +25,8 @@ const AspireDemibold = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Mixly",
-  description: "Ultimate Music Streamer and Downloader",
+  title: "yt-dlx",
+  description: "Effortless Audio-Video Downloader And Streamer!",
 };
 
 export default function RootLayout({
