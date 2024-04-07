@@ -1,6 +1,6 @@
 {
   "name": "yt-dlx",
-  "version": "8.1.1",
+  "version": "8.2.0",
   "license": "Apache-2.0",
   "main": "project/cjs/core/index.js",
   "types": "project/types/index.d.ts",
@@ -78,7 +78,7 @@
     "readline-sync": "^1.4.10",
     "speedometer": "^1.1.0",
     "youtubei": "^1.4.0",
-    "yt-dlx": "^8.1.1"
+    "yt-dlx": "^8.2.0"
   },
   "devDependencies": {
     "@types/async": "^3.2.24",
@@ -97,7 +97,6 @@
     "jest-extended": "^4.0.2",
     "ts-node": "^10.9.2",
     "tsc": "^2.0.4",
-    "tsup": "^8.1.1",
     "typescript": "^5.4.4"
   },
   "keywords": [
