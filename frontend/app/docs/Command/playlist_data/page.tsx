@@ -207,7 +207,7 @@ export default function AwesomePackage({ param }: any) {
           <span className="text-red-600">Yt-Dlx</span>
         </span>
         <span className="mt-2 text-sm font-light text-[#C4C4C4]">
-          Copyright © 2023
+          Copyright © 2024
         </span>
       </footer>
     </main>
