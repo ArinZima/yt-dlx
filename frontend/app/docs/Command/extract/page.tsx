@@ -88,41 +88,19 @@ export default function AwesomePackage({ param }: any) {
               compatibility and comprehensive type safety coverage.
             </p>
             <ul className="list-disc m-4 bg-neutral-800/40 shadow-black shadow-2xl p-8 rounded-3xl border border-dashed border-red-600">
-              <li>
-                Downloads and processes a single YouTube video with audio
-                customization options.
-              </li>
+              <li>Extracts metadata information from a YouTube video.</li>
               <li>@param query - The YouTube video URL or ID or name.</li>
-              <li>
-                @param output - (optional) The output directory for the
-                processed file.
-              </li>
-              <li>
-                @param stream - (optional) Whether to stream the processed video
-                or not.
-              </li>
-              <li>
-                @param filter - (optional) The audio filter to apply. Available
-                options: echo, slow, speed, phaser, flanger, panning, reverse,
-                vibrato, subboost, surround, bassboost, nightcore, superslow,
-                vaporwave, superspeed.
-              </li>
               <li>
                 @param verbose - (optional) Whether to log verbose output or
                 not.
               </li>
               <li>
-                @param onionTor - (optional) Whether to use Tor for the download
-                or not.
+                @param onionTor - (optional) Whether to use Tor for the
+                extraction or not.
               </li>
               <li>
-                @param resolution - The desired audio resolution. Available
-                options: high, medium, low, ultralow.
-              </li>
-              <li>
-                @returns A Promise that resolves with either `void` (if `stream`
-                is false) or an object containing the `ffmpeg` instance and the
-                output filename (if `stream` is true).
+                @returns A Promise that resolves with an object containing
+                metadata information about the video.
               </li>
             </ul>
             <section className="relative items-center w-full px-5 py-12 mx-auto md:px-12 lg:px-24 max-w-7xl">
@@ -150,7 +128,7 @@ export default function AwesomePackage({ param }: any) {
                     </p>
                     <div className="mt-6">
                       <a
-                        href="https://github.com/yt-dlx/yt-dlx/blob/main/examples/typescript/Audio/single.custom.test.ts"
+                        href="https://github.com/yt-dlx/yt-dlx/blob/main/examples/typescript/Command/extract.test.ts"
                         className="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform bg-red-900 rounded-xl hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                       >
                         View profile
@@ -181,7 +159,7 @@ export default function AwesomePackage({ param }: any) {
                     </p>
                     <div className="mt-6">
                       <a
-                        href="https://github.com/yt-dlx/yt-dlx/blob/main/examples/javascript/Audio/single.custom.test.js"
+                        href="https://github.com/yt-dlx/yt-dlx/blob/main/examples/javascript/Command/extract.test.js"
                         className="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform bg-red-900 rounded-xl hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                       >
                         View profile
@@ -212,7 +190,7 @@ export default function AwesomePackage({ param }: any) {
                     </p>
                     <div className="mt-6">
                       <a
-                        href="https://github.com/yt-dlx/yt-dlx/blob/main/examples/ecmascript/Audio/single.custom.test.mjs"
+                        href="https://github.com/yt-dlx/yt-dlx/blob/main/examples/ecmascript/Command/extract.test.mjs"
                         className="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform bg-red-900 rounded-xl hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                       >
                         View profile
