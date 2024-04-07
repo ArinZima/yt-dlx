@@ -325,8 +325,11 @@ export default function AwesomePackage() {
                       ID or link.
                     </td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      <Link href="/docs/" className="font-bold">
-                        docs coming soon!
+                      <Link
+                        href="/docs/Command/video_data"
+                        className="font-bold"
+                      >
+                        click here!
                       </Link>
                     </td>
                   </tr>
@@ -341,8 +344,11 @@ export default function AwesomePackage() {
                     <td>Video.Multiple</td>
                     <td>Searches for YouTube videos based on the query.</td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      <Link href="/docs/" className="font-bold">
-                        docs coming soon!
+                      <Link
+                        href="/docs/Command/search_videos"
+                        className="font-bold"
+                      >
+                        click here!
                       </Link>
                     </td>
                   </tr>
@@ -357,8 +363,11 @@ export default function AwesomePackage() {
                     <td>Playlist.Single</td>
                     <td>Extracts metadata for videos in a YouTube playlist.</td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      <Link href="/docs/" className="font-bold">
-                        docs coming soon!
+                      <Link
+                        href="/docs/Command/playlist_data"
+                        className="font-bold"
+                      >
+                        click here!
                       </Link>
                     </td>
                   </tr>
@@ -373,8 +382,11 @@ export default function AwesomePackage() {
                     <td>Playlist.Multiple</td>
                     <td>Searches for YouTube playlists based on the query.</td>
                     <td className="cursor-pointer hover:bg-red-800 hover:animate-pulse rounded-r-3xl text-white">
-                      <Link href="/docs/" className="font-bold">
-                        docs coming soon!
+                      <Link
+                        href="/docs/Command/search_playlist"
+                        className="font-bold"
+                      >
+                        click here!
                       </Link>
                     </td>
                   </tr>
