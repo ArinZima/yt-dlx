@@ -153,8 +153,8 @@ var Playground = () => {
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
-                    setSimilar([]);
                     setTubeSearch(null);
+                    setSimilar([]);
                     ApiSearch.mutate();
                   }}
                   className="pb-1 space-y-4"
