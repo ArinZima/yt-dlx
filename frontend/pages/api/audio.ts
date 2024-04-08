@@ -20,7 +20,8 @@ export default async function handler(
         "Content-Disposition",
         `attachment; filename="${result.filename}"`
       );
-      result.ffmpeg.pipe(res, { end: true });
+      if (!res.writableEnded) result.ffmpeg.pipe(res, { end: true });
+      else console.error("@error: no res so cannot pipe.");
     } else return res.status(400).send("@error: try again!");
   } catch (error: any) {
     return res.status(500).send("@error: " + error.message);

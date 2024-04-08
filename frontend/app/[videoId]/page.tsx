@@ -107,25 +107,6 @@ export default function home() {
     );
   };
 
-  const handleDownload = async (videoId: string) => {
-    try {
-      const response = await fetch(`/api/audio?videoId=${videoId}`);
-      if (response.ok) {
-        const filename = "audio.mp3";
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      } else console.error("Error downloading audio");
-    } catch (error) {
-      console.error("Error downloading audio:", error);
-    }
-  };
-
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
       <NavPackage />
@@ -240,8 +221,9 @@ export default function home() {
                         </button>
                       </div>
                       <p className="mt-6 text-xs text-red-600 items-center justify-center flex font-bold">
-                        Everything Is Provided Free Of Cost To You With The
-                        Power Of Yt-Dlx Copyright © 2024
+                        Effortless Audio-Video Downloading And Streaming Is
+                        Provided Free Of Cost To You With The Power Of Yt-Dlx
+                        Copyright © 2024
                       </p>
                     </div>
                   </section>
