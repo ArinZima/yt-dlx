@@ -193,8 +193,7 @@ export default function home() {
                     <div className="mt-8">
                       <div className="mt-4 space-y-2 -mx-2">
                         <button
-                          onClick={(event) => {
-                            event.preventDefault();
+                          onClick={() => {
                             window.location.href = `/api/audio?videoId=${videoId}`;
                           }}
                           className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer"
@@ -202,8 +201,7 @@ export default function home() {
                           Get it as 'Audio Only'
                         </button>
                         <button
-                          onClick={(event) => {
-                            event.preventDefault();
+                          onClick={() => {
                             window.location.href = `/api/video?videoId=${videoId}`;
                           }}
                           className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer"
@@ -211,8 +209,7 @@ export default function home() {
                           Get it as 'Video Only'
                         </button>
                         <button
-                          onClick={(event) => {
-                            event.preventDefault();
+                          onClick={() => {
                             window.location.href = `/api/audio_video?videoId=${videoId}`;
                           }}
                           className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer"
