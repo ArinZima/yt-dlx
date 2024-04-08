@@ -94,7 +94,6 @@ var Playground = () => {
   var QueryClient = useQueryClient();
   var [Query, setQuery] = react.useState<string>("");
   var [TubeSearch, setTubeSearch] = react.useState<any>(null);
-  // var [GeneralError, setGeneralError] = react.useState<string | any>(null);
   var ApiSearch = useMutation({
     mutationFn: async () => {
       var resp = await fetch("/api/search", {
@@ -107,16 +106,13 @@ var Playground = () => {
         }),
       });
       if (resp.status === 200) setTubeSearch(await resp.json());
-      // else setGeneralError("Error fetching SearchData ...");
     },
-    // onError: (error) => setGeneralError(error.message),
     onMutate: () => console.log("ApiSearch started!"),
   });
-
   var [similar, setSimilar] = react.useState<string[]>([]);
   var [socket, setSocket] = react.useState<socketIO.Socket>();
   react.useEffect(() => {
-    fetch("/ioSocket").finally(() => {
+    fetch("/api/ioSocket").finally(() => {
       var ioSocket = io();
       var getSimilar = (data: string[]) => setSimilar(data);
       ioSocket.on("similar", getSimilar);
@@ -157,6 +153,7 @@ var Playground = () => {
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
+                    setSimilar([]);
                     setTubeSearch(null);
                     ApiSearch.mutate();
                   }}
@@ -179,7 +176,7 @@ var Playground = () => {
                       disabled={ApiSearch.isPending}
                       onChange={(e) => {
                         setQuery(e.target.value);
-                        socket?.emit("msg[Req]", {
+                        socket?.emit("similar", {
                           query: e.target.value,
                           user: socket.id,
                         });
@@ -204,13 +201,21 @@ var Playground = () => {
                   </button>
                 </form>
               </div>
-              <div className="col-span-1 lg:col-span-4">
-                <img
-                  loading="lazy"
-                  src="/yt-dlx.png"
-                  alt="3 women looking at a laptop"
-                  className="object-cover w-full h-64 min-h-full"
-                />
+              <div className="col-span-1 lg:col-span-4 p-2 m-2">
+                {similar.length > 0 ? (
+                  similar.map((data: any, index: number) => (
+                    <ul key={index} className="text-sm list-disc">
+                      <li>{data.title}</li>
+                    </ul>
+                  ))
+                ) : (
+                  <img
+                    alt="logo"
+                    loading="lazy"
+                    src="/yt-dlx.png"
+                    className="object-cover w-full h-64 min-h-full"
+                  />
+                )}
               </div>
             </section>
             {TubeSearch && (

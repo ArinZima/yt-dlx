@@ -11,23 +11,15 @@ export default function ioSocket(req: any, res: any) {
   if (!res.socket.server.io) {
     var io = new Server(res.socket.server);
     io.on("connection", (socket) => {
-      console.log(
-        chalk.green("+user[socket.io<server>]:"),
-        chalk.italic(socket.id)
-      );
       socket.on("similar", async (param) => {
         console.log(chalk.green("📢 User:"), chalk.italic(param.user));
+        console.log(param.query);
         var TubeBody = await ytdlx.ytSearch.Video.Multiple({
           query: param.query,
         });
+        console.log(TubeBody);
         if (TubeBody) io.emit("similar", TubeBody);
         else io.emit("similar", []);
-      });
-      socket.on("disconnect", () => {
-        console.log(
-          chalk.cyanBright.bold("-user[socket.io<server>]: "),
-          chalk.italic(socket.id)
-        );
       });
     });
     res.socket.server.io = io;
