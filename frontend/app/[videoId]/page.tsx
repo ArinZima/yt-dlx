@@ -108,7 +108,7 @@ export default function home() {
   };
 
   return (
-    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
+    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-gradient-to-b from-[#360404] via-[#181010] to-[#131313] scrollbar-track-[#131313] scrollbar-thumb-red-600">
       <NavPackage />
       <Introduction />
       {TubeSearch && (
