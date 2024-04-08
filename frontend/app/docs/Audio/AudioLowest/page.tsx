@@ -7,7 +7,7 @@ import FootPackage from "@/pages/components/foot";
 
 export default function AwesomePackage({ param }: any) {
   return (
-    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-gradient-to-b from-[#360404] via-[#181010] to-[#131313] scrollbar-track-[#131313] scrollbar-thumb-red-600">
+    <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-neutral-900 scrollbar-neutral-900 scrollbar-thumb-red-600">
       <NavPackage />
       <section className="flex flex-col items-center justify-center mt-20">
         <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">

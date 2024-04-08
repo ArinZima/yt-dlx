@@ -16,8 +16,8 @@ export default function ioSocket(req: any, res: any) {
         var TubeBody = await ytdlx.ytSearch.Video.Multiple({
           query: param.query,
         });
-        if (TubeBody) io.emit("similar", TubeBody);
-        else io.emit("similar", []);
+        if (TubeBody) io.to(param.user).emit("similar", TubeBody);
+        else io.to(param.user).emit("similar", []);
       });
     });
     res.socket.server.io = io;
