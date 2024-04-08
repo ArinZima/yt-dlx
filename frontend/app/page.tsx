@@ -260,12 +260,20 @@ const Playground = () => {
                                   {item.viewCount}
                                 </li>
                               </ul>
-                              <div className="flex items-left justify-left gap-2">
-                                <button className="btn bg-red-800 hover:bg-red-600 shadow-black shadow-2xl text-white font-bold btn-wide">
-                                  stream now!
-                                </button>
-                                <button className="btn bg-red-800 hover:bg-red-600 shadow-black shadow-2xl text-white font-bold btn-wide">
+                              <div className="md:flex items-left justify-left gap-2">
+                                <Link
+                                  href={`/${item}`}
+                                  className="btn bg-red-800 hover:bg-red-600 shadow-black shadow-2xl text-white font-bold btn-wide"
+                                >
                                   download!
+                                </Link>
+                                <button
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                  }}
+                                  className="btn bg-red-800 hover:bg-red-600 shadow-black shadow-2xl text-white font-bold btn-wide"
+                                >
+                                  stream!
                                 </button>
                               </div>
                             </div>
@@ -616,6 +624,67 @@ const Documentation = () => {
         </div>
       </div>
     </section>
+  );
+};
+const Accordion = () => {
+  const [activeIndex, setActiveIndex] = react.useState(null);
+  const onItemClick = (index: any) => {
+    setActiveIndex(index === activeIndex ? null : index);
+  };
+  const editClick = (event: any) => event.stopPropagation();
+  const deleteClick = (event: any) => event.stopPropagation();
+  const items = [
+    {
+      title: "Section 1",
+      content: "Content of section 1...",
+    },
+    {
+      title: "Section 2",
+      content: "Content of section 2...",
+    },
+    {
+      title: "Section 3",
+      content: "Content of section 3...",
+    },
+  ];
+  return (
+    <div className="accordion mt-20">
+      {items.map((item, index) => (
+        <div key={index} className="border-b border-gray-200">
+          <div
+            className={`accordion-title flex justify-between items-center py-3 px-4 cursor-pointer ${
+              index === activeIndex ? "bg-gray-200" : ""
+            }`}
+            onClick={() => onItemClick(index)}
+          >
+            <span>{item.title}</span>
+            {index === activeIndex && (
+              <div className="accordion-buttons flex">
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 rounded"
+                  onClick={editClick}
+                >
+                  Edit
+                </button>
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={deleteClick}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+          <div
+            className={`accordion-content py-3 px-4 ${
+              index === activeIndex ? "block" : "hidden"
+            }`}
+          >
+            {item.content}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
 
