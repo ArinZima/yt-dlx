@@ -83,7 +83,7 @@ export default async function ListAudioCustom({
           console.log(colors.red("@error: "), "@error: invalid playlist", purl);
           continue;
         } else {
-          const punique = await web.browserLess.playlistVideos({
+          const punique = await web.playlistVideos({
             playlistId,
           });
           if (punique === undefined) {
