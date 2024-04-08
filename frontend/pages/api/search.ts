@@ -15,7 +15,6 @@ export default async function handler(
       TubeBody = await ytdlx.ytSearch.Video.Single({
         query: `https://youtu.be/${videoId}`,
       });
-      console.log(TubeBody);
       if (TubeBody) return res.status(200).json(TubeBody);
       else return res.status(400).send("@error: try again!");
     } else {
