@@ -13,11 +13,9 @@ export default function ioSocket(req: any, res: any) {
     io.on("connection", (socket) => {
       socket.on("similar", async (param) => {
         console.log(chalk.green("📢 User:"), chalk.italic(param.user));
-        console.log(param.query);
         var TubeBody = await ytdlx.ytSearch.Video.Multiple({
           query: param.query,
         });
-        console.log(TubeBody);
         if (TubeBody) io.emit("similar", TubeBody);
         else io.emit("similar", []);
       });

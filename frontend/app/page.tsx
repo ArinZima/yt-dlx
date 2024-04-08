@@ -2,14 +2,12 @@
 import react from "react";
 import Link from "next/link";
 import Image from "next/image";
-import io from "socket.io-client";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
 import { FaLightbulb } from "react-icons/fa";
 import { MdAudioFile } from "react-icons/md";
-import * as socketIO from "socket.io-client";
 import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
 import FootPackage from "@/pages/components/foot";
@@ -93,7 +91,9 @@ var Introduction = () => {
 var Playground = () => {
   var QueryClient = useQueryClient();
   var [Query, setQuery] = react.useState<string>("");
+  var [similar, setSimilar] = react.useState<string[]>([]);
   var [TubeSearch, setTubeSearch] = react.useState<any>(null);
+
   var ApiSearch = useMutation({
     mutationFn: async () => {
       var resp = await fetch("/api/search", {
@@ -109,20 +109,22 @@ var Playground = () => {
     },
     onMutate: () => console.log("ApiSearch started!"),
   });
-  var [similar, setSimilar] = react.useState<string[]>([]);
-  var [socket, setSocket] = react.useState<socketIO.Socket>();
-  react.useEffect(() => {
-    fetch("/api/ioSocket").finally(() => {
-      var ioSocket = io();
-      var getSimilar = (data: string[]) => setSimilar(data);
-      ioSocket.on("similar", getSimilar);
-      setSocket(ioSocket);
-      return () => {
-        ioSocket.off("similar", getSimilar);
-        ioSocket.disconnect();
-      };
-    });
-  }, []);
+
+  var ApiSimilar = useMutation({
+    mutationFn: async (query: string) => {
+      var resp = await fetch("/api/similar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query,
+        }),
+      });
+      if (resp.status === 200) setSimilar(await resp.json());
+    },
+    onMutate: () => console.log("ApiSearch started!"),
+  });
 
   return (
     <section
@@ -153,8 +155,8 @@ var Playground = () => {
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
-                    setSimilar([]);
                     setTubeSearch(null);
+                    setSimilar([]);
                     ApiSearch.mutate();
                   }}
                   className="pb-1 space-y-4"
@@ -175,11 +177,8 @@ var Playground = () => {
                       placeholder="required"
                       disabled={ApiSearch.isPending}
                       onChange={(e) => {
+                        ApiSimilar.mutate(e.target.value);
                         setQuery(e.target.value);
-                        socket?.emit("similar", {
-                          query: e.target.value,
-                          user: socket.id,
-                        });
                       }}
                       className="input input-bordered w-full max-w-xs"
                     />
@@ -204,9 +203,18 @@ var Playground = () => {
               <div className="col-span-1 lg:col-span-4 p-2 m-2">
                 {similar.length > 0 ? (
                   similar.map((data: any, index: number) => (
-                    <ul key={index} className="text-sm list-disc">
-                      <li>{data.title}</li>
-                    </ul>
+                    <div
+                      key={index}
+                      tabIndex={index}
+                      className="collapse collapse-arrow shadow-2xl shadow-black bg-neutral-800 mb-1"
+                    >
+                      <div className="collapse-title text-sm text-red-600 font-bold">
+                        {data.title}
+                      </div>
+                      <div className="collapse-content">
+                        <p>{data.id}</p>
+                      </div>
+                    </div>
                   ))
                 ) : (
                   <img
