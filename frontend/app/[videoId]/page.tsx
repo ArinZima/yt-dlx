@@ -107,6 +107,25 @@ export default function home() {
     );
   };
 
+  const handleDownload = async (videoId: string) => {
+    try {
+      const response = await fetch(`/api/audio?videoId=${videoId}`);
+      if (response.ok) {
+        const filename = "audio.mp3";
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else console.error("Error downloading audio");
+    } catch (error) {
+      console.error("Error downloading audio:", error);
+    }
+  };
+
   return (
     <main className="overflow-x-hidden max-h-screen scrollbar-thin bg-[#1A1A1C] scrollbar-track-[#1A1A1C] scrollbar-thumb-red-600">
       <NavPackage />
@@ -133,7 +152,7 @@ export default function home() {
             <section className="flex flex-col items-center justify-center">
               <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
                 <div className="overflow-x-auto">
-                  <section className="max-w-2xl px-6 py-8 mx-auto">
+                  <section className="max-w-screen-2xl px-6 py-8 mx-auto p-4">
                     <div className="mt-8">
                       <iframe
                         allowFullScreen
@@ -141,14 +160,6 @@ export default function home() {
                         src={`https://www.youtube.com/embed/${TubeSearch.id}`}
                         className="w-full h-64 my-10 rounded-3xl md:h-80 shadow-2xl shadow-red-800"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      />
-                      <audio
-                        controls
-                        autoPlay
-                        autoFocus
-                        id="AudioStreamer"
-                        src={`/api/audio?asource=true`}
-                        className="w-full bg-[#18181b] shadow-2xl shadow-pink-600"
                       />
                       <h2 className="mt-6 text-4xl font-bold text-red-600">
                         {TubeSearch.title}
@@ -200,21 +211,33 @@ export default function home() {
                     </div>
                     <div className="mt-8">
                       <div className="mt-4 space-y-2 -mx-2">
-                        <a className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer">
-                          <span className="mx-2 font-bold">
-                            Get it as 'Audio Only'
-                          </span>
-                        </a>
-                        <a className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer">
-                          <span className="mx-2 font-bold">
-                            Get it as 'Video Only'
-                          </span>
-                        </a>
-                        <a className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer">
-                          <span className="mx-2 font-bold">
-                            Get it as 'Audio + Video'
-                          </span>
-                        </a>
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            window.location.href = `/api/audio?videoId=${videoId}`;
+                          }}
+                          className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer"
+                        >
+                          Get it as 'Audio Only'
+                        </button>
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            window.location.href = `/api/video?videoId=${videoId}`;
+                          }}
+                          className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer"
+                        >
+                          Get it as 'Video Only'
+                        </button>
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            window.location.href = `/api/audio_video?videoId=${videoId}`;
+                          }}
+                          className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm overflow-hidden text-white duration-300 bg-red-900 hover:bg-red-700 rounded-3xl shadow-black shadow-2xl hover:shadow-red-900 hover:scale-105 duration300 transition-transform sm:w-auto sm:mx-2 cursor-pointer"
+                        >
+                          Get it as 'Audio + Video'
+                        </button>
                       </div>
                       <p className="mt-6 text-xs text-red-600 items-center justify-center flex font-bold">
                         Everything Is Provided Free Of Cost To You With The
