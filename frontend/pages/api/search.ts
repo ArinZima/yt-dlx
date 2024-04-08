@@ -7,11 +7,25 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const query = await req.body.query;
-    console.log(chalk.greenBright.bold("❓ query:"), chalk.italic(query));
-    const TubeBody: any[] = await ytdlx.ytSearch.Video.Multiple({ query });
-    if (TubeBody) return res.status(200).json(TubeBody);
-    else return res.status(400).send("@error: try again!");
+    var TubeBody;
+    var query = await req.body.query;
+    var videoId = await req.body.videoId;
+    if (videoId) {
+      console.log(chalk.greenBright.bold("❓ videoId:"), chalk.italic(videoId));
+      TubeBody = await ytdlx.ytSearch.Video.Single({
+        query: `https://youtu.be/${videoId}`,
+      });
+      console.log(TubeBody);
+      if (TubeBody) return res.status(200).json(TubeBody);
+      else return res.status(400).send("@error: try again!");
+    } else {
+      console.log(chalk.greenBright.bold("❓ query:"), chalk.italic(query));
+      TubeBody = await ytdlx.ytSearch.Video.Multiple({
+        query,
+      });
+      if (TubeBody) return res.status(200).json(TubeBody);
+      else return res.status(400).send("@error: try again!");
+    }
   } catch (error: any) {
     return res.status(500).send("@error: " + error.message);
   }

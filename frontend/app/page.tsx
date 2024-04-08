@@ -10,8 +10,8 @@ import { FaLightbulb } from "react-icons/fa";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
-import { SiFirefoxbrowser } from "react-icons/si";
 import FootPackage from "@/pages/components/foot";
+import { SiFirefoxbrowser } from "react-icons/si";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
@@ -262,7 +262,7 @@ const Playground = () => {
                               </ul>
                               <div className="md:flex items-left justify-left gap-2">
                                 <Link
-                                  href={`/${item}`}
+                                  href={`/${item.id}`}
                                   className="btn bg-red-800 hover:bg-red-600 shadow-black shadow-2xl text-white font-bold btn-wide"
                                 >
                                   download!
