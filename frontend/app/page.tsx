@@ -130,7 +130,7 @@ const Playground = () => {
             coverage.
           </p>
         </div>
-        <section className="mt-8 grid grid-cols-1 gap-8 md:mt-16 hover:bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
+        <section className="mt-8 grid grid-cols-1 gap-8 md:mt-16 bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
           <div className="overflow-x-auto">
             <section className="grid grid-cols-1 gap-0 lg:grid-cols-12">
               <div className="w-full col-span-1 p-4 mx-auto mt-6 lg:col-span-8 xl:p-12 md:w-2/4">
@@ -311,7 +311,7 @@ const Documentation = () => {
           </p>
         </div>
         {/* ========================[ AUDIO ONLY ]======================== */}
-        <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 hover:bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
+        <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
           <div className="overflow-x-auto">
             <table className="table text-white/80">
               <thead>

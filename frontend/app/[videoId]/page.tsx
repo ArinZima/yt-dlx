@@ -137,14 +137,19 @@ export default function home() {
                 coverage.
               </p>
             </div>
-            <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 hover:bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
+            <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 bg-red-950/10 border-4 border-red-600 border-double rounded-3xl shadow-red-600 duration-500 shadow-2xl">
               <div className="overflow-x-auto">
                 <section className="max-w-2xl px-6 py-8 mx-auto">
                   <div className="mt-8">
-                    <img
-                      src={`TubeSearch.thumbnails[TubeSearch.thumbnails.length - 1].url`}
-                      className="object-cover w-full h-56 rounded-lg shadow-md md:h-72"
+                    <Image
+                      width={1920}
+                      height={1080}
                       alt="thumbnail"
+                      className="object-cover w-full h-56 rounded-lg shadow-md md:h-72"
+                      src={`${
+                        TubeSearch.thumbnails[TubeSearch.thumbnails.length - 1]
+                          .url
+                      }`}
                     />
                     <h2 className="mt-6 text-2xl font-medium text-red-600">
                       {TubeSearch.title}
@@ -152,14 +157,7 @@ export default function home() {
                     <p className="mt-2 leading-loose text-red-600">
                       {TubeSearch.description}
                     </p>
-
                     <ul className="mt-2 text-red-600 list-disc">
-                      <li>
-                        <span className="text-red-600 font-bold">
-                          @description:
-                        </span>{" "}
-                        {TubeSearch.description}
-                      </li>
                       <li>
                         <span className="text-red-600 font-bold">
                           @videoId:
