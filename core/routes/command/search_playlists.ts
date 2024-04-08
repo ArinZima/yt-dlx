@@ -20,7 +20,7 @@ export default async function search_playlists({
       colors.red("@error: ") + "use playlist_data() for playlist link!"
     );
   } else {
-    const metaData = await web.browserLess.searchPlaylists({ query });
+    const metaData = await web.searchPlaylists({ query });
     if (!metaData) {
       throw new Error(colors.red("@error: ") + "Unable to get response!");
     } else return metaData;

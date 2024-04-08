@@ -51,7 +51,7 @@ export default async function Agent({
   let respEngine: EngineOutput | undefined = undefined;
   let videoId: string | undefined = await YouTubeID(query);
   if (!videoId) {
-    TubeBody = await web.browserLess.searchVideos({ query });
+    TubeBody = await web.searchVideos({ query });
     if (!TubeBody[0]) throw new Error("Unable to get response!");
     console.log(
       colors.green("@info:"),
@@ -65,7 +65,7 @@ export default async function Agent({
     });
     return respEngine;
   } else {
-    TubeBody = await web.browserLess.singleVideo({ videoId });
+    TubeBody = await web.singleVideo({ videoId });
     if (!TubeBody) throw new Error("Unable to get response!");
     console.log(
       colors.green("@info:"),

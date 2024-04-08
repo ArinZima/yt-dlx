@@ -20,7 +20,7 @@ export default async function search_videos({
       colors.red("@error: ") + "use video_data() for video link!"
     );
   } else {
-    const metaData = await web.browserLess.searchVideos({ query });
+    const metaData = await web.searchVideos({ query });
     if (!metaData) {
       throw new Error(colors.red("@error: ") + "Unable to get response!");
     } else return metaData;

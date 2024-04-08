@@ -18,7 +18,7 @@ export default async function playlist_data({
   if (!playlistId) {
     throw new Error(colors.red("@error: ") + "incorrect playlist link");
   } else {
-    const metaData = await web.browserLess.playlistVideos({ playlistId });
+    const metaData = await web.playlistVideos({ playlistId });
     if (!metaData) {
       throw new Error(colors.red("@error: ") + "Unable to get response!");
     } else return metaData;
