@@ -5,14 +5,17 @@ import Image from "next/image";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
+import { TiPlus } from "react-icons/ti";
 import { TbBrandNpm } from "react-icons/tb";
 import { FaLightbulb } from "react-icons/fa";
 import { MdAudioFile } from "react-icons/md";
 import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
+import { TbDiamondFilled } from "react-icons/tb";
 import FootPackage from "@/pages/components/foot";
 import { SiFirefoxbrowser } from "react-icons/si";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 const Introduction = () => {
@@ -263,17 +266,17 @@ const Playground = () => {
                               <div className="md:flex items-left justify-left gap-2">
                                 <Link
                                   href={`/${item.id}`}
-                                  className="btn bg-red-800 hover:bg-red-600 shadow-black shadow-2xl text-white font-bold btn-wide"
+                                  className="btn bg-red-800 hover:bg-red-600 rounded-2xl shadow-black shadow-2xl text-white font-bold btn-wide"
                                 >
-                                  download!
+                                  stream or download file!
                                 </Link>
                                 <button
                                   onClick={(event) => {
                                     event.preventDefault();
                                   }}
-                                  className="btn bg-red-800 hover:bg-red-600 shadow-black shadow-2xl text-white font-bold btn-wide"
+                                  className="btn bg-red-800 hover:bg-red-600 rounded-2xl shadow-black shadow-2xl text-white font-bold btn-wide"
                                 >
-                                  stream!
+                                  download metadata!
                                 </button>
                               </div>
                             </div>
