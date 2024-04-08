@@ -2,23 +2,22 @@
 import react from "react";
 import Link from "next/link";
 import Image from "next/image";
+import io from "socket.io-client";
 import { SiBun } from "react-icons/si";
 import { FaYarn } from "react-icons/fa";
 import { SiPnpm } from "react-icons/si";
-import { TiPlus } from "react-icons/ti";
 import { TbBrandNpm } from "react-icons/tb";
 import { FaLightbulb } from "react-icons/fa";
 import { MdAudioFile } from "react-icons/md";
+import * as socketIO from "socket.io-client";
 import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
-import { TbDiamondFilled } from "react-icons/tb";
 import FootPackage from "@/pages/components/foot";
 import { SiFirefoxbrowser } from "react-icons/si";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
-const Introduction = () => {
+var Introduction = () => {
   return (
     <section
       id="Introduction"
@@ -91,14 +90,14 @@ const Introduction = () => {
     </section>
   );
 };
-const Playground = () => {
-  const QueryClient = useQueryClient();
-  const [Query, setQuery] = react.useState<string>("");
-  const [TubeSearch, setTubeSearch] = react.useState<any>(null);
-  const [GeneralError, setGeneralError] = react.useState<string | any>(null);
-  const ApiSearch = useMutation({
+var Playground = () => {
+  var QueryClient = useQueryClient();
+  var [Query, setQuery] = react.useState<string>("");
+  var [TubeSearch, setTubeSearch] = react.useState<any>(null);
+  // var [GeneralError, setGeneralError] = react.useState<string | any>(null);
+  var ApiSearch = useMutation({
     mutationFn: async () => {
-      const resp = await fetch("/api/search", {
+      var resp = await fetch("/api/search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -108,11 +107,26 @@ const Playground = () => {
         }),
       });
       if (resp.status === 200) setTubeSearch(await resp.json());
-      else setGeneralError("Error fetching SearchData ...");
+      // else setGeneralError("Error fetching SearchData ...");
     },
-    onError: (error) => setGeneralError(error.message),
+    // onError: (error) => setGeneralError(error.message),
     onMutate: () => console.log("ApiSearch started!"),
   });
+
+  var [similar, setSimilar] = react.useState<string[]>([]);
+  var [socket, setSocket] = react.useState<socketIO.Socket>();
+  react.useEffect(() => {
+    fetch("/ioSocket").finally(() => {
+      var ioSocket = io();
+      var getSimilar = (data: string[]) => setSimilar(data);
+      ioSocket.on("similar", getSimilar);
+      setSocket(ioSocket);
+      return () => {
+        ioSocket.off("similar", getSimilar);
+        ioSocket.disconnect();
+      };
+    });
+  }, []);
 
   return (
     <section
@@ -163,7 +177,13 @@ const Playground = () => {
                       value={Query}
                       placeholder="required"
                       disabled={ApiSearch.isPending}
-                      onChange={(e) => setQuery(e.target.value)}
+                      onChange={(e) => {
+                        setQuery(e.target.value);
+                        socket?.emit("msg[Req]", {
+                          query: e.target.value,
+                          user: socket.id,
+                        });
+                      }}
                       className="input input-bordered w-full max-w-xs"
                     />
                     <div className="label">
@@ -293,7 +313,7 @@ const Playground = () => {
     </section>
   );
 };
-const Documentation = () => {
+var Documentation = () => {
   return (
     <section
       id="Documentation"
@@ -629,14 +649,14 @@ const Documentation = () => {
     </section>
   );
 };
-const Accordion = () => {
-  const [activeIndex, setActiveIndex] = react.useState(null);
-  const onItemClick = (index: any) => {
+var Accordion = () => {
+  var [activeIndex, setActiveIndex] = react.useState(null);
+  var onItemClick = (index: any) => {
     setActiveIndex(index === activeIndex ? null : index);
   };
-  const editClick = (event: any) => event.stopPropagation();
-  const deleteClick = (event: any) => event.stopPropagation();
-  const items = [
+  var editClick = (event: any) => event.stopPropagation();
+  var deleteClick = (event: any) => event.stopPropagation();
+  var items = [
     {
       title: "Section 1",
       content: "Content of section 1...",
