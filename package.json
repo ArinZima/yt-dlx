@@ -15,7 +15,8 @@
   "bin": {
     "yt": "project/cjs/core/cli/main.js",
     "ytdlx": "project/cjs/core/cli/main.js",
-    "yt-dlx": "project/cjs/core/cli/main.js"
+    "yt-dlx": "project/cjs/core/cli/main.js",
+    "youtube": "project/cjs/core/cli/main.js"
   },
   "scripts": {
     "start": "node util/dev.mjs",
