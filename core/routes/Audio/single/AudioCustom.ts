@@ -48,7 +48,6 @@ var ZodSchema = z.object({
  * @param verbose - (optional) Whether to log verbose output or not.
  * @param onionTor - (optional) Whether to use Tor for the download or not.
  * @param resolution - The desired audio resolution. Available options: "high", "medium", "low", "ultralow".
- * @returns A Promise that resolves with either `void` (if `stream` is false) or an object containing the `ffmpeg` instance and the output filename (if `stream` is true).
  */
 class Emitter extends EventEmitter {}
 export default async function AudioCustom({

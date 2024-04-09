@@ -47,7 +47,6 @@ var ZodSchema = z.object({
  * @param verbose - (optional) Whether to log verbose output or not.
  * @param filter - (optional) The audio filter to apply. Available options: "echo", "slow", "speed", "phaser", "flanger", "panning", "reverse", "vibrato", "subboost", "surround", "bassboost", "nightcore", "superslow", "vaporwave", "superspeed".
  * @param onionTor - (optional) Whether to use Tor for the download or not.
- * @returns A Promise that resolves with either `void` (if `stream` is false) or an object containing the `ffmpeg` instance and the output filename (if `stream` is true).
  */
 class Emitter extends EventEmitter {}
 export default async function AudioHighest({
