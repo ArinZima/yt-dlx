@@ -7,8 +7,6 @@ import web, { singleVideoType } from "../../web";
  * Fetches data for a single YouTube video based on the video ID or link.
  *
  * @param query - The video ID or link.
- * @returns A Promise that resolves with the metadata for the single video.
- * @throws An error if the input is an incorrect video link or if unable to get a response.
  */
 class Emitter extends EventEmitter {}
 export default async function video_data({

@@ -23,8 +23,8 @@ export default async function Agent({
     "version",
     colors.green(version)
   );
-  var ipAddress: any;
-  var nipTor: { stdout: any; stderr?: string };
+  let ipAddress: any;
+  let nipTor: { stdout: any; stderr?: string };
   nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
   console.log(
     colors.green("@info:"),
@@ -47,9 +47,9 @@ export default async function Agent({
       ipAddress = nipTor.stdout.trim();
     } else throw new Error("Unable to connect to Tor.");
   }
-  var TubeBody: any;
-  var respEngine: EngineOutput | undefined = undefined;
-  var videoId: string | undefined = await YouTubeID(query);
+  let TubeBody: any;
+  let respEngine: EngineOutput | undefined = undefined;
+  let videoId: string | undefined = await YouTubeID(query);
   if (!videoId) {
     TubeBody = await web.searchVideos({ query });
     if (!TubeBody[0]) throw new Error("Unable to get response!");
