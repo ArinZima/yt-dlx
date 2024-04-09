@@ -56,14 +56,11 @@ export default async function AudioLowest({
   verbose,
   filter,
   onionTor,
-}: z.infer<typeof ZodSchema>): Promise<void | {
-  ffmpeg: FfmpegCommand;
-  filename: string;
-}> {
+}: z.infer<typeof ZodSchema>): Promise<EventEmitter> {
+  var emitter = new Emitter();
   try {
     ZodSchema.parse({ query, output, stream, verbose, filter, onionTor });
     var startTime: Date;
-    var emitter = new Emitter();
     var engineData = await ytdlx({ query, verbose, onionTor });
     if (engineData === undefined) {
       throw new Error(`${colors.red("@error:")} unable to get response!`);
@@ -146,23 +143,25 @@ export default async function AudioLowest({
           break;
       }
       ff.on("error", (error) => {
-        throw new Error(error.message);
+        emitter.emit("error", new Error(error.message));
       });
       ff.on("start", (comd) => {
         startTime = new Date();
-        if (verbose) console.info(colors.green("@comd:"), comd);
+        if (verbose) emitter.emit("start", comd);
       });
-      ff.on("end", () => process.stdout.write("\n"));
+      ff.on("end", () => emitter.emit("end"));
       ff.on("progress", ({ percent, timemark }) => {
-        var color = colors.green;
+        let color = colors.green;
         if (isNaN(percent)) percent = 0;
         if (percent > 98) percent = 100;
         if (percent < 25) color = colors.red;
         else if (percent < 50) color = colors.yellow;
-        var width = Math.floor(process.stdout.columns / 4);
-        var scomp = Math.round((width * percent) / 100);
-        var progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
-        process.stdout.write(
+        const width = Math.floor(process.stdout.columns / 4);
+        const scomp = Math.round((width * percent) / 100);
+        const progb =
+          color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+        emitter.emit(
+          "progress",
           `\r${color("@prog:")} ${progb}` +
             ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
             ` ${color("| @timemark:")} ${timemark}` +
@@ -171,30 +170,39 @@ export default async function AudioLowest({
             )}`
         );
       });
-      if (stream) {
-        return {
-          ffmpeg: ff,
-          filename: output
-            ? path.join(folder, filename)
-            : filename.replace("_)_", ")_"),
-        };
-      } else {
-        await new Promise<void>((resolve, reject) => {
+      switch (stream) {
+        case true:
+          emitter.emit("data", {
+            ffmpeg: ff,
+            filename: output
+              ? path.join(folder, filename)
+              : filename.replace("_)_", ")_"),
+          });
+          break;
+        default:
           ff.output(path.join(folder, filename.replace("_)_", ")_")));
-          ff.on("end", () => resolve());
+          ff.on("end", () => emitter.emit("finish"));
           ff.on("error", (error) => {
-            reject(new Error(colors.red("@error: ") + error.message));
+            emitter.emit(
+              "error",
+              new Error(colors.red("@error: ") + error.message)
+            );
           });
           ff.run();
-        });
+          break;
       }
     }
   } catch (error: any) {
     switch (true) {
       case error instanceof ZodError:
-        throw new Error(colors.red("@zod-error:") + error.errors);
+        emitter.emit(
+          "error",
+          new Error(colors.red("@zod-error:") + error.errors)
+        );
+        break;
       default:
-        throw new Error(colors.red("@error:") + error.message);
+        emitter.emit("error", new Error(colors.red("@error:") + error.message));
+        break;
     }
   } finally {
     console.log(
@@ -207,4 +215,5 @@ export default async function AudioLowest({
       colors.green("https://github.com/yt-dlx\n")
     );
   }
+  return emitter;
 }
