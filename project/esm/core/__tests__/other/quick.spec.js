@@ -1,205 +1,30 @@
 console.clear();
-import * as fs from "fs";
-import colors from "colors";
-import * as path from "path";
-import { z, ZodError } from "zod";
-import EventEmitter from "events";
-import ffmpeg from "fluent-ffmpeg";
-import ytdlx from "../../base/Agent";
-import formatTime from "../../base/formatTime";
-import calculateETA from "../../base/calculateETA";
-const ZodSchema = z.object({
-    query: z.string().min(2),
-    output: z.string().optional(),
-    stream: z.boolean().optional(),
-    verbose: z.boolean().optional(),
-    onionTor: z.boolean().optional(),
-    filter: z
-        .enum([
-        "echo",
-        "slow",
-        "speed",
-        "phaser",
-        "flanger",
-        "panning",
-        "reverse",
-        "vibrato",
-        "subboost",
-        "surround",
-        "bassboost",
-        "nightcore",
-        "superslow",
-        "vaporwave",
-        "superspeed",
-    ])
-        .optional(),
-});
-class Emitter extends EventEmitter {
-}
-export default async function AudioHighest({ query, output, stream, verbose, filter, onionTor, }) {
-    const emitter = new Emitter();
+import AudioHighest from "../../routes/Audio/single/AudioHighest";
+const videos = [
+    "https://youtu.be/M1l52x3wXYw?si=NepWSKHiOF7tuYPN",
+    "https://youtu.be/DeSa4z6rV9c?si=m5Qjknc0J5eGqp2Z",
+    "https://youtu.be/t2ZrXnhKoZs?si=tqgDPILIBFXIJbuH",
+    "https://youtu.be/Nx5W_1zcQI0?si=g7SmWv2B6BPK0giz",
+    "https://youtu.be/Xyofyyc7Up8?si=t4qhkoSZUi9LIP52",
+    "haan pehlibaar kishor kumar",
+    "tumse milna batei karna acha lagtahai",
+    "tumbhi chalo humbhi chale",
+    "raho mein rehte hai",
+];
+async function main() {
     try {
-        ZodSchema.parse({ query, output, stream, verbose, filter, onionTor });
-        let startTime;
-        const engineData = await ytdlx({ query, verbose, onionTor });
-        if (engineData === undefined) {
-            throw new Error(`${colors.red("@error:")} unable to get response!`);
-        }
-        else {
-            const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-            const folder = output ? path.join(__dirname, output) : __dirname;
-            if (!fs.existsSync(folder))
-                fs.mkdirSync(folder, { recursive: true });
-            let filename = "yt-dlx_(AudioHighest_";
-            const ff = ffmpeg();
-            ff.addInput(engineData.AudioHighF.url);
-            ff.addInput(engineData.metaData.thumbnail);
-            ff.withOutputFormat("avi");
-            ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-            switch (filter) {
-                case "bassboost":
-                    ff.withAudioFilter(["bass=g=10,dynaudnorm=f=150"]);
-                    filename += `bassboost)_${title}.avi`;
-                    break;
-                case "echo":
-                    ff.withAudioFilter(["aecho=0.8:0.9:1000:0.3"]);
-                    filename += `echo)_${title}.avi`;
-                    break;
-                case "flanger":
-                    ff.withAudioFilter(["flanger"]);
-                    filename += `flanger)_${title}.avi`;
-                    break;
-                case "nightcore":
-                    ff.withAudioFilter(["aresample=48000,asetrate=48000*1.25"]);
-                    filename += `nightcore)_${title}.avi`;
-                    break;
-                case "panning":
-                    ff.withAudioFilter(["apulsator=hz=0.08"]);
-                    filename += `panning)_${title}.avi`;
-                    break;
-                case "phaser":
-                    ff.withAudioFilter(["aphaser=in_gain=0.4"]);
-                    filename += `phaser)_${title}.avi`;
-                    break;
-                case "reverse":
-                    ff.withAudioFilter(["areverse"]);
-                    filename += `reverse)_${title}.avi`;
-                    break;
-                case "slow":
-                    ff.withAudioFilter(["atempo=0.8"]);
-                    filename += `slow)_${title}.avi`;
-                    break;
-                case "speed":
-                    ff.withAudioFilter(["atempo=2"]);
-                    filename += `speed)_${title}.avi`;
-                    break;
-                case "subboost":
-                    ff.withAudioFilter(["asubboost"]);
-                    filename += `subboost)_${title}.avi`;
-                    break;
-                case "superslow":
-                    ff.withAudioFilter(["atempo=0.5"]);
-                    filename += `superslow)_${title}.avi`;
-                    break;
-                case "superspeed":
-                    ff.withAudioFilter(["atempo=3"]);
-                    filename += `superspeed)_${title}.avi`;
-                    break;
-                case "surround":
-                    ff.withAudioFilter(["surround"]);
-                    filename += `surround)_${title}.avi`;
-                    break;
-                case "vaporwave":
-                    ff.withAudioFilter(["aresample=48000,asetrate=48000*0.8"]);
-                    filename += `vaporwave)_${title}.avi`;
-                    break;
-                case "vibrato":
-                    ff.withAudioFilter(["vibrato=f=6.5"]);
-                    filename += `vibrato)_${title}.avi`;
-                    break;
-                default:
-                    filename += `)_${title}.avi`;
-                    break;
-            }
-            ff.on("error", (error) => {
-                emitter.emit("error", new Error(error.message));
+        for (const query of videos) {
+            await AudioHighest({
+                query,
+                verbose: true,
+                onionTor: true,
+                output: "audio",
             });
-            ff.on("start", (comd) => {
-                startTime = new Date();
-                if (verbose)
-                    emitter.emit("start", comd);
-            });
-            ff.on("end", () => emitter.emit("end"));
-            ff.on("progress", ({ percent, timemark }) => {
-                let color = colors.green;
-                if (isNaN(percent))
-                    percent = 0;
-                if (percent > 98)
-                    percent = 100;
-                if (percent < 25)
-                    color = colors.red;
-                else if (percent < 50)
-                    color = colors.yellow;
-                const width = Math.floor(process.stdout.columns / 4);
-                const scomp = Math.round((width * percent) / 100);
-                const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
-                emitter.emit("progress", `\r${color("@prog:")} ${progb}` +
-                    ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
-                    ` ${color("| @timemark:")} ${timemark}` +
-                    ` ${color("| @eta:")} ${formatTime(calculateETA(startTime, percent))}`);
-            });
-            switch (stream) {
-                case true:
-                    emitter.emit("data", {
-                        ffmpeg: ff,
-                        filename: output
-                            ? path.join(folder, filename)
-                            : filename.replace("_)_", ")_"),
-                    });
-                    break;
-                default:
-                    ff.output(path.join(folder, filename.replace("_)_", ")_")));
-                    ff.on("end", () => emitter.emit("finish"));
-                    ff.on("error", (error) => {
-                        emitter.emit("error", new Error(colors.red("@error: ") + error.message));
-                    });
-                    ff.run();
-                    break;
-            }
         }
     }
     catch (error) {
-        switch (true) {
-            case error instanceof ZodError:
-                emitter.emit("error", new Error(colors.red("@zod-error:") + error.errors));
-                break;
-            default:
-                emitter.emit("error", new Error(colors.red("@error:") + error.message));
-                break;
-        }
+        console.error("@error:", error);
     }
-    finally {
-        console.log(colors.green("@info:"), "❣️ Thank you for using", colors.green("yt-dlx."), "Consider", colors.green("🌟starring"), "the GitHub repo", colors.green("https://github.com/yt-dlx\n"));
-    }
-    return emitter;
 }
-(async () => {
-    try {
-        const proc = await AudioHighest({
-            onionTor: false,
-            stream: false,
-            verbose: true,
-            output: "temp",
-            query: "dil nu",
-            filter: "bassboost",
-        });
-        proc.on("end", () => console.log("@finished."));
-        proc.on("start", (comd) => console.log("@command:", comd));
-        proc.on("error", (error) => console.error("@rror:", error));
-        proc.on("progress", (progress) => console.log("@progress:", progress));
-    }
-    catch (error) {
-        console.error("Error:", error);
-    }
-})();
+main();
 //# sourceMappingURL=quick.spec.js.map

@@ -31,11 +31,10 @@ const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
 const zod_1 = require("zod");
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
-const eventemitter3_1 = __importDefault(require("eventemitter3"));
 const Agent_1 = __importDefault(require("../../../base/Agent"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
-var ZodSchema = zod_1.z.object({
+const ZodSchema = zod_1.z.object({
     query: zod_1.z.string().min(2),
     output: zod_1.z.string().optional(),
     stream: zod_1.z.boolean().optional(),
@@ -74,8 +73,6 @@ var ZodSchema = zod_1.z.object({
  * @param resolution - The desired audio resolution. Available options: "high", "medium", "low", "ultralow".
  * @returns A Promise that resolves with either `void` (if `stream` is false) or an object containing the `ffmpeg` instance and the output filename (if `stream` is true).
  */
-class Emitter extends eventemitter3_1.default {
-}
 async function AudioCustom({ query, output, stream, filter, verbose, onionTor, resolution, }) {
     try {
         ZodSchema.parse({
@@ -87,20 +84,19 @@ async function AudioCustom({ query, output, stream, filter, verbose, onionTor, r
             onionTor,
             resolution,
         });
-        var startTime;
-        var emitter = new Emitter();
-        var engineData = await (0, Agent_1.default)({ query, verbose, onionTor });
+        let startTime;
+        const engineData = await (0, Agent_1.default)({ query, verbose, onionTor });
         if (engineData === undefined) {
             throw new Error(`${colors_1.default.red("@error:")} unable to get response!`);
         }
         else {
-            var title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-            var folder = output ? path.join(__dirname, output) : __dirname;
+            const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
+            const folder = output ? path.join(__dirname, output) : __dirname;
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            var filename = `yt-dlx_(AudioCustom_${resolution}_`;
-            var ff = (0, fluent_ffmpeg_1.default)();
-            var adata = engineData.AudioHigh.find((i) => i.format.includes(resolution.replace("p", "").toString()));
+            let filename = `yt-dlx_(AudioCustom_${resolution}_`;
+            const ff = (0, fluent_ffmpeg_1.default)();
+            const adata = engineData.AudioHigh.find((i) => i.format.includes(resolution.replace("p", "").toString()));
             if (adata)
                 ff.addInput(adata.url.toString());
             else {
@@ -184,7 +180,7 @@ async function AudioCustom({ query, output, stream, filter, verbose, onionTor, r
             });
             ff.on("end", () => process.stdout.write("\n"));
             ff.on("progress", ({ percent, timemark }) => {
-                var color = colors_1.default.green;
+                let color = colors_1.default.green;
                 if (isNaN(percent))
                     percent = 0;
                 if (percent > 98)
@@ -193,9 +189,9 @@ async function AudioCustom({ query, output, stream, filter, verbose, onionTor, r
                     color = colors_1.default.red;
                 else if (percent < 50)
                     color = colors_1.default.yellow;
-                var width = Math.floor(process.stdout.columns / 4);
-                var scomp = Math.round((width * percent) / 100);
-                var progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+                const width = Math.floor(process.stdout.columns / 4);
+                const scomp = Math.round((width * percent) / 100);
+                const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
                 process.stdout.write(`\r${color("@prog:")} ${progb}` +
                     ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
                     ` ${color("| @timemark:")} ${timemark}` +

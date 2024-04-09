@@ -5,15 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const youtubei_1 = require("youtubei");
-const eventemitter3_1 = __importDefault(require("eventemitter3"));
-class Emitter extends eventemitter3_1.default {
-}
 async function relatedVideos({ videoId }) {
     try {
-        var youtube = new youtubei_1.Client();
-        var emitter = new Emitter();
-        var relatedVideos = await youtube.getVideo(videoId);
-        var result = relatedVideos.related.items.map((item) => ({
+        const youtube = new youtubei_1.Client();
+        const relatedVideos = await youtube.getVideo(videoId);
+        const result = relatedVideos.related.items.map((item) => ({
             id: item.id,
             title: item.title,
             isLive: item.isLive,

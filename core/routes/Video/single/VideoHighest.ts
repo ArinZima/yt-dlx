@@ -3,14 +3,13 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
-import EventEmitter from "eventemitter3";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
 import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
 
-var ZodSchema = z.object({
+const ZodSchema = z.object({
   query: z.string().min(2),
   output: z.string().optional(),
   stream: z.boolean().optional(),
@@ -37,8 +36,8 @@ var ZodSchema = z.object({
  * @param output - (optional) The output directory for the processed files.
  * @param filter - (optional) The video filter to apply. Available options: "invert", "rotate90", "rotate270", "grayscale", "rotate180", "flipVertical", "flipHorizontal".
  * @param onionTor - (optional) Whether to use Tor for the download or not.
+ * @returns A Promise that resolves when the video has been processed, unless `stream` is `true`, in which case it resolves with an object containing the `ffmpeg` command and the `filename`.
  */
-class Emitter extends EventEmitter {}
 export default async function VideoHighest({
   query,
   stream,
@@ -46,8 +45,10 @@ export default async function VideoHighest({
   output,
   filter,
   onionTor,
-}: z.infer<typeof ZodSchema>): Promise<EventEmitter> {
-  var emitter = new Emitter();
+}: z.infer<typeof ZodSchema>): Promise<void | {
+  ffmpeg: FfmpegCommand;
+  filename: string;
+}> {
   try {
     ZodSchema.parse({
       query,
@@ -57,25 +58,25 @@ export default async function VideoHighest({
       filter,
       onionTor,
     });
-    var startTime: Date;
-    var engineData = await ytdlx({ query, verbose, onionTor });
+    let startTime: Date;
+    const engineData = await ytdlx({ query, verbose, onionTor });
     if (engineData === undefined) {
       throw new Error(`${colors.red("@error:")} unable to get response!`);
     } else {
-      var title: string = engineData.metaData.title.replace(
+      const title: string = engineData.metaData.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      var folder = output ? path.join(__dirname, output) : __dirname;
+      const folder = output ? path.join(__dirname, output) : __dirname;
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      var ff: FfmpegCommand = ffmpeg();
-      var vdata =
+      const ff: FfmpegCommand = ffmpeg();
+      const vdata =
         engineData.ManifestHigh[engineData.ManifestHigh.length - 1].url;
       ff.addInput(vdata.toString());
       ff.videoCodec("copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-      var filename: string = "yt-dlx_(VideoHighest_";
+      let filename: string = "yt-dlx_(VideoHighest_";
       switch (filter) {
         case "grayscale":
           ff.withVideoFilter(
@@ -112,13 +113,13 @@ export default async function VideoHighest({
           break;
       }
       ff.on("error", (error) => {
-        emitter.emit("error", new Error(error.message));
+        throw new Error(error.message);
       });
       ff.on("start", (comd) => {
         startTime = new Date();
-        if (verbose) emitter.emit("start", comd);
+        if (verbose) console.info(colors.green("@comd:"), comd);
       });
-      ff.on("end", () => emitter.emit("end"));
+      ff.on("end", () => process.stdout.write("\n"));
       ff.on("progress", ({ percent, timemark }) => {
         let color = colors.green;
         if (isNaN(percent)) percent = 0;
@@ -129,8 +130,7 @@ export default async function VideoHighest({
         const scomp = Math.round((width * percent) / 100);
         const progb =
           color("━").repeat(scomp) + color(" ").repeat(width - scomp);
-        emitter.emit(
-          "progress",
+        process.stdout.write(
           `\r${color("@prog:")} ${progb}` +
             ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
             ` ${color("| @timemark:")} ${timemark}` +
@@ -139,39 +139,30 @@ export default async function VideoHighest({
             )}`
         );
       });
-      switch (stream) {
-        case true:
-          emitter.emit("data", {
-            ffmpeg: ff,
-            filename: output
-              ? path.join(folder, filename)
-              : filename.replace("_)_", ")_"),
-          });
-          break;
-        default:
+      if (stream) {
+        return {
+          ffmpeg: ff,
+          filename: output
+            ? path.join(folder, filename)
+            : filename.replace("_)_", ")_"),
+        };
+      } else {
+        await new Promise<void>((resolve, reject) => {
           ff.output(path.join(folder, filename.replace("_)_", ")_")));
-          ff.on("end", () => emitter.emit("finish"));
+          ff.on("end", () => resolve());
           ff.on("error", (error) => {
-            emitter.emit(
-              "error",
-              new Error(colors.red("@error: ") + error.message)
-            );
+            reject(new Error(colors.red("@error: ") + error.message));
           });
           ff.run();
-          break;
+        });
       }
     }
   } catch (error: any) {
     switch (true) {
       case error instanceof ZodError:
-        emitter.emit(
-          "error",
-          new Error(colors.red("@zod-error:") + error.errors)
-        );
-        break;
+        throw new Error(colors.red("@zod-error:") + error.errors);
       default:
-        emitter.emit("error", new Error(colors.red("@error:") + error.message));
-        break;
+        throw new Error(colors.red("@error:") + error.message);
     }
   } finally {
     console.log(
@@ -184,5 +175,4 @@ export default async function VideoHighest({
       colors.green("https://github.com/yt-dlx\n")
     );
   }
-  return emitter;
 }

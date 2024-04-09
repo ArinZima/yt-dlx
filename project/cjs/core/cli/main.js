@@ -34,7 +34,7 @@ const path = __importStar(require("path"));
 const minimist_1 = __importDefault(require("minimist"));
 const child_process_1 = require("child_process");
 const package_json_1 = require("../../package.json");
-var proTube = (0, minimist_1.default)(process.argv.slice(2), {
+const proTube = (0, minimist_1.default)(process.argv.slice(2), {
     string: ["query", "format"],
     alias: {
         h: "help",
@@ -46,15 +46,15 @@ var proTube = (0, minimist_1.default)(process.argv.slice(2), {
         ah: "audio-highest",
     },
 });
-var uLoc = "";
-var maxTries = 6;
-var currentDir = __dirname;
-var program = async () => {
-    var command = proTube._[0];
+let uLoc = "";
+let maxTries = 6;
+let currentDir = __dirname;
+const program = async () => {
+    const command = proTube._[0];
     switch (command) {
         case "install:deps":
             while (maxTries > 0) {
-                var enginePath = path.join(currentDir, "util");
+                const enginePath = path.join(currentDir, "util");
                 if (fs.existsSync(enginePath)) {
                     uLoc = enginePath;
                     break;
@@ -64,7 +64,7 @@ var program = async () => {
                     maxTries--;
                 }
             }
-            var rox = (0, child_process_1.spawn)("sh", [
+            const rox = (0, child_process_1.spawn)("sh", [
                 "-c",
                 `chmod +x ${uLoc}/deps.sh && ${uLoc}/deps.sh`,
             ]);
@@ -95,7 +95,7 @@ var program = async () => {
             break;
         case "install:socks5":
             while (maxTries > 0) {
-                var enginePath = path.join(currentDir, "util");
+                const enginePath = path.join(currentDir, "util");
                 if (fs.existsSync(enginePath)) {
                     uLoc = enginePath;
                     break;
@@ -105,7 +105,7 @@ var program = async () => {
                     maxTries--;
                 }
             }
-            var xrox = (0, child_process_1.spawn)("sh", [
+            const xrox = (0, child_process_1.spawn)("sh", [
                 "-c",
                 `chmod +x ${uLoc}/socks5.sh && ${uLoc}/socks5.sh`,
             ]);

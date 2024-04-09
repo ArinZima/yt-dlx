@@ -33,12 +33,12 @@ const path = __importStar(require("path"));
 const async_retry_1 = __importDefault(require("async-retry"));
 const util_1 = require("util");
 const child_process_1 = require("child_process");
-var sizeFormat = (filesize) => {
+const sizeFormat = (filesize) => {
     if (isNaN(filesize) || filesize < 0)
         return filesize;
-    var bytesPerMegabyte = 1024 * 1024;
-    var bytesPerGigabyte = bytesPerMegabyte * 1024;
-    var bytesPerTerabyte = bytesPerGigabyte * 1024;
+    const bytesPerMegabyte = 1024 * 1024;
+    const bytesPerGigabyte = bytesPerMegabyte * 1024;
+    const bytesPerTerabyte = bytesPerGigabyte * 1024;
     if (filesize < bytesPerMegabyte)
         return filesize + " B";
     else if (filesize < bytesPerGigabyte) {
@@ -53,25 +53,25 @@ var sizeFormat = (filesize) => {
 exports.sizeFormat = sizeFormat;
 // =====================================================================================
 async function Engine({ query, ipAddress, onionTor, }) {
-    var AudioLow = {};
-    var AudioHigh = {};
-    var VideoLow = {};
-    var VideoHigh = {};
-    var ManifestLow = {};
-    var ManifestHigh = {};
-    var AudioLowDRC = {};
-    var AudioHighDRC = {};
-    var VideoLowHDR = {};
-    var VideoHighHDR = {};
-    var AudioLowF = null;
-    var AudioHighF = null;
-    var VideoLowF = null;
-    var VideoHighF = null;
-    var dirC = __dirname || process.cwd();
-    var pLoc = "";
-    var maxT = 8;
+    let AudioLow = {};
+    let AudioHigh = {};
+    let VideoLow = {};
+    let VideoHigh = {};
+    let ManifestLow = {};
+    let ManifestHigh = {};
+    let AudioLowDRC = {};
+    let AudioHighDRC = {};
+    let VideoLowHDR = {};
+    let VideoHighHDR = {};
+    let AudioLowF = null;
+    let AudioHighF = null;
+    let VideoLowF = null;
+    let VideoHighF = null;
+    let dirC = __dirname || process.cwd();
+    let pLoc = "";
+    let maxT = 8;
     while (maxT > 0) {
-        var cprobePath = path.join(dirC, "util", "cprobe");
+        const cprobePath = path.join(dirC, "util", "cprobe");
         if (fs.existsSync(cprobePath)) {
             pLoc = cprobePath;
             break;
@@ -85,13 +85,13 @@ async function Engine({ query, ipAddress, onionTor, }) {
         throw new Error(colors_1.default.red("@error: ") +
             "Could not find cprobe file. maybe re-install yt-dlx?");
     }
-    var config = {
+    const config = {
         factor: 2,
         retries: 3,
         minTimeout: 1000,
         maxTimeout: 3000,
     };
-    var metaCore = await (0, async_retry_1.default)(async () => {
+    const metaCore = await (0, async_retry_1.default)(async () => {
         if (onionTor)
             pLoc += ` --proxy "socks5://127.0.0.1:9050"`;
         pLoc += ` --dump-single-json "${query}"`;
@@ -99,9 +99,9 @@ async function Engine({ query, ipAddress, onionTor, }) {
         pLoc += ` --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"`;
         return await (0, util_1.promisify)(child_process_1.exec)(pLoc);
     }, config);
-    var i = JSON.parse(metaCore.stdout.toString());
+    const i = JSON.parse(metaCore.stdout.toString());
     i.formats.forEach((tube) => {
-        var rm = new Set(["storyboard", "Default"]);
+        const rm = new Set(["storyboard", "Default"]);
         if (!rm.has(tube.format_note) &&
             tube.protocol === "m3u8_native" &&
             tube.vbr) {
@@ -132,10 +132,10 @@ async function Engine({ query, ipAddress, onionTor, }) {
                 tube.filesize > VideoHighHDR[tube.format_note].filesize)
                 VideoHighHDR[tube.format_note] = tube;
         }
-        var prevLowVideo = VideoLow[tube.format_note];
-        var prevHighVideo = VideoHigh[tube.format_note];
-        var prevLowAudio = AudioLow[tube.format_note];
-        var prevHighAudio = AudioHigh[tube.format_note];
+        const prevLowVideo = VideoLow[tube.format_note];
+        const prevHighVideo = VideoHigh[tube.format_note];
+        const prevLowAudio = AudioLow[tube.format_note];
+        const prevHighAudio = AudioHigh[tube.format_note];
         switch (true) {
             case tube.format_note.includes("p"):
                 if (!prevLowVideo || tube.filesize < prevLowVideo.filesize)
@@ -184,22 +184,22 @@ async function Engine({ query, ipAddress, onionTor, }) {
             return !i.format_note.includes("DRC") && !i.format_note.includes("HDR");
         });
     }
-    var payLoad = {
+    const payLoad = {
         ipAddress,
         AudioLowF: (() => {
-            var i = AudioLowF || {};
+            const i = AudioLowF || {};
             return nAudio(i);
         })(),
         AudioHighF: (() => {
-            var i = AudioHighF || {};
+            const i = AudioHighF || {};
             return nAudio(i);
         })(),
         VideoLowF: (() => {
-            var i = VideoLowF || {};
+            const i = VideoLowF || {};
             return nVideo(i);
         })(),
         VideoHighF: (() => {
-            var i = VideoHighF || {};
+            const i = VideoHighF || {};
             return nVideo(i);
         })(),
         AudioLowDRC: Object.values(AudioLowDRC).map((i) => pAudio(i)),

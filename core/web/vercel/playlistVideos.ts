@@ -1,6 +1,5 @@
 import colors from "colors";
 import { Client } from "youtubei";
-import EventEmitter from "eventemitter3";
 
 export interface playlistVideosType {
   id: string;
@@ -14,17 +13,15 @@ export interface playlistVideosType {
     thumbnails: string[];
   };
 }
-class Emitter extends EventEmitter {}
 export default async function playlistVideos({
   playlistId,
 }: {
   playlistId: string;
 }) {
   try {
-    var youtube = new Client();
-    var emitter = new Emitter();
-    var playlistVideos: any = await youtube.getPlaylist(playlistId);
-    var result = playlistVideos.videos.items.map((item: any) => ({
+    const youtube = new Client();
+    const playlistVideos: any = await youtube.getPlaylist(playlistId);
+    const result = playlistVideos.videos.items.map((item: any) => ({
       id: item.id,
       title: item.title,
       isLive: item.isLive,

@@ -7,8 +7,8 @@ import { version } from "../../package.json";
 export default async function Agent({ query, verbose, onionTor, }) {
     verbose;
     console.log(colors.green("@info:"), "using", colors.green("yt-dlx"), "version", colors.green(version));
-    var ipAddress;
-    var nipTor;
+    let ipAddress;
+    let nipTor;
     nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
     console.log(colors.green("@info:"), "system", colors.green("ipAddress"), nipTor.stdout.trim());
     ipAddress = nipTor.stdout.trim();
@@ -23,9 +23,9 @@ export default async function Agent({ query, verbose, onionTor, }) {
         else
             throw new Error("Unable to connect to Tor.");
     }
-    var TubeBody;
-    var respEngine = undefined;
-    var videoId = await YouTubeID(query);
+    let TubeBody;
+    let respEngine = undefined;
+    let videoId = await YouTubeID(query);
     if (!videoId) {
         TubeBody = await web.searchVideos({ query });
         if (!TubeBody[0])

@@ -1,6 +1,5 @@
 import colors from "colors";
 import { Client } from "youtubei";
-import EventEmitter from "eventemitter3";
 
 export interface searchVideosType {
   id: string;
@@ -14,13 +13,11 @@ export interface searchVideosType {
   description: string;
   thumbnails: string[];
 }
-class Emitter extends EventEmitter {}
 export default async function searchVideos({ query }: { query: string }) {
   try {
-    var youtube = new Client();
-    var emitter = new Emitter();
-    var searchVideos = await youtube.search(query, { type: "video" });
-    var result: searchVideosType[] = searchVideos.items.map((item: any) => ({
+    const youtube = new Client();
+    const searchVideos = await youtube.search(query, { type: "video" });
+    const result: searchVideosType[] = searchVideos.items.map((item: any) => ({
       id: item.id,
       title: item.title,
       isLive: item.isLive,

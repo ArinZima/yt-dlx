@@ -1,6 +1,5 @@
 import colors from "colors";
 import ytdlx from "../../base/Agent";
-import EventEmitter from "eventemitter3";
 import type { EngineOutput } from "../../base/Engine";
 
 /**
@@ -9,8 +8,9 @@ import type { EngineOutput } from "../../base/Engine";
  * @param query - The YouTube video URL for which to list formats and manifest.
  * @param verbose - (optional) Whether to log verbose output or not.
  * @param onionTor - (optional) Whether to use Tor for the extraction or not.
+ * @returns A Promise that resolves after listing the formats and manifest information.
+ * @throws An error if unable to get a response from YouTube.
  */
-class Emitter extends EventEmitter {}
 export default async function list_formats({
   query,
   verbose,
@@ -20,7 +20,6 @@ export default async function list_formats({
   verbose?: boolean;
   onionTor?: boolean;
 }): Promise<any> {
-  var emitter = new Emitter();
   var metaBody: EngineOutput = await ytdlx({ query, verbose, onionTor });
   if (!metaBody) {
     throw new Error("@error: Unable to get response from YouTube.");

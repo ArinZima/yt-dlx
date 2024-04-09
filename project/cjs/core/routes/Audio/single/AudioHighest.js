@@ -26,17 +26,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-console.clear();
 const fs = __importStar(require("fs"));
 const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
 const zod_1 = require("zod");
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
-const eventemitter3_1 = __importDefault(require("eventemitter3"));
 const Agent_1 = __importDefault(require("../../../base/Agent"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
-var ZodSchema = zod_1.z.object({
+const ZodSchema = zod_1.z.object({
     query: zod_1.z.string().min(2),
     output: zod_1.z.string().optional(),
     stream: zod_1.z.boolean().optional(),
@@ -73,24 +71,21 @@ var ZodSchema = zod_1.z.object({
  * @param onionTor - (optional) Whether to use Tor for the download or not.
  * @returns A Promise that resolves with either `void` (if `stream` is false) or an object containing the `ffmpeg` instance and the output filename (if `stream` is true).
  */
-class Emitter extends eventemitter3_1.default {
-}
 async function AudioHighest({ query, output, stream, verbose, filter, onionTor, }) {
     try {
         ZodSchema.parse({ query, output, stream, verbose, filter, onionTor });
-        var startTime;
-        var emitter = new Emitter();
-        var engineData = await (0, Agent_1.default)({ query, verbose, onionTor });
+        let startTime;
+        const engineData = await (0, Agent_1.default)({ query, verbose, onionTor });
         if (engineData === undefined) {
             throw new Error(`${colors_1.default.red("@error:")} unable to get response!`);
         }
         else {
-            var title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-            var folder = output ? path.join(__dirname, output) : __dirname;
+            const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
+            const folder = output ? path.join(__dirname, output) : __dirname;
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            var filename = "yt-dlx_(AudioHighest_";
-            var ff = (0, fluent_ffmpeg_1.default)();
+            let filename = "yt-dlx_(AudioHighest_";
+            const ff = (0, fluent_ffmpeg_1.default)();
             ff.addInput(engineData.AudioHighF.url);
             ff.addInput(engineData.metaData.thumbnail);
             ff.withOutputFormat("avi");
@@ -170,7 +165,7 @@ async function AudioHighest({ query, output, stream, verbose, filter, onionTor, 
             });
             ff.on("end", () => process.stdout.write("\n"));
             ff.on("progress", ({ percent, timemark }) => {
-                var color = colors_1.default.green;
+                let color = colors_1.default.green;
                 if (isNaN(percent))
                     percent = 0;
                 if (percent > 98)
@@ -179,9 +174,9 @@ async function AudioHighest({ query, output, stream, verbose, filter, onionTor, 
                     color = colors_1.default.red;
                 else if (percent < 50)
                     color = colors_1.default.yellow;
-                var width = Math.floor(process.stdout.columns / 4);
-                var scomp = Math.round((width * percent) / 100);
-                var progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+                const width = Math.floor(process.stdout.columns / 4);
+                const scomp = Math.round((width * percent) / 100);
+                const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
                 process.stdout.write(`\r${color("@prog:")} ${progb}` +
                     ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
                     ` ${color("| @timemark:")} ${timemark}` +

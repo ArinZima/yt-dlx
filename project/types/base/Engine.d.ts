@@ -1,7 +1,7 @@
 export interface sizeFormat {
     (filesize: number): string | number;
 }
-export declare var sizeFormat: sizeFormat;
+export declare const sizeFormat: sizeFormat;
 export interface AudioFormat {
     filesize: number;
     filesizeP: string | number;

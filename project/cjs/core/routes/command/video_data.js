@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
-const eventemitter3_1 = __importDefault(require("eventemitter3"));
 const YouTubeId_1 = __importDefault(require("../../web/YouTubeId"));
 const web_1 = __importDefault(require("../../web"));
 /**
@@ -14,16 +13,13 @@ const web_1 = __importDefault(require("../../web"));
  * @returns A Promise that resolves with the metadata for the single video.
  * @throws An error if the input is an incorrect video link or if unable to get a response.
  */
-class Emitter extends eventemitter3_1.default {
-}
 async function video_data({ query, }) {
-    var emitter = new Emitter();
-    var videoId = await (0, YouTubeId_1.default)(query);
+    const videoId = await (0, YouTubeId_1.default)(query);
     if (!videoId) {
         throw new Error(colors_1.default.red("@error: ") + "incorrect playlist link");
     }
     else {
-        var metaData = await web_1.default.singleVideo({ videoId });
+        const metaData = await web_1.default.singleVideo({ videoId });
         if (!metaData) {
             throw new Error(colors_1.default.red("@error: ") + "Unable to get response!");
         }

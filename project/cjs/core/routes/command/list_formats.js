@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const Agent_1 = __importDefault(require("../../base/Agent"));
-const eventemitter3_1 = __importDefault(require("eventemitter3"));
 /**
  * Lists the available formats and manifest information for a YouTube video.
  *
@@ -15,10 +14,7 @@ const eventemitter3_1 = __importDefault(require("eventemitter3"));
  * @returns A Promise that resolves after listing the formats and manifest information.
  * @throws An error if unable to get a response from YouTube.
  */
-class Emitter extends eventemitter3_1.default {
-}
 async function list_formats({ query, verbose, onionTor, }) {
-    var emitter = new Emitter();
     var metaBody = await (0, Agent_1.default)({ query, verbose, onionTor });
     if (!metaBody) {
         throw new Error("@error: Unable to get response from YouTube.");

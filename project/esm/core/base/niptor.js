@@ -7,7 +7,7 @@ import { spawn } from "child_process";
  */
 async function checkSudo() {
     return new Promise((resolve) => {
-        var check = spawn("sudo", ["-n", "true"]);
+        const check = spawn("sudo", ["-n", "true"]);
         check.on("close", (code) => {
             resolve(code === 0);
         });
@@ -21,12 +21,12 @@ async function checkSudo() {
  * @throws An error if the command execution fails.
  */
 export default async function niptor(args) {
-    var sudoAvailable = await checkSudo();
-    var command = sudoAvailable ? ["sudo", ...args] : args;
-    var prox = spawn("sh", ["-c", command.join(" ")]);
-    var [stdoutData, stderrData] = await Promise.all([
+    const sudoAvailable = await checkSudo();
+    const command = sudoAvailable ? ["sudo", ...args] : args;
+    const prox = spawn("sh", ["-c", command.join(" ")]);
+    const [stdoutData, stderrData] = await Promise.all([
         new Promise((resolve, reject) => {
-            var stdoutData = [];
+            const stdoutData = [];
             prox.stdout.on("data", (data) => stdoutData.push(data));
             prox.on("close", (code) => {
                 if (code === 0)
@@ -37,7 +37,7 @@ export default async function niptor(args) {
             });
         }),
         new Promise((resolve, reject) => {
-            var stderrData = [];
+            const stderrData = [];
             prox.stderr.on("data", (data) => stderrData.push(data));
             prox.on("close", (code) => {
                 if (code === 0)
