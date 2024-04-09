@@ -9,7 +9,7 @@
   "description": "Effortless Audio-Video Downloader And Streamer!",
   "repository": {
     "type": "git",
-    "url": "https://yt-dlx-shovit.koyeb.app"
+    "url": "https://github.com/yt-dlx/yt-dlx.git"
   },
   "homepage": "https://yt-dlx-shovit.koyeb.app",
   "bin": {
