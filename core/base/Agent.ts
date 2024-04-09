@@ -15,6 +15,7 @@ export default async function Agent({
   verbose?: boolean;
   onionTor?: boolean;
 }): Promise<EngineOutput> {
+  verbose;
   console.log(
     colors.green("@info:"),
     "using",
@@ -25,7 +26,6 @@ export default async function Agent({
   let ipAddress: any;
   let nipTor: { stdout: any; stderr?: string };
   nipTor = await niptor(["curl https://checkip.amazonaws.com --insecure"]);
-  console.log(colors.green("@info:"), "verbose", colors.green(`${verbose}`));
   console.log(
     colors.green("@info:"),
     "system",

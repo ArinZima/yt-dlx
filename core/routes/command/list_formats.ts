@@ -19,7 +19,7 @@ export default async function list_formats({
   query: string;
   verbose?: boolean;
   onionTor?: boolean;
-}): Promise<void> {
+}): Promise<any> {
   const metaBody: EngineOutput = await ytdlx({ query, verbose, onionTor });
   if (!metaBody) {
     throw new Error("@error: Unable to get response from YouTube.");
@@ -34,6 +34,18 @@ export default async function list_formats({
     pTable("@VideoHighHDR:", metaBody.VideoHighHDR);
     pManifestTable("@ManifestLow:", metaBody.ManifestLow);
     pManifestTable("@ManifestHigh:", metaBody.ManifestHigh);
+    return {
+      AudioLow: metaBody.AudioLow,
+      AudioLowDRC: metaBody.AudioLowDRC,
+      AudioHigh: metaBody.AudioHigh,
+      AudioHighDRC: metaBody.AudioHighDRC,
+      VideoLow: metaBody.VideoLow,
+      VideoLowHDR: metaBody.VideoLowHDR,
+      VideoHigh: metaBody.VideoHigh,
+      VideoHighHDR: metaBody.VideoHighHDR,
+      ManifestLow: metaBody.ManifestLow,
+      ManifestHigh: metaBody.ManifestHigh,
+    };
   }
 }
 

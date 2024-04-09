@@ -10,11 +10,11 @@ const niptor_1 = __importDefault(require("./niptor"));
 const YouTubeId_1 = __importDefault(require("../web/YouTubeId"));
 const package_json_1 = require("../../package.json");
 async function Agent({ query, verbose, onionTor, }) {
+    verbose;
     console.log(colors_1.default.green("@info:"), "using", colors_1.default.green("yt-dlx"), "version", colors_1.default.green(package_json_1.version));
     let ipAddress;
     let nipTor;
     nipTor = await (0, niptor_1.default)(["curl https://checkip.amazonaws.com --insecure"]);
-    console.log(colors_1.default.green("@info:"), "verbose", colors_1.default.green(`${verbose}`));
     console.log(colors_1.default.green("@info:"), "system", colors_1.default.green("ipAddress"), nipTor.stdout.trim());
     ipAddress = nipTor.stdout.trim();
     if (onionTor) {
