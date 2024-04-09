@@ -1,5 +1,5 @@
 import colors from "colors";
-import EventEmitter from "events";
+import EventEmitter from "eventemitter3";
 import YouTubeID from "../../web/YouTubeId";
 import web, { searchPlaylistsType } from "../../web";
 

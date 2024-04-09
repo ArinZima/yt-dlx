@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
-import EventEmitter from "events";
 import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
+import EventEmitter from "eventemitter3";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 
 import ytdlx from "../../../base/Agent";

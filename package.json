@@ -66,6 +66,7 @@
     "cheerio": "^1.0.0-rc.12",
     "colors": "^1.4.0",
     "crypto": "^1.0.1",
+    "eventemitter3": "^5.0.1",
     "express": "^4.19.2",
     "fluent-ffmpeg": "^2.1.2",
     "minimist": "^1.2.8",

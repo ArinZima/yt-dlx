@@ -1,5 +1,6 @@
 import colors from "colors";
 import { Client } from "youtubei";
+import EventEmitter from "eventemitter3";
 
 export interface searchVideosType {
   id: string;

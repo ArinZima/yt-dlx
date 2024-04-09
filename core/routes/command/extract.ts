@@ -1,6 +1,6 @@
 import colors from "colors";
-import EventEmitter from "events";
 import ytdlx from "../../base/Agent";
+import EventEmitter from "eventemitter3";
 import type { EngineOutput } from "../../base/Engine";
 
 /**

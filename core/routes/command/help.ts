@@ -1,5 +1,5 @@
 import colors from "colors";
-import EventEmitter from "events";
+import EventEmitter from "eventemitter3";
 
 export default function help(): Promise<string> {
   console.log(
