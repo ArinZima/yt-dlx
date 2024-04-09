@@ -17,9 +17,10 @@ export interface searchVideosType {
 class Emitter extends EventEmitter {}
 export default async function searchVideos({ query }: { query: string }) {
   try {
-    const youtube = new Client();
-    const searchVideos = await youtube.search(query, { type: "video" });
-    const result: searchVideosType[] = searchVideos.items.map((item: any) => ({
+    var youtube = new Client();
+    var emitter = new Emitter();
+    var searchVideos = await youtube.search(query, { type: "video" });
+    var result: searchVideosType[] = searchVideos.items.map((item: any) => ({
       id: item.id,
       title: item.title,
       isLive: item.isLive,

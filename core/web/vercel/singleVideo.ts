@@ -19,8 +19,9 @@ export interface singleVideoType {
 class Emitter extends EventEmitter {}
 export default async function singleVideo({ videoId }: { videoId: string }) {
   try {
-    const youtube = new Client();
-    const singleVideo: any = await youtube.getVideo(videoId);
+    var youtube = new Client();
+    var emitter = new Emitter();
+    var singleVideo: any = await youtube.getVideo(videoId);
     return {
       id: singleVideo.id,
       title: singleVideo.title,

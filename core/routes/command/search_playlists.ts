@@ -16,13 +16,14 @@ export default async function search_playlists({
 }: {
   query: string;
 }): Promise<searchPlaylistsType[]> {
-  const isID = await YouTubeID(query);
+  var emitter = new Emitter();
+  var isID = await YouTubeID(query);
   if (isID) {
     throw new Error(
       colors.red("@error: ") + "use playlist_data() for playlist link!"
     );
   } else {
-    const metaData = await web.searchPlaylists({ query });
+    var metaData = await web.searchPlaylists({ query });
     if (!metaData) {
       throw new Error(colors.red("@error: ") + "Unable to get response!");
     } else return metaData;

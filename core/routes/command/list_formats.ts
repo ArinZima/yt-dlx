@@ -22,6 +22,7 @@ export default async function list_formats({
   verbose?: boolean;
   onionTor?: boolean;
 }): Promise<any> {
+  var emitter = new Emitter();
   var metaBody: EngineOutput = await ytdlx({ query, verbose, onionTor });
   if (!metaBody) {
     throw new Error("@error: Unable to get response from YouTube.");

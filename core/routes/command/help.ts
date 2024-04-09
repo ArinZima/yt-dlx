@@ -3,6 +3,7 @@ import EventEmitter from "eventemitter3";
 
 class Emitter extends EventEmitter {}
 export default function help(): Promise<string> {
+  var emitter = new Emitter();
   console.log(
     colors.green("@info:"),
     "❣️ Thank you for using",

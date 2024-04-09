@@ -16,13 +16,14 @@ export default async function search_videos({
 }: {
   query: string;
 }): Promise<searchVideosType[]> {
-  const isID = await YouTubeID(query);
+  var emitter = new Emitter();
+  var isID = await YouTubeID(query);
   if (isID) {
     throw new Error(
       colors.red("@error: ") + "use video_data() for video link!"
     );
   } else {
-    const metaData = await web.searchVideos({ query });
+    var metaData = await web.searchVideos({ query });
     if (!metaData) {
       throw new Error(colors.red("@error: ") + "Unable to get response!");
     } else return metaData;

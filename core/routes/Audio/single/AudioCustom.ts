@@ -10,7 +10,7 @@ import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
 
-const ZodSchema = z.object({
+var ZodSchema = z.object({
   query: z.string().min(2),
   output: z.string().optional(),
   stream: z.boolean().optional(),
@@ -73,20 +73,21 @@ export default async function AudioCustom({
       onionTor,
       resolution,
     });
-    let startTime: Date;
-    const engineData = await ytdlx({ query, verbose, onionTor });
+    var startTime: Date;
+    var emitter = new Emitter();
+    var engineData = await ytdlx({ query, verbose, onionTor });
     if (engineData === undefined) {
       throw new Error(`${colors.red("@error:")} unable to get response!`);
     } else {
-      const title: string = engineData.metaData.title.replace(
+      var title: string = engineData.metaData.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path.join(__dirname, output) : __dirname;
+      var folder = output ? path.join(__dirname, output) : __dirname;
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      let filename: string = `yt-dlx_(AudioCustom_${resolution}_`;
-      const ff: FfmpegCommand = ffmpeg();
-      const adata = engineData.AudioHigh.find((i) =>
+      var filename: string = `yt-dlx_(AudioCustom_${resolution}_`;
+      var ff: FfmpegCommand = ffmpeg();
+      var adata = engineData.AudioHigh.find((i) =>
         i.format.includes(resolution.replace("p", "").toString())
       );
       if (adata) ff.addInput(adata.url.toString());
@@ -175,15 +176,14 @@ export default async function AudioCustom({
       });
       ff.on("end", () => process.stdout.write("\n"));
       ff.on("progress", ({ percent, timemark }) => {
-        let color = colors.green;
+        var color = colors.green;
         if (isNaN(percent)) percent = 0;
         if (percent > 98) percent = 100;
         if (percent < 25) color = colors.red;
         else if (percent < 50) color = colors.yellow;
-        const width = Math.floor(process.stdout.columns / 4);
-        const scomp = Math.round((width * percent) / 100);
-        const progb =
-          color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+        var width = Math.floor(process.stdout.columns / 4);
+        var scomp = Math.round((width * percent) / 100);
+        var progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
         process.stdout.write(
           `\r${color("@prog:")} ${progb}` +
             ` ${color("| @percent:")} ${percent.toFixed(2)}%` +

@@ -16,11 +16,12 @@ export default async function video_data({
 }: {
   query: string;
 }): Promise<singleVideoType> {
-  const videoId = await YouTubeID(query);
+  var emitter = new Emitter();
+  var videoId = await YouTubeID(query);
   if (!videoId) {
     throw new Error(colors.red("@error: ") + "incorrect playlist link");
   } else {
-    const metaData = await web.singleVideo({ videoId });
+    var metaData = await web.singleVideo({ videoId });
     if (!metaData) {
       throw new Error(colors.red("@error: ") + "Unable to get response!");
     } else return metaData;

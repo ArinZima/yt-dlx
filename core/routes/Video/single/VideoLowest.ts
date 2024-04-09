@@ -10,7 +10,7 @@ import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
 
-const ZodSchema = z.object({
+var ZodSchema = z.object({
   query: z.string().min(2),
   output: z.string().optional(),
   stream: z.boolean().optional(),
@@ -60,24 +60,25 @@ export default async function VideoLowest({
       filter,
       onionTor,
     });
-    let startTime: Date;
-    const engineData = await ytdlx({ query, verbose, onionTor });
+    var startTime: Date;
+    var emitter = new Emitter();
+    var engineData = await ytdlx({ query, verbose, onionTor });
     if (engineData === undefined) {
       throw new Error(`${colors.red("@error:")} unable to get response!`);
     } else {
-      const title: string = engineData.metaData.title.replace(
+      var title: string = engineData.metaData.title.replace(
         /[^a-zA-Z0-9_]+/g,
         "_"
       );
-      const folder = output ? path.join(__dirname, output) : __dirname;
+      var folder = output ? path.join(__dirname, output) : __dirname;
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-      const ff: FfmpegCommand = ffmpeg();
-      const vdata = engineData.ManifestLow[0].url;
+      var ff: FfmpegCommand = ffmpeg();
+      var vdata = engineData.ManifestLow[0].url;
       ff.addInput(vdata.toString());
       ff.videoCodec("copy");
       ff.withOutputFormat("matroska");
       ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-      let filename: string = "yt-dlx_(VideoLowest_";
+      var filename: string = "yt-dlx_(VideoLowest_";
       switch (filter) {
         case "grayscale":
           ff.withVideoFilter(
@@ -122,14 +123,14 @@ export default async function VideoLowest({
       });
       ff.on("end", () => process.stdout.write("\n"));
       ff.on("progress", ({ percent, timemark }) => {
-        let color = colors.green;
+        var color = colors.green;
         if (isNaN(percent)) percent = 0;
         if (percent > 98) percent = 100;
         if (percent < 25) color = colors.red;
         else if (percent < 50) color = colors.yellow;
-        const width = Math.floor(process.stdout.columns / 4);
-        const scomp = Math.round((width * percent) / 100);
-        const progb =
+        var width = Math.floor(process.stdout.columns / 4);
+        var scomp = Math.round((width * percent) / 100);
+        var progb =
           color("━").repeat(scomp) + color(" ").repeat(width - scomp);
         process.stdout.write(
           `\r${color("@prog:")} ${progb}` +

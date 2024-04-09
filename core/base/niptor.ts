@@ -8,7 +8,7 @@ import { spawn } from "child_process";
  */
 async function checkSudo() {
   return new Promise<boolean>((resolve) => {
-    const check = spawn("sudo", ["-n", "true"]);
+    var check = spawn("sudo", ["-n", "true"]);
     check.on("close", (code) => {
       resolve(code === 0);
     });
@@ -23,12 +23,12 @@ async function checkSudo() {
  * @throws An error if the command execution fails.
  */
 export default async function niptor(args: string[]) {
-  const sudoAvailable = await checkSudo();
-  const command = sudoAvailable ? ["sudo", ...args] : args;
-  const prox = spawn("sh", ["-c", command.join(" ")]);
-  const [stdoutData, stderrData] = await Promise.all([
+  var sudoAvailable = await checkSudo();
+  var command = sudoAvailable ? ["sudo", ...args] : args;
+  var prox = spawn("sh", ["-c", command.join(" ")]);
+  var [stdoutData, stderrData] = await Promise.all([
     new Promise<string>((resolve, reject) => {
-      const stdoutData: Buffer[] = [];
+      var stdoutData: Buffer[] = [];
       prox.stdout.on("data", (data) => stdoutData.push(data));
       prox.on("close", (code) => {
         if (code === 0) resolve(Buffer.concat(stdoutData).toString());
@@ -48,7 +48,7 @@ export default async function niptor(args: string[]) {
       });
     }),
     new Promise<string>((resolve, reject) => {
-      const stderrData: Buffer[] = [];
+      var stderrData: Buffer[] = [];
       prox.stderr.on("data", (data) => stderrData.push(data));
       prox.on("close", (code) => {
         if (code === 0) resolve(Buffer.concat(stderrData).toString());
