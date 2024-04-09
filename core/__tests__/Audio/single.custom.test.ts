@@ -6,7 +6,7 @@ import YouTube from "../../";
   try {
     const resolutions = ["high", "medium", "low", "ultralow"] as const;
     for (const resolution of resolutions) {
-      await YouTube.AudioOnly.Single.Custom({
+      const proc = await YouTube.AudioOnly.Single.Custom({
         resolution,
         stream: false,
         verbose: true,
@@ -14,6 +14,10 @@ import YouTube from "../../";
         output: "public/audio",
         query: "21 savage - redrum",
       });
+      proc.on("end", () => console.log("@finished."));
+      proc.on("start", (comd) => console.log("@command:", comd));
+      proc.on("error", (error) => console.error("@rror:", error));
+      proc.on("progress", (progress) => console.log("@progress:", progress));
     }
   } catch (error: any) {
     console.error(colors.red(error.message));
