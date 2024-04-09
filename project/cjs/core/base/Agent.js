@@ -12,8 +12,8 @@ const package_json_1 = require("../../package.json");
 async function Agent({ query, verbose, onionTor, }) {
     verbose;
     console.log(colors_1.default.green("@info:"), "using", colors_1.default.green("yt-dlx"), "version", colors_1.default.green(package_json_1.version));
-    let ipAddress;
-    let nipTor;
+    var ipAddress;
+    var nipTor;
     nipTor = await (0, niptor_1.default)(["curl https://checkip.amazonaws.com --insecure"]);
     console.log(colors_1.default.green("@info:"), "system", colors_1.default.green("ipAddress"), nipTor.stdout.trim());
     ipAddress = nipTor.stdout.trim();
@@ -28,9 +28,9 @@ async function Agent({ query, verbose, onionTor, }) {
         else
             throw new Error("Unable to connect to Tor.");
     }
-    let TubeBody;
-    let respEngine = undefined;
-    let videoId = await (0, YouTubeId_1.default)(query);
+    var TubeBody;
+    var respEngine = undefined;
+    var videoId = await (0, YouTubeId_1.default)(query);
     if (!videoId) {
         TubeBody = await web_1.default.searchVideos({ query });
         if (!TubeBody[0])

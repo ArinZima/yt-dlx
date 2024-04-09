@@ -5,11 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const youtubei_1 = require("youtubei");
+const eventemitter3_1 = __importDefault(require("eventemitter3"));
+class Emitter extends eventemitter3_1.default {
+}
 async function searchPlaylists({ query }) {
     try {
-        const youtube = new youtubei_1.Client();
-        const searchPlaylists = await youtube.search(query, { type: "playlist" });
-        const result = searchPlaylists.items.map((item) => ({
+        var youtube = new youtubei_1.Client();
+        var emitter = new Emitter();
+        var searchPlaylists = await youtube.search(query, { type: "playlist" });
+        var result = searchPlaylists.items.map((item) => ({
             id: item.id,
             title: item.title,
             videoCount: item.videoCount,

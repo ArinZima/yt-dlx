@@ -23,7 +23,7 @@ import AudioVideoCustom from "./routes/AudioVideo/single/AudioVideoCustom";
 import ListAudioVideoHighest from "./routes/AudioVideo/list/ListAudioVideoHighest";
 import ListAudioVideoLowest from "./routes/AudioVideo/list/ListAudioVideoLowest";
 import ListAudioVideoCustom from "./routes/AudioVideo/list/ListAudioVideoCustom";
-declare const ytdlx: {
+declare var ytdlx: {
     ytSearch: {
         Video: {
             Single: typeof video_data;

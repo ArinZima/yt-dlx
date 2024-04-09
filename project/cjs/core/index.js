@@ -38,7 +38,7 @@ const ListAudioVideoHighest_1 = __importDefault(require("./routes/AudioVideo/lis
 const ListAudioVideoLowest_1 = __importDefault(require("./routes/AudioVideo/list/ListAudioVideoLowest"));
 const ListAudioVideoCustom_1 = __importDefault(require("./routes/AudioVideo/list/ListAudioVideoCustom"));
 //
-const ytdlx = {
+var ytdlx = {
     ytSearch: {
         Video: {
             Single: video_data_1.default,

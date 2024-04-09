@@ -1,4 +1,5 @@
 import colors from "colors";
+import EventEmitter from "eventemitter3";
 import YouTubeID from "../../web/YouTubeId";
 import web from "../../web";
 /**
@@ -8,13 +9,16 @@ import web from "../../web";
  * @returns A Promise that resolves with the metadata for the single video.
  * @throws An error if the input is an incorrect video link or if unable to get a response.
  */
+class Emitter extends EventEmitter {
+}
 export default async function video_data({ query, }) {
-    const videoId = await YouTubeID(query);
+    var emitter = new Emitter();
+    var videoId = await YouTubeID(query);
     if (!videoId) {
         throw new Error(colors.red("@error: ") + "incorrect playlist link");
     }
     else {
-        const metaData = await web.singleVideo({ videoId });
+        var metaData = await web.singleVideo({ videoId });
         if (!metaData) {
             throw new Error(colors.red("@error: ") + "Unable to get response!");
         }

@@ -1,11 +1,3 @@
-/**
- * Extracts metadata information from a YouTube video.
- *
- * @param query - The YouTube video URL to extract metadata from.
- * @param verbose - (optional) Whether to log verbose output or not.
- * @param onionTor - (optional) Whether to use Tor for the extraction or not.
- * @returns A Promise that resolves with an object containing metadata information about the video.
- */
 export default function extract({ query, verbose, onionTor, }: {
     query: string;
     verbose?: boolean;

@@ -31,10 +31,11 @@ const colors_1 = __importDefault(require("colors"));
 const path = __importStar(require("path"));
 const zod_1 = require("zod");
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
+const eventemitter3_1 = __importDefault(require("eventemitter3"));
 const Agent_1 = __importDefault(require("../../../base/Agent"));
 const formatTime_1 = __importDefault(require("../../../base/formatTime"));
 const calculateETA_1 = __importDefault(require("../../../base/calculateETA"));
-const ZodSchema = zod_1.z.object({
+var ZodSchema = zod_1.z.object({
     query: zod_1.z.string().min(2),
     output: zod_1.z.string().optional(),
     stream: zod_1.z.boolean().optional(),
@@ -63,6 +64,8 @@ const ZodSchema = zod_1.z.object({
  * @param onionTor - (optional) Whether to use Tor for the download or not.
  * @returns A Promise that resolves when the video has been processed, unless `stream` is `true`, in which case it resolves with an object containing the `ffmpeg` command and the `filename`.
  */
+class Emitter extends eventemitter3_1.default {
+}
 async function VideoHighest({ query, stream, verbose, output, filter, onionTor, }) {
     try {
         ZodSchema.parse({
@@ -73,23 +76,24 @@ async function VideoHighest({ query, stream, verbose, output, filter, onionTor, 
             filter,
             onionTor,
         });
-        let startTime;
-        const engineData = await (0, Agent_1.default)({ query, verbose, onionTor });
+        var startTime;
+        var emitter = new Emitter();
+        var engineData = await (0, Agent_1.default)({ query, verbose, onionTor });
         if (engineData === undefined) {
             throw new Error(`${colors_1.default.red("@error:")} unable to get response!`);
         }
         else {
-            const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-            const folder = output ? path.join(__dirname, output) : __dirname;
+            var title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
+            var folder = output ? path.join(__dirname, output) : __dirname;
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const ff = (0, fluent_ffmpeg_1.default)();
-            const vdata = engineData.ManifestHigh[engineData.ManifestHigh.length - 1].url;
+            var ff = (0, fluent_ffmpeg_1.default)();
+            var vdata = engineData.ManifestHigh[engineData.ManifestHigh.length - 1].url;
             ff.addInput(vdata.toString());
             ff.videoCodec("copy");
             ff.withOutputFormat("matroska");
             ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-            let filename = "yt-dlx_(VideoHighest_";
+            var filename = "yt-dlx_(VideoHighest_";
             switch (filter) {
                 case "grayscale":
                     ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -133,7 +137,7 @@ async function VideoHighest({ query, stream, verbose, output, filter, onionTor, 
             });
             ff.on("end", () => process.stdout.write("\n"));
             ff.on("progress", ({ percent, timemark }) => {
-                let color = colors_1.default.green;
+                var color = colors_1.default.green;
                 if (isNaN(percent))
                     percent = 0;
                 if (percent > 98)
@@ -142,9 +146,9 @@ async function VideoHighest({ query, stream, verbose, output, filter, onionTor, 
                     color = colors_1.default.red;
                 else if (percent < 50)
                     color = colors_1.default.yellow;
-                const width = Math.floor(process.stdout.columns / 4);
-                const scomp = Math.round((width * percent) / 100);
-                const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+                var width = Math.floor(process.stdout.columns / 4);
+                var scomp = Math.round((width * percent) / 100);
+                var progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
                 process.stdout.write(`\r${color("@prog:")} ${progb}` +
                     ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
                     ` ${color("| @timemark:")} ${timemark}` +

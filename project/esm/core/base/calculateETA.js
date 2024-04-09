@@ -6,9 +6,9 @@
  * @returns The estimated time remaining in seconds as a string with two decimal places.
  */
 export default function calculateETA(startTime, percent) {
-    const currentTime = new Date();
-    const elapsedTime = (currentTime.getTime() - startTime.getTime()) / 1000;
-    const remainingTime = (elapsedTime / percent) * (100 - percent);
+    var currentTime = new Date();
+    var elapsedTime = (currentTime.getTime() - startTime.getTime()) / 1000;
+    var remainingTime = (elapsedTime / percent) * (100 - percent);
     return remainingTime.toFixed(2);
 }
 //# sourceMappingURL=calculateETA.js.map

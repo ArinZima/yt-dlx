@@ -3,10 +3,11 @@ import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
 import ffmpeg from "fluent-ffmpeg";
+import EventEmitter from "eventemitter3";
 import ytdlx from "../../../base/Agent";
 import formatTime from "../../../base/formatTime";
 import calculateETA from "../../../base/calculateETA";
-const ZodSchema = z.object({
+var ZodSchema = z.object({
     query: z.string().min(2),
     output: z.string().optional(),
     stream: z.boolean().optional(),
@@ -35,6 +36,8 @@ const ZodSchema = z.object({
  * @param onionTor - (optional) Whether to use Tor for the download or not.
  * @returns A Promise that resolves when the video has been processed, unless `stream` is `true`, in which case it resolves with an object containing the `ffmpeg` command and the `filename`.
  */
+class Emitter extends EventEmitter {
+}
 export default async function VideoLowest({ query, stream, verbose, output, filter, onionTor, }) {
     try {
         ZodSchema.parse({
@@ -45,23 +48,24 @@ export default async function VideoLowest({ query, stream, verbose, output, filt
             filter,
             onionTor,
         });
-        let startTime;
-        const engineData = await ytdlx({ query, verbose, onionTor });
+        var startTime;
+        var emitter = new Emitter();
+        var engineData = await ytdlx({ query, verbose, onionTor });
         if (engineData === undefined) {
             throw new Error(`${colors.red("@error:")} unable to get response!`);
         }
         else {
-            const title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
-            const folder = output ? path.join(__dirname, output) : __dirname;
+            var title = engineData.metaData.title.replace(/[^a-zA-Z0-9_]+/g, "_");
+            var folder = output ? path.join(__dirname, output) : __dirname;
             if (!fs.existsSync(folder))
                 fs.mkdirSync(folder, { recursive: true });
-            const ff = ffmpeg();
-            const vdata = engineData.ManifestLow[0].url;
+            var ff = ffmpeg();
+            var vdata = engineData.ManifestLow[0].url;
             ff.addInput(vdata.toString());
             ff.videoCodec("copy");
             ff.withOutputFormat("matroska");
             ff.addOption("-headers", "X-Forwarded-For: " + engineData.ipAddress);
-            let filename = "yt-dlx_(VideoLowest_";
+            var filename = "yt-dlx_(VideoLowest_";
             switch (filter) {
                 case "grayscale":
                     ff.withVideoFilter("colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3");
@@ -105,7 +109,7 @@ export default async function VideoLowest({ query, stream, verbose, output, filt
             });
             ff.on("end", () => process.stdout.write("\n"));
             ff.on("progress", ({ percent, timemark }) => {
-                let color = colors.green;
+                var color = colors.green;
                 if (isNaN(percent))
                     percent = 0;
                 if (percent > 98)
@@ -114,9 +118,9 @@ export default async function VideoLowest({ query, stream, verbose, output, filt
                     color = colors.red;
                 else if (percent < 50)
                     color = colors.yellow;
-                const width = Math.floor(process.stdout.columns / 4);
-                const scomp = Math.round((width * percent) / 100);
-                const progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
+                var width = Math.floor(process.stdout.columns / 4);
+                var scomp = Math.round((width * percent) / 100);
+                var progb = color("━").repeat(scomp) + color(" ").repeat(width - scomp);
                 process.stdout.write(`\r${color("@prog:")} ${progb}` +
                     ` ${color("| @percent:")} ${percent.toFixed(2)}%` +
                     ` ${color("| @timemark:")} ${timemark}` +

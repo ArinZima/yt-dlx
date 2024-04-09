@@ -1,5 +1,6 @@
 import colors from "colors";
 import ytdlx from "../../base/Agent";
+import EventEmitter from "eventemitter3";
 /**
  * Lists the available formats and manifest information for a YouTube video.
  *
@@ -9,7 +10,10 @@ import ytdlx from "../../base/Agent";
  * @returns A Promise that resolves after listing the formats and manifest information.
  * @throws An error if unable to get a response from YouTube.
  */
+class Emitter extends EventEmitter {
+}
 export default async function list_formats({ query, verbose, onionTor, }) {
+    var emitter = new Emitter();
     var metaBody = await ytdlx({ query, verbose, onionTor });
     if (!metaBody) {
         throw new Error("@error: Unable to get response from YouTube.");
