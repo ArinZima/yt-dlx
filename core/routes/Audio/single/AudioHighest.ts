@@ -1,7 +1,9 @@
+console.clear();
 import * as fs from "fs";
 import colors from "colors";
 import * as path from "path";
 import { z, ZodError } from "zod";
+import EventEmitter from "events";
 import ffmpeg from "fluent-ffmpeg";
 import type { FfmpegCommand } from "fluent-ffmpeg";
 

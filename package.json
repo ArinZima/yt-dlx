@@ -75,6 +75,7 @@
     "protobufjs": "^7.2.6",
     "readline-sync": "^1.4.10",
     "speedometer": "^1.1.0",
+    "tsup": "^8.0.2",
     "youtubei": "^1.4.0",
     "yt-dlx": "^8.3.0",
     "zod": "^3.22.4"
