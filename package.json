@@ -13,9 +13,9 @@
   },
   "homepage": "https://yt-dlx-shovit.koyeb.app",
   "bin": {
-    "yt": "project/esm/core/cli/main.js",
-    "ytdlx": "project/esm/core/cli/main.js",
-    "yt-dlx": "project/esm/core/cli/main.js"
+    "yt": "project/cjs/core/cli/main.js",
+    "ytdlx": "project/cjs/core/cli/main.js",
+    "yt-dlx": "project/cjs/core/cli/main.js"
   },
   "scripts": {
     "start": "node util/dev.mjs",
