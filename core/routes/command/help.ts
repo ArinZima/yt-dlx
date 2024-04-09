@@ -1,6 +1,7 @@
 import colors from "colors";
 import EventEmitter from "eventemitter3";
 
+class Emitter extends EventEmitter {}
 export default function help(): Promise<string> {
   console.log(
     colors.green("@info:"),

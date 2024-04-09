@@ -10,6 +10,7 @@ import web, { playlistVideosType } from "../../web";
  * @returns A Promise that resolves with the metadata of videos in the playlist.
  * @throws An error if the playlist link is incorrect or if unable to get a response.
  */
+class Emitter extends EventEmitter {}
 export default async function playlist_data({
   query,
 }: {

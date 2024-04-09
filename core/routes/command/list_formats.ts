@@ -12,6 +12,7 @@ import type { EngineOutput } from "../../base/Engine";
  * @returns A Promise that resolves after listing the formats and manifest information.
  * @throws An error if unable to get a response from YouTube.
  */
+class Emitter extends EventEmitter {}
 export default async function list_formats({
   query,
   verbose,

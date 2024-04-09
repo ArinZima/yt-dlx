@@ -16,6 +16,7 @@ export interface singleVideoType {
   tags: string;
   likeCount: number;
 }
+class Emitter extends EventEmitter {}
 export default async function singleVideo({ videoId }: { videoId: string }) {
   try {
     const youtube = new Client();

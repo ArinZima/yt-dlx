@@ -50,6 +50,7 @@ const ZodSchema = z.object({
  * @param resolution - The desired audio resolution. Available options: "high", "medium", "low", "ultralow".
  * @returns A Promise that resolves with either `void` (if `stream` is false) or an object containing the `ffmpeg` instance and the output filename (if `stream` is true).
  */
+class Emitter extends EventEmitter {}
 export default async function AudioCustom({
   query,
   output,

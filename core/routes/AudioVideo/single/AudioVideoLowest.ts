@@ -39,6 +39,7 @@ const ZodSchema = z.object({
  * @param onionTor - (optional) Whether to use Tor for the download or not.
  * @returns A Promise that resolves when the audio and video processing is complete. If `stream` is true, it returns an object with the `ffmpeg` command and the `filename`.
  */
+class Emitter extends EventEmitter {}
 export default async function AudioVideoLowest({
   query,
   stream,

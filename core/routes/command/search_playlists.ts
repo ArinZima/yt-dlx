@@ -10,6 +10,7 @@ import web, { searchPlaylistsType } from "../../web";
  * @returns A Promise that resolves with the search results for playlists.
  * @throws An error if the input is a playlist link (use playlist_data instead) or if unable to get a response.
  */
+class Emitter extends EventEmitter {}
 export default async function search_playlists({
   query,
 }: {

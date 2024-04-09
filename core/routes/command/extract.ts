@@ -11,6 +11,7 @@ import type { EngineOutput } from "../../base/Engine";
  * @param onionTor - (optional) Whether to use Tor for the extraction or not.
  * @returns A Promise that resolves with an object containing metadata information about the video.
  */
+class Emitter extends EventEmitter {}
 export default async function extract({
   query,
   verbose,

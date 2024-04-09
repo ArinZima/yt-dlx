@@ -8,6 +8,7 @@ export interface searchPlaylistsType {
   videoCount: number;
   thumbnails: string[];
 }
+class Emitter extends EventEmitter {}
 export default async function searchPlaylists({ query }: { query: string }) {
   try {
     const youtube = new Client();

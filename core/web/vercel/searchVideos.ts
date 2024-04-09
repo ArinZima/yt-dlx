@@ -14,6 +14,7 @@ export interface searchVideosType {
   description: string;
   thumbnails: string[];
 }
+class Emitter extends EventEmitter {}
 export default async function searchVideos({ query }: { query: string }) {
   try {
     const youtube = new Client();

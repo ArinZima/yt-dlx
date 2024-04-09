@@ -10,6 +10,7 @@ export interface relatedVideosType {
   uploadDate: string;
   thumbnails: string[];
 }
+class Emitter extends EventEmitter {}
 export default async function relatedVideos({ videoId }: { videoId: string }) {
   try {
     const youtube = new Client();

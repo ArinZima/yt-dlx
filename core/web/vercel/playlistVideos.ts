@@ -14,6 +14,7 @@ export interface playlistVideosType {
     thumbnails: string[];
   };
 }
+class Emitter extends EventEmitter {}
 export default async function playlistVideos({
   playlistId,
 }: {
