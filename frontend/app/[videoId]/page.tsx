@@ -6,6 +6,7 @@ import { SiPnpm } from "react-icons/si";
 import { TbBrandNpm } from "react-icons/tb";
 import NavPackage from "@/pages/components/nav";
 import FootPackage from "@/pages/components/foot";
+import VerPackage from "@/pages/components/version";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
@@ -40,11 +41,7 @@ export default function home() {
       >
         <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">
           <article className="space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLX@8.4.0
-              </h1>
-            </div>
+            <VerPackage />
             <p className="text-white/80">
               Yt-Dlx Is A Robust Multimedia Downloading Tool Meticulously
               Crafted To Elevate Your Media Consumption Experience. With Its

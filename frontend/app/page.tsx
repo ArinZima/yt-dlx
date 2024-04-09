@@ -14,6 +14,7 @@ import { FaFileVideo } from "react-icons/fa6";
 import NavPackage from "@/pages/components/nav";
 import FootPackage from "@/pages/components/foot";
 import { SiFirefoxbrowser } from "react-icons/si";
+import VerPackage from "@/pages/components/version";
 import { AiFillCodeSandboxCircle } from "react-icons/ai";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
@@ -25,11 +26,7 @@ var Introduction = () => {
     >
       <div className="max-w-screen-2xl px-6 py-16 mx-auto space-y-12">
         <article className="space-y-8">
-          <div className="space-y-6">
-            <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-              YT-DLX@8.4.0
-            </h1>
-          </div>
+          <VerPackage />
           <p className="text-white/80">
             Yt-Dlx Is A Robust Multimedia Downloading Tool Meticulously Crafted
             To Elevate Your Media Consumption Experience. With Its Advanced
