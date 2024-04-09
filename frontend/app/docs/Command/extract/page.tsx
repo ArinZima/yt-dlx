@@ -14,7 +14,7 @@ export default function AwesomePackage({ param }: any) {
           <article className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-5xl text-red-600 font-bold lg:text-9xl">
-                YT-DLX@8.2.0
+                YT-DLX@8.3.0
               </h1>
             </div>
             <p className="text-white/80">
