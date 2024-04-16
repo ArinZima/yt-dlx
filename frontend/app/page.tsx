@@ -103,6 +103,7 @@ var Playground = () => {
         }),
       });
       if (resp.status === 200) setTubeSearch(await resp.json());
+      else setTubeSearch(null);
     },
     onMutate: () => console.log("ApiSearch started!"),
   });
@@ -111,7 +112,7 @@ var Playground = () => {
   react.useEffect(() => {
     fetch("/api/ioSocket").finally(() => {
       var ioSocket = io();
-      var getSimilar = (data: string[]) => setSimilar(data);
+      var getSimilar = (data: string[]) => setSimilar(data.slice(0, 8));
       ioSocket.on("similar", getSimilar);
       setSocket(ioSocket);
       return () => {
@@ -209,7 +210,7 @@ var Playground = () => {
                   <img
                     alt="logo"
                     loading="lazy"
-                    src="/yt-dlx.png"
+                    src="/logo.png"
                     className="object-cover w-full h-64 min-h-full"
                   />
                 )}

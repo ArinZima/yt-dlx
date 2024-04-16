@@ -5,26 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const child_process_1 = require("child_process");
-/**
- * Checks if sudo is available.
- *
- * @returns A Promise that resolves with a boolean indicating whether sudo is available.
- */
 async function checkSudo() {
     return new Promise((resolve) => {
         const check = (0, child_process_1.spawn)("sudo", ["-n", "true"]);
+        check.on("error", () => resolve(false));
         check.on("close", (code) => {
             resolve(code === 0);
         });
     });
 }
-/**
- * Executes a command with or without sudo based on availability.
- *
- * @param args - The arguments to pass to the command.
- * @returns A Promise that resolves with an object containing stdout and stderr data.
- * @throws An error if the command execution fails.
- */
 async function niptor(args) {
     const sudoAvailable = await checkSudo();
     const command = sudoAvailable ? ["sudo", ...args] : args;
