@@ -3,11 +3,14 @@ import { spawn } from "child_process";
 
 async function checkSudo() {
   return new Promise<boolean>((resolve) => {
-    const check = spawn("sudo", ["-n", "true"]);
-    check.on("error", () => resolve(false));
-    check.on("close", (code) => {
-      resolve(code === 0);
-    });
+    if (process.env.sudo === "false") resolve(false);
+    else {
+      const check = spawn("sudo", ["-n", "true"]);
+      check.on("error", () => resolve(false));
+      check.on("close", (code) => {
+        resolve(code === 0);
+      });
+    }
   });
 }
 
