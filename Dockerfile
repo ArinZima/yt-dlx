@@ -3,6 +3,7 @@ FROM node:latest
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     git \
+    npm \
     tor \
     wget \
     curl \
@@ -18,7 +19,7 @@ RUN apt-get update \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install -g yarn
+RUN npm i -g yarn
 RUN git clone https://github.com/yt-dlx/yt-dlx /app
 WORKDIR /app
 RUN yarn remake
