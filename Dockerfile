@@ -19,7 +19,7 @@ RUN apt-get update \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm i -g yarn
+RUN npm i -g yarn yt-dlx --force
 RUN git clone https://github.com/yt-dlx/yt-dlx /app
 WORKDIR /app
 RUN yarn remake
