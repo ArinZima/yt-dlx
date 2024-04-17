@@ -9,9 +9,8 @@
   "homepage": "https://yt-dlx-shovit.koyeb.app/",
   "description": "Effortless audio-video download and streaming. yt-dlx does the heavy load for free.",
   "scripts": {
-    "clean": "rm -rf .next .cache .temp",
-    "build": "yarn clean && next build",
-    "dev": "yarn clean && next dev",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
