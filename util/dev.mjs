@@ -13,11 +13,10 @@ const colors = {
 const core = {
   remake:
     "yarn run clean && yarn run make && yarn run update && yarn run build",
-  postinstall: "run-s download-files setup-permissions install-chrome",
+  postinstall: "run-s download-files setup-permissions",
   prepublishOnly: "yarn run clean:deps",
   "setup-permissions": "chmod -R +x util/*",
   "download-files": "node util/cprobe.mjs",
-  "install-chrome": "npx puppeteer browsers install chrome",
   "frontend:dev": "cd frontend && yarn run dev",
   "frontend:lint": "cd frontend && yarn run lint",
   "frontend:build": "cd frontend && yarn run build",
@@ -26,7 +25,7 @@ const core = {
   clean:
     "yarn run clean:base && yarn run clean:frontend && yarn run clean:deps",
   "clean:base": "rm -rf node_modules temp project others",
-  "clean:frontend": "cd frontend && yarn run clean",
+  "clean:frontend": "cd frontend && rm -rf .next node_modules",
   "clean:deps": "rm -rf util/ffmpeg.tar.xz util/ffmpeg util/cprobe",
   make: "yarn run make:base && yarn run make:frontend",
   "make:base": "yarn install",
@@ -35,7 +34,7 @@ const core = {
   "update:base": "yarn upgrade --latest",
   "update:frontend": "cd frontend && yarn upgrade --latest",
   build: "yarn run build:base && yarn run build:frontend",
-  "build:frontend": "cd frontend && yarn run clean && yarn run build",
+  "build:frontend": "cd frontend && yarn run build",
   "build:base":
     "rm -rf project temp && tsc -p ./config/cjs.json && tsc -p ./config/esm.json && tsc -p ./config/types.json",
   spec: "rm -rf temp && tsup core/__tests__/other/quick.spec.ts --outDir temp && node temp/quick.spec.js",
