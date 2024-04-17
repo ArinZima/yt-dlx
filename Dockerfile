@@ -18,9 +18,8 @@ RUN apt-get update \
     python3-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install -g yarn yt-dlx
+RUN npm install -g yarn
+RUN git clone https://github.com/yt-dlx/yt-dlx /app
 WORKDIR /app
-COPY . .
-RUN yarn run make
-RUN yarn run build
-CMD yarn frontend:start
+RUN yarn remake
+CMD ["yarn", "frontend:start"]
